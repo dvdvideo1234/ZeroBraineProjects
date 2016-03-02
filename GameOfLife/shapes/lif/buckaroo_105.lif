@@ -1,0 +1,16 @@
+#Life 1.05
+#D Name: Buckaroo
+#D Author: David Buckingham
+#D A period 30 oscillator based on the queen bee shuttle.
+#D www.conwaylife.com/wiki/index.php?title=Buckaroo
+#N
+#P -11 -3
+.........*
+.......*.*
+......*.*
+**...*..*
+**....*.*
+.......*.*........**
+.........*........*.*
+....................*
+....................**
