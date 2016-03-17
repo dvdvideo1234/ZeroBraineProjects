@@ -151,31 +151,27 @@ function makeUnion(w,h,minw,maxw,minh,maxh)
       updt()
     end
   end
-  
   return self
 end
 
-local W = 100
-local H = 80
+local W     = 100
+local H     = 80
+local szRe  = 3
+local szIm  = 3
+local iTer  = 100
+local nPow  = 2
+local nStep = 40
+local nZoom = 6
 
 open("Union 2D Plot")
 size(W,H)
 zero(0, 0) 
 updt(false) -- disable auto updates
 
-local szRe = 3
-local szIm = 3
-
 local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm)
       S:SetControlWX(wx)
-      
-iTer = 100
-nPow = 2
-nStep = 40
-nZoom = 6
+      S:Mandelbrot(iTer,nPow)
 
-S:Mandelbrot(iTer,nPow)
- 
 while true do
   local lx, ly = clck('ld')
   local rx, ry = clck('rd')
