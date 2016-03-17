@@ -32,7 +32,6 @@ function TurtleDraw(F,Arg)
     y = y + dy
     i = i + 1
   end
-          rect(sx,sy,x,y,0)
 end
 
 
