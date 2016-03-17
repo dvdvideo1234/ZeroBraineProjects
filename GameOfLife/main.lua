@@ -7,12 +7,12 @@ io.stdout:setvbuf("no")
 
 function TurtleDraw(F,Arg)
   local sx = 0
-  local sy = 15
+  local sy = 18
   local fx = F:getW()
   local fy = F:getH()
   local dx = (Arg[1]-sx)/fx
   local dy = (Arg[2]-sy)/fy
-  local x,y = 1,1
+  local x,y = 0,0
   local i = 1
   local Arr = F:getArray()
   wipe()
@@ -21,7 +21,7 @@ function TurtleDraw(F,Arg)
   while(Arr[i]) do
     local v = Arr[i]
     local j = 1
-          x = 1
+          x = 0
     while(v[j]) do
       if(v[j] == 1) then
         rect(x+sx,y+sy,dx,dy,0)
@@ -32,6 +32,7 @@ function TurtleDraw(F,Arg)
     y = y + dy
     i = i + 1
   end
+          rect(sx,sy,x,y,0)
 end
 
 
