@@ -6,12 +6,11 @@ local io        = io
 local string    = string
 local MetaShape = {}
 local MetaField = {}
-local Log       = io.write
 
 io.stdout:setvbuf("no")
 
-function LogLine(sStr)
-  Log(tostring(sStr).."\n")
+function LogLine(anyData)
+  io.write(tostring(anyData).."\n")
 end
 
 function Print(tT,sS)
@@ -477,70 +476,63 @@ end
 
 function testPerformance(stCard,stEstim,sFile)
   if(sFile) then
-    local F = io.open(sFile,"a+")
-    if(F) then
-      io.output(F)
-    end
+    LogLine("Output set to: "..sFile)
+    io.output(sFile)
   end
-  local Test = 1
-  while(stCard[Test]) do -- All tests
-    local tstVal = stCard[Test]
+  LogLine("Testing started")
+  local TestID, Cases = 1, {}
+  while(stCard[TestID]) do -- All tests
+    local tstEst = #stEstim
+    local tstVal = stCard[TestID]
     local fooVal = tstVal[1]
     local fooRes = tstVal[2]
-    local tstNam = tstVal[3] or ""
-    local tstEst = #stEstim
-    io.write("\nTesting case: <"..tostring(tstVal[3])..">")
-    io.write("\n   Inp: <"..tostring(tstVal[1])..">")
-    io.write("\n   Out: <"..tostring(tstVal[2])..">")
+    local tstNam = tostring(tstVal[3] or "")
+    local fooCnt = tonumber(tstVal[4]) or 0
+    local fooCyc = tonumber(tstVal[5]) or 0
+    if(fooCnt < 1) then LogLine("No test-card count  stCard.Cnt for test ID # "..tostring(TestID)); return end
+    if(fooCyc < 1) then LogLine("No test-card cycles stCard.Cyc for test ID # "..tostring(TestID)); return end
+    if(Cases[tstNam]) then LogLine("Test case name <"..tstNam.."> already chosen under ID # "..tostring(Cases[tstNam])); return; end
+    LogLine("Testing case["..tostring(TestID).."]: <"..tostring(tstVal[3])..">")
+    LogLine("   Inp: <"..tostring(tstVal[1])..">")
+    LogLine("   Out: <"..tostring(tstVal[2])..">")
+    LogLine("   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }")
     local Itr = 1 -- Current iteration
-    for Itr = 1, stCard.Settings.Count, 1 do -- Repeat each test
+    for Itr = 1, fooCnt, 1 do -- Repeat each test
       for Est = 1, tstEst  do -- For all functions
-        if(not stEstim[Est].Times[tstNam]) then
-          stEstim[Est].Times[tstNam] = 0
+        local Foo = stEstim[Est]
+        if(not Foo.Times[tstNam]) then Foo.Times[tstNam] = 0 end
+        if(not Foo.Rolled[tstNam]) then
+          Foo.Rolled[tstNam] = {}
+          Foo.Rolled[tstNam]["PASS"] = 0
+          Foo.Rolled[tstNam]["FAIL"] = 0
         end
-        if(not stEstim[Est].Rolled[tstNam]) then
-          stEstim[Est].Rolled[tstNam] = {}
-          stEstim[Est].Rolled[tstNam]["PASS"] = 0
-          stEstim[Est].Rolled[tstNam]["FAIL"] = 0
+        local Roll = Foo.Rolled[tstNam]
+        local Time = os.clock()
+        for Ind = 1, fooCyc do -- N Cycles
+          local Rez = Foo.Function(fooVal)
+          if(Rez == fooRes) then Roll["PASS"] = Roll["PASS"] + 1
+          else                   Roll["FAIL"] = Roll["FAIL"] + 1 end
         end
-        local Roll = stEstim[Est].Rolled[tstNam]
-        local Time, Rez = os.clock()
-        for Ind = 1, stCard.Settings.Cycles do -- N Cycles
-          Rez = stEstim[Est].Function(fooVal)
-          if(Rez == fooRes) then
-            Roll["PASS"] = Roll["PASS"] + 1
-          else
-            Roll["FAIL"] = Roll["FAIL"] + 1
-          end
-        end
-        stEstim[Est].Times[tstNam]  = stEstim[Est].Times[tstNam] + (os.clock() - Time)
+        Foo.Times[tstNam] = Foo.Times[tstNam] + (os.clock() - Time)
       end
     end
-
     local Min = stEstim[1].Times[tstNam]
     for Est = 1, tstEst do  -- For all functions
-      if(stEstim[Est].Times[tstNam] <= Min) then
-        Min = stEstim[Est].Times[tstNam]
-      end
+      local Foo = stEstim[Est]
+      if(Foo.Times[tstNam] <= Min) then Min = Foo.Times[tstNam] end
     end
-    
     for Est = 1, tstEst do  -- For all functions
-      local All = (stCard.Settings.Count * stCard.Settings.Cycles)
-      local Pas = ((100 *  stEstim[Est].Rolled[tstNam]["PASS"]) / All)
-      local Fal = ((100 *  stEstim[Est].Rolled[tstNam]["FAIL"]) / All)
-      -- print(Test,Est,stEstim[Est].Rolled[tstNam]["PASS"],All)
-      local Tim = stEstim[Est].Times[tstNam]
+      local Foo = stEstim[Est]
+      local All = (fooCnt * fooCyc)
+      local Pas = ((100 * Foo.Rolled[tstNam]["PASS"]) / All)
+      local Fal = ((100 * Foo.Rolled[tstNam]["FAIL"]) / All)
+      local Tim = Foo.Times[tstNam]
       local Tip =  (Min ~= 0) and (100 * (Tim / Min)) or 0
-      local Nam = "Passed ["..stEstim[Est].Name.."]: "
-      local Dat = string.format("%3.3f -> %3.3f (%5.3f)",Pas,Tip,Tim)
-      io.write("\n"..Nam..Dat)  
-    end
-    
-    io.write("\n")
-    
-    Test = Test + 1
-  end
-  if(F) then
-    F:close()
+      local Nam = "Passed ["..Foo.Name.."]: "
+      local Dat = string.format("%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d",Pas,Tip,Tim,(fooCnt*fooCyc/Tim),Fal)
+      LogLine(Nam..Dat)  
+    end; Cases[tstNam] = TestID;
+    LogLine("")
+    TestID = TestID + 1
   end
 end
