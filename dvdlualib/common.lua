@@ -479,10 +479,11 @@ function testPerformance(stCard,stEstim,sFile)
     LogLine("Output set to: "..sFile)
     io.output(sFile)
   end
-  LogLine("Testing started")
+  local tstCas = #stCard
+  local tstEst = #stEstim
+  LogLine("Started "..tostring(tstCas).." test cases for "..tostring(tstEst).." functions")
   local TestID, Cases = 1, {}
   while(stCard[TestID]) do -- All tests
-    local tstEst = #stEstim
     local tstVal = stCard[TestID]
     local fooVal = tstVal[1]
     local fooRes = tstVal[2]
@@ -535,4 +536,5 @@ function testPerformance(stCard,stEstim,sFile)
     LogLine("")
     TestID = TestID + 1
   end
+  LogLine("Test finished all "..tostring(tstCas).." cases successfully")
 end
