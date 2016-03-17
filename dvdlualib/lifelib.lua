@@ -1,4 +1,5 @@
-﻿-- Remember to add "COMMON" in the main file
+﻿local LIFE = {}
+
 local pairs     = pairs
 local tonumber  = tonumber
 local tostring  = tostring
@@ -8,9 +9,7 @@ local string    = string
 local MetaShape = {}
 local MetaField = {}
 
-io.stdout:setvbuf("no")
-
-local function getRuleBS(sStr)
+LIFE.getRuleBS = function(sStr)
   local cB,cS
   local BS = {B = {}, S = {}}
   local Len = string.len(sStr)
@@ -44,7 +43,7 @@ local function getRuleBS(sStr)
   return nil
 end
 
-local function getRleSettings(sStr)
+LIFE.getRleSettings = function(sStr)
   local Cpy = sStr..","
   local Len = string.len(Cpy)
   local Che = ""
@@ -68,7 +67,7 @@ local function getRleSettings(sStr)
   return Exp
 end
 
-local function CopyShape(argShape,w,h)
+local function copyShape(argShape,w,h)
   if(not argShape) then return false end
   if(not (w and h)) then return false end   
   if(not (w > 0 and h > 0)) then return false end   
@@ -81,19 +80,19 @@ local function CopyShape(argShape,w,h)
   return Rez
 end
 
-local function getDefaultRule()
+LIFE.getDefaultRule = function()
   -- Conway
   return { Name = "B3/S23", Data = { B = {3}, S = {2,3} } }
 end
 
----------------------------LIBRARY-------------------------------
+---------------------------LIFE-------------------------------
 
 local Aliv = "O"
 local Dead = "-"
 local ShapePath = "game-of-life/shapes/"
 Life = {}
 
-Life.Aliv = function(sA)
+LIFE.charAliv = function (sA)
   if(not sA) then return Aliv end
   local sA   = string.sub(tostring(sA),1,1)
   if( sA ~= "" and
@@ -104,7 +103,7 @@ Life.Aliv = function(sA)
   return false
 end
 
-Life.Dead = function(sD)
+LIFE.charDead = function(sD)
   if(not sD) then return Dead end
   local sD = string.sub(tostring(sD),1,1)
   if( sD ~= "" and
@@ -115,7 +114,7 @@ Life.Dead = function(sD)
   return false
 end
 
-Life.ShapesPath = function(sData)
+LIFE.shapesPath = function(sData)
   if(not sData) then return ShapePath end
   local Typ = type(sData)
   if( Typ == "string" and sData ~= "" ) then
@@ -125,7 +124,7 @@ Life.ShapesPath = function(sData)
   return false
 end
 
-Life.InitStruct = function(sName)
+LIFE.initStruct = function(sName)
   local Shapes = {
   ["HEART"]       = { 1,0,1,
                       1,0,1,
@@ -187,7 +186,7 @@ Life.InitStruct = function(sName)
   return Shapes[string.upper(sName)]
 end
 
-function Life.InitStringText(sStr,sDelimiter)
+LIFE.initStringText = function(sStr,sDelimiter)
   if( not (sStr and sDelimiter)) then return false end
   if(type(sStr) ~= "string") then return false end
   if(type(sDelimiter) ~= "string" and
@@ -232,7 +231,7 @@ function Life.InitStringText(sStr,sDelimiter)
   return Shape
 end
 
-function Life.InitStringRle(sStr)
+LIFE.initStringRle = function(sStr)
   local nS
   local nE
   local Ch
@@ -281,7 +280,7 @@ function Life.InitStringRle(sStr)
   return Shape
 end
 
-Life.InitFileLif105 = function(sName, sAddFormat)
+LIFE.initFileLif105 = function(sName, sAddFormat)
   F = io.open(ShapePath.."lif/"..string.lower(sName).."_105.lif"..string.lower(sAddFormat or ""), "r")
   if(not F) then return false end
   local Line = ""
@@ -340,7 +339,7 @@ Life.InitFileLif105 = function(sName, sAddFormat)
   return Shape
 end
 
-Life.InitFileLif106 = function(sName, sAddFormat)
+LIFE.initFileLif106 = function(sName, sAddFormat)
   F = io.open(ShapePath.."lif/"..string.lower(sName).."_106.lif"..string.lower(sAddFormat or ""), "r")
   if(not F) then return false end
   local Line = ""
@@ -435,7 +434,7 @@ Life.InitFileLif106 = function(sName, sAddFormat)
   return Shape
 end
 
-Life.InitFileRle = function(sName, sAddFormat)
+LIFE.initFileRle = function(sName, sAddFormat)
   F = io.open(ShapePath.."rle/"..string.lower(sName)..".rle"..string.lower(sAddFormat or ""), "r")
   if(not F) then return false end
   local Shape = {w = 0, h = 0, Rule = { Name = "", Data = {}}, Header = {}}
@@ -463,11 +462,11 @@ Life.InitFileRle = function(sName, sAddFormat)
       Ind = Ind + 1
     elseif(cFirst == "x") then
       FileShapePos = F:seek("cur",0)
-      local Settings = getRleSettings(Line)
+      local Settings = LIFE.getRleSettings(Line)
       Shape.w = tonumber(Settings["x"])
       Shape.h = tonumber(Settings["y"])
       Shape.Rule.Name = Settings["rule"]
-      Shape.Rule.Data = getRuleBS(Shape.Rule.Name)
+      Shape.Rule.Data = LIFE.getRuleBS(Shape.Rule.Name)
     end
   end
   Line = ""
@@ -516,7 +515,7 @@ Life.InitFileRle = function(sName, sAddFormat)
   return Shape
 end
 
-Life.InitFileCells = function(sName, sAddFormat)
+LIFE.initFileCells = function(sName, sAddFormat)
   F = io.open(ShapePath.."cells/"..string.lower(sName)..".cells"..string.lower(sAddFormat or ""), "r")
   if(not F) then return false end
   local Line = ""
@@ -561,7 +560,7 @@ Life.InitFileCells = function(sName, sAddFormat)
   return Shape
 end
 
-local function DrawConsole(F)
+local function drawConsole(F)
   local tArr = F:getArray()
   local fx   = F:getW()
   local fy   = F:getH()
@@ -594,7 +593,7 @@ local function getSumStatus(nStatus,nSum,tRule)
   end
 end
 
-Life.Field = function(w,h,sRule)  
+LIFE.makeField = function(w,h,sRule)  
   local self  = {}
   local w = w or 0
         w = ((w >= 1) and w) or 1
@@ -603,13 +602,13 @@ Life.Field = function(w,h,sRule)
   local Gen = 0
   local Old = arMalloc2D(w,h) 
   local New = arMalloc2D(w,h)
-  local Draw = { ["text"] = DrawConsole }
+  local Draw = { ["text"] = drawConsole }
   local Rule
         
   setmetatable(self,MetaField)
   
   if(type(sRule) ~= "string") then
-    Rule = getDefaultRule()
+    Rule = LIFE.getDefaultRule()
   else
     Rule = {}
     Rule.Name = sRule
@@ -775,18 +774,18 @@ Life.Field = function(w,h,sRule)
 end
 
 -- Creates Shape objects from row data
-Life.Shape = function(tInit,sRule)
-  if(not tInit) then return false end
-  if(not (tInit.w and tInit.h)) then return false end
+LIFE.makeShape = function(tInit,sRule)
+  if(not tInit) then 
+    io.write("No initialization table\n"); return false end
+  if(not (tInit.w and tInit.h)) then
+    io.write("Initialization table bad dimensions\n"); return false end
   if(not (tInit.w > 0 and tInit.h > 0)) then
-    LogLine("Shape(Init, Rule): Check Shape init structure !")
-    return false
-  end
+    io.write("Shape(Init, Rule): Check Shape init structure !\n"); return false end
   local self = {}
   local w    = tInit.w
   local h    = tInit.h
-  local Data = CopyShape(tInit,w,h)
-  local Draw = { ["text"] = DrawConsole }
+  local Data = copyShape(tInit,w,h)
+  local Draw = { ["text"] = drawConsole }
   local Rule = ""
   
   setmetatable(self,MetaShape)
@@ -801,18 +800,18 @@ Life.Shape = function(tInit,sRule)
     end
   elseif(type(tInit.Rule) == "table") then
     if(type(tInit.Rule.Name) == "string") then
-      local Data = getRuleBS(Rule)
+      local Data = LIFE.getRuleBS(Rule)
       if(Data ~= nil) then
         Rule = tInit.Rule.Name
       else
-        Rule = getDefaultRule().Name
+        Rule = LIFE.getDefaultRule().Name
       end
     else
       LogLine("Shape(Init, Rule): Check init Rule !")
       return nil
     end
   else
-    Rule = getDefaultRule().Name
+    Rule = LIFE.getDefaultRule().Name
   end
 
   function self:getRuleName(x,y)
@@ -953,3 +952,5 @@ Life.Shape = function(tInit,sRule)
   end  
   return self
 end
+
+return LIFE
