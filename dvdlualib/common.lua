@@ -481,7 +481,7 @@ function testPerformance(stCard,stEstim,sFile)
   end
   local tstCas = #stCard
   local tstEst = #stEstim
-  LogLine("Started "..tostring(tstCas).." test cases for "..tostring(tstEst).." functions")
+  LogLine("Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions")
   local TestID, Cases = 1, {}
   while(stCard[TestID]) do -- All tests
     local tstVal = stCard[TestID]

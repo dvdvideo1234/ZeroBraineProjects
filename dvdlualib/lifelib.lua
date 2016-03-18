@@ -9,6 +9,50 @@ local string    = string
 local MetaShape = {}
 local MetaField = {}
 
+--------------------------- ALIVE / DEAD / PATH -------------------------------
+
+local Aliv = "O"
+local Dead = "-"
+local ShapePath = "game-of-life/shapes/"
+
+LIFE.charAliv = function (sA)
+  if(not sA) then return Aliv end
+  local sA   = string.sub(tostring(sA),1,1)
+  if( sA ~= "" and
+      sA ~= Dead ) then
+    Aliv = sA
+    return true
+  end
+  return false
+end
+
+LIFE.charDead = function(sD)
+  if(not sD) then return Dead end
+  local sD = string.sub(tostring(sD),1,1)
+  if( sD ~= "" and
+      sD ~= Aliv ) then 
+    Dead = sD
+    return true
+  end
+  return false
+end
+
+LIFE.shapesPath = function(sData)
+  if(not sData) then return ShapePath end
+  local Typ = type(sData)
+  if( Typ == "string" and sData ~= "" ) then
+    ShapePath = sData
+    return true
+  end
+  return false
+end
+
+--------------------------- RULES -------------------------------
+
+LIFE.getDefaultRule = function() -- Conway
+  return { Name = "B3/S23", Data = { B = {3}, S = {2,3} } }
+end
+
 LIFE.getRuleBS = function(sStr)
   local cB,cS
   local BS = {B = {}, S = {}}
@@ -67,6 +111,8 @@ LIFE.getRleSettings = function(sStr)
   return Exp
 end
 
+------------------- SHAPE INIT --------------------
+
 local function copyShape(argShape,w,h)
   if(not argShape) then return false end
   if(not (w and h)) then return false end   
@@ -80,77 +126,33 @@ local function copyShape(argShape,w,h)
   return Rez
 end
 
-LIFE.getDefaultRule = function()
-  -- Conway
-  return { Name = "B3/S23", Data = { B = {3}, S = {2,3} } }
-end
-
----------------------------LIFE-------------------------------
-
-local Aliv = "O"
-local Dead = "-"
-local ShapePath = "game-of-life/shapes/"
-Life = {}
-
-LIFE.charAliv = function (sA)
-  if(not sA) then return Aliv end
-  local sA   = string.sub(tostring(sA),1,1)
-  if( sA ~= "" and
-      sA ~= Dead ) then
-    Aliv = sA
-    return true
-  end
-  return false
-end
-
-LIFE.charDead = function(sD)
-  if(not sD) then return Dead end
-  local sD = string.sub(tostring(sD),1,1)
-  if( sD ~= "" and
-      sD ~= Aliv ) then 
-    Dead = sD
-    return true
-  end
-  return false
-end
-
-LIFE.shapesPath = function(sData)
-  if(not sData) then return ShapePath end
-  local Typ = type(sData)
-  if( Typ == "string" and sData ~= "" ) then
-    ShapePath = sData
-    return true
-  end
-  return false
-end
-
-LIFE.initStruct = function(sName)
+local function initStruct(sName)
   local Shapes = {
-  ["HEART"]       = { 1,0,1,
+  ["heart"]       = { 1,0,1,
                       1,0,1,
                       1,1,1;
                       w = 3, h = 3 },
-  ["GLIDER"]      = { 0,0,1,
+  ["glider"]      = { 0,0,1,
                       1,0,1,
                       0,1,1;
                       w = 3, h = 3 },
-  ["EXPLODE"]     = { 0,1,0,
+  ["explode"]     = { 0,1,0,
                       1,1,1,
                       1,0,1,
                       0,1,0;
                       w = 3, h = 4 },
-  ["FISH"]        = { 0,1,1,1,1,
+  ["fish"]        = { 0,1,1,1,1,
                       1,0,0,0,1,
                       0,0,0,0,1,
                       1,0,0,1,0;
                       w = 5, h = 4 },
-  ["BUTTERFLY"]   = { 1,0,0,0,1,
+  ["butterfly"]   = { 1,0,0,0,1,
                       0,1,1,1,0,
                       1,0,0,0,1,
                       1,0,1,0,1,
                       1,0,0,0,1;
                       w = 5, h = 5 },
-  ["GLIDERGUN"]   = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
+  ["glidergun"]   = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,
                      0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
                      0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
@@ -160,15 +162,15 @@ LIFE.initStruct = function(sName)
                      0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                      0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;
                      w = 36,h = 9},
-  ["BLOCK"]       = {1,1,1,1;
+  ["block"]       = {1,1,1,1;
                      w = 2, h = 2},
-  ["BLINKER"]     = {1,1,1;
+  ["blinker"]     = {1,1,1;
                      w = 3, h = 1},
-  ["R_PENTOMINO"] = {0,1,1,
+  ["r_pentomino"] = {0,1,1,
                      1,1,0,
                      0,1,0;
                      w = 3, h = 3},
-  ["PULSAR"]      ={0,0,1,1,1,0,0,0,1,1,1,0,0,
+  ["pulsar"]      ={0,0,1,1,1,0,0,0,1,1,1,0,0,
                     0,0,0,0,0,0,0,0,0,0,0,0,0,
                     1,0,0,0,0,1,0,1,0,0,0,0,1,
                     1,0,0,0,0,1,0,1,0,0,0,0,1,
@@ -186,7 +188,7 @@ LIFE.initStruct = function(sName)
   return Shapes[string.upper(sName)]
 end
 
-LIFE.initStringText = function(sStr,sDelimiter)
+local function initStringText(sStr,sDelimiter)
   if( not (sStr and sDelimiter)) then return false end
   if(type(sStr) ~= "string") then return false end
   if(type(sDelimiter) ~= "string" and
@@ -231,7 +233,7 @@ LIFE.initStringText = function(sStr,sDelimiter)
   return Shape
 end
 
-LIFE.initStringRle = function(sStr)
+local function initStringRle(sStr)
   local nS
   local nE
   local Ch
@@ -280,8 +282,8 @@ LIFE.initStringRle = function(sStr)
   return Shape
 end
 
-LIFE.initFileLif105 = function(sName, sAddFormat)
-  F = io.open(ShapePath.."lif/"..string.lower(sName).."_105.lif"..string.lower(sAddFormat or ""), "r")
+local function initFileLif105(sName)
+  F = io.open(ShapePath.."lif/"..string.lower(sName).."_105.lif", "r")
   if(not F) then return false end
   local Line = ""
   local FileShapePos
@@ -312,7 +314,7 @@ LIFE.initFileLif105 = function(sName, sAddFormat)
         Shape.Header[Ind] = string.sub(Line,2,leLine)
         Ind = Ind + 1
       end
-    elseif(cFirst == "*" or cFirst == ".") then
+    elseif(cFirst == Aliv or cFirst == Dead) then
       Shape.h = Shape.h + 1
       if(leLine >= Shape.w) then
         Shape.w = leLine
@@ -327,7 +329,7 @@ LIFE.initFileLif105 = function(sName, sAddFormat)
     if(not Line) then break end
     for x = 1,Shape.w do
       cFirst = string.sub(Line,x,x)
-      if(cFirst == "*") then
+      if(cFirst == Aliv) then
         Shape[Ind] = 1
       else
         Shape[Ind] = 0    
@@ -339,8 +341,8 @@ LIFE.initFileLif105 = function(sName, sAddFormat)
   return Shape
 end
 
-LIFE.initFileLif106 = function(sName, sAddFormat)
-  F = io.open(ShapePath.."lif/"..string.lower(sName).."_106.lif"..string.lower(sAddFormat or ""), "r")
+local function initFileLif106(sName)
+  F = io.open(ShapePath.."lif/"..string.lower(sName).."_106.lif", "r")
   if(not F) then return false end
   local Line = ""
   local MinX, MaxX
@@ -434,8 +436,8 @@ LIFE.initFileLif106 = function(sName, sAddFormat)
   return Shape
 end
 
-LIFE.initFileRle = function(sName, sAddFormat)
-  F = io.open(ShapePath.."rle/"..string.lower(sName)..".rle"..string.lower(sAddFormat or ""), "r")
+local function initFileRle(sName)
+  F = io.open(ShapePath.."rle/"..string.lower(sName)..".rle", "r")
   if(not F) then return false end
   local Shape = {w = 0, h = 0, Rule = { Name = "", Data = {}}, Header = {}}
   local nS = 1
@@ -497,7 +499,7 @@ LIFE.initFileRle = function(sName, sAddFormat)
       end
       if(Number > 0) then
         while(Number > 0) do
-          Shape[CellsInd] = (((cFirst == "o") and 1) or 0)
+          Shape[CellsInd] = (((cFirst == Aliv) and 1) or 0)
           CellsInd = CellsInd + 1
           Number   = Number   - 1
         end
@@ -505,7 +507,7 @@ LIFE.initFileRle = function(sName, sAddFormat)
              cFirst ~= "!" and not
              IsNumber
       ) then
-        Shape[CellsInd] = (((cFirst == "o") and 1) or 0)
+        Shape[CellsInd] = (((cFirst == Aliv) and 1) or 0)
         CellsInd = CellsInd + 1
       end
       ChCnt = ChCnt + 1
@@ -515,8 +517,8 @@ LIFE.initFileRle = function(sName, sAddFormat)
   return Shape
 end
 
-LIFE.initFileCells = function(sName, sAddFormat)
-  F = io.open(ShapePath.."cells/"..string.lower(sName)..".cells"..string.lower(sAddFormat or ""), "r")
+local function initFileCells(sName)
+  F = io.open(ShapePath.."cells/"..string.lower(sName)..".cells", "r")
   if(not F) then return false end
   local Line = ""
   local x = 0
@@ -548,7 +550,7 @@ LIFE.initFileCells = function(sName, sAddFormat)
     if(not Line) then break end
     for x = 1,Shape.w do
       cFirst = string.sub(Line,x,x)
-      if(cFirst == "O") then
+      if(cFirst == Aliv) then
         Shape[Ind] = 1
       else
         Shape[Ind] = 0    
@@ -627,24 +629,24 @@ LIFE.makeField = function(w,h,sRule)
     return Rule.Data
   end  
   
-  function self:ShiftXY(nX,nY)
+  function self:shiftXY(nX,nY)
     local x   = nX or 0
     local y   = nY or 0
     arShift2D(Old,w,h,x,y)
   end
   
-  function self:RollXY(nX,nY)
+  function self:rollXY(nX,nY)
     local x   = nX or 0
     local y   = nY or 0
     arRoll2D(Old,w,h,x,y)
   end
   
-  function self:MirrorXY(x,y)    
+  function self:mirrorXY(x,y)    
     arMirror2D(Old,w,h,x,y)
   end
   
   -- Give birth to a "Shape" within the cell array
-  function self:Spawn(Shape,Px,Py)
+  function self:setShape(Shape,Px,Py)
     local Px = Px or 1
     local Py = Py or 1
         
@@ -681,7 +683,7 @@ LIFE.makeField = function(w,h,sRule)
   end
 
   -- Evelove to the next Generation
-  function self:Evolve()
+  function self:evoNext()
     local ym1,y,yp1,yi=h-1,h,1,h
     while yi > 0 do
       local xm1,x,xp1,xi=w-1,w,1,w
@@ -698,29 +700,29 @@ LIFE.makeField = function(w,h,sRule)
     Gen = Gen + 1
   end
 
-  function self:RotateR()
+  function self:rotRght()
     arRotateR(Old,w,h)
     h,w = w,h
   end
   
-  function self:RotateL()
+  function self:rotLeft()
     arRotateL(Old,w,h)
     h,w = w,h
   end
   
-  function self:RegisterDraw(sKey,fFoo)
+  function self:regDraw(sKey,fFoo)
     if(type(fFoo) == "function" and type(sKey) == "string") then
       Draw[sKey] = fFoo
     end
   end
   
   -- output the array to screen
-  function self:Draw(sMode,tArgs)   
+  function self:drwLife(sMode,tArgs)   
     local Mode = sMode or "text"
-    local Arg = tArgs or {}
+    local Args = tArgs or {}
        
     if(Draw[Mode]) then
-      Draw[Mode](self,Arg)
+      Draw[Mode](self,Args)
     else
       LogLine("Drawing mode not found !")
     end
@@ -774,14 +776,36 @@ LIFE.makeField = function(w,h,sRule)
 end
 
 -- Creates Shape objects from row data
-LIFE.makeShape = function(tInit,sRule)
+LIFE.makeShape = function(sName, sSrc, sExt)
+  local isEmpty, iCnt, tInit = true, 1, nil
+  if(sSrc == "file") then
+    if    (sExt == "rle") then tInit = initFileRle(sName)
+    elseif(sExt == "cells") then tInit = initFileCells(sName)
+    elseif(sExt == "lif105") then tInit = initFileLif105(sName)
+    elseif(sExt == "lif106") then tInit = initFileLif106(sName)
+    else LogLine("Extension <"..sExt.."> not supported on the source <"..sName..">") end
+  elseif(sSrc == "string") then
+    if    (sExt == "rle") then tInit = initStringRle(sName)
+    elseif(sExt == "txt") then tInit = initStringText(sName)
+    else LogLine("Extension <"..sExt.."> not supported on the source <"..sName..">") end
+  elseif(sSrc == "strict") then tInit = initStruct(sName) end
+  
   if(not tInit) then 
     io.write("No initialization table\n"); return false end
   if(not (tInit.w and tInit.h)) then
     io.write("Initialization table bad dimensions\n"); return false end
   if(not (tInit.w > 0 and tInit.h > 0)) then
-    io.write("Shape(Init, Rule): Check Shape init structure !\n"); return false end
+    io.write("makeShape(sName, sSrc, sExt): Check Shape unit structure !\n"); return false end
+  
+  while(tInit[iCnt]) do
+    if(tInit[iCnt] == 1) then isEmpty = false end
+    iCnt = iCnt + 1
+  end
+  
+  if(isEmpty) then LogLine("There is nothing to spawn"); return nil; end
+  
   local self = {}
+        self.Init = tInit
   local w    = tInit.w
   local h    = tInit.h
   local Data = copyShape(tInit,w,h)
@@ -792,12 +816,8 @@ LIFE.makeShape = function(tInit,sRule)
   
   if(type(sRule) == "string") then
     local Data = getRuleBS(sRule)
-    if(Data ~= nil) then
-      Rule = sRule
-    else
-      LogLine("Shape(Init, Rule): Check crator's Rule !")
-      return nil
-    end
+    if(Data ~= nil) then Rule = sRule
+    else LogLine("Shape(Init, Rule): Check creator's Rule !"); return nil end
   elseif(type(tInit.Rule) == "table") then
     if(type(tInit.Rule.Name) == "string") then
       local Data = LIFE.getRuleBS(Rule)
@@ -807,45 +827,45 @@ LIFE.makeShape = function(tInit,sRule)
         Rule = LIFE.getDefaultRule().Name
       end
     else
-      LogLine("Shape(Init, Rule): Check init Rule !")
+      LogLine("Shape(Name, Source, Extension): Check init Rule !")
       return nil
     end
   else
     Rule = LIFE.getDefaultRule().Name
   end
 
-  function self:getRuleName(x,y)
+  function self:getRuleName()
     return Rule
   end
 
-  function self:MirrorXY(x,y)
+  function self:mirrorXY(x,y)
     arMirror2D(Data,w,h,x,y)
   end
 
-  function self:RotateR()
+  function self:rotRigh()
     arRotateR(Data,w,h)
     h,w = w,h
   end
   
-  function self:RotateL()
+  function self:rotLeft()
     arRotateL(Data,w,h)
     h,w = w,h
   end
   
-  function self:RollXY(nX,nY)
+  function self:rollXY(nX,nY)
     local x   = nX or 0
     local y   = nY or 0
     arRoll2D(Data,w,h,x,y)
   end
   
-  function self:RegisterDraw(sKey,fFoo)
+  function self:regDraw(sKey,fFoo)
     if(type(fFoo) == "function" and type(sKey) == "string") then
       Draw[sKey] = fFoo
     end
   end
   
   -- output the array to screen
-  function self:Draw(sMode,tArgs)   
+  function self:drwLife(sMode,tArgs)   
     local Mode = sMode or "text"
     local Arg = tArgs or {}
     

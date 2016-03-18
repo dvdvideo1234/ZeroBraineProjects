@@ -51,25 +51,29 @@ zero(0, 0)
 
 life.shapesPath("GameOfLife/shapes/")
 
+life.charAliv("o")
+life.charDead("b")
+
 local F = life.makeField(60,25)
-      F:RegisterDraw("turtle",TurtleDraw)
+      F:regDraw("turtle",TurtleDraw)
+      
+local glider = "bob$2bo$3o!"
+local GG = life.makeShape(glider,"string","rle")
 
-local GG = life.makeShape(life.initFileRle("gosperglidergun"))
+Print(GG)
 
-io.write(tostring(GG))
-
--- For click detect
+-- Used for mouse clicks and keys
 Arg[3] = 10
 Arg[4] = 57
 Arg[5] = ""
 
-F:Spawn(GG,X,Y)
+F:setShape(GG,X,Y)
 
-F:Draw("turtle",Arg)
+F:drwLife("turtle",Arg)
 
 while true do
   Arg[5] = char()
-  F:Draw("turtle",Arg)
-  F:Evolve()
+  F:drwLife("turtle",Arg)
+  F:evoNext()
 end
 
