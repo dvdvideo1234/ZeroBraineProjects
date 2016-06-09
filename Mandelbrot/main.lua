@@ -1,6 +1,6 @@
 require("turtle")
 require("wx")
-require("dvdlualib/complex")
+require("ZeroBraineProjects/dvdlualib/complex")
 
 local Log = function(anyArg) io.write(tostring(anyArg).."\n") end
 -- z(0) = z,    z(n+1) = z(n)*z(n) + z,    n=0,1,2, ...    (1) 

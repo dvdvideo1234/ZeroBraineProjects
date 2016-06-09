@@ -4,8 +4,6 @@ local tostring  = tostring
 local type      = type
 local io        = io
 local string    = string
-local MetaShape = {}
-local MetaField = {}
 
 io.stdout:setvbuf("no")
 
@@ -537,4 +535,27 @@ function testPerformance(stCard,stEstim,sFile)
     TestID = TestID + 1
   end
   LogLine("Test finished all "..tostring(tstCas).." cases successfully")
+end
+
+function StrExplode(sStr,sDel)
+  local sStr = string.gsub(sStr,sDel,"#")
+  local List, Char, Idx, ID = {""}, "", 1, 1
+  while(Char) do
+    Char = string.sub(sStr,Idx,Idx)
+    if    (Char ==  "") then return List
+    elseif(Char == "#") then ID = ID + 1; List[ID] = ""
+    else List[ID] = List[ID]..Char end
+    Idx = Idx + 1
+  end
+  return List
+end
+
+function StrImplode(tList,sDel)
+  local ID, Str = 1, ""
+  local sDel = tostring(sDel or "")
+  while(tList and tList[ID]) do
+    Str = Str..tList[ID]; ID = ID + 1
+    if(tList[ID]) then Str = Str..sDel end
+  end
+  return Str
 end

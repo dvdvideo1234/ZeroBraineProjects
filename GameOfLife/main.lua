@@ -1,7 +1,7 @@
 require("turtle")
 require("wx")
-require("dvdlualib/common")
-local life = require("dvdlualib/lifelib")
+require("ZeroBraineProjects/dvdlualib/common")
+local life = require("ZeroBraineProjects/dvdlualib/lifelib")
 
 io.stdout:setvbuf("no")
 
@@ -42,7 +42,8 @@ function getKeyboardKeyNonBlock()
 end
 
 
-local Arg = {200, 100,0,0}
+local Arg = {300, 150,0,0}
+
 
 open("Game Of Life")
 size(Arg[1],Arg[2])
@@ -51,29 +52,41 @@ zero(0, 0)
 
 life.shapesPath("GameOfLife/shapes/")
 
-life.charAliv("o")
-life.charDead("b")
+life.charAliv("O")
+life.charDead(".")
 
 local F = life.makeField(60,25)
       F:regDraw("turtle",TurtleDraw)
-      
-local glider = "bob$2bo$3o!"
-local GG = life.makeShape(glider,"string","rle")
 
-Print(GG)
+ggrle = "24.O11.$22.O.O11.$12.2O6.2O12.2O$11.O3.O4.2O12.2O$2O8.O5.O3.2O14.$2O8.O3.O.2O4.O.O11.$10.O5.O7.O11.$11.O3.O20.$12.2O22.!"
+
+local ggtx = [[
+........................O...........
+......................O.O...........
+............OO......OO............OO
+...........O...O....OO............OO
+OO........O.....O...OO..............
+OO........O...O.OO....O.O...........
+..........O.....O.......O...........
+...........O...O....................
+............OO......................]]
+local GG = life.makeShape(ggtx,"string","txt",{"\n"})
+
+-- Print(GG)
 
 -- Used for mouse clicks and keys
 Arg[3] = 10
 Arg[4] = 57
 Arg[5] = ""
 
-F:setShape(GG,X,Y)
+F:setShape(GG,1,1)
 
 F:drwLife("turtle",Arg)
 
 while true do
   Arg[5] = char()
   F:drwLife("turtle",Arg)
+  Delay(-0.2)
   F:evoNext()
 end
 

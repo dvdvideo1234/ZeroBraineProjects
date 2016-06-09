@@ -1,6 +1,6 @@
 require("turtle")
-require("dvdlualib/complex")
-require("dvdlualib/common")
+require("ZeroBraineProjects/dvdlualib/complex")
+require("ZeroBraineProjects/dvdlualib/common")
 local Log = function(anyStuff)
   io.write(tostring(anyStuff).."\n")
 end
@@ -64,7 +64,8 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
     xyS.y, xyE.y = xyE.y, xyS.y
   end
   local nDelay = tonumber(nDelay) or 0
-  if(not sMeth or sMeth == "" or sMeth == "BIN") then
+  local sMeth  = tostring(sMeth or "BIN")
+  if(sMeth == "BIN") then
     local DisX = xyE.x - xyS.x
     local DirX = DisX
           DisX = DisX * DisX
@@ -88,6 +89,8 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       end
       Pos.x = Pos.x + DirX * Sig * Mid
       Pos.y = Pos.y + DirY * Sig * Mid
+      plot(Pos,colr(255,0,0))
+      Delay(nDelay)
       --[[
         Estimate the distance and break
         earlier with 0.5 because of the 
@@ -116,6 +119,8 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       V.x = V.x + D.x
       V.y = V.y + D.y
       Sig = Enclose(V)
+      plot(V,colr(255,0,0))
+      Delay(nDelay)
       I = I + 1
     end
   end
@@ -138,7 +143,7 @@ text("Iter: "..i.." "..xyText(S).." >  "..xyText(iE).." ("..tostring(s)..")",0,s
 plot(iE,colr(0,255,0))
 
 local S = {x = 200, y = 220}
-local s,i = adaptLine(S,bE,9999,0.5,"BIN",1)
+local s,i = adaptLine(S,bE,500,0.5,"BIN",1)
 Log("Binary status: "..tostring(s))
 text("Iter: "..i.." "..xyText(S).." >  "..xyText(bE).." ("..tostring(s)..")",0,sW,eH+2)
 plot(bE,colr(0,255,0))

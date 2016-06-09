@@ -188,97 +188,52 @@ local function initStruct(sName)
   return Shapes[string.upper(sName)]
 end
 
-local function initStringText(sStr,sDelimiter)
-  if( not (sStr and sDelimiter)) then return false end
-  if(type(sStr) ~= "string") then return false end
-  if(type(sDelimiter) ~= "string" and
-     type(sDelimiter) ~= "number") then return false end
-  local sDelimiter = tostring(sDelimiter)
-  local Len = string.len(sStr)
-  if(string.sub(sStr,Len,Len) ~= sDelimiter) then
-    return false
-  end
-  local Ch = ""
-  local Cnt = 1  
-  local x = 0
-  local y = 0
-  local Shape = {w = 0, h = 0}
-  while(Cnt <= Len) do
-    Ch = string.sub(sStr,Cnt,Cnt)
-    if(Ch == sDelimiter) then
-      Shape.h = Shape.h + 1
-      if(Shape.w <= x) then
-        Shape.w = x
-      end
-      x = 0
-    else
-      x = x + 1
-    end
-    Cnt  = Cnt  + 1
-  end
-  Cnt = 1
-  x = 0
-  y = 0
-  while(Cnt <= Len) do
-    Ch = string.sub(sStr,Cnt,Cnt)
-    if(Ch == sDelimiter) then
-      x = 0
-      y = y + 1
-    else
-      Shape[y*Shape.w + x + 1] = ((Ch == "o") and 1) or 0
-      x = x + 1
-    end
-    Cnt  = Cnt  + 1
+local function initStringText(sStr,sDel)
+  local sStr = tostring(sStr or "")
+  local Rows = StrExplode(sStr,sDel)
+  local Rall = StrImplode(Rows) 
+  local Shape = {w = string.len(Rows[1]), h = #Rows}
+  for k = 1,(Shape.w * Shape.h) do
+    Shape[k] = (string.sub(Rall,k,k) == Aliv) and 1 or 0
   end
   return Shape
 end
 
 local function initStringRle(sStr)
-  local nS
-  local nE
-  local Ch
-  local Cnt = 1
-  local Ind = 1
+  local nS, nE, Ch
+  local Cnt, Ind, Lin = 1, 1, true
   local Len = string.len(sStr)
-  local Number = 0
-  local IsNumber = false
-  local ToNumber = 0
+  local Num, ToNum, IsNum = 0, 0, false
   local Shape = {w = 0, h = 0}
   while(Cnt <= Len) do
     Ch = string.sub(sStr,Cnt,Cnt)
-    if(Ch == "!") then
-      Shape.h = Shape.h + 1
-      break
-    end
-    ToNumber = tonumber(Ch)
-    if(not IsNumber and ToNumber) then
+    if(Ch == "!") then Shape.h = Shape.h + 1; break end
+    ToNum = tonumber(Ch)
+    if(not IsNum and ToNum) then
       -- Start of a number
-      IsNumber = true
-      nS       = Cnt
-    elseif(not ToNumber and IsNumber) then
+      IsNum = true
+      nS    = Cnt
+    elseif(not ToNum and IsNum) then
       -- End of a number
-      IsNumber = false
-      nE = Cnt - 1
-      Number = tonumber(string.sub(sStr,nS,nE)) or 0
+      IsNum = false
+      nE    = Cnt - 1
+      Num   = tonumber(string.sub(sStr,nS,nE)) or 0
     end
-    if(Number > 0) then
-      while(Number > 0) do
+    if(Num > 0) then
+      if(Lin) then Shape.w = Shape.w + Num end
+      while(Num > 0) do
         Shape[Ind] = (((Ch == Aliv) and 1) or 0)
         Ind = Ind + 1
-        Number   = Number   - 1
-      end
+        Num = Num - 1
+      end; 
     elseif(Ch ~= "$" and
-           Ch ~= "!" and not
-           IsNumber
-    ) then
+           Ch ~= "!" and not IsNum) then
+      if(Lin) then Shape.w = Shape.w + 1 end
       Shape[Ind] = (((Ch == Aliv) and 1) or 0)
       Ind = Ind + 1
-    elseif(Ch == "$") then
-      Shape.h = Shape.h + 1
-    end
+    elseif(Ch == "$") then Shape.h = Shape.h + 1; Lin = false end
     Cnt = Cnt + 1
   end
-  Shape.w = math.floor(Ind / Shape.h)
   return Shape
 end
 
@@ -578,34 +533,29 @@ local function drawConsole(F)
 end
 
 local function getSumStatus(nStatus,nSum,tRule)
-  if(nStatus == 1) then
+  if(nStatus == 1) then -- Check survive
     for _, v in ipairs(tRule.Data["S"]) do
-      if(v == nSum) then
-          return 1
-      end
-    end
-    return 0
-  elseif(nStatus == 0) then
+      if(v == nSum) then return 1 end
+    end; return 0
+  elseif(nStatus == 0) then -- Check born
     for _, v in ipairs(tRule.Data["B"]) do
-      if(v == nSum) then
-          return 1
-      end
-    end
-    return 0
+      if(v == nSum) then return 1 end
+    end; return 0
   end
 end
-
+  --[[
+   * Creates a field object used for living environment for the shapes ( organisms )
+  ]]-- 
 LIFE.makeField = function(w,h,sRule)  
   local self  = {}
-  local w = w or 0
-        w = ((w >= 1) and w) or 1
-  local h = h or 0
-        h = ((h >= 1) and h) or 1
-  local Gen = 0
+  local w = tonumber(w) or 0
+        w = (w >= 1) and w or 1
+  local h = tonumber(h) or 0
+        h = (h >= 1) and h or 1
+  local Gen, Rule = 0
   local Old = arMalloc2D(w,h) 
   local New = arMalloc2D(w,h)
   local Draw = { ["text"] = drawConsole }
-  local Rule
         
   setmetatable(self,MetaField)
   
@@ -620,38 +570,29 @@ LIFE.makeField = function(w,h,sRule)
       return nil
     end
   end
-  
-  function self:getRuleName()
-    return Rule.Name
-  end
+  --[[
+   * Internal data primitives
+  ]]-- 
+  function self:getW() return w end 
+  function self:getH() return h end
+  function self:getSellCount() return (w * h) end
+  function self:getRuleName() return Rule.Name end
+  function self:getRuleData() return Rule.Data end  
+  function self:shiftXY (nX,nY) arShift2D (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)) end
+  function self:rollXY  (nX,nY) arRoll2D  (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)) end
+  function self:mirrorXY(bX,bY) arMirror2D(Old,w,h,bX,bY) end
+  function self:getArray()       return Old end
+  function self:getGenerations() return Gen end
+  function self:rotRght() arRotateR(Old,w,h); h,w = w,h end
+  function self:rotLeft() arRotateL(Old,w,h); h,w = w,h end
 
-  function self:getRuleData()
-    return Rule.Data
-  end  
-  
-  function self:shiftXY(nX,nY)
-    local x   = nX or 0
-    local y   = nY or 0
-    arShift2D(Old,w,h,x,y)
-  end
-  
-  function self:rollXY(nX,nY)
-    local x   = nX or 0
-    local y   = nY or 0
-    arRoll2D(Old,w,h,x,y)
-  end
-  
-  function self:mirrorXY(x,y)    
-    arMirror2D(Old,w,h,x,y)
-  end
-  
-  -- Give birth to a "Shape" within the cell array
+  --[[
+   * Give birth to a shape inside the field array
+  ]]-- 
   function self:setShape(Shape,Px,Py)
-    local Px = Px or 1
-    local Py = Py or 1
-        
-    Px = Px % w
-    Py = Py % h
+    local Px = (Px or 1) % w
+    local Py = (Py or 1) % h
+    
     if(Rule.Name ~= Shape:getRuleName()) then 
       LogLine("Field:Spawn(Shape,PosX,PosY): Shape: Different kind of life !")
       return nil
@@ -674,15 +615,16 @@ LIFE.makeField = function(w,h,sRule)
         local x = Px+j-1
         local y = Py+i-1
         if(x > w) then x = x-w end
-        if(x < 1) then x = w+w end
+        if(x < 1) then x = x+w end
         if(y > h) then y = y-h end
-        if(y < 1) then y = h+h end
+        if(y < 1) then y = y+h end
         Old[y][x] = ar[i][j]
       end
     end
   end
-
-  -- Evelove to the next Generation
+  --[[
+   * Calcolates the next generation
+  ]]-- 
   function self:evoNext()
     local ym1,y,yp1,yi=h-1,h,1,h
     while yi > 0 do
@@ -699,84 +641,56 @@ LIFE.makeField = function(w,h,sRule)
     Old, New = New, Old
     Gen = Gen + 1
   end
-
-  function self:rotRght()
-    arRotateR(Old,w,h)
-    h,w = w,h
-  end
-  
-  function self:rotLeft()
-    arRotateL(Old,w,h)
-    h,w = w,h
-  end
-  
+  --[[
+   * Registers a draw method under a particular key
+  ]]-- 
   function self:regDraw(sKey,fFoo)
-    if(type(fFoo) == "function" and type(sKey) == "string") then
+    if(type(sKey) == "string" and type(fFoo) == "function") then
       Draw[sKey] = fFoo
-    end
+    else LogLine("Drawing method {"..tostring(sKey)..","..tostring(fFoo).."} registration skipped !") end
   end
-  
-  -- output the array to screen
+  --[[
+   * Visualizates the field on the screen using the draw method given
+  ]]--
   function self:drwLife(sMode,tArgs)   
-    local Mode = sMode or "text"
+    local Mode = tostring(sMode or "text")
     local Args = tArgs or {}
-       
-    if(Draw[Mode]) then
-      Draw[Mode](self,Args)
-    else
-      LogLine("Drawing mode not found !")
-    end
+    if(Draw[Mode]) then Draw[Mode](self,Args)
+    else LogLine("Drawing mode <"..Mode.."> not found !") end
   end
-  
-  function self:getW()
-    return w
-  end
-  
-  function self:getH()
-    return h
-  end
-  
-  function self:getElemsNum()
-    return w * h
-  end
-    
+  --[[
+   * Converts the field to a number, beware they are big
+  ]]--
   function self:toNumber()
-    local Pow  = 0
-    local Num  = 0
-    local Flag = 0
+    local Pow, Num, Flag = 0, 0, 0
     for i = h,1,-1 do
       for j = w,1,-1 do
         Flag = (Old[i][j] ~= 0) and 1 or 0 
         Num = Num + 2 ^ Pow
         Pow  = Pow + 1
       end
-    end
-    return Num
+    end; return Num
   end
-  
+  --[[
+   * Exports a field to a non-delimited string format
+  ]]--
   function self:toString()
     local Line = ""
-    for i = 1,h do
-      for j = 1,w do
+    for i = 1,h do for j = 1,w do
         Line = Line .. tostring((Old[i][j] ~= 0) and Aliv or Dead)
-      end
-    end
-    return Line
+    end end; return Line
   end
   
-  function self:getArray()
-    return Old
-  end
-  
-  function self:getGenerations()
-    return Gen
-  end
-
   return self
 end
-
--- Creates Shape objects from row data
-LIFE.makeShape = function(sName, sSrc, sExt)
+  --[[
+   * Crates a shape ( life form ) object
+  ]]--
+LIFE.makeShape = function(sName, sSrc, sExt, tArg)
+  local sName = tostring(sName or "")
+  local sSrc  = tostring(sSrc  or "")
+  local sExt  = tostring(sExt  or "")
+  local tArg  = tArg or {}
   local isEmpty, iCnt, tInit = true, 1, nil
   if(sSrc == "file") then
     if    (sExt == "rle") then tInit = initFileRle(sName)
@@ -786,7 +700,7 @@ LIFE.makeShape = function(sName, sSrc, sExt)
     else LogLine("Extension <"..sExt.."> not supported on the source <"..sName..">") end
   elseif(sSrc == "string") then
     if    (sExt == "rle") then tInit = initStringRle(sName)
-    elseif(sExt == "txt") then tInit = initStringText(sName)
+    elseif(sExt == "txt") then tInit = initStringText(sName,tostring(tArg[1]))
     else LogLine("Extension <"..sExt.."> not supported on the source <"..sName..">") end
   elseif(sSrc == "strict") then tInit = initStruct(sName) end
   
@@ -802,7 +716,7 @@ LIFE.makeShape = function(sName, sSrc, sExt)
     iCnt = iCnt + 1
   end
   
-  if(isEmpty) then LogLine("There is nothing to spawn"); return nil; end
+  if(isEmpty) then LogLine("There is nothing to spawn"); return nil end
   
   local self = {}
         self.Init = tInit
@@ -833,143 +747,96 @@ LIFE.makeShape = function(sName, sSrc, sExt)
   else
     Rule = LIFE.getDefaultRule().Name
   end
-
-  function self:getRuleName()
-    return Rule
-  end
-
-  function self:mirrorXY(x,y)
-    arMirror2D(Data,w,h,x,y)
-  end
-
-  function self:rotRigh()
-    arRotateR(Data,w,h)
-    h,w = w,h
-  end
-  
-  function self:rotLeft()
-    arRotateL(Data,w,h)
-    h,w = w,h
-  end
-  
-  function self:rollXY(nX,nY)
-    local x   = nX or 0
-    local y   = nY or 0
-    arRoll2D(Data,w,h,x,y)
-  end
-  
+  --[[
+   * Internal data primitives
+  ]]--
+  function self:getW() return w end
+  function self:getH() return h end
+  function self:rotRigh() arRotateR(Data,w,h); h,w = w,h end
+  function self:rotLeft() arRotateL(Data,w,h); h,w = w,h end
+  function self:getArray() return Data end
+  function self:getRuleName() return Rule end
+  function self:getCellCount() return (w * h) end
+  function self:getGenerations() return nil end  
+  function self:mirrorXY(bX,bY) arMirror2D(Data,w,h,bX,bY) end
+  function self:rollXY(nX,nY) arRoll2D(Data,w,h,tonumber(nX) or 0,tonumber(nY) or 0) end
+  --[[
+   * Registers a draw method under a particular key
+  ]]--
   function self:regDraw(sKey,fFoo)
-    if(type(fFoo) == "function" and type(sKey) == "string") then
+    if(type(sKey) == "string" and type(fFoo) == "function") then
       Draw[sKey] = fFoo
-    end
+    else LogLine("Drawing method {"..tostring(sKey)..","..tostring(fFoo).."} registration skipped !") end
   end
-  
-  -- output the array to screen
+  --[[
+   * Visualizates the shape on the screen using the draw method given
+  ]]--
   function self:drwLife(sMode,tArgs)   
     local Mode = sMode or "text"
-    local Arg = tArgs or {}
-    
-    if(Draw[Mode]) then
-      Draw[Mode](self,Arg)
-    else
-      LogLine("Drawing mode not found !\n")
-    end
+    local Arg  = tArgs or {}
+    if(Draw[Mode]) then Draw[Mode](self,Arg)
+    else LogLine("Drawing mode not found !\n") end
   end
-  
-  function self:getArray()
-    return Data
-  end
-  
-  function self:getW()
-    return w
-  end
-  
-  function self:getH()
-    return h
-  end
-  
-  function self:getElemsNum()
-    return w * h
-  end
-  
+  --[[
+   * Converts the shape to a number, beware they are big
+  ]]--
   function self:toNumber()
-    local Pow  = 0
-    local Num  = 0
-    local Flag = 0
-    for i = h,1,-1 do
-      for j = w,1,-1 do
+    local Pow, Num, Flag = 0, 0, 0
+    for i = h,1,-1 do for j = w,1,-1 do
         Flag = (Data[i][j] ~= 0) and 1 or 0 
         Num = Num + 2 ^ Pow
         Pow  = Pow + 1
-      end
-    end
-    return Num
+    end end; return Num
   end
-  
+  --[[
+   * Exports the shape in non-delimited string format
+  ]]--
   function self:toString()
     local Line = ""
-    for i = 1,h do
-      for j = 1,w do
+    for i = 1,h do for j = 1,w do
         Line = Line .. tostring((Data[i][j] ~= 0) and Aliv or Dead)
-      end
-    end
-    return Line
+    end end; return Line
   end
-  
+  --[[
+   * Exports the shape in RLE format
+  ]]--
   function self:toStringRle()
-    local BaseCh = ""
-    local CurCh  = ""
-    local Cnt    = 0
-    local Line   = ""
+    local BaseCh, CurCh, Line, Cnt  = "", "", "", 0
     for i = 1,h do
-      BaseCh = tostring(((Data[i][1] ~= 0) and "o") or "b")
-      Cnt    = 0
+      BaseCh = tostring(((Data[i][1] ~= 0) and Aliv) or Dead); Cnt = 0
       for j = 1,w do
-        CurCh = tostring(((Data[i][j] ~= 0) and "o") or "b")
-        if(CurCh == BaseCh) then 
-          Cnt = Cnt + 1
+        CurCh = tostring(((Data[i][j] ~= 0) and Aliv) or Dead)
+        if(CurCh == BaseCh) then Cnt = Cnt + 1
         else
-          if(Cnt > 1) then
-            Line  = Line .. Cnt .. BaseCh
-          else
-            Line  = Line .. BaseCh
-          end
-          BaseCh = CurCh
-          Cnt    = 1
+          if(Cnt > 1) then Line  = Line..Cnt..BaseCh
+          else Line  = Line..BaseCh end
+          BaseCh, Cnt = CurCh, 1
         end
       end
-      if(Cnt > 1) then
-        Line  = Line .. Cnt .. BaseCh
-      else
-        Line  = Line .. BaseCh
-      end
-      if(i ~= h) then
-        Line = Line .. "$"
-      end
-    end
-    return Line .. "!"
+      if(Cnt > 1) then Line  = Line..Cnt..BaseCh
+      else Line  = Line .. BaseCh end
+      if(i ~= h) then Line = Line.."$" end
+    end; return Line.."!"
   end
-  
-  function self:toStringText(sDelimiter)
-    if(sDelimiter ~= Aliv or sDelimiter ~= Dead) then 
-      local Line = ""
-      local LastAl
+  --[[
+   * Exports the shape in text format
+   * sDel the delemiter for the lines
+   * bAll Should they be drawn to the end of the line
+  ]]--
+  function self:toStringText(sDel,bAll)
+    if(sDel ~= Aliv and sDel ~= Dead) then 
+      local Line, Last = ""
       for i = 1,h do
-        LastAl = w
-        while(Data[i][LastAl] == 0) do
-          LastAl = LastAl - 1
+        Last = w
+        if(bAll) then 
+          while(Data[i][Last] == 0) do Last = Last - 1 end
         end
-        for j = 1,LastAl do
-          Line = Line .. tostring(((Data[i][j] ~= 0) and Aliv) or Dead)
-        end
-        Line = Line .. sDelimiter
-      end
-      return Line
+        for j = 1,Last do
+          Line = Line..tostring(((Data[i][j] ~= 0) and Aliv) or Dead)
+        end; Line = Line..sDel
+      end; return Line
     end
   end
-  function self:getGenerations()
-    return nil
-  end  
   return self
 end
 
