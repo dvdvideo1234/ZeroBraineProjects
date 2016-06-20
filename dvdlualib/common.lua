@@ -12,25 +12,19 @@ function LogLine(anyData)
 end
 
 function Print(tT,sS)
-  if(not tT)then
-    LogLine("Print: No Data: Print( table, string = \"Data\" )!")
+  if(not tT) then
+    LogLine("Print: {nil, name="..tostring(sS or "\"Data\"").."}")
     return
   end
   local S = type(sS)
   local T = type(tT)
-  local Key  = ""
-  if(S == "string") then
-    S = sS
-  elseif(S == "number") then
-    S = tostring(sS)
-  else
-    S = "Data"
-  end
-  if(T ~= "table") then
-    LogLine("{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT))
-    return
-  end
+  local Key = ""
+  if    (S == "string") then S = sS
+  elseif(S == "number") then S = tostring(sS)
+  else                       S = "Data" end
+  if(T ~= "table") then LogLine("{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT)); return end
   T = tT
+  if(next(T) == nil) then LogLine(S.." = {}"); return end
   LogLine(S)
   for k,v in pairs(T) do
     if(type(k) == "string") then
@@ -78,7 +72,6 @@ function ClampValue(nVal,nMin,nMax)
   if(nVal <= Min) then return Min end
   return nVal
 end
-
 
 function StrTrimSpaces(sStr)
   if(not sStr)   then return nil end

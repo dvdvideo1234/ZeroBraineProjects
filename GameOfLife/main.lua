@@ -42,26 +42,25 @@ function getKeyboardKeyNonBlock()
 end
 
 
-local Arg = {585, 150,0,0}
+local Arg = {500, 220,0,0}
 
+life.shapesPath("ZeroBraineProjects/GameOfLife/shapes/")
+
+life.charAliv("O")
+life.charDead(".")
+
+local F = life.makeField(80,50)
+      F:regDraw("turtle",TurtleDraw)
 
 open("Game Of Life")
 size(Arg[1],Arg[2])
 updt(true)
 zero(0, 0)
-
-life.shapesPath("ZeroBraineProjects/GameOfLife/shapes/")
-
-life.charAliv("*")
-life.charDead(".")
-
-local F = life.makeField(125,25)
-      F:regDraw("turtle",TurtleDraw)
-
-ggrle = "24.O11.$22.O.O11.$12.2O6.2O12.2O$11.O3.O4.2O12.2O$2O8.O5.O3.2O14.$2O8.O3.O.2O4.O.O11.$10.O5.O7.O11.$11.O3.O20.$12.2O22.!"
+      
+ggrle = "24.O11.G22.O.O11.G12.2O6.2O12.2OG11.O3.O4.2O12.2OG2O8.O5.O3.2O14.G2O8.O3.O.2O4.O.O11.G10.O5.O7.O11.G11.O3.O20.G12.2O22.E"
 
 
-local GG = life.makeShape("gosperglidergun","file","lif106",{"\n"})
+local GG = life.makeShape(ggrle,"string","rle",{"G","E"})
 
 
 -- Used for mouse clicks and keys

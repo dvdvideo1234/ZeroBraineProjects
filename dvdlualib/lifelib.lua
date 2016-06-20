@@ -170,6 +170,7 @@ end
 
 local function initStringText(sStr,sDel)
   local sStr = tostring(sStr or "")
+  local sDel = string.sub(tostring(sDel or "\n"),1,1)
   local Rows = StrExplode(sStr,sDel)
   local Rall = StrImplode(Rows) 
   local Shape = {w = string.len(Rows[1]), h = #Rows}
@@ -178,15 +179,17 @@ local function initStringText(sStr,sDel)
   end; return Shape
 end
 
-local function initStringRle(sStr)
+local function initStringRle(sStr, sDel, sEnd)
   local nS, nE, Ch
   local Cnt, Ind, Lin = 1, 1, true
   local Len = string.len(sStr)
   local Num, toNum, isNum = 0, 0, false
   local Shape = {w = 0, h = 0}
+  local sDel = string.sub(tostring(sDel or "$"),1,1)
+  local sEnd = string.sub(tostring(sEnd or "!"),1,1)
   while(Cnt <= Len) do
     Ch = string.sub(sStr,Cnt,Cnt)
-    if(Ch == "!") then Shape.h = Shape.h + 1; break end
+    if(Ch == sEnd) then Shape.h = Shape.h + 1; break end
     toNum = tonumber(Ch)
     if(not isNum and toNum) then
       -- Start of a number
@@ -203,12 +206,12 @@ local function initStringRle(sStr)
         Ind = Ind + 1
         Num = Num - 1
       end; 
-    elseif(Ch ~= "$" and
-           Ch ~= "!" and not isNum) then
+    elseif(Ch ~= sDel and
+           Ch ~= sEnd and not isNum) then
       if(Lin) then Shape.w = Shape.w + 1 end
       Shape[Ind] = (((Ch == Aliv) and 1) or 0)
       Ind = Ind + 1
-    elseif(Ch == "$") then Shape.h = Shape.h + 1; Lin = false end
+    elseif(Ch == sDel) then Shape.h = Shape.h + 1; Lin = false end
     Cnt = Cnt + 1
   end; return Shape
 end
@@ -586,8 +589,8 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
     elseif(sExt == "lif106") then tInit = initFileLif106(sName)
     else LogLine("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">"); return nil end
   elseif(sSrc == "string") then
-    if    (sExt == "rle" ) then tInit = initStringRle(sName)
-    elseif(sExt == "txt" ) then tInit = initStringText(sName,tostring(tArg[1]))
+    if    (sExt == "rle" ) then tInit = initStringRle(sName,tArg[1],tArg[2])
+    elseif(sExt == "txt" ) then tInit = initStringText(sName,tArg[1])
     else LogLine("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">"); return nil end
   elseif(sSrc == "strict") then tInit = initStruct(sName)
   else LogLine("makeShape(sName, sSrc, sExt, tArg): Source <"..sSrc.."> not suported for <"..sName..">"); return nil end

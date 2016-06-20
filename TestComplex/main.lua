@@ -1,4 +1,4 @@
-require("dvdlualib/complex")
+require("ZeroBraineProjects/dvdlualib/complex")
 
 local function LogLine(sStr)
   io.write(tostring(sStr).."\n")
