@@ -73,6 +73,17 @@ function ClampValue(nVal,nMin,nMax)
   return nVal
 end
 
+function RoundValue(nvExact, nFrac)
+  local nExact = tonumber(nvExact)
+  if(not nExact) then
+    return LogLine("RoundValue: Cannot round NAN {"..type(nvExact).."}<"..tostring(nvExact)..">") end
+  local nFrac = tonumber(nFrac) or 0
+  if(nFrac == 0) then
+    return LogLine("RoundValue: Fraction must be <> 0") end
+  local q, f = math.modf(nExact/nFrac)
+  return nFrac * (q + (f > 0.5 and 1 or 0))
+end
+
 function StrTrimSpaces(sStr)
   if(not sStr)   then return nil end
   if(sStr == "") then return ""  end

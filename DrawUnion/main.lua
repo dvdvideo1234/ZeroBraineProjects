@@ -1,43 +1,73 @@
 require("turtle")
 require("wx")
-require("ZeroBraineProjects/dvdlualib/complex")
 require("ZeroBraineProjects/dvdlualib/common")
+require("ZeroBraineProjects/dvdlualib/complex")
 require("ZeroBraineProjects/dvdlualib/fractal")
+require("ZeroBraineProjects/dvdlualib/colormap")
 
 -- z(0) = z,    z(n+1) = z(n)*z(n) + z,    n=0,1,2, ...    (1) 
 
 io.stdout:setvbuf("no")
 
--- get the current screen size
-
-local W     = 500
-local H     = 500
+-- Changable parameters
+local maxCl = 255
+local W     = 160
+local H     = 160
 local szRe  = 2
 local szIm  = 2
 local nStep = 35
-local nZoom = 4
-local iTer  = 250
-local sfrac = "julia4"
+local nZoom = 30
+local iTer  = 100
+local sfrac = "mandelbrot"
+local spale = "wikipedia"
+local brdcl = colr(255, 30, 100)
 
-local cexp = ToComplex(math.exp(1))
+--- Dinamic parameters and constants
+local cexp   = ToComplex(math.exp(1))
+local w2, h2 = W/2, H/2
+local gr     = 1.681
 
 open("Union 2D Plot")
 size(W,H)
 zero(0, 0) 
 updt(false) -- disable auto updates
 
-local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm)
+--[[
+Zoom: {3375}
+Cent: {-0.10109678819444,-0.95628602430556}
+Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
+]]
+
+local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
       S:SetControlWX(wx)
-      S:Register("mandelbrot",function (Z, C, A) Z:Pow(2); Z:Add(C) end )
-      S:Register("mandelbar" ,function (Z, C, A) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
-      S:Register("julia1"    ,function (Z, C, A) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )
-      S:Register("julia2"    ,function (Z, C, A) Z:Set(cexp^(Z^3) - 0.621) end )
-      S:Register("julia3"    ,function (Z, C, A) Z:Set(cexp^Z) Z:Sub(0.65) end )
-      S:Register("julia4"    ,function (Z, C, A) Z:Pow(3) Z:Add(0.4)  end )
-      S:Register("julia5"    ,function (Z, C, A) Z:Set((Z^4) * cexp^Z + 0.41 )  end )
-      S:Register("julia6"    ,function (Z, C, A) Z:Set((Z^3) * cexp^Z + 0.33 )  end )
-    
-S:Draw(sfrac,iTer)
+      -- S:SetArea(-0.80472222222222,-0.80027777777778,0.17527777777778,0.17972222222222)
+      S:Register("UDRAW","mandelbrot",function (Z, C, A) Z:Pow(2); Z:Add(C) end )
+      S:Register("UDRAW","mandelbar" ,function (Z, C, A) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
+      S:Register("UDRAW","julia1"    ,function (Z, C, A) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )
+      S:Register("UDRAW","julia2"    ,function (Z, C, A) Z:Set(cexp^(Z^3) - 0.621) end )
+      S:Register("UDRAW","julia3"    ,function (Z, C, A) Z:Set(cexp^Z) Z:Sub(0.65) end )
+      S:Register("UDRAW","julia4"    ,function (Z, C, A) Z:Pow(3) Z:Add(0.4)  end )
+      S:Register("UDRAW","julia5"    ,function (Z, C, A) Z:Set((Z^4) * cexp^Z + 0.41 )  end )
+      S:Register("UDRAW","julia6"    ,function (Z, C, A) Z:Set((Z^3) * cexp^Z + 0.33 )  end )
+      S:Register("PALET","default"   ,function (Z, C, n) return
+        (math.floor((64  * n) % maxCl)),
+        (math.floor((128 * n) % maxCl)),
+        (math.floor((192 * n) % maxCl))
+      end )
+      S:Register("PALET","rediter"   ,function (Z, C, i) return
+        math.floor((1-(i / iTer)) * maxCl), 0, 0
+      end )
+      S:Register("PALET","greenbl"     ,function (Z, C, i, x, y)
+        local it = i / iTer
+      return
+        math.floor(0),
+        math.floor((1 - it) * maxCl),
+        math.floor(     it  * maxCl)
+      end)
+      S:Register("PALET","wikipedia"     ,function (Z, C, i, x, y) return getColorMap("wikipedia",i) end)
+      S:Register("PALET","wikiyellow"     ,function (Z, C, i, x, y) return getYellowIterationMap(i,iTer) end)
+  
+S:Draw(sfrac,spale,iTer)
 
 while true do
   local lx, ly = clck('ld')
@@ -59,11 +89,9 @@ while true do
     elseif(key == S:GetKey("dirD")) then S:MoveCenter(0, nStep)
     elseif(key == S:GetKey("dirL")) then S:MoveCenter(-nStep,0)
     elseif(key == S:GetKey("dirR")) then S:MoveCenter( nStep,0) end
-    S:Draw(sfrac,iTer)
+    S:Draw(sfrac,spale,iTer)
   end
   updt()
   wait(0.2) 
 end
-
-
 

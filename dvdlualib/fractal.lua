@@ -7,14 +7,14 @@ local setmetatable = setmetatable
 
 local metaUnion = {}
 
-function makeUnion(w,h,minw,maxw,minh,maxh)
-  local self, uniNames, conKeys, uZoom = {}, {}, {}, 1
-  local imgW, imgH = w, h
-  local imgCx, imgCy = (w / 2), (h / 2)
+function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
+  local imgW , imgH  = w   , h
   local minRe, maxRe = minw, maxw
   local minIm, maxIm = minh, maxh
+  local imgCx, imgCy = (imgW / 2), (imgH / 2)
   local reFac = (maxRe-minRe)/(imgW) -- Re units per pixel
   local imFac = (maxIm-minIm)/(imgH) -- Im units per pixel
+  local self, uniPalet, uniNames, conKeys, uZoom, brdCl = {}, {}, {}, {}, 1, clbrd
   local uniCr, uniCi = minRe + ((maxRe - minRe) / 2), minIm + ((maxIm - minIm) / 2)
   function self:SetControlWX(wx)
     conKeys.dirU, conKeys.dirD = (wx["WXK_UP"]   or -1), (wx["WXK_DOWN"]  or -1)
@@ -73,32 +73,33 @@ function makeUnion(w,h,minw,maxw,minh,maxh)
     end
   end
   
-  function self:Register(sMeth, fFractal)
-    if(type(fFractal) ~= "function") then
-      LogLine("Unoin.Register: Unable to register non-function"); return end
-    local sMeth = tostring(sMeth or "")
-    uniNames[sMeth] = fFractal
+  function self:Register(...)
+    local tArgs = {...}
+    local sMode = tostring(tArgs[1] or "UDRAW")
+    for iNdex = 2, #tArgs, 2 do
+      local key = tArgs[iNdex]
+      local foo = tArgs[iNdex + 1]
+      if(key and foo) then
+        if(type(foo) ~= "function") then
+          LogLine("Unoin.Register: Unable to register non-function under <"..key..">"); return end
+        if(sMode == "UDRAW") then uniNames[key] = foo end
+        if(sMode == "PALET") then uniPalet[key] = foo end
+      end
+    end
   end
   
-  function self:Draw(sMeth,maxItr,tArgs)
+  function self:Draw(sName,sPalet,maxItr)
     local maxItr = tonumber(maxItr) or 0
     if(maxItr < 1) then
       LogLine("Union.Draw: Iteretion depth #"..tostring(maxItr).." invalid"); return end
-    local nrmZ
-    local sMeth = tostring(sMeth)
-    local tArgs = tArgs or {}
-    local C = Complex()
-    local Z = Complex()
-    local maxColor = 255
-    local isInside = true
-    local r, g, b = 0, 0, 0
+    local r, g, b, iTer isInside, nrmZ = 0, 0, 0, 0, true
+    local sName, sPalet = tostring(sName), tostring(sPalet)
+    local C,  Z,  tArgs = Complex(), Complex(), (tArgs or {})
     LogLine("Zoom: {"..uZoom.."}")
     LogLine("Cent: {"..uniCr..","..uniCi.."}")
     LogLine("Area: {"..minRe..","..maxRe..","..minIm..","..maxIm.."}")
     for y = 0, imgH do -- Row
-      pncl(colr(255, 20, 110))
-      line(0,y,imgW,y)
-      updt()
+      if(brdCl) then pncl(brdCl); line(0,y,imgW,y); updt() end
       C:setImag(minIm + y*imFac)
       for x = 0, imgW do -- Col
         C:setReal(minRe + x*reFac)
@@ -108,18 +109,19 @@ function makeUnion(w,h,minw,maxw,minh,maxh)
           nrmZ = Z:getNorm2()
           if(nrmZ > 4) then
             isInside = false
+            iTer     = n
             break
           end
-          if(not uniNames[sMeth]) then
-            LogLine("Union.Draw: Invalid method <"..sMeth.."> given"); return end
-          uniNames[sMeth](Z, C, tArgs)
+          if(not uniNames[sName]) then
+            LogLine("Union.Draw: Invalid fractal name <"..sName.."> given"); return end
+          uniNames[sName](Z, C, tArgs) -- Call the fractal formula
         end
         r, g, b = 0, 0, 0
         if(not isInside) then
-          local n = Z:getNorm()
-          r = math.floor((64  * n) % maxColor)
-          g = math.floor((128 * n) % maxColor)
-          b = math.floor((192 * n) % maxColor)
+          if(not uniPalet[sPalet]) then
+            LogLine("Union.Draw: Invalid palet <"..sPalet.."> given"); return end
+          r, g, b = uniPalet[sPalet](Z,C,iTer,x,y) -- Call the fractal coloring
+          r, g, b = ClampValue(r,0,255), ClampValue(g,0,255), ClampValue(b,0,255)
         end
         pncl(colr(r, g, b))
         pixl(x,y)
