@@ -41,14 +41,14 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
       if(yCen < 0 or yCen > imgH) then LogLine("Union.SetCenter: Y outbound"); return end
       local dxP, dyP = (xCen - imgCx), (yCen - imgCy)
       local dxU, dyU = (reFac  * dxP), (imFac *  dyP)
-      -- LogLine("Center: DX = "..dxP.." >> "..dxU)
-      -- LogLine("Center: DY = "..dyP.." >> "..dyU)
+      LogLine("Center: DX = "..dxP.." >> "..dxU)
+      LogLine("Center: DY = "..dyP.." >> "..dyU)
       self:SetArea((minRe + dxU), (maxRe + dxU), (minIm + dyU), (maxIm + dyU))
     elseif(sMode == "POS") then -- Use the union cneter
       local disRe = (maxRe - minRe) / 2
       local disIm = (maxIm - minIm) / 2
       self:SetArea((xCen - disRe), (xCen + disRe), (yCen - disIm), (yCen + disIm))
-    else LogLine("Union.SetCenter: Mode "..sMode.." missing")
+    else LogLine("Union.SetCenter: Mode <"..sMode.."> missing")
     end
   end
   function self:MoveCenter(dX, dY)
@@ -92,7 +92,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
     local maxItr = tonumber(maxItr) or 0
     if(maxItr < 1) then
       LogLine("Union.Draw: Iteretion depth #"..tostring(maxItr).." invalid"); return end
-    local r, g, b, iTer isInside, nrmZ = 0, 0, 0, 0, true
+    local r, g, b, iDepth, isInside, nrmZ = 0, 0, 0, 0, true
     local sName, sPalet = tostring(sName), tostring(sPalet)
     local C,  Z,  tArgs = Complex(), Complex(), (tArgs or {})
     LogLine("Zoom: {"..uZoom.."}")
@@ -107,11 +107,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
         isInside = true
         for n = 1, maxItr do
           nrmZ = Z:getNorm2()
-          if(nrmZ > 4) then
-            isInside = false
-            iTer     = n
-            break
-          end
+          if(nrmZ > 4) then iDepth, isInside = n, false; break end
           if(not uniNames[sName]) then
             LogLine("Union.Draw: Invalid fractal name <"..sName.."> given"); return end
           uniNames[sName](Z, C, tArgs) -- Call the fractal formula
@@ -120,7 +116,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
         if(not isInside) then
           if(not uniPalet[sPalet]) then
             LogLine("Union.Draw: Invalid palet <"..sPalet.."> given"); return end
-          r, g, b = uniPalet[sPalet](Z,C,iTer,x,y) -- Call the fractal coloring
+          r, g, b = uniPalet[sPalet](Z,C,iDepth,x,y) -- Call the fractal coloring
           r, g, b = ClampValue(r,0,255), ClampValue(g,0,255), ClampValue(b,0,255)
         end
         pncl(colr(r, g, b))

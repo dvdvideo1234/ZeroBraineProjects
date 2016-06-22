@@ -17,7 +17,7 @@ local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 30
-local iTer  = 100
+local iTer  = 2000
 local sfrac = "mandelbrot"
 local spale = "wikipedia"
 local brdcl = colr(255, 30, 100)
@@ -40,7 +40,7 @@ Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 
 local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
       S:SetControlWX(wx)
-      -- S:SetArea(-0.80472222222222,-0.80027777777778,0.17527777777778,0.17972222222222)
+      --S:SetArea(-0.8627962962963,-0.86264814814815,0.26473148148148,0.26487962962963)
       S:Register("UDRAW","mandelbrot",function (Z, C, A) Z:Pow(2); Z:Add(C) end )
       S:Register("UDRAW","mandelbar" ,function (Z, C, A) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
       S:Register("UDRAW","julia1"    ,function (Z, C, A) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )
@@ -64,9 +64,12 @@ local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
         math.floor((1 - it) * maxCl),
         math.floor(     it  * maxCl)
       end)
-      S:Register("PALET","wikipedia"     ,function (Z, C, i, x, y) return getColorMap("wikipedia",i) end)
-      S:Register("PALET","wikiyellow"     ,function (Z, C, i, x, y) return getYellowIterationMap(i,iTer) end)
-  
+      S:Register("PALET","wikipedia"   ,function (Z, C, i, x, y) return getColorMap("wikipedia",i) end)
+      S:Register("PALET","region"      ,function (Z, C, i, x, y) return getColorRegion(i,iTer,10) end)
+      S:Register("PALET","hsl", function (Z, C, i, x, y) local it = i / iTer; return getColorHSL(it*360,it,it) end)
+      S:Register("PALET","hsv", function (Z, C, i, x, y) local it = i / iTer; return getColorHSV(it*360,1,1) end)
+            
+
 S:Draw(sfrac,spale,iTer)
 
 while true do
@@ -94,4 +97,3 @@ while true do
   updt()
   wait(0.2) 
 end
-
