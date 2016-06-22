@@ -11,6 +11,17 @@ function LogLine(anyData)
   io.write(tostring(anyData).."\n")
 end
 
+function LogMulty(...)
+  local line = "{"
+  local args, i = {...}, 1
+  while(args[i]) do
+    line = line..tostring(args[i])
+    if(args[i+1]) then line = line.."_" end
+    i = i + 1
+  end
+  io.write(line.."}\n")
+end
+
 function Print(tT,sS)
   if(not tT) then
     LogLine("Print: {nil, name="..tostring(sS or "\"Data\"").."}")

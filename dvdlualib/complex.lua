@@ -1,13 +1,14 @@
-local type = type
-local tonumber = tonumber
-local tostring = tostring
+local type         = type
+local math         = math
+local string       = string
+local tonumber     = tonumber
+local tostring     = tostring
 local setmetatable = setmetatable
-local math = math
-local string = string
 
 local MetaComplex   = {}
 MetaComplex.__type  = "complex"
 MetaComplex.__index = MetaComplex
+MetaComplex.__bords = {"/|<({[","/|>)}]"}
 
 function Complex(nRe,nIm)
   self = {}
@@ -16,130 +17,106 @@ function Complex(nRe,nIm)
  
   setmetatable(self,MetaComplex)
   
-  function self:getReal()
-    return Re
-  end
-  
-  function self:getImag()
-    return Im
-  end
-  
-  function self:setReal(R)
-    Re = (tonumber(R) or 0)
-  end
-  
-  function self:setImag(I)
-    Im = (tonumber(I) or 0)
-  end
+  function self:NegRe()     Re = -Re end
+  function self:NegIm()     Im = -Im end
+  function self:Conj()      Im = -Im end
+  function self:setReal(R)  Re = (tonumber(R) or 0) end
+  function self:setImag(I)  Im = (tonumber(I) or 0) end
+  function self:Floor()     Re = math.floor(Re); Im = math.floor(Im); end
+  function self:Ceil()      Re = math.ceil(Re); Im = math.ceil(Im); end
+  function self:Print(N,E)  io.write(tostring(N).."{"..tostring(Re)..","..tostring(Im).."}"..tostring(E)) end
+  function self:getReal()   return Re end
+  function self:getImag()   return Im end
+  function self:getDup()    return Complex(Re,Im) end
+  function self:getFloor()  return Complex(math.floor(Re),math.floor(Im)) end
+  function self:getCeil()   return Complex(math.ceil(Re),math.ceil(Im)) end
+  function self:toPointXY() return {x = Re, y = Im} end
+  function self:getNeg()    return Complex(-Re,-Im) end
+  function self:getNegRe()  return Complex(-Re, Im) end
+  function self:getNegIm()  return Complex( Re,-Im) end
+  function self:getConj()   return Complex( Re,-Im) end
+  function self:getNorm2()  return (Re*Re + Im*Im) end  
+  function self:getNorm()   return math.sqrt(Re*Re + Im*Im) end 
+  function self:getAngRad() return math.atan2(Im,Re) end 
+  function self:getAngDeg() return (math.atan2(Im,Re) * 180) / math.pi end 
   
   function self:Set(R,I)
-    local tR = type(R) 
-    local tI = type(I)
+    local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      Re = (tonumber(R) or 0)
-      Im = (tonumber(I) or 0)
+      Re, Im = (tonumber(R) or 0), (tonumber(I) or 0)
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      Re = R:getReal()
-      Im = R:getImag()
+      Re, Im = R:getReal(), R:getImag()
     end
   end
   
   function self:Add(R,I)
-    local tR = type(R) 
-    local tI = type(I)
+    local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      Re = Re + (tonumber(R) or 0)
-      Im = Im + (tonumber(I) or 0)
+      Re, Im = (Re + (tonumber(R) or 0)), (Im + (tonumber(I) or 0))
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      Re = Re + R:getReal()
-      Im = Im + R:getImag()
+      Re, Im = (Re + R:getReal()), (Im + R:getImag())
     end
   end
   
   function self:Sub(R,I)
-    local tR = type(R) 
-    local tI = type(I)
+    local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      Re = Re - (tonumber(R) or 0)
-      Im = Im - (tonumber(I) or 0)
+      Re, Im = (Re - (tonumber(R) or 0)), (Im - (tonumber(I) or 0))
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      Re = Re - R:getReal()
-      Im = Im - R:getImag()
+      Re, Im = (Re - R:getReal()), (Im - R:getImag())
     end
   end
   
   function self:Scale(nNum)
     local Typ = type(nNum) 
-    if(Typ == "number" or
-       Typ == "string"
-    ) then
+    if(Typ == "number" or Typ == "string" ) then
       local M = (tonumber(Num) or 0)
-      Re = Re * M
-      Im = Im * M
+      Re, Im = (Re * M), (Im * M)
     end
   end
   
   function self:Mul(R,I)
-    local tR = type(R) 
-    local tI = type(I)
-    local A = Re
-    local C = 0
-    local D = 0
+    local tR, tI = type(R), type(I)
+    local A, C, D = Re, 0, 0
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      C = (tonumber(R) or 0)
-      D = (tonumber(I) or 0)
+      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      C = R:getReal()
-      D = R:getImag()
+      C, D = R:getReal(), R:getImag()
     end
-    Re = A*C - Im*D
-    Im = A*D + Im*C
+    Re = A*C - Im*D; Im = A*D + Im*C
   end
   
   function self:Div(R,I)
-    local tR = type(R) 
-    local tI = type(I)
-    local A = Re
-    local C = 0
-    local D = 0
+    local tR, tI = type(R), type(I)
+    local A, C, D = Re, 0, 0
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      C = (tonumber(R) or 0)
-      D = (tonumber(I) or 0)
+      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      C = R:getReal()
-      D = R:getImag()
+      C, D = R:getReal(), R:getImag()
     end
     Z = (C*C + D*D)
-    if(Z ~= 0) then
-      Re = (A *C + Im*D) / Z
-      Im = (Im*C -  A*D) / Z
-    end
+    if(Z ~= 0) then Re = (A *C + Im*D) / Z; Im = (Im*C -  A*D) / Z end
   end
   
   function self:Mod(R,I)
-    local tR = type(R) 
-    local tI = type(I)
-    local A = Re
-    local C = 0
-    local D = 0
+    local tR, tI = type(R), type(I)
+    local A, C, D = Re, 0, 0
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      C = (tonumber(R) or 0)
-      D = (tonumber(I) or 0)
+      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      C = R:getReal()
-      D = R:getImag()
+      C, D = R:getReal(), R:getImag()
     end
     self:Div(C,D)
     local rei, ref = math.modf(Re)
@@ -148,102 +125,27 @@ function Complex(nRe,nIm)
     self:Mul(C,D)
   end
   
-  function self:NegRe()
-    Re = -Re
-  end
-  
-  function self:NegIm()
-    Im = -Im
-  end
-  
-  function self:Conj()
-    Im = -Im
-  end
-  
-  function self:getDup()
-    return Complex(Re,Im)
-  end
-  
-  function self:Floor()
-    Re = math.floor(Re)
-    Im = math.floor(Im)
-  end
-
-  function self:getFloor()
-    return Complex(math.floor(Re),math.floor(Im))
-  end
-
-  function self:Ceil()
-    Re = math.ceil(Re)
-    Im = math.ceil(Im)
-  end
-
-  function self:getCeil()
-    return Complex(math.ceil(Re),math.ceil(Im))
-  end
-  
-  function self:toPointXY()
-    return {x = Re, y = Im}
-  end
-  
-  function self:getNeg()
-    return Complex(-Re,-Im)
-  end
-  
-  function self:getNegRe()
-    return Complex(-Re,Im)
-  end
-  function self:getNegIm()
-    return Complex(Re,-Im)
-  end
-  
-  function self:getConj()
-    return Complex(Re,-Im)
-  end
-  
-  function self:getNorm2()
-    return (Re*Re + Im*Im)
-  end  
-  
-  function self:getNorm()
-    return math.sqrt(Re*Re + Im*Im)
-  end 
-  
-  function self:getAngRad()
-    return math.atan2(Im,Re)
-  end 
-  
-  function self:getAngDeg()
-      return (math.atan2(Im,Re) * 180) / math.pi
-  end 
-  
   function self:Pow(R,I)
-    local tR = type(R) 
-    local tI = type(I)
-    local nC = 0
-    local nD = 0
+    local tR, tI = type(R), type(I)
+    local nC, nD = 0, 0
     if( (tR == "number" or tR == "string") and
        ((tI == "number" or tI == "string") or not I)
     ) then
-      nC = (tonumber(R) or 0)
-      nD = (tonumber(I) or 0)
+      nC, nD = (tonumber(R) or 0), (tonumber(I) or 0)
     elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
-      nC = R:getReal()
-      nD = R:getImag()
+      nC, nD = R:getReal(), R:getImag()
     end
     local Ro = self:getNorm()
     local Th = self:getAngRad()
-    local nR = (Ro^nC)*math.exp(-nD*Th)
-    local nF = nC*Th + nD*math.log(Ro)
+    local nR = (Ro ^ nC) * math.exp(-nD * Th)
+    local nF =  nC * Th  + nD * math.log(Ro)
     Re = nR * math.cos(nF)
     Im = nR * math.sin(nF)
   end
   
   function self:getRoots(nNum)
     local T = type(nNum)
-    if(T == "number" or
-       T == "string"
-    ) then
+    if(T == "number" or T == "string") then
       local Num = tonumber(nNum)
       if(Num) then
         Num = math.floor(Num)
@@ -313,15 +215,12 @@ end
 MetaComplex.__tostring = function(Comp)
   local R = tostring(Comp:getReal())
   local I = tostring(Comp:getImag())
-  if(R and I) then
-    return "{"..R..","..I.."}"
-  end
+  if(R and I) then return "{"..R..","..I.."}" end
   return "N/A"
 end
 
 MetaComplex.__concat = function(A,B)
-  local Ta = type(A)
-  local Tb = type(B)
+  local Ta, Tb = type(A), type(B)
   if(Ta == "table" and getmetatable(A) == MetaComplex) then
     return "{"..A:getReal()..", "..A:getImag().."}"..tostring(B)
   elseif(Tb == "table" and getmetatable(B) == MetaComplex) then
@@ -338,142 +237,98 @@ MetaComplex.__pow =  function(C1,C2)
 end
 
 MetaComplex.__eq =  function(C1,C2)
-  local T1 = type(C1) 
-  local T2 = type(C2)
-  local R1 = 0
-  local R2 = 0
-  local I1 = 0
-  local I2 = 0
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
   if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
-    R1 = C1:getReal()
-    I1 = C1:getImag()
+    R1, I1 = C1:getReal(), C1:getImag()
   else
-    R1 = (tonumber(C1) or 0)
-    I1 = 0
+    R1, I1 = (tonumber(C1) or 0), 0
   end
   if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
-    R2 = C2:getReal()
-    I2 = C2:getImag()
+    R2, I2 = C2:getReal(), C2:getImag()
   else
-    R2 = (tonumber(C2) or 0)
-    I2 = 0
+    R2, I2 = (tonumber(C2) or 0), 0
   end
-  if(R1 == R2 and I1 == I2) then
-    return true
-  end
+  if(R1 == R2 and I1 == I2) then return true end
   return false
 end
 
 MetaComplex.__le =  function(C1,C2)
-  local T1 = type(C1) 
-  local T2 = type(C2)
-  local R1 = 0
-  local R2 = 0
-  local I1 = 0
-  local I2 = 0
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
   if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
-    R1 = C1:getReal()
-    I1 = C1:getImag()
+    R1, I1 = C1:getReal(), C1:getImag()
   else
-    R1 = (tonumber(C1) or 0)
-    I1 = 0
+    R1, I1 = (tonumber(C1) or 0), 0
   end
   if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
-    R2 = C2:getReal()
-    I2 = C2:getImag()
+    R2, I2 = C2:getReal(), C2:getImag()
   else
-    R2 = (tonumber(C2) or 0)
-    I2 = 0
+    R2, I2 = (tonumber(C2) or 0), 0
   end
-  if(R1 <= R2 and I1 <= I2) then
-    return true
-  end
+  if(R1 <= R2 and I1 <= I2) then return true end
   return false
 end
 
 MetaComplex.__lt =  function(C1,C2)
-  local T1 = type(C1) 
-  local T2 = type(C2)
-  local R1 = 0
-  local R2 = 0
-  local I1 = 0
-  local I2 = 0
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
   if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
-      R1 = C1:getReal()
-      I1 = C1:getImag()
+    R1, I1 = C1:getReal(), C1:getImag()
   else
-    R1 = (tonumber(C1) or 0)
-    I1 = 0
+    R1, I1 = (tonumber(C1) or 0), 0
   end
   if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
-    R2 = C2:getReal()
-    I2 = C2:getImag()
+    R2, I2 = C2:getReal(), C2:getImag()
   else
-    R2 = (tonumber(C2) or 0)
-    I2 = 0
+    R2, I2 = (tonumber(C2) or 0), 0
   end
-  if(R1 < R2 and I1 < I2) then
-    return true
-  end
+  if(R1 < R2 and I1 < I2) then return true end
   return false
 end
 
-local function Str2Complex(strS)
-  if(not strS) then return nil end
-  local S = 1
-  local E = string.len(strS)
-  local C = string.find(strS,",")
-  if((not C) or (C < S) or (C > E)) then return nil end
+local function StrValidateComplex(sStr)
+  local Str = string.gsub(sStr," ","") -- Remove spaces
+  local S, E = 1, string.len(Str)
   while(S < E) do
-    local CS = string.sub(strS,S,S)
-    local CE = string.sub(strS,E,E)
-    if(CS ~= "{" and CE ~= "}") then break end;
-    if(CS == "{") then S = S + 1 end
-    if(CE == "}") then E = E - 1 end
+    local CS = string.sub(Str,S,S)
+    local CE = string.sub(Str,E,E)
+--    LogMulty("StrValidateComplex C ",CS,CE)
+    local FS = string.find(MetaComplex.__bords[1],CS,1,true)
+    local FE = string.find(MetaComplex.__bords[2],CE,1,true)
+    if(not FS and FE) then return LogLine("StrValidateComplex: Unbalanced end <"..CE..">") end
+    if(not FE and FS) then return LogLine("StrValidateComplex: Unbalanced beg <"..CS..">") end
+--    LogMulty("StrValidateComplex F ",FS,FE)
+    if(FS and FE and FS > 0 and FE > 0) then
+      if(FS == FE) then S = S + 1; E = E - 1
+      else return LogLine("StrValidateComplex: Unbalanced beg <"..CS..">") end
+    elseif(not (FS and FE)) then break end;
+  end; return Str, S, E
+end
+
+local function Str2Complex(sStr, nS, nE, sDel)
+--  LogLine("Str2Complex: >"..sStr.."<")
+  local Del = string.sub(tostring(sDel or ","),1,1)
+  local S, E, D = nS, nE, string.find(sStr,Del)
+--  LogMulty("Str2Complex:",S,E,D)
+  if((not D) or (D < S) or (D > E)) then
+    return Complex(tonumber(string.sub(sStr,S,E)) or 0, 0) end
+  return Complex(tonumber(string.sub(sStr,S,D-1)) or 0, tonumber(string.sub(sStr,D+1,E)) or 0)
+end
+
+local function StrI2Complex(sStr, nS, nE, nI)
+  local Str, S, E, I, M, C = sStr, nS, nE, (tonumber(nI) or 0), 0, ""
+  if(nI == 0) then return LogLine("StrI2Complex: Complex not in plain format") end
+  if(I == E) then  -- ([+-]7[+-]2i)
+    Str = string.sub(Str,S,E-1); E = E - 1
+    C   = string.sub(Str,1,1)
+    if(C == "+" or C == "-") then M = string.find(Str,"+",2) end
+    return Complex(tonumber(string.sub(Str,S,M-1)), tonumber(string.sub(Str,M+1,E)))
+  else -- ([+-]7[+-]i2)
+    M = I - 1
+    return Complex(tonumber(string.sub(Str,S,M-1)), tonumber(string.sub(Str,M+2,E)))
   end
-  return Complex(tonumber(string.sub(strS,S,C-1)) or 0,
-                 tonumber(string.sub(strS,C+1,E)) or 0)
 end
-
-local function StrI2Complex(strS)
-  if(not strS) then return nil end
-  local L  = string.len(strS)
-  local Im, Re
-  local S = 1
-  local M = 1
-  local I = 1
-  I = string.find(strS,'i',S)
-  I = string.find(strS,'I',S) or I
-  I = string.find(strS,'j',S) or I
-  I = string.find(strS,'J',S) or I
-  if(not I) then return nil end
-  Ch = string.sub(strS,I-1,I-1)
-  if(I == L) then
-    L = L - 1
-    Ch = string.sub(strS,1,1)
-    if(Ch == "+") then
-      S = S + 1
-    end
-    M = string.find(strS,"+",S)
-    if(not M) then
-      M = string.find(strS,"-",S+1)
-      if(not M) then return nil end
-    end
-    Re = tonumber(string.sub(strS,S,M-1)) or 0
-    Im = tonumber(string.sub(strS,M,  L)) or 0
-    return Complex(Re,Im)
-  elseif(Ch == "+") then
-    Re = tonumber(string.sub(strS,1,I-2)) or 0
-    Im = tonumber(string.sub(strS,I+1,L)) or 0
-    return Complex(Re,Im)
-  elseif(Ch == "-") then
-    Re = tonumber(string.sub(strS,1,I-2)) or 0
-    Im = tonumber(string.sub(strS,I+1,L)) or 0
-    Im = -Im
-    return Complex(Re,Im)
-  else return nil end
-end
-
 
 local function Tab2Complex(tTab)
   if(not tTab) then return nil end
@@ -498,19 +353,24 @@ local function Tab2Complex(tTab)
     V1 = tonumber(V1) or 0
     return Complex(V1,V2)
   end
-  return nil
+  return LogLine("StrI2Complex: Table format not supported")
 end
 
-function ToComplex(In)
-  local C
+function ToComplex(In,Del)
   local Tin = type(In)
   if(Tin == "table")  then return Tab2Complex(In) end
   if(Tin == "number") then return Complex(In,0)  end
   if(Tin == "nil")    then return Complex(In,0)  end
   if(Tin == "string") then
-    local C = Str2Complex(In)
-    if(C) then return C end
-    return StrI2Complex(In)
+    local Str, S, E = StrValidateComplex(In)
+    if(not (Str and S and E)) then return LogLine("ToComplex: Failed to vlalidate <"..tostring(In)..">") end
+        Str = string.sub (Str, S ,E); E = E-S+1; S = 1
+    local I = string.find(Str,'i',S)
+          I = string.find(Str,'I',S) or I
+          I = string.find(Str,'j',S) or I
+          I = string.find(Str,'J',S) or I
+    if(I and (I > 0)) then return StrI2Complex(Str, S, E, I)
+    else return Str2Complex(Str, S, E, Del) end
   end
-  return nil
+  return LogLine("ToComplex: Type <"..Tin.."> not supported")
 end
