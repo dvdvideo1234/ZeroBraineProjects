@@ -29,14 +29,10 @@ J = ToComplex("[3]")   ;  LogLine(J and tostring(J) or "5 missing")
 LogLine("---------------Advanced: Str-I-2Complex---------------")
 H = ToComplex("3 - 6i")   ;  LogLine(H and tostring(H) or "H2 missing")
 H = ToComplex("3 - i6")   ;  LogLine(H and tostring(H) or "H1 missing")
+J = ToComplex("-0.8+0.156i")   ;  LogLine(J and tostring(J) or "6 missing")
+J = ToComplex("-0.8+ i 0.156")   ;  LogLine(J and tostring(J) or "6 missing")
 LogLine("---------------Advanced: Str-I-2Complex with brackets---------------")
 J = ToComplex("[4+j5]")   ;  LogLine(J and tostring(J) or "6 missing")
-
-
-
-
-
-
 
 
 

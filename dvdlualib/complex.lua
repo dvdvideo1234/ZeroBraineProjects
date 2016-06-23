@@ -307,10 +307,8 @@ local function StrValidateComplex(sStr)
 end
 
 local function Str2Complex(sStr, nS, nE, sDel)
---  LogLine("Str2Complex: >"..sStr.."<")
   local Del = string.sub(tostring(sDel or ","),1,1)
   local S, E, D = nS, nE, string.find(sStr,Del)
---  LogMulty("Str2Complex:",S,E,D)
   if((not D) or (D < S) or (D > E)) then
     return Complex(tonumber(string.sub(sStr,S,E)) or 0, 0) end
   return Complex(tonumber(string.sub(sStr,S,D-1)) or 0, tonumber(string.sub(sStr,D+1,E)) or 0)
@@ -318,13 +316,13 @@ end
 
 local function StrI2Complex(sStr, nS, nE, nI)
   if(nI == 0) then return LogLine("StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
-  local M = nI - 1
+  local M = nI - 1 -- There will be no delimiter symbols here
   local C = string.sub(sStr,M,M)
-  if(nI == nE) then  -- (7-2i)
-    while(tonumber(C)) do
+  if(nI == nE) then  -- (-0.7-2.9i) Skip symbols til +/- is reached
+    while(C ~= "+" and C ~= "-") do 
       M = M - 1; C = string.sub(sStr,M,M)
     end; return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(string.sub(sStr,M,nE-1)))
-  else -- (7-i2)
+  else -- (-0.7-i2.9)
     return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(C..string.sub(sStr,nI+1,nE)))
   end
 end

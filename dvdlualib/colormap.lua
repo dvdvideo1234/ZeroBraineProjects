@@ -109,11 +109,13 @@ function getColorRegion(iDepth, maxDepth, iRegions)
       arRegions[regid].brd = arRegions[regid - 1].brd + arRegions[1].brd
       if(regid <= oneThird and regid > 1) then
         arRegions[regid].foo = function(iTer)
-          return ((((iTer - arRegions[regid-1].brd) * arRegions[oneThird-regid+1].brd) / arRegions[2].brd) + arRegions[2].brd), 0, 0
+          return ((((iTer - arRegions[regid-1].brd) * arRegions[oneThird-regid+1].brd)
+                 * arRegions[2].brd) + arRegions[2].brd), 0, 0
         end  
       else
         arRegions[regid].foo = function(iTer)
-          return 255, ((((iTer - arRegions[regid-1].brd) * arRegions[1].brd) / arRegions[regid-2].brd) + arRegions[regid-3].brd), 0
+          return 255, ((((iTer - arRegions[regid-1].brd) * arRegions[1].brd)
+                 / arRegions[regid-2].brd) + arRegions[regid-3].brd), 0
         end  
       end
     end

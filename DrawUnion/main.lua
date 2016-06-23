@@ -17,9 +17,9 @@ local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 30
-local iTer  = 2000
-local sfrac = "mandelbrot"
-local spale = "wikipedia"
+local iTer  = 200
+local sfrac = "mandelbar"
+local spale = "hsl"
 local brdcl = colr(255, 30, 100)
 
 --- Dinamic parameters and constants
@@ -40,7 +40,7 @@ Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 
 local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
       S:SetControlWX(wx)
-      --S:SetArea(-0.8627962962963,-0.86264814814815,0.26473148148148,0.26487962962963)
+      S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
       S:Register("UDRAW","mandelbrot",function (Z, C, A) Z:Pow(2); Z:Add(C) end )
       S:Register("UDRAW","mandelbar" ,function (Z, C, A) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
       S:Register("UDRAW","julia1"    ,function (Z, C, A) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )
@@ -50,20 +50,10 @@ local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
       S:Register("UDRAW","julia5"    ,function (Z, C, A) Z:Set((Z^4) * cexp^Z + 0.41 )  end )
       S:Register("UDRAW","julia6"    ,function (Z, C, A) Z:Set((Z^3) * cexp^Z + 0.33 )  end )
       S:Register("PALET","default"   ,function (Z, C, n) return
-        (math.floor((64  * n) % maxCl)),
-        (math.floor((128 * n) % maxCl)),
-        (math.floor((192 * n) % maxCl))
-      end )
-      S:Register("PALET","rediter"   ,function (Z, C, i) return
-        math.floor((1-(i / iTer)) * maxCl), 0, 0
-      end )
-      S:Register("PALET","greenbl"     ,function (Z, C, i, x, y)
-        local it = i / iTer
-      return
-        math.floor(0),
-        math.floor((1 - it) * maxCl),
-        math.floor(     it  * maxCl)
-      end)
+        (math.floor((64  * n) % maxCl)), (math.floor((128 * n) % maxCl)), (math.floor((192 * n) % maxCl)) end )
+      S:Register("PALET","rediter"   ,function (Z, C, i) return math.floor((1-(i / iTer)) * maxCl), 0, 0 end )
+      S:Register("PALET","greenbl"   ,function (Z, C, i, x, y)
+        local it = i / iTer; return math.floor(0), math.floor((1 - it) * maxCl), math.floor(     it  * maxCl) end)
       S:Register("PALET","wikipedia"   ,function (Z, C, i, x, y) return getColorMap("wikipedia",i) end)
       S:Register("PALET","region"      ,function (Z, C, i, x, y) return getColorRegion(i,iTer,10) end)
       S:Register("PALET","hsl", function (Z, C, i, x, y) local it = i / iTer; return getColorHSL(it*360,it,it) end)
