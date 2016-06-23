@@ -317,16 +317,15 @@ local function Str2Complex(sStr, nS, nE, sDel)
 end
 
 local function StrI2Complex(sStr, nS, nE, nI)
-  local Str, S, E, I, M, C = sStr, nS, nE, (tonumber(nI) or 0), 0, ""
-  if(nI == 0) then return LogLine("StrI2Complex: Complex not in plain format") end
-  if(I == E) then  -- ([+-]7[+-]2i)
-    Str = string.sub(Str,S,E-1); E = E - 1
-    C   = string.sub(Str,1,1)
-    if(C == "+" or C == "-") then M = string.find(Str,"+",2) end
-    return Complex(tonumber(string.sub(Str,S,M-1)), tonumber(string.sub(Str,M+1,E)))
-  else -- ([+-]7[+-]i2)
-    M = I - 1
-    return Complex(tonumber(string.sub(Str,S,M-1)), tonumber(string.sub(Str,M+2,E)))
+  if(nI == 0) then return LogLine("StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
+  local M = nI - 1
+  local C = string.sub(sStr,M,M)
+  if(nI == nE) then  -- (7-2i)
+    while(tonumber(C)) do
+      M = M - 1; C = string.sub(sStr,M,M)
+    end; return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(string.sub(sStr,M,nE-1)))
+  else -- (7-i2)
+    return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(C..string.sub(sStr,nI+1,nE)))
   end
 end
 
@@ -357,11 +356,11 @@ local function Tab2Complex(tTab)
 end
 
 function ToComplex(In,Del)
-  local Tin = type(In)
-  if(Tin == "table")  then return Tab2Complex(In) end
-  if(Tin == "number") then return Complex(In,0)  end
-  if(Tin == "nil")    then return Complex(In,0)  end
-  if(Tin == "string") then
+  local tIn = type(In)
+  if(tIn ==  "table") then return Tab2Complex(In) end
+  if(tIn == "number") then return Complex(In,0) end
+  if(tIn ==    "nil") then return Complex(0,0) end
+  if(tIn == "string") then
     local Str, S, E = StrValidateComplex(In)
     if(not (Str and S and E)) then return LogLine("ToComplex: Failed to vlalidate <"..tostring(In)..">") end
         Str = string.sub (Str, S ,E); E = E-S+1; S = 1
