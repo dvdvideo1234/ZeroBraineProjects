@@ -336,6 +336,7 @@ local function Tab2Complex(tTab)
         V1 = tTab["re"]   or V1
         V1 = tTab["R"]    or V1
         V1 = tTab["r"]    or V1
+        V1 = tTab["X"]    or V1
         V1 = tTab["x"]    or V1
   local V2 = tTab[2]
         V2 = tTab["Imag"] or V2
@@ -344,6 +345,7 @@ local function Tab2Complex(tTab)
         V2 = tTab["im"]   or V2
         V2 = tTab["I"]    or V2
         V2 = tTab["i"]    or V2
+        V2 = tTab["Y"]    or V2
         V2 = tTab["y"]    or V2
   if(V1 or V2) then
     V2 = tonumber(V2) or 0

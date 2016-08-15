@@ -92,6 +92,14 @@ local libOpVars = {} -- Used to Store operational Variable Values
 
 module("asmlib")
 
+function stringToFileName(sName)
+  if(not sName) then return "" end
+  local Name = tostring(sName)
+  local N, Ch = -1, Name:sub(-1,-1)
+  while(Ch ~= "/" and Ch ~= "\\") do N = N - 1; Ch = Name:sub(N,N) end
+  return Name:sub(N+1,-1)
+end
+
 function GetIndexes(sType)
   if(sType == "V") then
     return cvX, cvY, cvZ
@@ -240,11 +248,7 @@ end
 function StatusLog(anyStatus,sError)
   local inf = debugGetinfo(2) or {}
   local src = ""
-        src = src..(inf.linedefined and "["..inf.linedefined.."]" or "[n/a]")
-        src = src..(inf.name and inf.name or "Main")
-        src = src..(inf.currentline and ("["..inf.currentline.."]") or "[n/a]")
-        src = src..(inf.nparams and (" #"..inf.nparams) or " #N")
-        src = src..(inf.source and (" "..inf.source) or " @N")
+
   print("LOG "..src.." >> "..tostring(GetOpVar("MODE_DATABASE")).." # "..tostring(sError))
   return anyStatus
 end
@@ -354,48 +358,50 @@ function DefaultTable(anyTable)
   SettingsModelToName("CLR")
 end
 
-function ModelToName(sModel)
+function ModelToName(sModel,bNoSettings)
   if(not IsString(sModel)) then
     return StatusLog("","ModelToName: Argument {"..type(sModel).."}<"..tostring(sModel)..">") end
   if(IsEmptyString(sModel)) then return StatusLog("","ModelToName: Empty string") end
   local fCh, bCh, Cnt = "", "", 1
-  local sSymDiv = GetOpVar("OPSYM_DIVIDER")
-  local sSymDir = GetOpVar("OPSYM_DIRECTORY")
-  local sModel  = stringGsub(StringToFile(sModel),GetOpVar("FILE_MODEL"),"")
-  local gModel  = stringSub(sModel,1,-1) -- Create a copy so we can select cut-off parts later on
-  local tCut, tSub, tApp = SettingsModelToName("GET")
-  if(tCut and tCut[1]) then
-    while(tCut[Cnt] and tCut[Cnt+1]) do
-      fCh = tonumber(tCut[Cnt])
-      bCh = tonumber(tCut[Cnt+1])
-      if(not (IsExistent(fCh) and IsExistent(bCh))) then
-        return StatusLog("","ModelToName: Cannot cut the model in {"
-                 ..tostring(tCut[Cnt])..","..tostring(tCut[Cnt+1]).."} for "..sModel)
+  local sSymDiv, sSymDir = GetOpVar("OPSYM_DIVIDER"), GetOpVar("OPSYM_DIRECTORY")
+  local sModel = (stringSub(sModel,1, 1) ~= sSymDir) and (sSymDir..sModel) or sModel
+        sModel =  stringGsub(stringToFileName(sModel),GetOpVar("FILE_MODEL"),"")
+  local gModel =  stringSub(sModel,1,-1) -- Create a copy so we can select cut-off parts later on
+  if(not bNoSettings) then
+    local tCut, tSub, tApp = SettingsModelToName("GET")
+    if(tCut and tCut[1]) then
+      while(tCut[Cnt] and tCut[Cnt+1]) do
+        fCh = tonumber(tCut[Cnt])
+        bCh = tonumber(tCut[Cnt+1])
+        if(not (IsExistent(fCh) and IsExistent(bCh))) then
+          return StatusLog("","ModelToName: Cannot cut the model in {"
+                   ..tostring(tCut[Cnt])..","..tostring(tCut[Cnt+1]).."} for "..sModel)
+        end
+        LogInstance("ModelToName[CUT]: {"..tostring(tCut[Cnt])..", "..tostring(tCut[Cnt+1]).."} << "..gModel)
+        gModel = stringGsub(gModel,stringSub(sModel,fCh,bCh),"")
+        LogInstance("ModelToName[CUT]: {"..tostring(tCut[Cnt])..", "..tostring(tCut[Cnt+1]).."} >> "..gModel)
+        Cnt = Cnt + 2
       end
-      LogInstance("ModelToName[CUT]: {"..tostring(tCut[Cnt])..", "..tostring(tCut[Cnt+1]).."} << "..gModel)
-      gModel = stringGsub(gModel,stringSub(sModel,fCh,bCh),"")
-      LogInstance("ModelToName[CUT]: {"..tostring(tCut[Cnt])..", "..tostring(tCut[Cnt+1]).."} >> "..gModel)
-      Cnt = Cnt + 2
+      Cnt = 1
     end
-    Cnt = 1
-  end
-  -- Replace the unneeded parts by finding an in-string gModel
-  if(tSub and tSub[1]) then
-    while(tSub[Cnt]) do
-      fCh = tostring(tSub[Cnt]   or "")
-      bCh = tostring(tSub[Cnt+1] or "")
-      LogInstance("ModelToName[SUB]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} << "..gModel)
-      gModel = stringGsub(gModel,fCh,bCh)
-      LogInstance("ModelToName[SUB]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} >> "..gModel)
-      Cnt = Cnt + 2
+    -- Replace the unneeded parts by finding an in-string gModel
+    if(tSub and tSub[1]) then
+      while(tSub[Cnt]) do
+        fCh = tostring(tSub[Cnt]   or "")
+        bCh = tostring(tSub[Cnt+1] or "")
+        LogInstance("ModelToName[SUB]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} << "..gModel)
+        gModel = stringGsub(gModel,fCh,bCh)
+        LogInstance("ModelToName[SUB]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} >> "..gModel)
+        Cnt = Cnt + 2
+      end
+      Cnt = 1
     end
-    Cnt = 1
-  end
-  -- Append something if needed
-  if(tApp and tApp[1]) then
-    LogInstance("ModelToName[APP]: {"..tostring(tApp[Cnt])..", "..tostring(tApp[Cnt+1]).."} << "..gModel)
-    gModel = tostring(tApp[1] or "")..gModel..tostring(tApp[2] or "")
-    LogInstance("ModelToName[APP]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} >> "..gModel)
+    -- Append something if needed
+    if(tApp and tApp[1]) then
+      LogInstance("ModelToName[APP]: {"..tostring(tApp[Cnt])..", "..tostring(tApp[Cnt+1]).."} << "..gModel)
+      gModel = tostring(tApp[1] or "")..gModel..tostring(tApp[2] or "")
+      LogInstance("ModelToName[APP]: {"..tostring(tSub[Cnt])..", "..tostring(tSub[Cnt+1]).."} >> "..gModel)
+    end
   end
   -- Trigger the capital-space using the divider
   if(stringSub(gModel,1,1) ~= sSymDiv) then gModel = sSymDiv..gModel end
@@ -405,9 +411,7 @@ function ModelToName(sModel)
     if(fCh > bCh) then
       sModel = sModel..stringSub(gModel,bCh+2,fCh-1)
     end
-    if(not IsEmptyString(sModel)) then
-      sModel = sModel.." "
-    end
+    if(not IsEmptyString(sModel)) then sModel = sModel.." " end
     sModel = sModel..stringUpper(stringSub(gModel,fCh+1,fCh+1))
     bCh = fCh
     fCh = stringFind(gModel,sSymDiv,fCh+1)
@@ -821,6 +825,7 @@ function InitAssembly(sName)
   SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
   SetOpVar("TABLE_FREQUENT_MODELS",{})
   SetOpVar("TABLE_BORDERS",{})
+  SetOpVar("TABLE_LOCALIFY",{})
   SetOpVar("MISS_NOID","N")    -- No ID selected
   SetOpVar("MISS_NOAV","N/A")  -- Not Available
   SetOpVar("MISS_NOMD","X")    -- No model
@@ -2403,3 +2408,23 @@ function StringToFile(sPath)
   return stringSub(sPath,nCnt+1,Len)
 end
 
+function SetLocalify(sCode, sPhrase, sDetail)
+  if(not IsString(sCode)) then
+    return StatusLog(nil,"SetLocalify: Language code <"..tostring(sCode).."> invalid") end
+  if(not IsString(sPhrase)) then
+    return StatusLog(nil,"SetLocalify: Phrase words <"..tostring(sPhrase).."> invalid") end
+  local Localify = GetOpVar("TABLE_LOCALIFY")
+  if(not IsExistent(Localify[sCode])) then Localify[sCode] = {}; end
+  Localify[sCode][sPhrase] = sDetail
+end
+
+function InitLocalify(sCode) -- https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+  if(not IsString(sCode)) then -- https://en.wikipedia.org/wiki/ISO_639-2
+    return StatusLog(nil,"InitLocalify: Laguage code <"..tostring(sCode).."> invalid") end
+  local Localify = GetOpVar("TABLE_LOCALIFY")
+  if(not IsExistent(Localify[sCode])) then
+    return StatusLog(nil,"GetLocalify: Language not found for <"..sCode..">") end
+  for phrase, detail in pairs(Localify[sCode]) do
+    print(phrase, detail)
+  end
+end
