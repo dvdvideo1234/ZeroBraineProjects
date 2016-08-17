@@ -290,7 +290,7 @@ function GappModelToName(tGapp)
 end
 
 function SetAction(sKey,fAct,tDat)
-  if(not (sKey)) then return false end
+  if(not (sKey and IsString(sKey))) then return false end
   if(not (fAct and type(fAct) == "function")) then return false end
   if(not libAction[sKey]) then
     libAction[sKey] = {}
@@ -300,16 +300,23 @@ function SetAction(sKey,fAct,tDat)
   return true
 end
 
-function GetAction(sKey)
-  if(not (sKey)) then return nil end
+function GetActionCode(sKey)
+  if(not (sKey and IsString(sKey))) then return StatusLog(nil,"GetActionCode: ") end
   if(not (libAction and libAction[sKey])) then return nil end
-  return libAction[sKey]
+  return libAction[sKey].Act
 end
 
-function DoAction(sKey,A1,A2,A3)
-  if(not (sKey)) then return false end
+function GetActionData(sKey)
+  if(not (sKey and IsString(sKey))) then return nil end
+  if(not (libAction and libAction[sKey])) then return nil end
+  return libAction[sKey].Dat
+end
+
+function CallAction(sKey,...)
+  if(not (sKey and IsString(sKey))) then return false end
   if(not (libAction and libAction[sKey])) then return false end
-  return libAction[sKey].Act(A1,A2,A3,libAction[sKey].Dat)
+  print(sKey,...)
+  return libAction[sKey].Act(libAction[sKey].Dat,...)
 end
 
 function IsExistent(anyValue)
