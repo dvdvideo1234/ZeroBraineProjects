@@ -290,32 +290,37 @@ function GappModelToName(tGapp)
 end
 
 function SetAction(sKey,fAct,tDat)
-  if(not (sKey and IsString(sKey))) then return false end
-  if(not (fAct and type(fAct) == "function")) then return false end
-  if(not libAction[sKey]) then
-    libAction[sKey] = {}
-  end
+  if(not (sKey and IsString(sKey))) then
+    return StatusLog(nil,"SetAction: Key {"..type(sKey).."}<"..tostring(sKey).."> not string") end
+  if(not (fAct and type(fAct) == "function")) then
+    return StatusLog(nil,"SetAction: Act {"..type(fAct).."}<"..tostring(fAct).."> not function") end
+  if(not libAction[sKey]) then libAction[sKey] = {} end
   libAction[sKey].Act = fAct
   libAction[sKey].Dat = tDat
   return true
 end
 
 function GetActionCode(sKey)
-  if(not (sKey and IsString(sKey))) then return StatusLog(nil,"GetActionCode: ") end
-  if(not (libAction and libAction[sKey])) then return nil end
+  if(not (sKey and IsString(sKey))) then
+    return StatusLog(nil,"GetActionCode: Key {"..type(sKey).."}<"..tostring(sKey).."> not string") end
+  if(not (libAction and libAction[sKey])) then
+    return StatusLog(nil,"GetActionCode: Key not located") end
   return libAction[sKey].Act
 end
 
 function GetActionData(sKey)
-  if(not (sKey and IsString(sKey))) then return nil end
-  if(not (libAction and libAction[sKey])) then return nil end
+  if(not (sKey and IsString(sKey))) then
+    return StatusLog(nil,"GetActionData: Key {"..type(sKey).."}<"..tostring(sKey).."> not string") end
+  if(not (libAction and libAction[sKey])) then
+    return StatusLog(nil,"GetActionData: Key not located") end
   return libAction[sKey].Dat
 end
 
 function CallAction(sKey,...)
-  if(not (sKey and IsString(sKey))) then return false end
-  if(not (libAction and libAction[sKey])) then return false end
-  print(sKey,...)
+  if(not (sKey and IsString(sKey))) then
+    return StatusLog(nil,"CallAction: Key {"..type(sKey).."}<"..tostring(sKey).."> not string") end
+  if(not (libAction and libAction[sKey])) then
+    return StatusLog(nil,"CallAction: Key not located") end
   return libAction[sKey].Act(libAction[sKey].Dat,...)
 end
 

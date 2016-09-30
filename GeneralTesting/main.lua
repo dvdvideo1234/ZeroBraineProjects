@@ -1,4 +1,5 @@
 require("ZeroBraineProjects/dvdlualib/common")
+require("ZeroBraineProjects/dvdlualib/asmlib")
 
 local Angle                = Angle
 local Vector               = Vector
@@ -21,14 +22,10 @@ local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
 
-local s = "models/ron/2ft/curves/curve_45_right_4.mdl"
+local enLog = true
 
-local a = function(m)
-  local r = stringGsub(m,"models/ron/2ft/","")
-        r = stringSub(r,1,stringFind(r,"/")-1)
-        r = stringUpper(stringSub(r,1,1))..stringLower(stringSub(r,2,-1))
-  return r
-end
+local function envPrint(...) if(not enLog) then return end; print("asd",...) end
 
 
-LogLine(a(s))
+
+envPrint(1,2,3)

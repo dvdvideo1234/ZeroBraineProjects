@@ -57,7 +57,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
   end
   function self:Zoom(nZoom)
     local nZoom = tonumber(nZoom) or 0
-    if(nZoom <= 1 and nZoom >= -1) then LogLine("Union.Zoom("..tostring(nZoom).."): Skipped") return end
+    if(nZoom == 0) then LogLine("Union.Zoom("..tostring(nZoom).."): Skipped") return end
     local disRe = (maxRe - minRe) / 2
     local disIm = (maxIm - minIm) / 2
     local midRe = minRe + disRe
@@ -94,7 +94,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
       LogLine("Union.Draw: Iteretion depth #"..tostring(maxItr).." invalid"); return end
     local r, g, b, iDepth, isInside, nrmZ = 0, 0, 0, 0, true
     local sName, sPalet = tostring(sName), tostring(sPalet)
-    local C,  Z,  tArgs = Complex(), Complex(), (tArgs or {})
+    local C, Z, R = Complex(), Complex(), {}
     LogLine("Zoom: {"..uZoom.."}")
     LogLine("Cent: {"..uniCr..","..uniCi.."}")
     LogLine("Area: {"..minRe..","..maxRe..","..minIm..","..maxIm.."}")
@@ -110,13 +110,13 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
           if(nrmZ > 4) then iDepth, isInside = n, false; break end
           if(not uniNames[sName]) then
             LogLine("Union.Draw: Invalid fractal name <"..sName.."> given"); return end
-          uniNames[sName](Z, C, tArgs) -- Call the fractal formula
+          uniNames[sName](Z, C, R) -- Call the fractal formula
         end
         r, g, b = 0, 0, 0
         if(not isInside) then
           if(not uniPalet[sPalet]) then
             LogLine("Union.Draw: Invalid palet <"..sPalet.."> given"); return end
-          r, g, b = uniPalet[sPalet](Z,C,iDepth,x,y) -- Call the fractal coloring
+          r, g, b = uniPalet[sPalet](Z, C, iDepth, x, y, R) -- Call the fractal coloring
           r, g, b = ClampValue(r,0,255), ClampValue(g,0,255), ClampValue(b,0,255)
         end
         pncl(colr(r, g, b))

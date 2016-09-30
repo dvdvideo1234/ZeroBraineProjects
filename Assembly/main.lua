@@ -9,6 +9,12 @@ function math.Sign(num)
   return (num ~= 0) and (num / math.abs(num)) or 0
 end
 
-asmlib.SetAction("mul",function(db, a, b, c) print(c); return (a * b) + db.Base; end, {Base = 7})
 
-print("Rez: ",asmlib.CallAction("mul",14,2,3))
+asmlib.SetAction("TEST",function(a,b) 
+  local td = asmlib.GetActionData("TEST").t
+  return a + b + td
+end ,{t = 5})
+
+s = asmlib.GetActionCode("TEST")
+
+print(s(2,3))

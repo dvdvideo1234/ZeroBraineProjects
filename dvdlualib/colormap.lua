@@ -78,7 +78,7 @@ function printColorMap(r,g,b) LogLine("colorMap: {"..r..","..g..","..b.."}") end
   
 function getColorMap(sKey,iNdex)
   local iNdex = tonumber(iNdex) or 0
-  if(iNdex <= 0) then LogLine("getColorMap: Missing iteration id #"..iTer); return getColorBlackRGB() end
+  if(iNdex <= 0) then LogLine("getColorMap: Missing index #"..tostring(iNdex)); return getColorBlackRGB() end
   local sKey = tostring(sKey)
   local rgb = clMapping[sKey]
   if(not rgb) then LogLine("getColorMap: Missing mapping for <"..sKey..">"); return getColorBlackRGB() end
