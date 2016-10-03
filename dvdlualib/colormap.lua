@@ -1,33 +1,15 @@
 local math = math
 local clMapping = {}
 local clClamp = {0, 255}
-clMapping["wikipedia"] = {
-  { 66,  30,  15}, -- brown 3
-  { 25,   7,  26}, -- dark violett
-  {  9,   1,  47}, -- darkest blue
-  {  4,   4,  73}, -- blue 5
-  {  0,   7, 100}, -- blue 4
-  { 12,  44, 138}, -- blue 3
-  { 24,  82, 177}, -- blue 2
-  { 57, 125, 209}, -- blue 1
-  {134, 181, 229}, -- blue 0
-  {211, 236, 248}, -- lightest blue
-  {241, 233, 191}, -- lightest yellow
-  {248, 201,  95}, -- light yellow
-  {255, 170,   0}, -- dirty yellow
-  {204, 128,   0}, -- brown 0
-  {153,  87,   0}, -- brown 1
-  {106,  52,   3}  -- brown 2
-}
 
-function getColorBlackRGB()  return 0  ,  0,  0 end
-function getColorRedRGB()    return 255,  0,  0 end
-function getColorGreenRGB()  return 0  ,255,  0 end
-function getColorBlueRGB()   return 0  ,  0,255 end
+function getColorBlackRGB () return 0  ,  0,  0 end
+function getColorRedRGB   () return 255,  0,  0 end
+function getColorGreenRGB () return 0  ,255,  0 end
+function getColorBlueRGB  () return 0  ,  0,255 end
 function getColorYellowRGB() return 255,255,  0 end
-function getColorCyanRGB()   return 0  ,255,255 end
-function getColorMagenRGB()  return 255,  0,255 end
-function getColorWhiteRGB()  return 255,255,255 end
+function getColorCyanRGB  () return 0  ,255,255 end
+function getColorMagenRGB () return 255,  0,255 end
+function getColorWhiteRGB () return 255,255,255 end
 
 function getColorRotateLeft(r, g, b) return g, b, r end
 function getColorRotateRigh(r, g, b) return b, r, g end
@@ -75,6 +57,15 @@ function getColorHCL(h,c,l)
 end
 
 function printColorMap(r,g,b) LogLine("colorMap: {"..r..","..g..","..b.."}") end
+  
+function setColorMap(sKey,tTable,bReplace)
+  local tyTable = type(tTable)
+  if(tyTable ~= "table") then LogLine("getColorMap: Missing tabe argument"); return nil end
+  local sKey = tostring(sKey)
+  local rgb = clMapping[sKey]
+  if(rgb and not bReplace) then LogLine("getColorMap: Exists mapping for <"..sKey..">"); return nil end
+  clMapping[sKey] = tTable; return clMapping[sKey]
+end
   
 function getColorMap(sKey,iNdex)
   local iNdex = tonumber(iNdex) or 0

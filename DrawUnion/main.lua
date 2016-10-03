@@ -11,21 +11,42 @@ io.stdout:setvbuf("no")
 
 -- Changable parameters
 local maxCl = 255
-local W     = 160
-local H     = 160
+local W     = 200
+local H     = 200
 local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 30
-local iTer  = 100
+local iTer  = 500
 local sfrac = "mandelbrot"
-local spale = "wikipedia_r"
-local brdcl = colr(255, 30, 100)
+local spale = "region"
+local brdcl = colr(0, 250, 100)
+local brdup = true
 
 --- Dinamic parameters and constants
 local cexp   = ToComplex(math.exp(1))
 local w2, h2 = W/2, H/2
 local gr     = 1.681
+
+setColorMap("wikipedia",
+{
+  { 66,  30,  15}, -- brown 3
+  { 25,   7,  26}, -- dark violett
+  {  9,   1,  47}, -- darkest blue
+  {  4,   4,  73}, -- blue 5
+  {  0,   7, 100}, -- blue 4
+  { 12,  44, 138}, -- blue 3
+  { 24,  82, 177}, -- blue 2
+  { 57, 125, 209}, -- blue 1
+  {134, 181, 229}, -- blue 0
+  {211, 236, 248}, -- lightest blue
+  {241, 233, 191}, -- lightest yellow
+  {248, 201,  95}, -- light yellow
+  {255, 170,   0}, -- dirty yellow
+  {204, 128,   0}, -- brown 0
+  {153,  87,   0}, -- brown 1
+  {106,  52,   3}  -- brown 2
+})
 
 open("Union 2D Plot")
 size(W,H)
@@ -38,9 +59,9 @@ Cent: {-0.10109678819444,-0.95628602430556}
 Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 ]]
 
-local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl)
+local S = makeUnion(W,H,-szRe,szRe,-szIm,szIm,brdcl,brdup)
       S:SetControlWX(wx)
-      S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
+      -- S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
       S:Register("UDRAW","mandelbrot",function (Z, C, R) Z:Pow(2); Z:Add(C); R[1] = Z:getAngRad(); end )
       S:Register("UDRAW","mandelbar" ,function (Z, C, R) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
       S:Register("UDRAW","julia1"    ,function (Z, C, R) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )

@@ -7,14 +7,14 @@ local setmetatable = setmetatable
 
 local metaUnion = {}
 
-function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
+function makeUnion(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
   local imgW , imgH  = w   , h
   local minRe, maxRe = minw, maxw
   local minIm, maxIm = minh, maxh
   local imgCx, imgCy = (imgW / 2), (imgH / 2)
   local reFac = (maxRe-minRe)/(imgW) -- Re units per pixel
   local imFac = (maxIm-minIm)/(imgH) -- Im units per pixel
-  local self, uniPalet, uniNames, conKeys, uZoom, brdCl = {}, {}, {}, {}, 1, clbrd
+  local self, uniPalet, uniNames, conKeys, uZoom, brdCl, bbrdP = {}, {}, {}, {}, 1, clbrd, bBrdP
   local uniCr, uniCi = minRe + ((maxRe - minRe) / 2), minIm + ((maxIm - minIm) / 2)
   function self:SetControlWX(wx)
     conKeys.dirU, conKeys.dirD = (wx["WXK_UP"]   or -1), (wx["WXK_DOWN"]  or -1)
@@ -102,6 +102,7 @@ function makeUnion(w,h,minw,maxw,minh,maxh,clbrd)
       if(brdCl) then pncl(brdCl); line(0,y,imgW,y); updt() end
       C:setImag(minIm + y*imFac)
       for x = 0, imgW do -- Col
+        if(brdCl and bbrdP) then updt() end  
         C:setReal(minRe + x*reFac)
         Z:Set(C)
         isInside = true
