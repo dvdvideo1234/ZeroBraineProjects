@@ -5,17 +5,17 @@ local tonumber     = tonumber
 local tostring     = tostring
 local setmetatable = setmetatable
 
-local MetaComplex   = {}
-MetaComplex.__type  = "complex"
-MetaComplex.__index = MetaComplex
-MetaComplex.__bords = {"/|<({[","/|>)}]"}
+local metaComplex   = {}
+metaComplex.__type  = "complex"
+metaComplex.__index = metaComplex
+metaComplex.__bords = {"/|<({[","/|>)}]"}
 
 function Complex(nRe,nIm)
   self = {}
   local Re = tonumber(nRe) or 0
   local Im = tonumber(nIm) or 0
  
-  setmetatable(self,MetaComplex)
+  setmetatable(self,metaComplex)
   
   function self:NegRe()     Re = -Re end
   function self:NegIm()     Im = -Im end
@@ -46,7 +46,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       Re, Im = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       Re, Im = R:getReal(), R:getImag()
     end
   end
@@ -57,7 +57,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       Re, Im = (Re + (tonumber(R) or 0)), (Im + (tonumber(I) or 0))
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       Re, Im = (Re + R:getReal()), (Im + R:getImag())
     end
   end
@@ -68,7 +68,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       Re, Im = (Re - (tonumber(R) or 0)), (Im - (tonumber(I) or 0))
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       Re, Im = (Re - R:getReal()), (Im - R:getImag())
     end
   end
@@ -88,7 +88,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       C, D = R:getReal(), R:getImag()
     end
     Re = A*C - Im*D; Im = A*D + Im*C
@@ -101,7 +101,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       C, D = R:getReal(), R:getImag()
     end
     Z = (C*C + D*D)
@@ -115,7 +115,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       C, D = R:getReal(), R:getImag()
     end
     self:Div(C,D)
@@ -132,7 +132,7 @@ function Complex(nRe,nIm)
        ((tI == "number" or tI == "string") or not I)
     ) then
       nC, nD = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == MetaComplex and not I) then
+    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
       nC, nD = R:getReal(), R:getImag()
     end
     local Ro = self:getNorm()
@@ -171,80 +171,80 @@ function Complex(nRe,nIm)
   return self
 end
 
-MetaComplex.__unm = function(Comp)
+metaComplex.__unm = function(Comp)
   T = type(Comp)
-  if(T and T == "table" and getmetatable(Comp) == MetaComplex) then
+  if(T and T == "table" and getmetatable(Comp) == metaComplex) then
     return Complex(-Comp:getReal(),-Comp:getImag())
   end
 end
 
-MetaComplex.__add = function(C1,C2)
+metaComplex.__add = function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Add(C2)
   return O
 end
 
-MetaComplex.__sub = function(C1,C2)
+metaComplex.__sub = function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Sub(C2)
   return O
 end
 
-MetaComplex.__mul = function(C1,C2)
+metaComplex.__mul = function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Mul(C2)
   return O
 end
 
-MetaComplex.__div = function(C1,C2)
+metaComplex.__div = function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Div(C2)
   return O
 end
 
-MetaComplex.__mod =  function(C1,C2)
+metaComplex.__mod =  function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Mod(C2)
   return O
 end
-MetaComplex.__tostring = function(Comp)
+metaComplex.__tostring = function(Comp)
   local R = tostring(Comp:getReal())
   local I = tostring(Comp:getImag())
   if(R and I) then return "{"..R..","..I.."}" end
   return "N/A"
 end
 
-MetaComplex.__concat = function(A,B)
+metaComplex.__concat = function(A,B)
   local Ta, Tb = type(A), type(B)
-  if(Ta == "table" and getmetatable(A) == MetaComplex) then
+  if(Ta == "table" and getmetatable(A) == metaComplex) then
     return "{"..A:getReal()..", "..A:getImag().."}"..tostring(B)
-  elseif(Tb == "table" and getmetatable(B) == MetaComplex) then
+  elseif(Tb == "table" and getmetatable(B) == metaComplex) then
     return tostring(A).."{"..B:getReal()..", "..B:getImag().."}"
   end
   return "N/A"
 end
 
-MetaComplex.__pow =  function(C1,C2)
+metaComplex.__pow =  function(C1,C2)
   local O = Complex()
   O:Set(C1)
   O:Pow(C2)
   return O
 end
 
-MetaComplex.__eq =  function(C1,C2)
+metaComplex.__eq =  function(C1,C2)
   local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
@@ -253,15 +253,15 @@ MetaComplex.__eq =  function(C1,C2)
   return false
 end
 
-MetaComplex.__le =  function(C1,C2)
+metaComplex.__le =  function(C1,C2)
   local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
@@ -270,15 +270,15 @@ MetaComplex.__le =  function(C1,C2)
   return false
 end
 
-MetaComplex.__lt =  function(C1,C2)
+metaComplex.__lt =  function(C1,C2)
   local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == MetaComplex) then
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == MetaComplex) then
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
@@ -294,8 +294,8 @@ local function StrValidateComplex(sStr)
     local CS = string.sub(Str,S,S)
     local CE = string.sub(Str,E,E)
 --    LogMulty("StrValidateComplex C ",CS,CE)
-    local FS = string.find(MetaComplex.__bords[1],CS,1,true)
-    local FE = string.find(MetaComplex.__bords[2],CE,1,true)
+    local FS = string.find(metaComplex.__bords[1],CS,1,true)
+    local FE = string.find(metaComplex.__bords[2],CE,1,true)
     if(not FS and FE) then return LogLine("StrValidateComplex: Unbalanced end <"..CE..">") end
     if(not FE and FS) then return LogLine("StrValidateComplex: Unbalanced beg <"..CS..">") end
 --    LogMulty("StrValidateComplex F ",FS,FE)

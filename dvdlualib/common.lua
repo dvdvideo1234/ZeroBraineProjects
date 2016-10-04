@@ -570,7 +570,7 @@ function StrImplode(tList,sDel)
   local sDel = tostring(sDel or "")
   while(tList and tList[ID]) do
     Str = Str..tList[ID]; ID = ID + 1
-    if(tList[ID]) then Str = Str..sDel end
+    if(tList[ID] and sDel ~= "") then Str = Str..sDel end
   end
   return Str
 end
