@@ -6,9 +6,126 @@ local tostring     = tostring
 local setmetatable = setmetatable
 
 local metaComplex   = {}
-metaComplex.__type  = "complex"
+metaComplex.__type  = "Complex"
 metaComplex.__index = metaComplex
 metaComplex.__bords = {"/|<({[","/|>)}]"}
+
+metaComplex.__tostring = function(Comp)
+  local R = tostring(Comp:getReal())
+  local I = tostring(Comp:getImag())
+  if(R and I) then return "{"..R..","..I.."}" end
+  return "N/A"
+end
+
+metaComplex.__unm = function(Comp)
+  T = type(Comp)
+  if(T and T == "table" and getmetatable(Comp) == metaComplex) then
+    return Complex(-Comp:getReal(),-Comp:getImag())
+  end
+end
+
+metaComplex.__add = function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Add(C2)
+  return O
+end
+
+metaComplex.__sub = function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Sub(C2)
+  return O
+end
+
+metaComplex.__mul = function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Mul(C2)
+  return O
+end
+
+metaComplex.__div = function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Div(C2)
+  return O
+end
+
+metaComplex.__mod =  function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Mod(C2)
+  return O
+end
+
+metaComplex.__concat = function(A,B)
+  local Ta, Tb = type(A), type(B)
+  if(Ta == "table" and getmetatable(A) == metaComplex) then
+    return "{"..A:getReal()..", "..A:getImag().."}"..tostring(B)
+  elseif(Tb == "table" and getmetatable(B) == metaComplex) then
+    return tostring(A).."{"..B:getReal()..", "..B:getImag().."}"
+  end
+  return "N/A"
+end
+
+metaComplex.__pow =  function(C1,C2)
+  local O = Complex()
+  O:Set(C1)
+  O:Pow(C2)
+  return O
+end
+
+metaComplex.__eq =  function(C1,C2)
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+    R1, I1 = C1:getReal(), C1:getImag()
+  else
+    R1, I1 = (tonumber(C1) or 0), 0
+  end
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+    R2, I2 = C2:getReal(), C2:getImag()
+  else
+    R2, I2 = (tonumber(C2) or 0), 0
+  end
+  if(R1 == R2 and I1 == I2) then return true end
+  return false
+end
+
+metaComplex.__le =  function(C1,C2)
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+    R1, I1 = C1:getReal(), C1:getImag()
+  else
+    R1, I1 = (tonumber(C1) or 0), 0
+  end
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+    R2, I2 = C2:getReal(), C2:getImag()
+  else
+    R2, I2 = (tonumber(C2) or 0), 0
+  end
+  if(R1 <= R2 and I1 <= I2) then return true end
+  return false
+end
+
+metaComplex.__lt =  function(C1,C2)
+  local T1, T2 = type(C1), type(C2)
+  local R1, R2, I1, I2 = 0, 0, 0, 0
+  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+    R1, I1 = C1:getReal(), C1:getImag()
+  else
+    R1, I1 = (tonumber(C1) or 0), 0
+  end
+  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+    R2, I2 = C2:getReal(), C2:getImag()
+  else
+    R2, I2 = (tonumber(C2) or 0), 0
+  end
+  if(R1 < R2 and I1 < I2) then return true end
+  return false
+end
 
 function Complex(nRe,nIm)
   self = {}
@@ -169,122 +286,6 @@ function Complex(nRe,nIm)
   end 
 
   return self
-end
-
-metaComplex.__unm = function(Comp)
-  T = type(Comp)
-  if(T and T == "table" and getmetatable(Comp) == metaComplex) then
-    return Complex(-Comp:getReal(),-Comp:getImag())
-  end
-end
-
-metaComplex.__add = function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Add(C2)
-  return O
-end
-
-metaComplex.__sub = function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Sub(C2)
-  return O
-end
-
-metaComplex.__mul = function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Mul(C2)
-  return O
-end
-
-metaComplex.__div = function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Div(C2)
-  return O
-end
-
-metaComplex.__mod =  function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Mod(C2)
-  return O
-end
-metaComplex.__tostring = function(Comp)
-  local R = tostring(Comp:getReal())
-  local I = tostring(Comp:getImag())
-  if(R and I) then return "{"..R..","..I.."}" end
-  return "N/A"
-end
-
-metaComplex.__concat = function(A,B)
-  local Ta, Tb = type(A), type(B)
-  if(Ta == "table" and getmetatable(A) == metaComplex) then
-    return "{"..A:getReal()..", "..A:getImag().."}"..tostring(B)
-  elseif(Tb == "table" and getmetatable(B) == metaComplex) then
-    return tostring(A).."{"..B:getReal()..", "..B:getImag().."}"
-  end
-  return "N/A"
-end
-
-metaComplex.__pow =  function(C1,C2)
-  local O = Complex()
-  O:Set(C1)
-  O:Pow(C2)
-  return O
-end
-
-metaComplex.__eq =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
-  local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
-    R1, I1 = C1:getReal(), C1:getImag()
-  else
-    R1, I1 = (tonumber(C1) or 0), 0
-  end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
-    R2, I2 = C2:getReal(), C2:getImag()
-  else
-    R2, I2 = (tonumber(C2) or 0), 0
-  end
-  if(R1 == R2 and I1 == I2) then return true end
-  return false
-end
-
-metaComplex.__le =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
-  local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
-    R1, I1 = C1:getReal(), C1:getImag()
-  else
-    R1, I1 = (tonumber(C1) or 0), 0
-  end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
-    R2, I2 = C2:getReal(), C2:getImag()
-  else
-    R2, I2 = (tonumber(C2) or 0), 0
-  end
-  if(R1 <= R2 and I1 <= I2) then return true end
-  return false
-end
-
-metaComplex.__lt =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
-  local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
-    R1, I1 = C1:getReal(), C1:getImag()
-  else
-    R1, I1 = (tonumber(C1) or 0), 0
-  end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
-    R2, I2 = C2:getReal(), C2:getImag()
-  else
-    R2, I2 = (tonumber(C2) or 0), 0
-  end
-  if(R1 < R2 and I1 < I2) then return true end
-  return false
 end
 
 local function StrValidateComplex(sStr)
