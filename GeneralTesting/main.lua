@@ -21,11 +21,9 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
+a = function() end
 
-local enLog = true
-
-local function envPrint(...) if(not enLog) then return end; print("asd",...) end
-
+print(5)
 
 
-envPrint(1,2,3)
+

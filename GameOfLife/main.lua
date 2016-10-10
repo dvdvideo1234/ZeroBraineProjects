@@ -34,13 +34,11 @@ function TurtleDraw(F,Arg)
   end
 end
 
-
 function getKeyboardKeyNonBlock()
   local Ch = io.read(1)
              io.write("\n\r")
   return Ch
 end
-
 
 local Arg = {500, 220,0,0}
 
@@ -56,7 +54,7 @@ open("Game Of Life")
 size(Arg[1],Arg[2])
 updt(true)
 zero(0, 0)
-      
+
 ggrle = "24.O11.G22.O.O11.G12.2O6.2O12.2OG11.O3.O4.2O12.2OG2O8.O5.O3.2O14.G2O8.O3.O.2O4.O.O11.G10.O5.O7.O11.G11.O3.O20.G12.2O22.E"
 
 
@@ -72,8 +70,8 @@ F:setShape(GG,1,1)
 
 F:drwLife("turtle",Arg)
 
-LogLine(GG:toStringText("\n",true))
-LogLine(GG:toStringText("\n",false))
+logStatus(nil,GG:toStringText("\n",true))
+logStatus(nil,GG:toStringText("\n",false))
 
 while true do
   Arg[5] = char()

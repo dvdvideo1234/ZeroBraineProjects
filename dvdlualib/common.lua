@@ -7,8 +7,8 @@ local string    = string
 
 io.stdout:setvbuf("no")
 
-function LogLine(anyData)
-  io.write(tostring(anyData).."\n")
+function logStatus(anyData, anyMessage)
+  io.write(tostring(anyMessage).."\n"); return anyData
 end
 
 function LogMulty(...)
@@ -24,7 +24,7 @@ end
 
 function Print(tT,sS)
   if(not tT) then
-    LogLine("Print: {nil, name="..tostring(sS or "\"Data\"").."}")
+    logStatus(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}")
     return
   end
   local S = type(sS)
@@ -33,10 +33,10 @@ function Print(tT,sS)
   if    (S == "string") then S = sS
   elseif(S == "number") then S = tostring(sS)
   else                       S = "Data" end
-  if(T ~= "table") then LogLine("{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT)); return end
+  if(T ~= "table") then logStatus(nil,"{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT)); return end
   T = tT
-  if(next(T) == nil) then LogLine(S.." = {}"); return end
-  LogLine(S)
+  if(next(T) == nil) then logStatus(nil,S.." = {}"); return end
+  logStatus(nil,S)
   for k,v in pairs(T) do
     if(type(k) == "string") then
       Key = S.."[\""..k.."\"]"
@@ -45,9 +45,9 @@ function Print(tT,sS)
     end
     if(type(v) ~= "table") then
       if(type(v) == "string") then
-        LogLine(Key.." = \""..v.."\"")
+        logStatus(nil,Key.." = \""..v.."\"")
       else
-        LogLine(Key.." = "..tostring(v))
+        logStatus(nil,Key.." = "..tostring(v))
       end
     else
       Print(v,Key)
@@ -87,10 +87,10 @@ end
 function RoundValue(nvExact, nFrac)
   local nExact = tonumber(nvExact)
   if(not nExact) then
-    return LogLine("RoundValue: Cannot round NAN {"..type(nvExact).."}<"..tostring(nvExact)..">") end
+    return logStatus(nil,"RoundValue: Cannot round NAN {"..type(nvExact).."}<"..tostring(nvExact)..">") end
   local nFrac = tonumber(nFrac) or 0
   if(nFrac == 0) then
-    return LogLine("RoundValue: Fraction must be <> 0") end
+    return logStatus(nil,"RoundValue: Fraction must be <> 0") end
   local q, f = math.modf(nExact/nFrac)
   return nFrac * (q + (f > 0.5 and 1 or 0))
 end
@@ -112,14 +112,14 @@ function StrTrimSpaces(sStr)
     Che = string.sub(sStr,E,E)
     if(Che ~= " ") then break end
     E = E - 1
-  end 
+  end
   return string.sub(sStr,S,E)
 end
 
 function Delay(Add)
 -- NOTE: SYSTEM-DEPENDENT, adjust as necessary
   if(Add > 0) then
-    local i=os.clock()+Add 
+    local i=os.clock()+Add
     while(os.clock()<i) do end
   end
 end
@@ -144,24 +144,27 @@ function arMalloc1D(sZ)
   return Arr
 end
 
-function SignValAbs(Val)
-  return ( Val / math.abs(Val) )
+function getSignAnd(nVal)
+  return (nVal and ((nVal > 0 and 1) or (nVal < 0 and -1) or 0) or nil)
 end
 
-function SignValNil(na)
-  local a = tonumber(na)
-  if(a) then
-    if(a > 0) then return  1 end
-    if(a < 0) then return -1 end
-    return a
-  end  
-  return nil
+function getSignAbs(nVal)
+  return (nVal and (nVal / math.abs(nVal)) or nil)
+end
+
+function getSignCon(nVal)
+  local v = tonumber(nVal)
+  if(v) then
+    if(v > 0) then return  1 end
+    if(v < 0) then return -1 end
+    return v
+  end; return nil
 end
 
 function GetSEDValues(Val,Min,Max)
   local s = (Val > 0) and Min or Max
   local e = (Val > 0) and Max or Min
-  local d = SignVal(e - s)
+  local d = getSignAnd(e - s)
   return s, e, d
 end
 
@@ -207,7 +210,7 @@ function arRoll2D(Arr,sX,sY,nX,nY)
   if(y ~= 0) then
     local MaxY = (y > 0) and sY or 1
     local MinY = (y > 0) and 1 or sY
-    local siY  = SignVal(y)
+    local siY  = getSignAnd(y)
           y    = y * siY
     local arTmp = {}
     while(y > 0) do
@@ -224,7 +227,7 @@ function arRoll2D(Arr,sX,sY,nX,nY)
   if(x ~= 0) then
     local MaxX = (x > 0) and sX or 1
     local MinX = (x > 0) and 1 or sX
-    local siX  = SignVal(x)
+    local siX  = getSignAnd(x)
           x    = x * siX
     local arTmp = {}
     while(x > 0) do
@@ -389,7 +392,7 @@ function padString(sStr,sPad,ivCnt)
 end
 
 function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
-  
+
   local function Enclose(xyPnt)
     if(xyPnt.x < sW) then return -1 end
     if(xyPnt.x > eW) then return -1 end
@@ -397,7 +400,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
     if(xyPnt.y > eH) then return -1 end
     return 1
   end
-    
+
   local I = 0
   if(not (xyS and xyE)) then return false, I end
   if(not (xyS.x and xyS.y and xyE.x and xyE.y)) then return false, I end
@@ -447,14 +450,14 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       Pos.y = Pos.y + DirY * Sig * Mid
       --[[
         Estimate the distance and break
-        earlier with 0.5 because of the 
-        math.floor call afterwards. 
+        earlier with 0.5 because of the
+        math.floor call afterwards.
       ]]
       Pre = math.abs(
-            math.abs(Pos.x) + 
+            math.abs(Pos.x) +
             math.abs(Pos.y) -
             math.abs(xyE.x) -
-            math.abs(xyE.y))      
+            math.abs(xyE.y))
       if(Pre < 0.5) then break end
       Mid = nK * Mid
       I = I + 1
@@ -489,12 +492,12 @@ end
 
 function testPerformance(stCard,stEstim,sFile)
   if(sFile) then
-    LogLine("Output set to: "..sFile)
+    logStatus(nil,"Output set to: "..sFile)
     io.output(sFile)
   end
   local tstCas = #stCard
   local tstEst = #stEstim
-  LogLine("Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions")
+  logStatus(nil,"Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions")
   local TestID, Cases = 1, {}
   while(stCard[TestID]) do -- All tests
     local tstVal = stCard[TestID]
@@ -503,13 +506,13 @@ function testPerformance(stCard,stEstim,sFile)
     local tstNam = tostring(tstVal[3] or "")
     local fooCnt = tonumber(tstVal[4]) or 0
     local fooCyc = tonumber(tstVal[5]) or 0
-    if(fooCnt < 1) then LogLine("No test-card count  stCard.Cnt for test ID # "..tostring(TestID)); return end
-    if(fooCyc < 1) then LogLine("No test-card cycles stCard.Cyc for test ID # "..tostring(TestID)); return end
-    if(Cases[tstNam]) then LogLine("Test case name <"..tstNam.."> already chosen under ID # "..tostring(Cases[tstNam])); return; end
-    LogLine("Testing case["..tostring(TestID).."]: <"..tostring(tstVal[3])..">")
-    LogLine("   Inp: <"..tostring(tstVal[1])..">")
-    LogLine("   Out: <"..tostring(tstVal[2])..">")
-    LogLine("   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }")
+    if(fooCnt < 1) then logStatus(nil,"No test-card count  stCard.Cnt for test ID # "..tostring(TestID)); return end
+    if(fooCyc < 1) then logStatus(nil,"No test-card cycles stCard.Cyc for test ID # "..tostring(TestID)); return end
+    if(Cases[tstNam]) then logStatus(nil,"Test case name <"..tstNam.."> already chosen under ID # "..tostring(Cases[tstNam])); return; end
+    logStatus(nil,"Testing case["..tostring(TestID).."]: <"..tostring(tstVal[3])..">")
+    logStatus(nil,"   Inp: <"..tostring(tstVal[1])..">")
+    logStatus(nil,"   Out: <"..tostring(tstVal[2])..">")
+    logStatus(nil,"   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }")
     local Itr = 1 -- Current iteration
     for Itr = 1, fooCnt, 1 do -- Repeat each test
       for Est = 1, tstEst  do -- For all functions
@@ -544,12 +547,12 @@ function testPerformance(stCard,stEstim,sFile)
       local Tip =  (Min ~= 0) and (100 * (Tim / Min)) or 0
       local Nam = "Passed ["..Foo.Name.."]: "
       local Dat = string.format("%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d",Pas,Tip,Tim,(fooCnt*fooCyc/Tim),Fal)
-      LogLine(Nam..Dat)  
+      logStatus(nil,Nam..Dat)
     end; Cases[tstNam] = TestID;
-    LogLine("")
+    logStatus(nil,"")
     TestID = TestID + 1
   end
-  LogLine("Test finished all "..tostring(tstCas).." cases successfully")
+  logStatus(nil,"Test finished all "..tostring(tstCas).." cases successfully")
 end
 
 function StrExplode(sStr,sDel)

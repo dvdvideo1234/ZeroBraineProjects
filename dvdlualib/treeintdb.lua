@@ -33,7 +33,7 @@ treeintdb.getIndex = function(base, ind)
   local d, k = base, 1
   while(ind[k]) do
     local b = d[ind[k]] -- Is there such branch
-    if(isBranch(s)) then return LogLine("DB.getIndex("..tostring(ind[k])..")["..tostring(k).."]: Branch invalid") end
+    if(isBranch(s)) then return logStatus(nil,"DB.getIndex("..tostring(ind[k])..")["..tostring(k).."]: Branch invalid") end
     d = b; k = k + 1
   end
   return d

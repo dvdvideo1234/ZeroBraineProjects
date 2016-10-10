@@ -5,7 +5,7 @@ require("ZeroBraineProjects/dvdlualib/complex")
 require("ZeroBraineProjects/dvdlualib/fractal")
 require("ZeroBraineProjects/dvdlualib/colormap")
 
--- z(0) = z,    z(n+1) = z(n)*z(n) + z,    n=0,1,2, ...    (1) 
+-- z(0) = z,    z(n+1) = z(n)*z(n) + z,    n=0,1,2, ...    (1)
 
 io.stdout:setvbuf("no")
 
@@ -50,7 +50,7 @@ setColorMap("wikipedia",
 
 open("Fractal plot 2D")
 size(W,H)
-zero(0, 0) 
+zero(0, 0)
 updt(false) -- disable auto updates
 
 --[[
@@ -80,7 +80,7 @@ local S = makeFractal(W,H,-szRe,szRe,-szIm,szIm,brdcl,brdup)
       S:Register("PALET","hsl", function (Z, C, i, x, y) local it = i / iTer; return getColorHSL(it*360,it,it) end)
       S:Register("PALET","hsv", function (Z, C, i, x, y) local it = i / iTer; return getColorHSV(it*360,1,1) end)
       S:Register("PALET","wikipedia_r"   ,function (Z, C, i, x, y, R) return getColorMap("wikipedia",i * (R[1] and 1+math.floor(math.abs(R[1])) or 1)) end)
-            
+
 
 S:Draw(sfrac,spale,iTer)
 
@@ -89,9 +89,9 @@ while true do
   local rx, ry = clck('rd')
   local key = char()
   if(key or (lx and ly) or (rx and ry)) then
-    LogLine("LFT: {"..tostring(lx)..","..tostring(ly).."}")
-    LogLine("RGH: {"..tostring(rx)..","..tostring(ry).."}")
-    LogLine("KEY: {"..tostring(key).."}")
+    logStatus(nil,"LFT: {"..tostring(lx)..","..tostring(ly).."}")
+    logStatus(nil,"RGH: {"..tostring(rx)..","..tostring(ry).."}")
+    logStatus(nil,"KEY: {"..tostring(key).."}")
     if    (lx and ly) then
       S:SetCenter(lx,ly)
       S:Zoom( nZoom)
@@ -99,7 +99,7 @@ while true do
       S:SetCenter(rx,ry)
       S:Zoom(-nZoom)
     end
-    LogLine(S:GetKey("dirU"))
+    logStatus(nil,S:GetKey("dirU"))
     if    (key == S:GetKey("dirU")) then S:MoveCenter(0,-nStep)
     elseif(key == S:GetKey("dirD")) then S:MoveCenter(0, nStep)
     elseif(key == S:GetKey("dirL")) then S:MoveCenter(-nStep,0)
@@ -107,5 +107,5 @@ while true do
     S:Draw(sfrac,spale,iTer)
   end
   updt()
-  wait(0.2) 
+  wait(0.2)
 end

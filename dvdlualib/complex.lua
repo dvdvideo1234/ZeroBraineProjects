@@ -131,9 +131,9 @@ function Complex(nRe,nIm)
   self = {}
   local Re = tonumber(nRe) or 0
   local Im = tonumber(nIm) or 0
- 
+
   setmetatable(self,metaComplex)
-  
+
   function self:NegRe()     Re = -Re end
   function self:NegIm()     Im = -Im end
   function self:Conj()      Im = -Im end
@@ -152,11 +152,11 @@ function Complex(nRe,nIm)
   function self:getNegRe()  return Complex(-Re, Im) end
   function self:getNegIm()  return Complex( Re,-Im) end
   function self:getConj()   return Complex( Re,-Im) end
-  function self:getNorm2()  return (Re*Re + Im*Im) end  
-  function self:getNorm()   return math.sqrt(Re*Re + Im*Im) end 
-  function self:getAngRad() return math.atan2(Im,Re) end 
-  function self:getAngDeg() return (math.atan2(Im,Re) * 180) / math.pi end 
-  
+  function self:getNorm2()  return (Re*Re + Im*Im) end
+  function self:getNorm()   return math.sqrt(Re*Re + Im*Im) end
+  function self:getAngRad() return math.atan2(Im,Re) end
+  function self:getAngDeg() return (math.atan2(Im,Re) * 180) / math.pi end
+
   function self:Set(R,I)
     local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
@@ -167,7 +167,7 @@ function Complex(nRe,nIm)
       Re, Im = R:getReal(), R:getImag()
     end
   end
-  
+
   function self:Add(R,I)
     local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
@@ -178,7 +178,7 @@ function Complex(nRe,nIm)
       Re, Im = (Re + R:getReal()), (Im + R:getImag())
     end
   end
-  
+
   function self:Sub(R,I)
     local tR, tI = type(R), type(I)
     if( (tR == "number" or tR == "string") and
@@ -189,15 +189,15 @@ function Complex(nRe,nIm)
       Re, Im = (Re - R:getReal()), (Im - R:getImag())
     end
   end
-  
+
   function self:Scale(nNum)
-    local Typ = type(nNum) 
+    local Typ = type(nNum)
     if(Typ == "number" or Typ == "string" ) then
       local M = (tonumber(Num) or 0)
       Re, Im = (Re * M), (Im * M)
     end
   end
-  
+
   function self:Mul(R,I)
     local tR, tI = type(R), type(I)
     local A, C, D = Re, 0, 0
@@ -210,7 +210,7 @@ function Complex(nRe,nIm)
     end
     Re = A*C - Im*D; Im = A*D + Im*C
   end
-  
+
   function self:Div(R,I)
     local tR, tI = type(R), type(I)
     local A, C, D = Re, 0, 0
@@ -224,7 +224,7 @@ function Complex(nRe,nIm)
     Z = (C*C + D*D)
     if(Z ~= 0) then Re = (A *C + Im*D) / Z; Im = (Im*C -  A*D) / Z end
   end
-  
+
   function self:Mod(R,I)
     local tR, tI = type(R), type(I)
     local A, C, D = Re, 0, 0
@@ -241,7 +241,7 @@ function Complex(nRe,nIm)
     self:Set(ref,imf)
     self:Mul(C,D)
   end
-  
+
   function self:Pow(R,I)
     local tR, tI = type(R), type(I)
     local nC, nD = 0, 0
@@ -259,7 +259,7 @@ function Complex(nRe,nIm)
     Re = nR * math.cos(nF)
     Im = nR * math.sin(nF)
   end
-  
+
   function self:getRoots(nNum)
     local T = type(nNum)
     if(T == "number" or T == "string") then
@@ -283,7 +283,7 @@ function Complex(nRe,nIm)
       return nil
     end
     return nil
-  end 
+  end
 
   return self
 end
@@ -297,12 +297,12 @@ local function StrValidateComplex(sStr)
 --    LogMulty("StrValidateComplex C ",CS,CE)
     local FS = string.find(metaComplex.__bords[1],CS,1,true)
     local FE = string.find(metaComplex.__bords[2],CE,1,true)
-    if(not FS and FE) then return LogLine("StrValidateComplex: Unbalanced end <"..CE..">") end
-    if(not FE and FS) then return LogLine("StrValidateComplex: Unbalanced beg <"..CS..">") end
+    if(not FS and FE) then return logStatus(nil,"StrValidateComplex: Unbalanced end <"..CE..">") end
+    if(not FE and FS) then return logStatus(nil,"StrValidateComplex: Unbalanced beg <"..CS..">") end
 --    LogMulty("StrValidateComplex F ",FS,FE)
     if(FS and FE and FS > 0 and FE > 0) then
       if(FS == FE) then S = S + 1; E = E - 1
-      else return LogLine("StrValidateComplex: Unbalanced beg <"..CS..">") end
+      else return logStatus(nil,"StrValidateComplex: Unbalanced beg <"..CS..">") end
     elseif(not (FS and FE)) then break end;
   end; return Str, S, E
 end
@@ -316,11 +316,11 @@ local function Str2Complex(sStr, nS, nE, sDel)
 end
 
 local function StrI2Complex(sStr, nS, nE, nI)
-  if(nI == 0) then return LogLine("StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
+  if(nI == 0) then return logStatus(nil,"StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
   local M = nI - 1 -- There will be no delimiter symbols here
   local C = string.sub(sStr,M,M)
   if(nI == nE) then  -- (-0.7-2.9i) Skip symbols til +/- is reached
-    while(C ~= "+" and C ~= "-") do 
+    while(C ~= "+" and C ~= "-") do
       M = M - 1; C = string.sub(sStr,M,M)
     end; return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(string.sub(sStr,M,nE-1)))
   else -- (-0.7-i2.9)
@@ -353,7 +353,7 @@ local function Tab2Complex(tTab)
     V1 = tonumber(V1) or 0
     return Complex(V1,V2)
   end
-  return LogLine("StrI2Complex: Table format not supported")
+  return logStatus(nil,"StrI2Complex: Table format not supported")
 end
 
 function ToComplex(In,Del)
@@ -363,7 +363,7 @@ function ToComplex(In,Del)
   if(tIn ==    "nil") then return Complex(0,0) end
   if(tIn == "string") then
     local Str, S, E = StrValidateComplex(In)
-    if(not (Str and S and E)) then return LogLine("ToComplex: Failed to vlalidate <"..tostring(In)..">") end
+    if(not (Str and S and E)) then return logStatus(nil,"ToComplex: Failed to vlalidate <"..tostring(In)..">") end
         Str = string.sub (Str, S ,E); E = E-S+1; S = 1
     local I = string.find(Str,'i',S)
           I = string.find(Str,'I',S) or I
@@ -372,5 +372,5 @@ function ToComplex(In,Del)
     if(I and (I > 0)) then return StrI2Complex(Str, S, E, I)
     else return Str2Complex(Str, S, E, Del) end
   end
-  return LogLine("ToComplex: Type <"..Tin.."> not supported")
+  return logStatus(nil,"ToComplex: Type <"..Tin.."> not supported")
 end
