@@ -11,7 +11,7 @@ function logStatus(anyData, anyMessage)
   io.write(tostring(anyMessage).."\n"); return anyData
 end
 
-function LogMulty(...)
+function logMulty(...)
   local line = "{"
   local args, i = {...}, 1
   while(args[i]) do

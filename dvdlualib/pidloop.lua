@@ -3,6 +3,7 @@ local tonumber     = tonumber
 local tostring     = tostring
 local setmetatable = setmetatable
 local getSign      = getSignAnd
+local math         = math
 --[[
  * newControl: Class manages the maglev state processing
  * arPar > Parameter array {Kp, Ti, Td, satD, satU}
@@ -30,7 +31,7 @@ function newControl(nTo, sName)
   function self:getGains() return mkP, mkI, mkD end
   function self:setEnIntegral(bEn) meInt = tobool(bEn); return self end
   function self:getEnIntegral() return meInt end
-  function self:getError() return mErrN, mErrO end
+  function self:getError() return mErrO, mErrN end
   function self:getControl(bNeg) return (bNeg and (-mvCon) or (mvCon)) end
   function self:getUser() return mUser end
   function self:getType() return mType end
@@ -46,21 +47,19 @@ function newControl(nTo, sName)
     return self
   end
 
-  function self:Process(vRef,vOut)
-    mErrO, mErrN = mErrN, (vRef - vOut) -- Refresh error state
-    errS  = getSign(mErrN)
-    -- P-Term
-    local errP = mErrN; if((mkP > 0) and (errP ~= 0)) then
-      mvP = mkP * errS * math.abs(errP^mpP) end
-    -- I-Term
-    local errI = (mErrN + mErrO); if(meInt and (mkI > 0) and (errI ~= 0)) then
-      mvI = mvI + mkI * errS * math.abs(errI^mpI) end
-    -- D-Term
-    local errD = (mErrN - mErrO); if((mkD > 0) and (errD ~= 0)) then
-      mvD = mkD * errS * math.abs(errD^mpD) end
+  function self:Process(vRef,vOut,bQP,bQI)
+    mErrO = mErrN
+    mErrN = (bNeg and (vOut-vRef) or (vRef-vOut)) -- Refresh error state
+    errS  = (mErrN and ((mErrN > 0 and 1) or (mErrN < 0 and -1) or 0) or 0)
+    if(mkP > 0) then -- P-Term
+      mvP = mkP * errS * math.abs(mErrN^mpP) end
+    if((mkI > 0) and (mErrN ~= 0) and meInt) then -- I-Term
+      mvI = mvI + mkI * errS * math.abs((mErrN + mErrO)^mpI) end
+    if((mkD > 0) and (mErrN ~= mErrO)) then -- D-Term
+      mvD = mkD * errS * math.abs((mErrN - mErrO)^mpD) end
     -- Control and saturation
     mvCon = mvP + mvI + mvD
-    if(mSatU and mSatU) then
+    if(mSatD and mSatU) then
       if    (mvCon < mSatD) then mvCon, meInt = mSatD, false
       elseif(mvCon > mSatU) then mvCon, meInt = mSatU, false
       else meInt = true end
@@ -98,6 +97,7 @@ function newControl(nTo, sName)
     logStatus(nil, "["..sType..metaControl.__type.."]["..tostring(self).."] with properties:")
     logStatus(nil, "  Name : "..mName.." ["..tostring(mTo).."]s")
     logStatus(nil, "  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}")
+    logStatus(nil, "  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}")
     if(mUser and type(mUser) == "table") then
       logStatus(nil, "  Param: {"..tostring(mUser[1])..", "..tostring(mUser[2])..", "
         ..tostring(mUser[3])..", "..tostring(mUser[4])..", "..tostring(mUser[5]).."}")
