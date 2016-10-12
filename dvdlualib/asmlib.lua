@@ -837,7 +837,8 @@ function InitAssembly(sName)
   SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
   SetOpVar("TABLE_FREQUENT_MODELS",{})
   SetOpVar("TABLE_BORDERS",{})
-  SetOpVar("TABLE_LOCALIFY",{})
+  SetOpVar("LOCALIFY_TABLE",{})
+  SetOpVar("LOCALIFY_AUTO","en")
   SetOpVar("MISS_NOID","N")    -- No ID selected
   SetOpVar("MISS_NOAV","N/A")  -- Not Available
   SetOpVar("MISS_NOMD","X")    -- No model
@@ -2425,18 +2426,17 @@ function SetLocalify(sCode, sPhrase, sDetail)
     return StatusLog(nil,"SetLocalify: Language code <"..tostring(sCode).."> invalid") end
   if(not IsString(sPhrase)) then
     return StatusLog(nil,"SetLocalify: Phrase words <"..tostring(sPhrase).."> invalid") end
-  local Localify = GetOpVar("TABLE_LOCALIFY")
-  if(not IsExistent(Localify[sCode])) then Localify[sCode] = {}; end
-  Localify[sCode][sPhrase] = sDetail
+  local tPool = GetOpVar("LOCALIFY_TABLE")
+  if(not IsExistent(tPool[sCode])) then tPool[sCode] = {}; end
+  tPool[sCode][sPhrase] = tostring(sDetail)
 end
 
 function InitLocalify(sCode) -- https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-  if(not IsString(sCode)) then -- https://en.wikipedia.org/wiki/ISO_639-2
-    return StatusLog(nil,"InitLocalify: Laguage code <"..tostring(sCode).."> invalid") end
-  local Localify = GetOpVar("TABLE_LOCALIFY")
-  if(not IsExistent(Localify[sCode])) then
-    return StatusLog(nil,"GetLocalify: Language not found for <"..sCode..">") end
-  for phrase, detail in pairs(Localify[sCode]) do
-    print(phrase, detail)
-  end
+  local tPool = GetOpVar("LOCALIFY_TABLE")
+  local sCode = tostring(sCode or "") -- English is used when missing
+        sCode = tPool[sCode] and sCode or GetOpVar("LOCALIFY_AUTO")
+  if(not IsExistent(tPool[sCode])) then
+    return StatusLog(nil,"InitLocalify: Code <"..sCode.."> invalid") end
+  LogInstance("InitLocalify: Code <"..sCode.."> selected")
+  for phrase, detail in pairs(tPool[sCode]) do print(phrase, detail) end
 end
