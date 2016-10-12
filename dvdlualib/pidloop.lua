@@ -47,16 +47,16 @@ function newControl(nTo, sName)
     return self
   end
 
-  function self:Process(vRef,vOut,bQP,bQI)
+  function self:Process(vRef,vOut,bNeg)
     mErrO = mErrN
     mErrN = (bNeg and (vOut-vRef) or (vRef-vOut)) -- Refresh error state
-    errS  = (mErrN and ((mErrN > 0 and 1) or (mErrN < 0 and -1) or 0) or 0)
+    errS  = getSignAnd(mErrN)
     if(mkP > 0) then -- P-Term
-      mvP = mkP * errS * math.abs(mErrN^mpP) end
+      mvP = mkP * errS * math.abs(mErrN)^mpP end
     if((mkI > 0) and (mErrN ~= 0) and meInt) then -- I-Term
-      mvI = mvI + mkI * errS * math.abs((mErrN + mErrO)^mpI) end
+      mvI = mvI + mkI * errS * math.abs(mErrN + mErrO)^mpI end
     if((mkD > 0) and (mErrN ~= mErrO)) then -- D-Term
-      mvD = mkD * errS * math.abs((mErrN - mErrO)^mpD) end
+      mvD = mkD * errS * math.abs(mErrN - mErrO)^mpD end
     -- Control and saturation
     mvCon = mvP + mvI + mvD
     if(mSatD and mSatU) then

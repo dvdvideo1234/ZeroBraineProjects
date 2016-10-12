@@ -1,24 +1,6 @@
 require("turtle")
 require("ZeroBraineProjects/dvdlualib/complex")
 require("ZeroBraineProjects/dvdlualib/common")
-local Log = function(anyStuff)
-  io.write(tostring(anyStuff).."\n")
-end
-
-function LogXY(i,a,b)
-  Log(tostring(i).."{"..tostring(a)..","..tostring(b).."}")
-end
-
-function plot(xyP,cl)
-  pncl(cl)
-  rect(xyP.x-2,xyP.y-2,5,5)
-end
-
-function xyText(xyP)
-  return "{"..tostring(xyP.x)..","..tostring(xyP.y).."}"
-end
-
-io.stdout:setvbuf("no")
 
 open("Borderline Test")
 
@@ -89,7 +71,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       end
       Pos.x = Pos.x + DirX * Sig * Mid
       Pos.y = Pos.y + DirY * Sig * Mid
-      plot(Pos,colr(255,0,0))
+      xyPlot(Pos,colr(255,0,0))
       Delay(nDelay)
       --[[
         Estimate the distance and break
@@ -119,7 +101,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       V.x = V.x + D.x
       V.y = V.y + D.y
       Sig = Enclose(V)
-      plot(V,colr(255,0,0))
+      xyPlot(V,colr(255,0,0))
       Delay(nDelay)
       I = I + 1
     end
@@ -138,14 +120,14 @@ local iE = {x = bE.x, y = 50}
 
 local S = {x = 200, y = 180}
 local s,i = adaptLine(S,iE,500,0.2,"ITR",0.01)
-Log("Iterat status: "..tostring(s))
+logStatus(nil,"Iterat status: "..tostring(s))
 text("Iter: "..i.." "..xyText(S).." >  "..xyText(iE).." ("..tostring(s)..")",0,sW,sH-21)
-plot(iE,colr(0,255,0))
+xyPlot(iE,colr(0,255,0))
 
 local S = {x = 200, y = 220}
 local s,i = adaptLine(S,bE,500,0.5,"BIN",1)
-Log("Binary status: "..tostring(s))
+logStatus(nil,"Binary status: "..tostring(s))
 text("Iter: "..i.." "..xyText(S).." >  "..xyText(bE).." ("..tostring(s)..")",0,sW,eH+2)
-plot(bE,colr(0,255,0))
+xyPlot(bE,colr(0,255,0))
 
 

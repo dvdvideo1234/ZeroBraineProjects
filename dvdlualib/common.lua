@@ -11,6 +11,18 @@ function logStatus(anyData, anyMessage)
   io.write(tostring(anyMessage).."\n"); return anyData
 end
 
+function xyText(xyP)
+  return "{"..tostring(xyP.x)..","..tostring(xyP.y).."}"
+end
+
+function xyLog(xyP,anyMsg)
+  logStatus(nil,tostring(anyMsg)..xyText(xyP))
+end
+
+function xyPlot(xyP,cl)
+  pncl(cl); rect(xyP.x-2,xyP.y-4,5,5)
+end
+
 function logMulty(...)
   local line = "{"
   local args, i = {...}, 1
