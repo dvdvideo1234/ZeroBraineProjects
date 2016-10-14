@@ -246,10 +246,7 @@ function StatusPrint(anyStatus,sError)
 end
 
 function StatusLog(anyStatus,sError)
-  local inf = debugGetinfo(2) or {}
-  local src = ""
-
-  print("LOG "..src.." >> "..tostring(GetOpVar("MODE_DATABASE")).." # "..tostring(sError))
+  print("LOG ["..tostring(GetOpVar("MODE_DATABASE")).."] >> "..tostring(sError))
   return anyStatus
 end
 

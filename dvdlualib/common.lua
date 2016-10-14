@@ -7,6 +7,14 @@ local string    = string
 
 io.stdout:setvbuf("no")
 
+function waitSeconds(Add)
+-- NOTE: SYSTEM-DEPENDENT, adjust as necessary
+  if(Add > 0) then
+    local i=os.clock() + Add
+    while(os.clock() < i) do end
+  end
+end
+
 function logStatus(anyData, anyMessage)
   io.write(tostring(anyMessage).."\n"); return anyData
 end
@@ -20,7 +28,9 @@ function xyLog(xyP,anyMsg)
 end
 
 function xyPlot(xyP,cl)
-  pncl(cl); rect(xyP.x-2,xyP.y-4,5,5)
+  local x = xyP.x or xyP[1] or nil
+  local y = xyP.y or xyP[2] or nil
+  pncl(cl); rect(x-2,y-2,5,5)
 end
 
 function logMulty(...)
@@ -28,13 +38,13 @@ function logMulty(...)
   local args, i = {...}, 1
   while(args[i]) do
     line = line..tostring(args[i])
-    if(args[i+1]) then line = line.."_" end
+    if(args[i+1]) then line = line..", " end
     i = i + 1
   end
   io.write(line.."}\n")
 end
 
-function Print(tT,sS)
+function logTable(tT,sS)
   if(not tT) then
     logStatus(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}")
     return
@@ -62,12 +72,14 @@ function Print(tT,sS)
         logStatus(nil,Key.." = "..tostring(v))
       end
     else
-      Print(v,Key)
+      logTable(v,Key)
     end
   end
 end
 
-function BorderValue(nVal,nMin,nMax)
+--------------- VALUES ---------------
+
+function borderValue(nVal,nMin,nMax)
   if(type(nVal) ~= "number") then return nil end
   local Min = nMin or 0
   local Max = nMax or 0
@@ -76,7 +88,7 @@ function BorderValue(nVal,nMin,nMax)
   return nMax
 end
 
-function RollValue(nVal,nMin,nMax)
+function rollValue(nVal,nMin,nMax)
   if(type(nVal) ~= "number") then return nil end
   local Min = nMin or 0
   local Max = nMax or 0
@@ -87,7 +99,7 @@ function RollValue(nVal,nMin,nMax)
   return nMax
 end
 
-function ClampValue(nVal,nMin,nMax)
+function clampValue(nVal,nMin,nMax)
   if(type(nVal) ~= "number") then return nil end
   local Min = nMin or 0
   local Max = nMax or 0
@@ -96,7 +108,7 @@ function ClampValue(nVal,nMin,nMax)
   return nVal
 end
 
-function RoundValue(nvExact, nFrac)
+function roundValue(nvExact, nFrac)
   local nExact = tonumber(nvExact)
   if(not nExact) then
     return logStatus(nil,"RoundValue: Cannot round NAN {"..type(nvExact).."}<"..tostring(nvExact)..">") end
@@ -105,55 +117,6 @@ function RoundValue(nvExact, nFrac)
     return logStatus(nil,"RoundValue: Fraction must be <> 0") end
   local q, f = math.modf(nExact/nFrac)
   return nFrac * (q + (f > 0.5 and 1 or 0))
-end
-
-function StrTrimSpaces(sStr)
-  if(not sStr)   then return nil end
-  if(sStr == "") then return ""  end
-  local S = 1
-  local E = 1
-  local Len = string.len(sStr)
-  local Che
-  while(S <= Len) do
-    Che = string.sub(sStr,S,S)
-    if(Che ~= " ") then break end
-    S = S + 1
-  end
-  E = Len
-  while(E >= 1) do
-    Che = string.sub(sStr,E,E)
-    if(Che ~= " ") then break end
-    E = E - 1
-  end
-  return string.sub(sStr,S,E)
-end
-
-function Delay(Add)
--- NOTE: SYSTEM-DEPENDENT, adjust as necessary
-  if(Add > 0) then
-    local i=os.clock()+Add
-    while(os.clock()<i) do end
-  end
-end
-
-function arMalloc2D(w,h)
-  local Arr = {}
-  for y=1,h do
-    Arr[y] = {}
-    for x=1,w do
-      Arr[y][x]=0
-    end
-  end
-  return Arr
-end
-
-function arMalloc1D(sZ)
-  local s = sZ or 0
-  local Arr = {}
-  for x=1,s do
-    Arr[x]=0
-  end
-  return Arr
 end
 
 function getSignAnd(nVal)
@@ -178,6 +141,28 @@ function GetSEDValues(Val,Min,Max)
   local e = (Val > 0) and Max or Min
   local d = getSignAnd(e - s)
   return s, e, d
+end
+
+--------------- ARRAY MANIPULATION ---------------
+
+function arMalloc2D(w,h)
+  local Arr = {}
+  for y=1,h do
+    Arr[y] = {}
+    for x=1,w do
+      Arr[y][x]=0
+    end
+  end
+  return Arr
+end
+
+function arMalloc1D(sZ)
+  local s = sZ or 0
+  local Arr = {}
+  for x=1,s do
+    Arr[x]=0
+  end
+  return Arr
 end
 
 function arShift2D(Arr,sX,sY,nX,nY)
@@ -332,6 +317,8 @@ function arRotateL(Arr,sX,sY)
     end
   end
 end
+
+--------------- SORTING ---------------
 
 local function sortQuick(Data,Lo,Hi)
   if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
@@ -567,7 +554,9 @@ function testPerformance(stCard,stEstim,sFile)
   logStatus(nil,"Test finished all "..tostring(tstCas).." cases successfully")
 end
 
-function StrExplode(sStr,sDel)
+------------------- STRINGS --------------------------
+
+function strExplode(sStr,sDel)
   local sStr = string.gsub(sStr,sDel,"#")
   local List, Char, Idx, ID = {""}, "", 1, 1
   while(Char) do
@@ -580,7 +569,7 @@ function StrExplode(sStr,sDel)
   return List
 end
 
-function StrImplode(tList,sDel)
+function strImplode(tList,sDel)
   local ID, Str = 1, ""
   local sDel = tostring(sDel or "")
   while(tList and tList[ID]) do
@@ -588,4 +577,25 @@ function StrImplode(tList,sDel)
     if(tList[ID] and sDel ~= "") then Str = Str..sDel end
   end
   return Str
+end
+
+function strTrimSpaces(sStr)
+  if(not sStr)   then return nil end
+  if(sStr == "") then return ""  end
+  local S = 1
+  local E = 1
+  local Len = string.len(sStr)
+  local Che
+  while(S <= Len) do
+    Che = string.sub(sStr,S,S)
+    if(Che ~= " ") then break end
+    S = S + 1
+  end
+  E = Len
+  while(E >= 1) do
+    Che = string.sub(sStr,E,E)
+    if(Che ~= " ") then break end
+    E = E - 1
+  end
+  return string.sub(sStr,S,E)
 end

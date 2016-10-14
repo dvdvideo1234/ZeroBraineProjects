@@ -105,3 +105,107 @@ function newControl(nTo, sName)
   end
   return self
 end
+
+local metaUnit = {}
+      metaUnit.__index    = metaUnit
+      metaUnit.__type     = "Unit"
+      metaUnit.__tostring = function(oUnit) return "["..metaUnit.__type.."]" end
+function newUnit(tNum, tDen)
+  local mND  = #tDen
+  local mNN  = #tNum
+  if(mND <= mNN) then
+    return logStatus(nil,"Unit physically impossible") end
+  if(tDen[1] == 0) then
+    return logStatus(nil,"Unit denominator invalid") end
+       
+  local self = {}
+  local mSta, mDen, mNum = {}, {}, {}
+  for iK = 1, mNN, 1 do mNum[iK] =    tNum[iK]            / tDen[1] end
+  for iK = 1, mND, 1 do mSta[iK] = 0; mDen[iK] = tDen[iK] / tDen[1] end
+    
+  function getValue(bNeg)
+    local tSrc = bNeg and mDen or mNum
+    local nSgn = bNeg and -1   or 1
+    local vOut = 0
+    local iK   = (mND-1)
+    while(iK > 0) do
+      vOut = vOut + nSgn * mSta[iK] * (tSrc[iK] or 0)
+      iK = iK - 1 -- Get next state
+    end; return vOut
+  end
+    
+  function putState(vX)
+    local iK = mND
+    while(iK > 0) do
+      mSta[iK] = mSta[iK-1]
+      iK = iK - 1 -- Get next state
+    end; mSta[1] = vX
+  end
+    
+  function self:getProcess(vU)
+    local vU = (tonumber(vU) or 0)
+    putState(vU - getValue(true)); return getValue(false)
+  end
+  return self
+end
+
+function newInterval(sName, nBL1, nBH1, nBL2, nBH2)
+  local self = {}
+  local mNam = tostring(sName or "")
+  local mVal = (tonumber(nVal) or 0)
+  local mBL1 = (tonumber(nBL1) or 0)
+  local mBH1 = (tonumber(nBH1) or 0)
+  local mBL2 = (tonumber(nBL2) or 0)
+  local mBH2 = (tonumber(nBH2) or 0)
+  
+  function self:getName() return mNam end
+  
+  function self:getConv(nVal)
+    if(nVal < mBL1 or mVal > mBH1) then
+      return logStatus(nVal, "convInterval.valConv: Source value out of border") end
+    local kf = ((nVal - mBL1) / (mBH1 - mBL1)); return (kf * (mBH2 - mBL2) + mBL2)
+  end
+  
+  return self
+end
+
+function newTracer(sName)
+  local self = {}
+  local mName = tostring(sName or "")
+  local mValO, mValN = 0, 0
+  local mTimO, mTimN = 0, 0
+  local mPntN = {x=0,y=0}
+  local mPntO = {x=0,y=0}
+  local mMatX, mMatY
+  local enDraw = false
+  
+  function self:setInterval(oIntX, oIntY)
+    mMatX, mMatY = oIntX, oIntY; return self end
+  
+  function self:getValue() return mTimN, mValN end
+  function self:putValue(nTime, nVal)
+    mValO, nValN = nValN, nVal
+    mTimO, mTimN = mTimN, nTime
+    mPntO.x, mPntO.y = mPntN.x, mPntN.y
+    if(mMatX) then
+      mPntN.x = mMatX:getConv(nTime)
+    else
+      mPntN.x = nTime
+    end;
+    if(mMatY) then
+      mPntN.y = mMatY:getConv(nValN)
+    else
+      mPntN.y = nValN
+    end; return self
+  end
+    
+  function self:Draw(cCol)
+    if(enDraw) then
+      pncl(cCol);
+      line(mPntO.x,mPntO.y,mPntN.x,mPntN.y)
+      xyPlot(mPntN,cCol); updt()
+    else enDraw = true end
+  end
+
+  return self
+end

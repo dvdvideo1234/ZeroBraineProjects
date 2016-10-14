@@ -2,45 +2,44 @@ require("turtle")
 require("ZeroBraineProjects/dvdlualib/common")
 require("ZeroBraineProjects/dvdlualib/pidloop")
 
-local W, H = 500, 250
-local To   = 0.04
-local Intv = 50
+local minC, maxC = -200, 200
+local W, H  = 500, 250
+local To    = 0.015
+local endTm = 2
+local intX  = newInterval("WinX",  0,endTm, 0, W)
+local intY  = newInterval("WinY",minC,maxC , H, 0)
+local APR   = newUnit({1},{2, 1})
+local PID   = newControl(To, "Test"):Setup({0.240, 0.143, 55.6, minC, maxC}, true):setPower(1.275,0.69,0.95):Dump()
+
+local trRec = newTracer("Ref"):setInterval(intX, intY)
+local trCon = newTracer("Con"):setInterval(intX, intY)
+local trPV  = newTracer("PV" ):setInterval(intX, intY)
+
 open("PID trasition process")
 size(W,H)
 zero(0, 0)
 updt(false) -- disable auto updates
 
-local PID = newControl(To, "Test"):Setup({0.15, 0.2, 0.6, -1000, 1000}, true):setPower(1.3,0.95,0.98):Dump()
+local clRed = colr(255,0,0)
+local clGrn = colr(0,255,0)
+local clBlu = colr(0,0,255)
 
-logStatus(nil,"PID:"..tostring(getmetatable(PID)))
+local pvv, con, ref = 0, 0, 100
 
-local Smp, Ctr, Err = {0, 0}, {0, 0}, {0, 0}
-local PVStep = -2 -- PID must workout this value ( positive )
-local Ref, PV = 50, {0, H}
-
-pncl(colr(0, 0, 255)); line(0,Ref,W,Ref); updt()
-
-local xyCon, xyPV = {x=0,y=0}, {x=0,y=0}
-
-while(Smp[2] <= W) do
-  Delay(0.03)
-  Ctr[1] = Ctr[2]
-  Smp[1]   = Smp[2]
-  PV[1]  = PV[2]
-  PV[2] = PV[2] + PVStep
-  if(PV[2] < 0) then PV[2] = 0 end
-  if(PV[2] > H) then PV[2] = H end
-  Ctr[2] = PID:Process(Ref, PV[2]):getControl()
-  Err.x, Err.y = PID:getError()
-  PV[2] = PV[2] + Ctr[2]
-  Smp[2] = Smp[1] + (W/Intv);
-  xyCon.x = Smp[2]; xyPV.x = Smp[2]
-  xyCon.y = Ctr[2]+Ref; xyPV.y =  PV[2]
-  pncl(colr(255, 0, 255)); line(Smp[1],PV[1]+PVStep,Smp[2],PV[2]+PVStep); xyPlot(xyPV); updt()
-  pncl(colr(0, 255, 0)); line(Smp[1],Ctr[1]+Ref+PVStep,Smp[2],Ctr[2]+Ref+PVStep); xyPlot(xyCon); updt()
-  logStatus(nil, "Con: "..Ctr[1])
+local curTm = 0
+while(curTm <= endTm) do
+  waitSeconds(To)
+  ----------------------
+  if(curTm > 0.3*endTm and curTm <= 0.6*endTm) then
+    ref = -100
+  elseif(curTm > 0.6*endTm) then
+    ref = 100
+  end
+  trRec:putValue(curTm, ref):Draw(clBlu)
+  con = PID:Process(ref,pvv):getControl()
+  trCon:putValue(curTm,con):Draw(clGrn)
+       pvv = pvv + con
+  trPV:putValue(curTm, pvv):Draw(clRed)
+  curTm = curTm + To
 end
-
-
-
 
