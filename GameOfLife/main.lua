@@ -76,7 +76,7 @@ logStatus(nil,GG:toStringText("\n",false))
 while true do
   Arg[5] = char()
   F:drwLife("turtle",Arg)
-  Delay(0)
+  waitSeconds(0)
   F:evoNext()
 end
 

@@ -17,9 +17,9 @@ local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 30
-local iTer  = 500
+local iTer  = 60
 local sfrac = "mandelbrot"
-local spale = "hsv"
+local spale = "wikipedia"
 local brdcl = colr(0, 250, 100)
 local brdup = true
 

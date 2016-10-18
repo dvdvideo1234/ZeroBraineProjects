@@ -21,9 +21,10 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
-a = function() end
+local a = {7}
 
-print(5)
+arExtend(a,-3)
 
+logTable(a,"RESULT")
 
 

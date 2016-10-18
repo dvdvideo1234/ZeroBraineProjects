@@ -27,10 +27,11 @@ function xyLog(xyP,anyMsg)
   logStatus(nil,tostring(anyMsg)..xyText(xyP))
 end
 
-function xyPlot(xyP,cl)
+function xyPlot(xyP,clDrw)
   local x = xyP.x or xyP[1] or nil
   local y = xyP.y or xyP[2] or nil
-  pncl(cl); rect(x-2,y-2,5,5)
+  if(clDrw) then pncl(cl); end
+  rect(x-2,y-2,5,5)
 end
 
 function logMulty(...)
@@ -40,15 +41,12 @@ function logMulty(...)
     line = line..tostring(args[i])
     if(args[i+1]) then line = line..", " end
     i = i + 1
-  end
-  io.write(line.."}\n")
+  end; io.write(line.."}\n")
 end
 
 function logTable(tT,sS)
   if(not tT) then
-    logStatus(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}")
-    return
-  end
+    return logStatus(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}") end
   local S = type(sS)
   local T = type(tT)
   local Key = ""
@@ -71,9 +69,7 @@ function logTable(tT,sS)
       else
         logStatus(nil,Key.." = "..tostring(v))
       end
-    else
-      logTable(v,Key)
-    end
+    else logTable(v,Key) end
   end
 end
 
@@ -144,6 +140,38 @@ function GetSEDValues(Val,Min,Max)
 end
 
 --------------- ARRAY MANIPULATION ---------------
+
+--[[
+  * Extends an array to a given length
+  * tArr > The array
+  * nCnt > The new length. Positive to the right, negative to the left
+]]--
+function arExtend(tArr, nCnt)
+  if(not tArr) then return logStatus(tArr, "arZerofilLeft: Array missing") end
+  local nCnt = tonumber(nCnt) or 0
+  if(nCnt == 0) then return logStatus(tArr, "arZerofilLeft: Array dimension skipped") end
+  local nArl = #tArr
+  if(nCnt == nArl) then return logStatus(tArr, "arZerofilLeft: Array size unchanged") end
+  local vEmp = (type(tArr[1]) == "string") and "" or 0
+  if(nCnt > 0) then
+    local nEnd = (nArl > nCnt) and nArl or nCnt      
+    for iK = 1, nEnd, 1 do
+      tArr[iK] = (iK <= nCnt) and (tArr[iK] or vEmp) or nil
+    end
+  else
+    local nDif = nArl + nCnt
+    if(nDif > 0) then -- Cut in the front
+      for iK = 1, nArl, 1 do
+        tArr[iK] = ((iK+nDif) <= nArl) and tArr[iK+nDif] or nil
+      end 
+    else -- Extended in the front
+      local aCnt = math.abs(nCnt)
+      for iK = aCnt, 1, -1 do
+        tArr[iK] = ((iK+nDif) >= 1) and tArr[iK+nDif] or vEmp
+      end
+    end
+  end
+end
 
 function arMalloc2D(w,h)
   local Arr = {}

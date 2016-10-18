@@ -32,9 +32,9 @@ function getColorHSV(h,s,v)
   local c = v * s
   local m = v - c
   local r, g, b = projectColorHC(h,c)
-  return RoundValue(clClamp[2] * (r + m),1),
-         RoundValue(clClamp[2] * (g + m),1),
-         RoundValue(clClamp[2] * (b + m),1)
+  return roundValue(clClamp[2] * (r + m),1),
+         roundValue(clClamp[2] * (g + m),1),
+         roundValue(clClamp[2] * (b + m),1)
 end
 
 -- H [0,360], S [0,1], L [0,1]
@@ -42,9 +42,9 @@ function getColorHSL(h,s,l)
   local c = (1 - math.abs(2*l - 1)) * s
   local m = l - 0.5*c
   local r, g, b = projectColorHC(h,c)
-  return RoundValue(clClamp[2] * (r + m),1),
-         RoundValue(clClamp[2] * (g + m),1),
-         RoundValue(clClamp[2] * (b + m),1)
+  return roundValue(clClamp[2] * (r + m),1),
+         roundValue(clClamp[2] * (g + m),1),
+         roundValue(clClamp[2] * (b + m),1)
 end
 
 -- H [0,360], C [0,1], L [0,1]

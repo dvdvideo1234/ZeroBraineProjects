@@ -123,7 +123,7 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
           if(not frcPalet[sPalet]) then
             logStatus(nil,"Fractal.Draw: Invalid palet <"..sPalet.."> given"); return end
           r, g, b = frcPalet[sPalet](Z, C, iDepth, x, y, R) -- Call the fractal coloring
-          r, g, b = ClampValue(r,0,255), ClampValue(g,0,255), ClampValue(b,0,255)
+          r, g, b = clampValue(r,0,255), clampValue(g,0,255), clampValue(b,0,255)
         end
         pncl(colr(r, g, b))
         pixl(x,y)

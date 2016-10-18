@@ -4,14 +4,91 @@ local tostring     = tostring
 local setmetatable = setmetatable
 local getSign      = getSignAnd
 local math         = math
+
 --[[
- * newControl: Class manages the maglev state processing
- * arPar > Parameter array {Kp, Ti, Td, satD, satU}
+ * newInterval: Class that maps one interval onto another
+ * sName > A porper name to be identified as
+ * nL1   > Lower  value first border
+ * nH1   > Higher value first border
+ * nL2   > Lower  value second border
+ * nH2   > Higher value second border
+]]--
+function newInterval(sName, nL1, nH1, nL2, nH2)
+  local self = {}
+  local mNam = tostring(sName or "")
+  local mVal = (tonumber(nVal) or 0)
+  local mL1  = (tonumber(nL1) or 0)
+  local mH1  = (tonumber(nH1) or 0)
+  local mL2  = (tonumber(nL2) or 0)
+  local mH2  = (tonumber(nH2) or 0)
+  
+  function self:getName() return mNam end
+  
+  function self:getConv(nVal)
+    if(nVal < mL1 or mVal > mH1) then
+      return logStatus(nVal, "convInterval.valConv: Source value <"..tostring(nVal).."> out of border") end
+    local kf = ((nVal - mL1) / (mH1 - mL1)); return (kf * (mH2 - mL2) + mL2)
+  end
+  
+  return self
+end
+
+--[[
+ * newTracer: Class that plots a process variable
+ * sName > A porper name to be identified as
+]]--
+function newTracer(sName)
+  local self = {}
+  local mName = tostring(sName or "")
+  local mValO, mValN = 0, 0
+  local mTimO, mTimN = 0, 0
+  local mPntN = {x=0,y=0}
+  local mPntO = {x=0,y=0}
+  local mMatX, mMatY
+  local enDraw = false
+  
+  function self:setInterval(oIntX, oIntY)
+    mMatX, mMatY = oIntX, oIntY; return self end
+  
+  function self:getValue() return mTimN, mValN end
+  function self:putValue(nTime, nVal)
+    mValO, nValN = nValN, nVal
+    mTimO, mTimN = mTimN, nTime
+    mPntO.x, mPntO.y = mPntN.x, mPntN.y
+    if(mMatX) then
+      mPntN.x = mMatX:getConv(nTime)
+    else
+      mPntN.x = nTime
+    end;
+    if(mMatY) then
+      mPntN.y = mMatY:getConv(nValN)
+    else
+      mPntN.y = nValN
+    end; return self
+  end
+    
+  function self:Draw(cCol)
+    if(enDraw) then
+      pncl(cCol);
+      line(mPntO.x,mPntO.y,mPntN.x,mPntN.y)
+      xyPlot(mPntN,cCol); updt()
+    else enDraw = true end
+  end
+
+  return self
+end
+
+--[[
+ * newControl: Class manageof the controller loop
  * nTo   > Controller sampling time in seconds
+ * arPar > Parameter array {Kp, Ti, Td, satD, satU}
 ]]
 local metaControl = {}
       metaControl.__index = metaControl
       metaControl.__type  = "Control"
+      metaControl.__tostring = function(oControl)
+        return "["..((oControl:getType() ~= "") and (oControl:getType().."-") or "")..metaControl.__type.."] "..
+           oControl:getName().." "..tostring(oControl:getPeriod()).."[s]" end
 function newControl(nTo, sName)
   if((tonumber(nTo) or 0) <= 0) then
     return logStatus(nil, "newControl: Sampling time <"..tostring(nTo).."> invalid")
@@ -34,6 +111,7 @@ function newControl(nTo, sName)
   function self:getError() return mErrO, mErrN end
   function self:getControl(bNeg) return (bNeg and (-mvCon) or (mvCon)) end
   function self:getUser() return mUser end
+  function self:getName() return mName end
   function self:getType() return mType end
   function self:getPeriod() return mTo end
   function self:setPower(pP, pI, pD)
@@ -92,9 +170,7 @@ function newControl(nTo, sName)
   end
 
   function self:Dump()
-    local sType = ((mkP > 0) and "P" or "")..((mkI > 0) and "I" or "")..((mkD > 0) and "D" or "")
-    if(sType ~= "") then sType = sType.."-" end
-    logStatus(nil, "["..sType..metaControl.__type.."]["..tostring(self).."] with properties:")
+    logStatus(nil, "["..((mType ~= "") and (mType.."-") or "")..metaControl.__type.."] Properties:")
     logStatus(nil, "  Name : "..mName.." ["..tostring(mTo).."]s")
     logStatus(nil, "  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}")
     logStatus(nil, "  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}")
@@ -106,106 +182,67 @@ function newControl(nTo, sName)
   return self
 end
 
+-- https://www.mathworks.com/help/simulink/slref/discretefilter.html
 local metaUnit = {}
       metaUnit.__index    = metaUnit
       metaUnit.__type     = "Unit"
       metaUnit.__tostring = function(oUnit) return "["..metaUnit.__type.."]" end
-function newUnit(tNum, tDen)
-  local mND  = #tDen
-  local mNN  = #tNum
-  if(mND <= mNN) then
-    return logStatus(nil,"Unit physically impossible") end
+function newUnit(nTo, tNum, tDen, sName)
+  local mOrd = #tDen
+  if(mOrd < #tNum) then
+    return logStatus(nil, "Unit physically impossible") end
   if(tDen[1] == 0) then
-    return logStatus(nil,"Unit denominator invalid") end
-       
-  local self = {}
-  local mSta, mDen, mNum = {}, {}, {}
-  for iK = 1, mNN, 1 do mNum[iK] =    tNum[iK]            / tDen[1] end
-  for iK = 1, mND, 1 do mSta[iK] = 0; mDen[iK] = tDen[iK] / tDen[1] end
+    return logStatus(nil, "Unit denominator invalid") end
     
-  function getValue(bNeg)
-    local tSrc = bNeg and mDen or mNum
-    local nSgn = bNeg and -1   or 1
-    local vOut = 0
-    local iK   = (mND-1)
+  local self  = {}
+  local mTo   = tDen[1] -- Store (1/ao)
+  local mName, mOut = sName, nil
+  local mSta, mDen, mNum = {}, {}, {}
+  
+  for ik = 1, mOrd , 1 do mSta[ik] = 0 end
+  for iK = 1, mOrd , 1 do mDen[iK] = (tonumber(tDen[iK]) or 0) / mTo end
+  for iK = 1, #tNum, 1 do mNum[iK] = (tonumber(tNum[iK]) or 0) / mTo end; arExtend(mNum,-mOrd)
+  
+  mTo = nTo -- Refresh the sampling time
+  
+  function self:getOutput() return mOut end
+  
+  local function getBeta()
+    local vOut, iK = 0, mOrd
     while(iK > 0) do
-      vOut = vOut + nSgn * mSta[iK] * (tSrc[iK] or 0)
+      vOut = vOut + mSta[iK] * (mNum[iK] or 0)
       iK = iK - 1 -- Get next state
     end; return vOut
   end
     
-  function putState(vX)
-    local iK = mND
-    while(iK > 0) do
-      mSta[iK] = mSta[iK-1]
+  local function getAlpha()
+    local vOut, iK = 0, mOrd
+    while(iK > 1) do
+      vOut = vOut + mSta[iK] * (mDen[iK] or 0)
       iK = iK - 1 -- Get next state
+    end; return vOut
+  end
+    
+  local function putState(vX)
+    local iK = mOrd
+    while(iK > 0 and mSta[iK] and mSta[iK-1]) do
+      mSta[iK] = mSta[iK-1]; iK = iK - 1 -- Get next state
     end; mSta[1] = vX
   end
-    
-  function self:getProcess(vU)
-    local vU = (tonumber(vU) or 0)
-    putState(vU - getValue(true)); return getValue(false)
-  end
-  return self
-end
-
-function newInterval(sName, nBL1, nBH1, nBL2, nBH2)
-  local self = {}
-  local mNam = tostring(sName or "")
-  local mVal = (tonumber(nVal) or 0)
-  local mBL1 = (tonumber(nBL1) or 0)
-  local mBH1 = (tonumber(nBH1) or 0)
-  local mBL2 = (tonumber(nBL2) or 0)
-  local mBH2 = (tonumber(nBH2) or 0)
   
-  function self:getName() return mNam end
-  
-  function self:getConv(nVal)
-    if(nVal < mBL1 or mVal > mBH1) then
-      return logStatus(nVal, "convInterval.valConv: Source value out of border") end
-    local kf = ((nVal - mBL1) / (mBH1 - mBL1)); return (kf * (mBH2 - mBL2) + mBL2)
+  function self:Process(vU)
+    putState(((tonumber(vU) or 0) - getAlpha()) / mDen[1])
+    mOut = getBeta(false); return self
   end
   
-  return self
-end
-
-function newTracer(sName)
-  local self = {}
-  local mName = tostring(sName or "")
-  local mValO, mValN = 0, 0
-  local mTimO, mTimN = 0, 0
-  local mPntN = {x=0,y=0}
-  local mPntO = {x=0,y=0}
-  local mMatX, mMatY
-  local enDraw = false
-  
-  function self:setInterval(oIntX, oIntY)
-    mMatX, mMatY = oIntX, oIntY; return self end
-  
-  function self:getValue() return mTimN, mValN end
-  function self:putValue(nTime, nVal)
-    mValO, nValN = nValN, nVal
-    mTimO, mTimN = mTimN, nTime
-    mPntO.x, mPntO.y = mPntN.x, mPntN.y
-    if(mMatX) then
-      mPntN.x = mMatX:getConv(nTime)
-    else
-      mPntN.x = nTime
-    end;
-    if(mMatY) then
-      mPntN.y = mMatY:getConv(nValN)
-    else
-      mPntN.y = nValN
-    end; return self
+  function self:Dump()
+    logStatus(nil, metaUnit.__tostring(self).." Properties:")
+    logStatus(nil, "Name       : "..mName.."^"..tostring(mOrd).." ["..tostring(mTo).."]s")
+    logStatus(nil, "Numenator  : {"..strImplode(mNum,", ").."}")
+    logStatus(nil, "Denumenator: {"..strImplode(mDen,", ").."}")
+    logStatus(nil, "States     : {"..strImplode(mSta,", ").."}\n") 
+    return self
   end
-    
-  function self:Draw(cCol)
-    if(enDraw) then
-      pncl(cCol);
-      line(mPntO.x,mPntO.y,mPntN.x,mPntN.y)
-      xyPlot(mPntN,cCol); updt()
-    else enDraw = true end
-  end
-
+  
   return self
 end
