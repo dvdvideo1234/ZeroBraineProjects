@@ -3,15 +3,15 @@ require("ZeroBraineProjects/dvdlualib/common")
 require("ZeroBraineProjects/dvdlualib/pidloop")
 require("ZeroBraineProjects/dvdlualib/colormap")
 
-local W, H  = 500, 250
+local W, H  = 1024, 464
 
-local minC, maxC = -5000, 5000
-local To    = 0.0001
-local endTm = 0.02
+local minC, maxC = -50000, 50000
+local To    = 0.0006
+local endTm = 0.2
 local intX  = newInterval("WinX",  0,endTm, 0, W)
 local intY  = newInterval("WinY",-200,200 , H, 0)
 local APR   = newUnit(To,{0.904},{1.00, -0.569},"Aperiodic plant"):Dump()
-local PID   = newControl(To, "Test"):Setup({0.229, 0.0013, 93.0, minC, maxC}, fase):Dump()
+local PID   = newControl(To, "Test"):Setup({0.653, 0.003470, 43.3, minC, maxC}):setStruct(true,false):Dump()
 
 local trRec = newTracer("Ref"):setInterval(intX, intY)
 local trCon = newTracer("Con"):setInterval(intX, intY)

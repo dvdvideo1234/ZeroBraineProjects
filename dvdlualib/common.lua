@@ -115,21 +115,19 @@ function roundValue(nvExact, nFrac)
   return nFrac * (q + (f > 0.5 and 1 or 0))
 end
 
-function getSignAnd(nVal)
-  return (nVal and ((nVal > 0 and 1) or (nVal < 0 and -1) or 0) or nil)
+  function getSignAnd(anyVal)
+    local nVal = (tonumber(anyVal) or 0); return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0)
+  end
+
+function getSignAbs(anyVal)
+  local nVal = (tonumber(anyVal) or 0); return (nVal and (nVal / math.abs(nVal)) or nil)
 end
 
-function getSignAbs(nVal)
-  return (nVal and (nVal / math.abs(nVal)) or nil)
-end
-
-function getSignCon(nVal)
-  local v = tonumber(nVal)
-  if(v) then
-    if(v > 0) then return  1 end
-    if(v < 0) then return -1 end
-    return v
-  end; return nil
+function getSignCon(anyVal)
+  local nVal = (tonumber(anyVal) or 0)
+  if(nVal > 0) then return  1 end
+  if(nVal < 0) then return -1 end
+  return nVal
 end
 
 function GetSEDValues(Val,Min,Max)

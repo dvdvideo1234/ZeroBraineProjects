@@ -21,10 +21,8 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
-local a = {7}
+a = strExplode("1,2,3",",")
+for i=1,#a do a[i] = tonumber(a[i]) end
 
-arExtend(a,-3)
-
-logTable(a,"RESULT")
-
+logTable( a, "a")
 

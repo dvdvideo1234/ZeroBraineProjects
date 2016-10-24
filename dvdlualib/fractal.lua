@@ -77,7 +77,7 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
 
   function self:Register(...)
     local tArgs = {...}
-    local sMode = tostring(tArgs[1] or "UDRAW")
+    local sMode = tostring(tArgs[1] or "N/A")
     for iNdex = 2, #tArgs, 2 do
       local key = tArgs[iNdex]
       local foo = tArgs[iNdex + 1]
@@ -86,9 +86,9 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
           logStatus(nil,"Unoin.Register: Key not string <"..type(key)..">"); return end
         if(type(foo) ~= "function") then
           logStatus(nil,"Unoin.Register: Unable to register non-function under <"..key..">"); return end
-        if    (sMode == "DRWEX") then frcNames[key] = foo
+        if    (sMode == "FUNCT") then frcNames[key] = foo
         elseif(sMode == "PALET") then frcPalet[key] = foo
-        else logStatus(nil,"Unoin.Register: Mode <"..sMode.."> mismatsh !"); return end
+        else logStatus(nil,"Unoin.Register: Mode <"..sMode.."> skipped for <"..tostring(tArgs[1]).."> !"); return end
       end
     end
   end
