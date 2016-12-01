@@ -15,8 +15,8 @@ function waitSeconds(Add)
   end
 end
 
-function logStatus(anyData, anyMessage)
-  io.write(tostring(anyMessage).."\n"); return anyData
+function logStatus(anyData, anyMsg)
+  io.write(tostring(anyMsg).."\n"); return anyData
 end
 
 function xyText(xyP)
@@ -582,46 +582,27 @@ end
 
 ------------------- STRINGS --------------------------
 
-function strExplode(sStr,sDel)
-  local sStr = string.gsub(sStr,sDel,"#")
-  local List, Char, Idx, ID = {""}, "", 1, 1
-  while(Char) do
-    Char = string.sub(sStr,Idx,Idx)
-    if    (Char ==  "") then return List
-    elseif(Char == "#") then ID = ID + 1; List[ID] = ""
-    else List[ID] = List[ID]..Char end
-    Idx = Idx + 1
-  end
-  return List
+function stringExplode(sStr,sDel)
+  local List, Ch, Idx, ID, dL = {""}, "", 1, 1, (sDel:len()-1)
+  while(Ch) do
+    Ch = sStr:sub(Idx,Idx+dL)
+    if    (Ch ==  "" ) then return List
+    elseif(Ch == sDel) then ID = ID + 1; List[ID] = ""
+    else List[ID] = List[ID]..Ch:sub(1,1) end; Idx = Idx + 1
+  end; return List
 end
 
-function strImplode(tList,sDel)
+function stringImplode(tList,sDel)
   local ID, Str = 1, ""
-  local sDel = tostring(sDel or "")
+  local Del = tostring(sDel or "")
   while(tList and tList[ID]) do
     Str = Str..tList[ID]; ID = ID + 1
-    if(tList[ID] and sDel ~= "") then Str = Str..sDel end
-  end
-  return Str
+    if(tList[ID] and sDel ~= "") then Str = Str..Del end
+  end; return Str
 end
 
-function strTrimSpaces(sStr)
-  if(not sStr)   then return nil end
-  if(sStr == "") then return ""  end
-  local S = 1
-  local E = 1
-  local Len = string.len(sStr)
-  local Che
-  while(S <= Len) do
-    Che = string.sub(sStr,S,S)
-    if(Che ~= " ") then break end
-    S = S + 1
-  end
-  E = Len
-  while(E >= 1) do
-    Che = string.sub(sStr,E,E)
-    if(Che ~= " ") then break end
-    E = E - 1
-  end
-  return string.sub(sStr,S,E)
+function stringTrim(sStr)
+  return sStr:gsub("^%s+", ""):gsub("%s+$", "")
 end
+
+

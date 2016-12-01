@@ -1,6 +1,7 @@
 require("ZeroBraineProjects/dvdlualib/common")
 require("ZeroBraineProjects/dvdlualib/asmlib")
 
+local pairs                = pairs
 local Angle                = Angle
 local Vector               = Vector
 local IsValid              = IsValid
@@ -21,8 +22,34 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
-a = strExplode("1,2,3",",")
-for i=1,#a do a[i] = tonumber(a[i]) end
 
-logTable( a, "a")
+function encNumber(arNum)
+  local sTab = table.concat(arNum, ".")
+  return sTab
+end
+
+
+logStatus(nil, encNumber({1,2,3}))
+
+local s = "(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))"
+
+  function getDeviation(sSen, ...)
+    local id, pack, rez = 1, {...}, sSen; while(pack[id]) do
+      rez = rez:gsub(pack[id],"oSens["..pack[id].."].Val"); id = id + 1
+    end; return "function(oSens) return "..rez.." end"
+  end
+
+local dev = getDeviation(s,"DBR","DBL","DFR","DFL")
+
+logStatus(nil, dev)
+
+
+
+
+
+
+
+
+
+
 

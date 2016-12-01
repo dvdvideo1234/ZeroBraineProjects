@@ -1,0 +1,2 @@
+[NOINST] : makLineFile: Type <gggg> missing <[1],{gggg:DBR} {Len: 12} {Org:-17,-47,-4.3} {Dir:Up}>
+[NOINST] : getInit(file): Success

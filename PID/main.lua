@@ -13,7 +13,7 @@ local intY  = newInterval("WinY",-200,200 , H, 0)
 local APR   = newUnit(To,{0.904},{1.00, -0.569},"Aperiodic plant"):Dump()
 local PID   = newControl(To, "Test"):Setup({0.653, 0.003470, 43.3, minC, maxC}):setStruct(true,false):Dump()
 
-local trRec = newTracer("Ref"):setInterval(intX, intY)
+local trRef = newTracer("Ref"):setInterval(intX, intY)
 local trCon = newTracer("Con"):setInterval(intX, intY)
 local trPV  = newTracer("PV" ):setInterval(intX, intY)
 
@@ -38,7 +38,7 @@ while(curTm <= endTm) do
   elseif(curTm > 0.6*endTm) then
     ref = 100
   end
-  trRec:putValue(curTm, ref):Draw(clBlu)
+  trRef:putValue(curTm, ref):Draw(clBlu)
   logStatus(nil,ref.." > "..pvv.." > "..con)
   con = PID:Process(ref,pvv):getControl()
   trCon:putValue(curTm,con):Draw(clGrn)
