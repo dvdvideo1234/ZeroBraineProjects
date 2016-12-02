@@ -1,7 +1,7 @@
 {sensor:DFR} {Len: 12} {Org: 17,-47,-4.3} {Dir:Up}
-{gggg:DBR} {Len: 12} {Org:-17,-47,-4.3} {Dir:Up}
+{sensor:DBR} {Len: 12} {Org:-17,-47,-4.3} {Dir:Up}
 {sensor:DFL} {Len: 12} {Org: 17, 47,-4.3} {Dir:Up}
-{sensor:DBL} {Len: 12} {Org:-17, 47,-4.3} {Dir:Up}
+{ggggg:DBL} {Len: 12} {Org:-17, 47,-4.3} {Dir:Up}
 {sensor:SFR} {Len:-15} {Org: 17,-62, 4.0} {Dir:Rg}
 {sensor:SBR} {Len:-15} {Org:-17,-62, 4.0} {Dir:Rg}
 {sensor:SFL} {Len: 15} {Org: 17, 62, 4.0} {Dir:Rg}

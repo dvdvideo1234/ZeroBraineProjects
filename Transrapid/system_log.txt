@@ -1,2 +1,3 @@
-[NOINST] : makLineFile: Type <gggg> missing <[1],{gggg:DBR} {Len: 12} {Org:-17,-47,-4.3} {Dir:Up}>
-[NOINST] : getInit(file): Success
+[NOINST] : makLineFile: Type [1] <ggggg> missing
+[NOINST] : getInitFile: Process line <{ggggg:DBL} {Len: 12} {Org:-17, 47,-4.3} {Dir:Up}>
+[NOINST] : getInit(file): Failed: E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Transrapid/base_init.txt

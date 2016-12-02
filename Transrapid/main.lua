@@ -99,42 +99,46 @@ local logStatus = loglog
   ]]--
   function makLineFile(sLine, tBase)
     local sBase = stringTrim(sLine)
-    if(sBase:sub(1,1) == "#") then return end
+    if(sBase:sub(1,1) == "#") then return true end
     local exp, tab, cnt, typ, key = nil, nil, 1
     for v in sBase:gmatch("{(.-)}") do -- All the items in curly brackets
       local exp = stringExplode(":",v)    -- Explode on : to get key-value pairs
       if(tostring(exp[1] or "") == "") then
-        return logStatus("makLineFile: Key missing <["..tostring(cnt).."],"..sBase..">", nil) end
+        return logStatus("makLineFile: Key missing <["..tostring(cnt).."],"..sBase..">", false) end
       if(exp[1] and not exp[2]) then
-        return logStatus("makLineFile: Value missing <["..tostring(cnt).."],"..sBase..">", nil) end
+        return logStatus("makLineFile: Value missing <["..tostring(cnt).."],"..sBase..">", false) end
       if(cnt == 1) then
         if(not tBase[exp[1]]) then tBase[exp[1]] = {} end
          tBase[exp[1]][exp[2]] = {}; tab = tBase[exp[1]][exp[2]]
         typ, key = exp[1], exp[2]; if(not typEnabled(typ)) then
-          return logStatus("makLineFile: Type <"..exp[1].."> missing <["..tostring(cnt).."],"..sBase..">", nil) end
+          return logStatus("makLineFile: Type ["..tostring(cnt).."] <"..exp[1].."> missing", false) end
       else
         if(colEnabled(typ, exp[1])) then
           tab[exp[1]] = stringTrim(exp[2])
         else logStatus("makLineFile: Column <"..exp[1].."> ["..typ.."]"..key.." skipped") end
       end; cnt = cnt + 1
-    end
+    end; return true
   end
 
   --[[
     * Transforms a file to initialization table
     * sName  >  The file name to process
   ]]--
-  function getInitFile(sName)
+  local function getInitFile(sName)
     local ioF = fileOpen(sName, "r", "DATA")
-      if(not ioF) then return logStatus(nil, "getInitFile: Failed to load source file <"..tostring(sName)..">") end
+      if(not ioF) then return logStatus("getInitFile: Failed to load source file <"..tostring(sName)..">", nil) end
     local i, tRes, ln, pk = 1, {}, "", false
     while(true) do
       local rd = ioF:read(1)
       if(not rd) then break end
       if(rd == "\n" ) then
-        makLineFile(ln,tRes); i, ln = (i + 1), ""
+        if(not makLineFile(ln,tRes)) then
+          return logStatus("getInitFile: Process line <"..ln..">", nil) end
+        i, ln = (i + 1), ""
       else; ln = ln..rd end
-    end; if(ln ~= "") then makLineFile(ln,tRes) end
+    end; if(ln ~= "") then
+      if(not makLineFile(ln,tRes)) then
+        return logStatus("getInitFile: Process last line <"..ln..">", nil) end end
     ioF:close(); return tRes
   end
 
