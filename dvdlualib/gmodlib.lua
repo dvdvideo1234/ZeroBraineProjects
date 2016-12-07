@@ -55,7 +55,10 @@ function CompileString(s)
   return s
 end
 
- function stringTrim( s, char )
-    if ( char ) then char = char:PatternSafe() else char = "%s" end
-    return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
-  end
+function stringTrim( s, char )
+  if ( char ) then char = char:PatternSafe() else char = "%s" end
+  return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
+end
+
+function IsValid(anyV) return anyV ~= nil end
+  

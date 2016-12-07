@@ -45,7 +45,7 @@ local mtControl = {}; mtControl.__type = "control"
 
 local bulFlgVar  = bitBor(1,3,7)
 local varLogEnab = CreateConVar(gsSentFile.."_logenab", "1", bulFlgVar, "Controls logging for the the "..gsSentLogo:lower())
-local varLogFile = CreateConVar(gsSentFile.."_logfile", "1", bulFlgVar, "Controls file output for the"..gsSentLogo:lower())
+local varLogFile = CreateConVar(gsSentFile.."_logfile", "0", bulFlgVar, "Controls file output for the"..gsSentLogo:lower())
 local varSample  = CreateConVar(gsSentFile.."_tick" , "0.005", bulFlgVar, "Controls the bogie sampling time")
 local varFwLocal = CreateConVar(gsSentFile.."_fwloc", "1,0,0", bulFlgVar, "Bogie forward local vector")
 local varUpLocal = CreateConVar(gsSentFile.."_uploc", "0,0,1", bulFlgVar, "Bogie up local vector")
@@ -263,6 +263,18 @@ logStatus(nil,c)
 logStatus(nil,d)
 
 end
+
+local a = 0
+-- 10000000 > 16.302417382641
+
+for i = 0, 62, 1 do
+  a = a + 1 / (tonumber(tostring(i).."."..tostring(i+1)))
+  logStatus("a = a + 1 / ("..tonumber(tostring(i).."."..tostring(i+1))..")")
+  if((i % 10) == 0) then logStatus(i) end
+end
+
+logStatus("Rez:" ..a)
+
 
 
 

@@ -605,4 +605,23 @@ function stringTrim(sStr)
   return sStr:gsub("^%s+", ""):gsub("%s+$", "")
 end
 
+--------------- CRYPTING -----------------------------------
+
+function encNumber(arNum) -- Base 10 to base 11
+  local src = table.concat(arNum, "."):reverse()
+  local id, ch, re = 0, src:sub(1,1), 0
+  while(ch ~= "") do
+    re = re + (tonumber(ch) or 10) * 11^id
+    id = id + 1; ch = src:sub(id+1,id+1)
+  end; return re
+end
+
+function decNumber(nNum)
+  d, m, s = math.floor(nNum/11), math.fmod(nNum,11), ""
+  while(d ~= 0) do
+    s = ((m == 10) and "." or tostring(m))..s
+    d, m = math.floor(d / 11), math.fmod(d,11)
+  end; return stringExplode(((m == 10) and "." or tostring(m))..s,".")
+end
+
 
