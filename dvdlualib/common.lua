@@ -587,7 +587,7 @@ function stringExplode(sStr,sDel)
   while(Ch) do
     Ch = sStr:sub(Idx,Idx+dL)
     if    (Ch ==  "" ) then return List
-    elseif(Ch == sDel) then ID = ID + 1; List[ID] = ""
+    elseif(Ch == sDel) then ID = ID + 1; List[ID], Idx = "", (Idx + dL)
     else List[ID] = List[ID]..Ch:sub(1,1) end; Idx = Idx + 1
   end; return List
 end

@@ -61,4 +61,6 @@ function stringTrim( s, char )
 end
 
 function IsValid(anyV) return anyV ~= nil end
-  
+
+function sqlTableExists(anyTable) return true end
+function sqlQuery(sQ) return {} end

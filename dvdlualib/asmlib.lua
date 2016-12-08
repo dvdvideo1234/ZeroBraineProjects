@@ -37,9 +37,9 @@ local collectgarbage       = collectgarbage
 local io                   = io
 local osClock              = os and os.clock
 local osDate               = os and os.date
-local sqlQuery             = sql and sql.Query
-local sqlLastError         = sql and sql.LastError
-local sqlTableExists       = sql and sql.TableExists
+local sqlQuery             = sql and sql.Query or sqlQuery
+local sqlLastError         = sql and sql.LastError or sqlLastError
+local sqlTableExists       = sql and sql.TableExists or sqlTableExists
 local utilTraceLine        = util and util.TraceLine
 local utilIsInWorld        = util and util.IsInWorld
 local utilIsValidModel     = util and util.IsValidModel
@@ -71,6 +71,7 @@ local stringGsub           = string and string.gsub
 local stringUpper          = string and string.upper
 local stringLower          = string and string.lower
 local stringFormat         = string and string.format
+local stringExplode        = string and string.Explode
 local surfaceSetFont       = surface and surface.SetFont
 local surfaceDrawLine      = surface and surface.DrawLine
 local surfaceDrawText      = surface and surface.DrawText
@@ -171,6 +172,14 @@ function PrintArrLine(aTable,sName)
     Cnt = Cnt + 1
   end
   print(Line.."}")
+end
+
+function DefaultString(sBase, sDefault)
+  if(IsString(sBase)) then
+    if(not IsEmptyString(sBase)) then return sBase end
+  end
+  if(IsString(sDefault)) then return sDefault end
+  return ""
 end
 
 function PrintPush(aTable,sName)
@@ -592,14 +601,14 @@ function StringMakeSQL(sStr)
   end
   local Cnt = 1
   local Out = ""
-  local Chr = string.sub(sStr,Cnt,Cnt)
+  local Chr = stringSub(sStr,Cnt,Cnt)
   while(Chr ~= "") do
     Out = Out..Chr
     if(Chr == "'") then
       Out = Out..Chr
     end
     Cnt = Cnt + 1
-    Chr = string.sub(sStr,Cnt,Cnt)
+    Chr = stringSub(sStr,Cnt,Cnt)
   end
   return Out
 end
@@ -834,13 +843,13 @@ function InitAssembly(sName)
   SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
   SetOpVar("TABLE_FREQUENT_MODELS",{})
   SetOpVar("TABLE_BORDERS",{})
+  SetOpVar("QUERY_STORE",{})
   SetOpVar("LOCALIFY_TABLE",{})
   SetOpVar("LOCALIFY_AUTO","en")
   SetOpVar("MISS_NOID","N")    -- No ID selected
   SetOpVar("MISS_NOAV","N/A")  -- Not Available
   SetOpVar("MISS_NOMD","X")    -- No model
   SetOpVar("HASH_USER_PANEL",GetOpVar("TOOLNAME_PU").."USER_PANEL")
-  SetOpVar("HASH_QUERY_STORE",GetOpVar("TOOLNAME_PU").."QHASH_QUERY")
   SetOpVar("HASH_PLAYER_KEYDOWN","PLAYER_KEYDOWN")
   SetOpVar("HASH_PROPERTY_NAMES","PROPERTY_NAMES")
   SetOpVar("HASH_PROPERTY_TYPES","PROPERTY_TYPES")
@@ -981,7 +990,7 @@ function SQLBuildCreate(defTable)
       return SQLSetBuildErr("SQLBuildCreate: Missing Table "..TableName
                                   .."'s field type #"..tostring(Ind))
     end
-    Command.Create = Command.Create..string.upper(v[1]).." "..string.upper(v[2])
+    Command.Create = Command.Create..stringUpper(v[1]).." "..stringUpper(v[2])
     if(defTable[Ind+1]) then
       Command.Create = Command.Create ..", "
     end
@@ -1019,8 +1028,8 @@ function SQLBuildCreate(defTable)
             ..TableName..". The table does not have field index #"
             ..vF..", max is #"..Table.Size)
         end
-        FieldsU = FieldsU.."_" ..string.upper(defTable[vF][1])
-        FieldsC = FieldsC..string.upper(defTable[vF][1])
+        FieldsU = FieldsU.."_" ..stringUpper(defTable[vF][1])
+        FieldsC = FieldsC..stringUpper(defTable[vF][1])
         if(vI[Cnt+1]) then
           FieldsC = FieldsC ..", "
         end
@@ -1139,48 +1148,68 @@ local function SQLStoreQuery(defTable,tFields,tWhere,tOrderBy,sQuery)
   return Base[Val]
 end
 
+function SQLFetchSelect(sHash,...)
+  local tStore, tVal, sQ = GetOpVar("QUERY_STORE"), {...}, ""
+  if(tStore[sHash]) then
+    tStore = tStore[sHash]
+    iCnt   = #tStore
+    for ID = 1, (iCnt - 1) do
+      if(not tVal[ID]) then
+        return StatusLog(nil, "SQLFetchSelect: Not enough <"..tostring(sHash).."> values ["..tostring(ID).."]") end
+      sQ = sQ..tStore[ID]..tostring(tVal[ID])
+    end; return sQ..tStore[iCnt]
+  else return StatusLog(nil, "SQLFetchSelect: Storage missing for <"..sHash..">") end
+end
+
+function SQLStoreSelect(sHash,sQuery)
+  if(not sHash) then
+    return StatusLog(nil, "SQLStoreSelect: Store hash missing") end
+  if(not sQuery) then
+    return StatusLog(nil, "SQLStoreSelect: Store query missing") end
+  local tStore, sB, sQ, sV = GetOpVar("QUERY_STORE"), " = ", ""
+        tStore[sHash]  = stringExplode(sB,sQuery); tStore = tStore[sHash]
+  for ID = 2, #tStore do
+    tStore[ID-1], sV = tStore[ID-1]..sB, tStore[ID]
+    if(stringSub(sV,1,1) == "'") then
+      tStore[ID-1] = tStore[ID-1].."'"
+      local nE = stringFind(sV,"'",2)
+      if(not nE) then
+        return StatusLog(nil, "SQLStoreSelect: Value quote mismatch ["..ID.."]<"..sV..">") end
+      tStore[ID] = stringSub(sV,nE,-1)
+    else
+      local nE = stringFind(sV,"%s",1)
+      if(not nE) then
+        return StatusLog(nil, "SQLStoreSelect: Value space mismatch ["..ID.."]<"..sV..">") end
+      tStore[ID] = stringSub(sV,nE,-1)
+    end
+  end; return tStore
+end
+
 function SQLBuildSelect(defTable,tFields,tWhere,tOrderBy)
   if(not defTable) then
-    return SQLSetBuildErr("SQLBuildSelect: Missing: Table definition")
-  end
-  local namTable = defTable.Name
-  if(not (defTable[1][1] and
-          defTable[1][2])
-  ) then
-    return SQLSetBuildErr("SQLBuildSelect: Missing: Table "..namTable.." field definitions")
-  end
-  local Command = SQLStoreQuery(defTable,tFields,tWhere,tOrderBy)
-  if(Command) then
-    print("Retrieve query")
-    return Command
-  end
-  local Cnt = 1
-  Command = "SELECT "
+    return SQLBuildError("SQLBuildSelect: Missing table definition") end
+  if(not (defTable[1][1] and defTable[1][2])) then
+    return SQLBuildError("SQLBuildSelect: Missing table "..defTable.Name.." field definitions") end
+  local Command, Cnt = "SELECT ", 1
   if(tFields) then
     while(tFields[Cnt]) do
       local v = tonumber(tFields[Cnt])
-      if(not v) then
-        return SQLSetBuildErr("SQLBuildSelect: Select index #"
-          ..tostring(tFields[Cnt])
-          .." type mismatch in "..namTable)
-      end
+      if(not IsExistent(v)) then
+        return SQLBuildError("SQLBuildSelect: Select index NAN {"
+             ..type(tFields[Cnt]).."}<"..tostring(tFields[Cnt])
+             .."> type mismatch in "..defTable.Name) end
       if(defTable[v]) then
         if(defTable[v][1]) then
           Command = Command..defTable[v][1]
         else
-          return SQLSetBuildErr("SQLBuildSelect: Select no such field name by index #"
-            ..v.." in the table "..namTable)
-        end
+          return SQLBuildError("SQLBuildSelect: Select no such field name by index #"
+            ..v.." in the table "..defTable.Name) end
       end
-      if(tFields[Cnt+1]) then
-        Command = Command ..", "
-      end
+      if(tFields[Cnt+1]) then Command = Command ..", " end
       Cnt = Cnt + 1
     end
-  else
-    Command = Command.."*"
-  end
-  Command = Command .." FROM "..namTable
+  else Command = Command.."*" end
+  Command = Command .." FROM "..defTable.Name
   if(tWhere and
      type(tWhere == "table") and
      type(tWhere[1]) == "table" and
@@ -1195,20 +1224,15 @@ function SQLBuildSelect(defTable,tFields,tWhere,tOrderBy)
       v = tWhere[Cnt][2]
       t = defTable[k][2]
       if(not (k and v and t) ) then
-        return SQLSetBuildErr("SQLBuildSelect: Where clause inconsistent on "
-          ..namTable.." field index, {"..tostring(k)..", "..tostring(v)..", "..tostring(t)
-          .."} value or type in the table definition")
-      end
+        return SQLBuildError("SQLBuildSelect: Where clause inconsistent on "
+          ..defTable.Name.." field index, {"..tostring(k)..","..tostring(v)..","..tostring(t)
+          .."} value or type in the table definition") end
       v = MatchType(defTable,v,k,true)
       if(not IsExistent(v)) then
-        return SQLSetBuildErr("SQLBuildSelect: Data matching failed on "
-          ..namTable.." field index #"..Cnt.." value >"..tostring(v).."<")
-      end
-      if(Cnt == 1) then
-        Command = Command.." WHERE "..defTable[k][1].." = "..v
-      else
-        Command = Command.." AND "..defTable[k][1].." = "..v
-      end
+        return SQLBuildError("SQLBuildSelect: Data matching failed on "
+          ..defTable.Name.." field index #"..Cnt.." value <"..tostring(v)..">") end
+      if(Cnt == 1) then Command = Command.." WHERE "..defTable[k][1].." = "..v
+      else              Command = Command.." AND "  ..defTable[k][1].." = "..v end
       Cnt = Cnt + 1
     end
   end
@@ -1219,25 +1243,16 @@ function SQLBuildSelect(defTable,tFields,tWhere,tOrderBy)
     while(tOrderBy[Cnt]) do
       local v = tOrderBy[Cnt]
       if(v ~= 0) then
-        if(v > 0) then
-          Dire = " ASC"
-        else
-          Dire = " DESC"
-          v = -v
-        end
+        if(v > 0) then Dire = " ASC"
+        else Dire, v = " DESC", -v end
       else
-        return SQLSetBuildErr("SQLBuildSelect: Order wrong for "..namTable
-                              .." field index #"..Cnt)
-      end
+        return SQLBuildError("SQLBuildSelect: Order wrong for "
+                           ..defTable.Name .." field index #"..Cnt) end
         Command = Command..defTable[v][1]..Dire
-        if(tOrderBy[Cnt+1]) then
-          Command = Command..", "
-        end
+        if(tOrderBy[Cnt+1]) then Command = Command..", " end
       Cnt = Cnt + 1
     end
-  end
-  SetOpVar("SQL_BUILD_ERR", "")
-  return SQLStoreQuery(defTable,tFields,tWhere,tOrderBy,Command..";")
+  end; SetOpVar("SQL_BUILD_ERR", ""); return Command..";"
 end
 
 function SQLBuildInsert(defTable,tInsert,tValues)
@@ -1291,33 +1306,34 @@ function SQLBuildInsert(defTable,tInsert,tValues)
 end
 
 function CreateTable(sTable,defTable,bDelete,bReload)
-  if(not IsString(sTable)) then return StatusLog(false,"CreateTable: Table key is not a string") end
-  if(not (type(defTable) == "table")) then return StatusLog(false,"CreateTable: Table definition missing for "..sTable) end
-  defTable.Size = ArrayCount(defTable)
-  if(defTable.Size <= 0) then return StatusLog(false,"CreateTable: Record definition empty for "..sTable) end
+  if(not IsString(sTable)) then
+    return StatusLog(false,"CreateTable: Table key {"..type(sTable).."}<"..tostring(sTable).."> not string") end
+  if(not (type(defTable) == "table")) then
+    return StatusLog(false,"CreateTable: Table definition missing for "..sTable) end
+  if(#defTable <= 0) then
+    return StatusLog(false,"CreateTable: Record definition missing for "..sTable) end
+  SetOpVar("DEFTABLE_"..sTable,defTable)
+  defTable.Size = #defTable
+  defTable.Name = GetOpVar("TOOLNAME_PU")..sTable
   local sModeDB = GetOpVar("MODE_DATABASE")
   local sTable  = stringUpper(sTable)
-  defTable.Name = GetOpVar("TOOLNAME_PU")..sTable
-  SetOpVar("DEFTABLE_"..sTable,defTable)
-  local sDisable = GetOpVar("OPSYM_DISABLE")
-  local namTable = defTable.Name
-  local Cnt, defField = 1, nil
-  while(defTable[Cnt]) do
-    defField    = defTable[Cnt]
-    defField[3] = StringDefault(tostring(defField[3] or sDisable), sDisable)
-    defField[4] = StringDefault(tostring(defField[4] or sDisable), sDisable)
-    Cnt = Cnt + 1
+  local symDis  = GetOpVar("OPSYM_DISABLE")
+  local iCnt, defField = 1, nil
+  while(defTable[iCnt]) do
+    defField    = defTable[iCnt]
+    defField[3] = DefaultString(tostring(defField[3] or symDis), symDis)
+    defField[4] = DefaultString(tostring(defField[4] or symDis), symDis)
+    iCnt = iCnt + 1
   end
-  libCache[namTable] = {}
+  libCache[defTable.Name] = {}
   if(sModeDB == "SQL") then
     defTable.Life = tonumber(defTable.Life) or 0
     local tQ = SQLBuildCreate(defTable)
     if(not IsExistent(tQ)) then return StatusLog(false,"CreateTable: "..SQLBuildError()) end
-    if(bDelete and sqlTableExists(namTable)) then
+    if(bDelete and sqlTableExists(defTable.Name)) then
       local qRez = sqlQuery(tQ.Delete)
       if(not qRez and IsBool(qRez)) then
-        LogInstance("CreateTable: Table "..sTable
-          .." is not present. Skipping delete !")
+        LogInstance("CreateTable: Table "..sTable.." is not present. Skipping delete !")
       else
         LogInstance("CreateTable: Table "..sTable.." deleted !")
       end
@@ -1325,40 +1341,31 @@ function CreateTable(sTable,defTable,bDelete,bReload)
     if(bReload) then
       local qRez = sqlQuery(tQ.Drop)
       if(not qRez and IsBool(qRez)) then
-        LogInstance("CreateTable: Table "..sTable
-          .." is not present. Skipping drop !")
+        LogInstance("CreateTable: Table "..sTable.." is not present. Skipping drop !")
       else
         LogInstance("CreateTable: Table "..sTable.." dropped !")
       end
     end
-    if(sqlTableExists(namTable)) then
+    if(sqlTableExists(defTable.Name)) then
       LogInstance("CreateTable: Table "..sTable.." exists!")
       return true
     else
       local qRez = sqlQuery(tQ.Create)
       if(not qRez and IsBool(qRez)) then
         return StatusLog(false,"CreateTable: Table "..sTable
-          .." failed to create because of "..tostring(sqlLastError()))
-      end
-      if(sqlTableExists(namTable)) then
+          .." failed to create because of "..sqlLastError()) end
+      if(sqlTableExists(defTable.Name)) then
         for k, v in pairs(tQ.Index) do
           qRez = sqlQuery(v)
           if(not qRez and IsBool(qRez)) then
-            return StatusLog(false,"CreateTable: Table "..sTable
-              .." failed to create index ["..k.."] > "..v .." > because of "
-              ..tostring(sqlLastError()))
-          end
-        end
-        return StatusLog(true,"CreateTable: Indexed Table "..sTable.." created !")
+            return StatusLog(false,"CreateTable: Table "..sTable..
+              " failed to create index ["..k.."] > "..v .." > because of "..sqlLastError()) end
+        end return StatusLog(true,"CreateTable: Indexed Table "..sTable.." created !")
       else
-        return StatusLog(false,"CreateTable: Table "..sTable
-          .." failed to create because of "..tostring(sqlLastError())
-          .." Query ran > "..tQ.Create)
-      end
+        return StatusLog(false,"CreateTable: Table "..sTable..
+          " failed to create because of "..sqlLastError().." Query ran > "..tQ.Create) end
     end
-  elseif(sModeDB == "LUA") then
-    sModeDB = "LUA" -- Gust to do something here.
-  else
+  elseif(sModeDB == "LUA") then sModeDB = "LUA" else -- Just to do something here.
     return StatusLog(false,"CreateTable: Wrong database mode <"..sModeDB..">")
   end
 end
