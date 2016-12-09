@@ -178,7 +178,7 @@ local logStatus = loglog
           return logStatus("getInit: Controller <"..key.."> ID #"..rec["ID"].." occupied by "..tID[rec["ID"]], nil) end
         tID[rec["ID"]], rec["Ref"] = key, stringExplode("/",rec["Ref"])
         rec["Ref"][1] = tonumber(stringTrim(rec["Ref"][1])) or 0
-        rec["Ref"][2] = (((not rec["Ref"][2]) or (rec["Ref"][2] ~= "")) and rec["Ref"][2] or nil)
+        rec["Ref"][2] = ((rec["Ref"][2] and (rec["Ref"][2] ~= "")) and rec["Ref"][2] or nil)
         for nam, sen in pairs(tSen) do rec["Dev"] = getStringDev(rec["Dev"], nam) end
         rec["Dev"] = CompileString("function(oSens) return "..rec["Dev"].." end", gsSentFile.."_"..key)
       end; local iID = 1; while(tID[iID]) do tSen[iID], tCon[iID] = 0, 0; iID = iID + 1 end
@@ -223,7 +223,7 @@ local logStatus = loglog
 
 local a, b = getInit()
 --logTable(a, "sensors")
---logTable(b, "control")
+logTable(b, "control")
 
 
 if(false) then
@@ -262,7 +262,7 @@ logStatus(nil,"#"..b)
 logStatus(nil,c)
 logStatus(nil,d)
 
-end
+
 
 local a = 0
 -- 10000000 > 16.302417382641
@@ -277,7 +277,7 @@ logStatus("Rez:" ..a)
 
 
 
-
+end
 
 
 

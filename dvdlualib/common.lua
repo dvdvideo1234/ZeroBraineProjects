@@ -30,7 +30,7 @@ end
 function xyPlot(xyP,clDrw)
   local x = xyP.x or xyP[1] or nil
   local y = xyP.y or xyP[2] or nil
-  if(clDrw) then pncl(cl); end
+  if(clDrw) then pncl(clDrw); end
   rect(x-2,y-2,5,5)
 end
 

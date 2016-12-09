@@ -72,7 +72,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       Pos.x = Pos.x + DirX * Sig * Mid
       Pos.y = Pos.y + DirY * Sig * Mid
       xyPlot(Pos,colr(255,0,0))
-      Delay(nDelay)
+      waitSeconds(nDelay)
       --[[
         Estimate the distance and break
         earlier with 0.5 because of the 
@@ -102,7 +102,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       V.y = V.y + D.y
       Sig = Enclose(V)
       xyPlot(V,colr(255,0,0))
-      Delay(nDelay)
+      waitSeconds(nDelay)
       I = I + 1
     end
   end

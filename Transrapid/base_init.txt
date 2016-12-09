@@ -1,15 +1,15 @@
 {sensor:DFR} {Len: 12} {Org: 17,-47,-4.3} {Dir:Up}
 {sensor:DBR} {Len: 12} {Org:-17,-47,-4.3} {Dir:Up}
 {sensor:DFL} {Len: 12} {Org: 17, 47,-4.3} {Dir:Up}
-{ggggg:DBL} {Len: 12} {Org:-17, 47,-4.3} {Dir:Up}
+{sensor:DBL} {Len: 12} {Org:-17, 47,-4.3} {Dir:Up}
 {sensor:SFR} {Len:-15} {Org: 17,-62, 4.0} {Dir:Rg}
 {sensor:SBR} {Len:-15} {Org:-17,-62, 4.0} {Dir:Rg}
 {sensor:SFL} {Len: 15} {Org: 17, 62, 4.0} {Dir:Rg}
 {sensor:SBL} {Len: 15} {Org:-17, 62, 4.0} {Dir:Rg}
 
-{control:UR} {ID:1} {Ref:4.5/asd} {Tun:460,0.2,1740//1.2,1,1}  {Cmb:true} {Rev:true}  {Dev:((DFR < DBR) and DFR or DBR)}
-{control:UL} {ID:2} {Ref:4.5/} {Tun:460,0.2,1740//1.2,1,1}  {Cmb:true} {Rev:true}  {Dev:((DFL < DBL) and DFL or DBL)}
-{control:LR} {ID:3} {Ref:0.0/} {Tun:2500,0,2600//1.5,1,1.4} {Cmb:true} {Rev:true}  {Dev:(((SFR < SBR) and SFR or SBR) - ((SFL < SBL) and SFL or SBL))}
-{control:AP} {ID:4} {Ref:0.0/} {Tun:100,0,250//}            {Cmb:true} {Rev:true}  {Dev:(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))}
-{control:AY} {ID:5} {Ref:0.0/} {Tun:510,0,450//}            {Cmb:true} {Rev:false} {Dev:(4 * (((SFR < SBL) and SFR or SBL) - ((SFL < SBR) and SFL or SBR)))}
-{control:AR} {ID:6} {Ref:0.0/} {Tun:32,0,1200//1.2,1,1.2}   {Cmb:true} {Rev:true}  {Dev:(4 * (((DFL < DBL) and DFL or DBL) - ((DFR < DBR) and DFR or DBR)))}
+{control:UR} {ID:1} {Ref:4.5} {Tun:460,0.2,1740//1.2,1,1}  {Cmb:true} {Rev:true}  {Dev:((DFR < DBR) and DFR or DBR)}
+#{control:UL} {ID:2} {Ref:4.5/} {Tun:460,0.2,1740//1.2,1,1}  {Cmb:true} {Rev:true}  {Dev:((DFL < DBL) and DFL or DBL)}
+#{control:LR} {ID:3} {Ref:0.0/} {Tun:2500,0,2600//1.5,1,1.4} {Cmb:true} {Rev:true}  {Dev:(((SFR < SBR) and SFR or SBR) - ((SFL < SBL) and SFL or SBL))}
+#{control:AP} {ID:4} {Ref:0.0/} {Tun:100,0,250//}            {Cmb:true} {Rev:true}  {Dev:(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))}
+#{control:AY} {ID:5} {Ref:0.0/} {Tun:510,0,450//}            {Cmb:true} {Rev:false} {Dev:(4 * (((SFR < SBL) and SFR or SBL) - ((SFL < SBR) and SFL or SBR)))}
+#{control:AR} {ID:6} {Ref:0.0/} {Tun:32,0,1200//1.2,1,1.2}   {Cmb:true} {Rev:true}  {Dev:(4 * (((DFL < DBL) and DFL or DBL) - ((DFR < DBR) and DFR or DBR)))}
