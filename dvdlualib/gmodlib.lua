@@ -64,3 +64,8 @@ function IsValid(anyV) return anyV ~= nil end
 
 function sqlTableExists(anyTable) return true end
 function sqlQuery(sQ) return {} end
+
+function utilIsValidModel(sMdl)
+  if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
+  return false
+end
