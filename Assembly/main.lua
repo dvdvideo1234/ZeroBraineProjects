@@ -26,15 +26,18 @@ asmlib.CreateTable("PIECES",{
 
 local defTable = asmlib.GetOpVar("DEFTABLE_PIECES")
  
-asmlib.DefaultType("Test",[[function(m)]]) --[===[
+asmlib.DefaultType("Test",[[function(m)
     local r = m:gsub("models/bobsters_trains/rails/2ft/",""):gsub("_","/")
     local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
-          r = r:gsub("^%l", string.upper); return r end]]) ]===]
+          r = r:gsub("^%l", string.upper); return r end
+          ]])
 
 asmlib.DefaultType("Bobster's two feet rails",[[function(m)
   local r = m:gsub("models/bobsters_trains/rails/2ft/",""):gsub("_","/")
   local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
         r = r:gsub("^%l", string.upper); return r end]])
+
+asmlib.GetOpVar("TABLE_CATEGORIES")["Test"].Txt = 77
 
 ---------------------------------------------------
 function expCaegoty(sNam, vEq)
@@ -50,7 +53,7 @@ function expCaegoty(sNam, vEq)
       if(not rec.Txt:find("\n")) then
         return asmlib.StatusLog(nil, "Category one-liner <"..cat..">") end
       ioF:write(exp.."\n")
-    end
+    else asmlib.StatusLog(nil, "Category <"..cat.."> code <"..tostring(rec.Txt).."> invalid ") end
   end; ioF:flush(); ioF:close()
 end
 
@@ -81,23 +84,20 @@ function impCategory(sNam, vEq)
           return asmlib.StatusLog(nil, "Name missing <"..txt..">") end
         if(not txt:find("function")) then
           return asmlib.StatusLog(nil, "Function missing <"..key..">") end
-        tCat[key] = {}; tCat[key].Txt = txt
-        tCat[key].Cmp = CompileString("return ("..txt..")",key)
-      else
-        sPar = sPar..sLin.."\n"
-      end; sLin = ""
+        tCat[key] = {}; tCat[key].Txt = txt:Trim("%s")
+        tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
+      else sPar = sPar..sLin.."\n" end; sLin = ""
     else sLin = sLin..sCh end
-  end; ioF:close()
-  return tCat
+  end; ioF:close(); return tCat
 end
 ---------------------------------------------------
 
 expCaegoty("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat.txt", 4)
 
---asmlib.SetOpVar("TABLE_CATEGORIES",{})
+asmlib.SetOpVar("TABLE_CATEGORIES",{})
 
---logTable(impCategory("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat.txt", 4),"tCat")
+logTable(impCategory("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat.txt", 4),"tCat")
 
---expCaegoty("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat2.txt", 4)
+expCaegoty("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat2.txt", 4)
 
 
