@@ -37,7 +37,7 @@ asmlib.DefaultType("Bobster's two feet rails",[[function(m)
   local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
         r = r:gsub("^%l", string.upper); return r end]])
 
-asmlib.GetOpVar("TABLE_CATEGORIES")["Test"].Txt = 77
+
 
 ---------------------------------------------------
 function expCaegoty(sNam, vEq)
@@ -49,7 +49,7 @@ function expCaegoty(sNam, vEq)
   local ioF  = fileOpen(sNam, "w")
   for cat, rec in pairs(tCat) do
     if(asmlib.IsString(rec.Txt)) then
-      local exp = "["..sEq.."["..cat..sEq..rec.Txt.."]"..sEq.."]"
+      local exp = "["..sEq.."["..cat..sEq..rec.Txt:Trim("%s").."]"..sEq.."]"
       if(not rec.Txt:find("\n")) then
         return asmlib.StatusLog(nil, "Category one-liner <"..cat..">") end
       ioF:write(exp.."\n")
