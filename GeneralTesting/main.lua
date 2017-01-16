@@ -1,4 +1,5 @@
 require("ZeroBraineProjects/dvdlualib/common")
+-- require("ZeroBraineProjects/dvdlualib/gmodlib")
 
 local pairs                = pairs
 local Angle                = Angle
@@ -21,19 +22,9 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
-local a = {29,2,3}
+local a = CompileString("function (oSens) return oSens[1] end")
 
-logStatus(nil, "encNumber: "..encNumber(a))
+z = {77}
 
-local b = decNumber(encNumber(a))
-
-for i = 1, #a do
-  if(tonumber(b[i]) == tonumber(a[i])) then
-    logStatus(nil, "Compate OK: "..i.." {"..tostring(b[i])..", "..a[i].."}") end
-end
-
-
-
-
-
+logStatus(a(Z))
 

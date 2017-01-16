@@ -15,6 +15,15 @@ function string.Explode(d, s)
   return stringExplode(s, d)
 end
 
+function string.Trim(s, char)
+  return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
+end
+
+function math.Round( num, idp )
+  local mult = 10 ^ ( idp or 0 )
+  return math.floor( num * mult + 0.5 ) / mult
+end
+
 function CreateConVar(a, b, c, d)
   local self = {}
   local nam, val, flg, dsc = a, b, c, d
@@ -68,4 +77,10 @@ function sqlQuery(sQ) return {} end
 function utilIsValidModel(sMdl)
   if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
   return false
+end
+
+function math.Clamp(v,a,b)
+  if(v <= a) then return a end
+  if(v >= b) then return b end 
+  return v
 end

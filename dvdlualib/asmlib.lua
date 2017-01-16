@@ -1,3 +1,5 @@
+-- require("ZeroBraineProjects/dvdlualib/gmodlib")
+
 --- Vector Component indexes ---
 local cvX -- Vector X component
 local cvY -- Vector Y component
@@ -34,6 +36,7 @@ local CreateConVar         = CreateConVar
 local getmetatable         = getmetatable
 local setmetatable         = setmetatable
 local collectgarbage       = collectgarbage
+local CompileString        = CompileString
 local io                   = io
 local osClock              = os and os.clock
 local osDate               = os and os.date
@@ -811,64 +814,91 @@ function ArrayCount(arArr)
   return (Count - 1)
 end
 
-function InitAssembly(sName)
+function InitBase(sName,sPurpose)
   SetOpVar("TYPEMT_STRING",getmetatable("TYPEMT_STRING"))
   SetOpVar("TYPEMT_SCREEN",{})
   SetOpVar("TYPEMT_CONTAINER",{})
   if(not IsString(sName)) then
-    return StatusPrint(false,"trackasmlib.lua: Error initializing. Expecting string argument")
-  end
-  if(stringLen(sName) < 1 and
-     tonumber(stringSub(sName,1,1))) then return end
-  sName = sName.."assembly"
+    return StatusPrint(false,"InitBase: Name <"..tostring(sName).."> not string") end
+  if(not IsString(sPurpose)) then
+    return StatusPrint(false,"InitBase: Purpose <"..tostring(sPurpose).."> not string") end
+  if(IsEmptyString(sName) or tonumber(stringSub(sName,1,1))) then
+    return StatusPrint(false,"InitBase: Name invalid <"..sName..">") end
+  if(IsEmptyString(sPurpose) or tonumber(stringSub(sPurpose,1,1))) then
+    return StatusPrint(false,"InitBase: Purpose invalid <"..sPurpose..">") end
+  SetOpVar("LOG_MAXLOGS",0)
+  SetOpVar("LOG_CURLOGS",0)
+  SetOpVar("DELAY_FREEZE",0.01)
+  SetOpVar("LOG_LOGFILE","")
+  SetOpVar("LOG_LOGLAST","")
+  SetOpVar("MAX_ROTATION",360)
+  SetOpVar("OPSYM_DISABLE","#")
+  SetOpVar("OPSYM_REVSIGN","@")
+  SetOpVar("OPSYM_DIVIDER","_")
+  SetOpVar("OPSYM_DIRECTORY","/")
+  SetOpVar("OPSYM_SEPARATOR",",")
+  SetOpVar("GOLDEN_RATIO",1.61803398875)
+  SetOpVar("NAME_INIT",stringLower(sName))
+  SetOpVar("NAME_PERP",stringLower(sPurpose))
+  SetOpVar("TOOLNAME_NL",stringLower(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")))
+  SetOpVar("TOOLNAME_NU",stringUpper(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")))
+  SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
+  SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
+  SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_INS","exp"..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("MISS_NOID","N")    -- No ID selected
+  SetOpVar("MISS_NOAV","N/A")  -- Not Available
+  SetOpVar("MISS_NOMD","X")    -- No model
+  SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
+  SetOpVar("LOCALIFY_TABLE",{})
+  SetOpVar("LOCALIFY_AUTO","en")
+  SetOpVar("MODELNAM_FILE","%.mdl")
+  SetOpVar("MODELNAM_FUNC",function(x) return " "..x:sub(2,2):upper() end)
+  SetOpVar("QUERY_STORE", {})
+  SetOpVar("TABLE_BORDERS",{})
+  SetOpVar("TABLE_CATEGORIES",{})
+  SetOpVar("TABLE_PLAYER_KEYS",{})
+  SetOpVar("TABLE_FREQUENT_MODELS",{})
+  SetOpVar("OOP_DEFAULTKEY","(!@<#_$|%^|&>*)DEFKEY(*>&|^%|$_#<@!)")
+  SetOpVar("CVAR_LIMITNAME","asm"..GetOpVar("NAME_INIT").."s")
+  SetOpVar("MODE_DATABASE",GetOpVar("MISS_NOAV"))
+  SetOpVar("HASH_USER_PANEL",GetOpVar("TOOLNAME_PU").."USER_PANEL")
+  SetOpVar("HASH_PROPERTY_NAMES","PROPERTY_NAMES")
+  SetOpVar("HASH_PROPERTY_TYPES","PROPERTY_TYPES")
+  SetOpVar("TRACE_CLASS", {["prop_physics"]=true})
   SetOpVar("NAV_PIECE",{})
   SetOpVar("NAV_PANEL",{})
   SetOpVar("NAV_ADDITION",{})
   SetOpVar("NAV_PROPERTY_NAMES",{})
   SetOpVar("NAV_PROPERTY_TYPES",{})
-  SetOpVar("TOOLNAME_NL",stringLower(sName))
-  SetOpVar("TOOLNAME_NU",stringUpper(sName))
-  SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
-  SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
-  SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
-  SetOpVar("TABLE_FREQUENT_MODELS",{})
-  SetOpVar("TABLE_BORDERS",{})
-  SetOpVar("QUERY_STORE",{})
-  SetOpVar("LOCALIFY_TABLE",{})
-  SetOpVar("LOCALIFY_AUTO","en")
-  SetOpVar("MISS_NOID","N")    -- No ID selected
-  SetOpVar("MISS_NOAV","N/A")  -- Not Available
-  SetOpVar("MISS_NOMD","X")    -- No model
-  SetOpVar("HASH_USER_PANEL",GetOpVar("TOOLNAME_PU").."USER_PANEL")
-  SetOpVar("HASH_PLAYER_KEYDOWN","PLAYER_KEYDOWN")
-  SetOpVar("HASH_PROPERTY_NAMES","PROPERTY_NAMES")
-  SetOpVar("HASH_PROPERTY_TYPES","PROPERTY_TYPES")
-  SetOpVar("FILE_MODEL","%.mdl")
-  SetOpVar("OPSYM_DISABLE","#")
-  SetOpVar("OPSYM_REVSIGN","@")
-  SetOpVar("OPSYM_DIVIDER","_")
-  SetOpVar("OPSYM_DIRECTORY","/")
-  SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
-  SetOpVar("DIRPATH_EXP","export"..GetOpVar("OPSYM_DIRECTORY"))
-  SetOpVar("DIRPATH_DSV","dsvbase"..GetOpVar("OPSYM_DIRECTORY"))
-  SetOpVar("DIRPATH_LOG","")
-  return true
+  return StatusPrint(true,"InitBase: Success")
 end
 
 --SQL---------------------------------
 
-function SetDefaultType(sType)
-  if(not IsString(sType)) then
-    return StatusLog(nil,"SetDefaultType: Type name is not a string")
+function DefaultType(anyType,fCat)
+  if(not IsExistent(anyType)) then
+    local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
+    local tCat = GetOpVar("TABLE_CATEGORIES")[sTyp]
+    return sTyp, (tCat and tCat.Cmp)
+  end; SettingsModelToName("CLR")
+  local sTyp = tostring(anyType); SetOpVar("DEFAULT_TYPE", sTyp)
+  if(IsExistent(fCat)) then
+    local tCat = GetOpVar("TABLE_CATEGORIES")
+    if(type(fCat) == "function") then
+      tCat[sTyp] = {Cmp = fCat}
+    elseif(type(fCat) == "string") then
+      tCat[sTyp] = {Txt = fCat, Cmp = CompileString("return ("..fCat..")", sTyp)}
+    end
   end
-  SetOpVar("DEFAULT_TYPE",sType)
 end
 
-function SetDefaultTable(sTable)
-  if(not IsString(sTable)) then
-    return StatusLog(nil,"SetDefaultTable: Table name is not a string")
-  end
-  SetOpVar("DEFAULT_TABLE",sTable)
+function DefaultTable(anyTable)
+  if(not IsExistent(anyTable)) then
+    return (GetOpVar("DEFAULT_TABLE") or "") end
+  SetOpVar("DEFAULT_TABLE",anyTable)
+  SettingsModelToName("CLR")
 end
 
 function SQLGetBuildErr()
