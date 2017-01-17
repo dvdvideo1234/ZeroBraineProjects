@@ -68,7 +68,6 @@ local function regPanel(pTree, pFolders, iCall, Typ, pCateg, ptCat)
             asmlib.StatusLog(nil, "Make table: <"..sCat..">")
           end; iCnt = iCnt + 1; 
         end
- 
       elseif(asmlib.IsString(ptCat)) then
         if(not asmlib.IsEmptyString(ptCat)) then
           if(not pCurr[ptCat]) then
@@ -94,46 +93,28 @@ if(not pCateg[Typ]) then pCateg[Typ] = {} end
 local pTree = asmlib.MakePanel(); pTree:SetName("Tree"); 
 local pItem = pTree
 local pCurr = pCateg[Typ]
-logTable(pCurr,"pCurr-ST")
+--logTable(pCurr,"pCurr-ST")
 
-bSuc = true
-
-
-
---regPanel(pTree, pFolders, 0, Typ, pCateg, nil)
---regPanel(pTree, pFolders, 1, Typ, pCateg, "")
---regPanel(pTree, pFolders, 2, Typ, pCateg, "Categ")
---regPanel(pTree, pFolders, 3, Typ, pCateg, "Categ")
-
-
+regPanel(pTree, pFolders, 0, Typ, pCateg, nil)
+regPanel(pTree, pFolders, 1, Typ, pCateg, "")
+regPanel(pTree, pFolders, 2, Typ, pCateg, "Categ")
+regPanel(pTree, pFolders, 3, Typ, pCateg, "Categ")
 
 regPanel(pTree, pFolders, 41, Typ, pCateg, {"Categ","Test"})
 regPanel(pTree, pFolders, 42, Typ, pCateg, {"Categ","Test","Gaga"})
 regPanel(pTree, pFolders, 5, Typ, pCateg, {"OneTab"})
 regPanel(pTree, pFolders, 6, Typ, pCateg, {"Categ"})
+regPanel(pTree, pFolders, 7, Typ, pCateg, "Categ")
 
 regPanel(pTree, pFolders, 92, Typ, pCateg, {"1"})
 regPanel(pTree, pFolders, 91, Typ, pCateg, {"1","2"})
 
 regPanel(pTree, pFolders, 93, Typ, pCateg, {"2"})
-
 regPanel(pTree, pFolders, 42, Typ, pCateg, {"Categ","Test","Gaga","hoho"})
 
 logTable(pTree,"pTree")
 
-logTable(pCurr,"pCurr")
+--logTable(pCurr,"pCurr")
 
 --logTable(pFolders,"Folders")
-
-
-
-
-
-
-
-
-
-
-
-
 

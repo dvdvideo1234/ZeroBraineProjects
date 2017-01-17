@@ -2026,16 +2026,16 @@ function GetDirectoryObj(pCurr, vName)
         sName = IsEmptyString(sName) and "Other" or sName
   if(not pCurr[sName]) then
     return StatusLog(nil,"GetDirectoryObj: Location invalid") end
-  return pCurr[sName], pCurr.__ObjPanel__
+  return pCurr[sName], pCurr[sName].__ObjPanel__
 end
 
 function SetDirectoryObj(pnBase, pCurr, vName, sImage, txCol)
-  local sName  = tostring(vName or "")
-        sName  = IsEmptyString(sName) and "Other" or sName
-  pCurr[sName] = {}
-  pCurr.__ObjPanel__ = pnBase:AddNode(sName)
-  pCurr.__ObjPanel__:SetName(sName)
-  return pCurr[sName], pCurr.__ObjPanel__
+  local sName = tostring(vName or "")
+        sName = IsEmptyString(sName) and "Other" or sName
+  local pItem = pnBase:AddNode(sName)
+  pCurr[sName] = {}; pCurr[sName].__ObjPanel__ = pItem
+  pItem:SetName(sName)
+  return pCurr[sName], pItem
 end
 
 function ExportDB(sTable,sDelim,sPrefix,sMethod)
