@@ -33,71 +33,107 @@ asmlib.DefaultType("Test",[[function(m)
           ]])
 
 asmlib.DefaultType("Bobster's two feet rails",[[function(m)
-  local r = m:gsub("models/bobsters_trains/rails/2ft/",""):gsub("_","/")
+  local r = m:gsub("goldels/bobsters_trains/rails/2ft/",""):gsub("_","/")
   local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
         r = r:gsub("^%l", string.upper); return r end]])
 
 
+local conPalette = asmlib.MakeContainer(colors)
 
----------------------------------------------------
-function expCaegoty(sNam, vEq)
-  local nEq = tonumber(vEq) or 0
-  if(nEq <= 0) then
-    return asmlib.StatusLog(nil, "Wrong equality <"..tostring(vEq)..">") end
-  local sEq, nLen = ("="):rep(nEq), (nEq+2)
-  local tCat = asmlib.GetOpVar("TABLE_CATEGORIES")
-  local ioF  = fileOpen(sNam, "w")
-  for cat, rec in pairs(tCat) do
-    if(asmlib.IsString(rec.Txt)) then
-      local exp = "["..sEq.."["..cat..sEq..rec.Txt:Trim("%s").."]"..sEq.."]"
-      if(not rec.Txt:find("\n")) then
-        return asmlib.StatusLog(nil, "Category one-liner <"..cat..">") end
-      ioF:write(exp.."\n")
-    else asmlib.StatusLog(nil, "Category <"..cat.."> code <"..tostring(rec.Txt).."> invalid ") end
-  end; ioF:flush(); ioF:close()
+local function regPanel(pTree, pFolders, iCall, Typ, pCateg, ptCat)
+    local bSuc = true
+    
+    local pItem  
+    if(Typ ~= "" and not pFolders[Typ]) then
+      pItem = pTree:AddNode(Typ)
+      pFolders[Typ] = pItem
+    else
+      pItem = pFolders[Typ]
+    end
+    
+    --logTable(pItem,"Start")
+    
+    if(bSuc) then
+      local pCurr = pCateg[Typ]
+      if(type(ptCat) == "table" and ptCat[1]) then
+        local iCnt = 1;   
+        while(ptCat[iCnt]) do
+          local sCat = tostring(ptCat[iCnt])
+          asmlib.StatusLog(nil, "Ind: <"..sCat..">")
+          if(pCurr[sCat]) then
+            pCurr, pItem = asmlib.GetDirectoryObj(pCurr, sCat)
+            asmlib.StatusLog(nil, "Jump table: <"..sCat..">")
+          else
+            pCurr, pItem = asmlib.SetDirectoryObj(pItem, pCurr, sCat,"icon16/folder.png",conPalette:Select("tx"))
+            asmlib.StatusLog(nil, "Make table: <"..sCat..">")
+          end; iCnt = iCnt + 1; 
+        end
+ 
+      elseif(asmlib.IsString(ptCat)) then
+        if(not asmlib.IsEmptyString(ptCat)) then
+          if(not pCurr[ptCat]) then
+            pCurr, pItem = asmlib.SetDirectoryObj(pItem, pCurr, ptCat,"icon16/folder.png",conPalette:Select("tx"))
+          else
+            pCurr, pItem = asmlib.GetDirectoryObj(pCurr, ptCat)
+          end
+        end
+      end
+      if(psNam and psNam ~= "") then Nam = psNam end
+    end
+    
+    
+    pItem:SetName(pItem:GetName().."("..tostring(iCall)..")")
 end
 
-function impCategory(sNam, vEq)
-  local nEq = tonumber(vEq) or 0
-  if(nEq <= 0) then
-    return asmlib.StatusLog(nil, "Wrong equality <"..tostring(vEq)..">") end
-  local sEq, sLin, nLen = ("="):rep(nEq), "", (nEq+2)
-  local cFr, cBk, sCh = "["..sEq.."[", "]"..sEq.."]", "X"
-  local tCat = asmlib.GetOpVar("TABLE_CATEGORIES")
-  local ioF, sPar, isPar = fileOpen(sNam, "r"), "", false
-  while(sCh) do
-    sCh = ioF:read(1)
-    if(not sCh) then break end
-    if(sCh == "\n") then
-      if(sLin:sub(-1,-1) == "\r") then
-        sLin = sLin:sub(1,-2) end
-      local sFr, sBk = sLin:sub(1,nLen), sLin:sub(-nLen,-1)
-      if(sFr == cFr and sBk == cBk) then
-        return asmlib.StatusLog(nil, "Category one-liner <"..sLin..">")
-      elseif(sFr == cFr and not isPar) then
-        sPar, isPar = sLin:sub(nLen+1,-1).."\n", true
-      elseif(sBk == cBk and isPar) then
-        sPar, isPar = sPar..sLin:sub(1,-nLen-1), false
-        local tBoo = stringExplode(sEq,sPar)
-        local key, txt = tBoo[1], tBoo[2]
-        if(key == "") then
-          return asmlib.StatusLog(nil, "Name missing <"..txt..">") end
-        if(not txt:find("function")) then
-          return asmlib.StatusLog(nil, "Function missing <"..key..">") end
-        tCat[key] = {}; tCat[key].Txt = txt:Trim("%s")
-        tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
-      else sPar = sPar..sLin.."\n" end; sLin = ""
-    else sLin = sLin..sCh end
-  end; ioF:close(); return tCat
-end
----------------------------------------------------
+local Typ  = "Bobster's reails"
+local Nam  = "Rail"
+local pCateg = {}
+local pFolders = {}
 
-expCaegoty("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat.txt", 4)
+if(not pCateg[Typ]) then pCateg[Typ] = {} end
+local pTree = asmlib.MakePanel(); pTree:SetName("Tree"); 
+local pItem = pTree
+local pCurr = pCateg[Typ]
+logTable(pCurr,"pCurr-ST")
 
-asmlib.SetOpVar("TABLE_CATEGORIES",{})
+bSuc = true
 
-logTable(impCategory("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat.txt", 4),"tCat")
 
-expCaegoty("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly/cat2.txt", 4)
+
+--regPanel(pTree, pFolders, 0, Typ, pCateg, nil)
+--regPanel(pTree, pFolders, 1, Typ, pCateg, "")
+--regPanel(pTree, pFolders, 2, Typ, pCateg, "Categ")
+--regPanel(pTree, pFolders, 3, Typ, pCateg, "Categ")
+
+
+
+regPanel(pTree, pFolders, 41, Typ, pCateg, {"Categ","Test"})
+regPanel(pTree, pFolders, 42, Typ, pCateg, {"Categ","Test","Gaga"})
+regPanel(pTree, pFolders, 5, Typ, pCateg, {"OneTab"})
+regPanel(pTree, pFolders, 6, Typ, pCateg, {"Categ"})
+
+regPanel(pTree, pFolders, 92, Typ, pCateg, {"1"})
+regPanel(pTree, pFolders, 91, Typ, pCateg, {"1","2"})
+
+regPanel(pTree, pFolders, 93, Typ, pCateg, {"2"})
+
+regPanel(pTree, pFolders, 42, Typ, pCateg, {"Categ","Test","Gaga","hoho"})
+
+logTable(pTree,"pTree")
+
+logTable(pCurr,"pCurr")
+
+--logTable(pFolders,"Folders")
+
+
+
+
+
+
+
+
+
+
+
 
 

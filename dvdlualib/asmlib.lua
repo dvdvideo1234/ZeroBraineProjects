@@ -1,4 +1,4 @@
--- require("ZeroBraineProjects/dvdlualib/gmodlib")
+require("ZeroBraineProjects/dvdlualib/gmodlib")
 
 --- Vector Component indexes ---
 local cvX -- Vector X component
@@ -48,7 +48,7 @@ local utilIsInWorld        = util and util.IsInWorld
 local utilIsValidModel     = util and util.IsValidModel or utilIsValidModel
 local utilGetPlayerTrace   = util and util.GetPlayerTrace
 local entsCreate           = ents and ents.Create
-local fileOpen             = file and file.Open
+local fileOpen             = fileOpen
 local fileExists           = file and file.Exists
 local fileAppend           = file and file.Append
 local fileDelete           = file and file.Delete
@@ -648,6 +648,22 @@ function ArrayAndIndex(arArr,iEnd)
     bFlg = bFlg and (arArr[iCnt] and true or false)
     iCnt = iCnt + 1
   end return bFlg
+end
+
+local mtPanel = {}
+      mtPanel.__type = "panel"
+function MakePanel(sName)
+  self = {Name = "", Node = {}}
+  function self:AddNode(sName)
+    local nam = tostring(sName or "n/a")
+    self.Node[nam] = MakePanel(nam)
+    return self.Node[nam]:SetName(nam)
+  end
+  function self:SetName(sName)
+    self.Name = tostring(sName or "n/a"); return self
+  end
+  function self:GetName(sName) return self.Name end
+  setmetatable(self, mtPanel); return self
 end
 
 function MakeContainer(sInfo,sDefKey)
@@ -2003,6 +2019,25 @@ local function GetFieldsName(defTable,sDelim)
   return sResult
 end
 
+function GetDirectoryObj(pCurr, vName)
+  if(not pCurr) then
+    return StatusLog(nil,"GetDirectoryObj: Location invalid") end
+  local sName = tostring(vName or "")
+        sName = IsEmptyString(sName) and "Other" or sName
+  if(not pCurr[sName]) then
+    return StatusLog(nil,"GetDirectoryObj: Location invalid") end
+  return pCurr[sName], pCurr.__ObjPanel__
+end
+
+function SetDirectoryObj(pnBase, pCurr, vName, sImage, txCol)
+  local sName  = tostring(vName or "")
+        sName  = IsEmptyString(sName) and "Other" or sName
+  pCurr[sName] = {}
+  pCurr.__ObjPanel__ = pnBase:AddNode(sName)
+  pCurr.__ObjPanel__:SetName(sName)
+  return pCurr[sName], pCurr.__ObjPanel__
+end
+
 function ExportDB(sTable,sDelim,sPrefix,sMethod)
   Print(debug.getinfo(1),"Info")
   local dbFunc = debug.getinfo(1) and debug.getinfo(1).name or ""
@@ -2198,6 +2233,58 @@ function ExportDB(sTable,sDelim,sPrefix,sMethod)
       end
     end
   end
+end
+
+
+function expCaegoty(sNam, vEq)
+  local nEq = tonumber(vEq) or 0
+  if(nEq <= 0) then
+    return StatusLog(nil, "Wrong equality <"..tostring(vEq)..">") end
+  local sEq, nLen = ("="):rep(nEq), (nEq+2)
+  local tCat = GetOpVar("TABLE_CATEGORIES")
+  local ioF  = fileOpen(sNam, "w")
+  for cat, rec in pairs(tCat) do
+    if(IsString(rec.Txt)) then
+      local exp = "["..sEq.."["..cat..sEq..rec.Txt:Trim("%s").."]"..sEq.."]"
+      if(not rec.Txt:find("\n")) then
+        return StatusLog(nil, "Category one-liner <"..cat..">") end
+      ioF:write(exp.."\n")
+    else StatusLog(nil, "Category <"..cat.."> code <"..tostring(rec.Txt).."> invalid ") end
+  end; ioF:flush(); ioF:close()
+end
+
+function impCategory(sNam, vEq)
+  local nEq = tonumber(vEq) or 0
+  if(nEq <= 0) then
+    return StatusLog(nil, "Wrong equality <"..tostring(vEq)..">") end
+  local sEq, sLin, nLen = ("="):rep(nEq), "", (nEq+2)
+  local cFr, cBk, sCh = "["..sEq.."[", "]"..sEq.."]", "X"
+  local tCat = GetOpVar("TABLE_CATEGORIES")
+  local ioF, sPar, isPar = fileOpen(sNam, "r"), "", false
+  while(sCh) do
+    sCh = ioF:read(1)
+    if(not sCh) then break end
+    if(sCh == "\n") then
+      if(sLin:sub(-1,-1) == "\r") then
+        sLin = sLin:sub(1,-2) end
+      local sFr, sBk = sLin:sub(1,nLen), sLin:sub(-nLen,-1)
+      if(sFr == cFr and sBk == cBk) then
+        return StatusLog(nil, "Category one-liner <"..sLin..">")
+      elseif(sFr == cFr and not isPar) then
+        sPar, isPar = sLin:sub(nLen+1,-1).."\n", true
+      elseif(sBk == cBk and isPar) then
+        sPar, isPar = sPar..sLin:sub(1,-nLen-1), false
+        local tBoo = stringExplode(sEq,sPar)
+        local key, txt = tBoo[1], tBoo[2]
+        if(key == "") then
+          return StatusLog(nil, "Name missing <"..txt..">") end
+        if(not txt:find("function")) then
+          return StatusLog(nil, "Function missing <"..key..">") end
+        tCat[key] = {}; tCat[key].Txt = txt:Trim("%s")
+        tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
+      else sPar = sPar..sLin.."\n" end; sLin = ""
+    else sLin = sLin..sCh end
+  end; ioF:close(); return tCat
 end
 
 SetOpVar("TIME_EPOCH",osClock())
