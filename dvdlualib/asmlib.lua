@@ -923,7 +923,7 @@ function SQLSetBuildErr(sError)
   return false
 end
 
-local function MatchType(defTable,snValue,nIndex,bQuoted,sQuote)
+function MatchType(defTable,snValue,nIndex,bQuoted,sQuote)
   if(not defTable) then
     return StatusLog(nil,"MatchType: Missing: Table definition")
   end
