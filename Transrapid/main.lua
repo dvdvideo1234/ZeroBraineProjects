@@ -306,5 +306,35 @@ function ExpParameters(sFile)
 ExpParameters("base_comp")
 
 
+local function loglogTable(tT,sS)
+  local vS = type(sS)
+  local vT = type(tT)
+  local vK = ""
+  if(vT ~= "table") then
+    return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">",nil) end
+  if(next(tT) == nil) then
+    return logStatus(vS.." = {}",nil) end
+  logStatus(sS.." = {}",nil)
+  for k,v in pairs(tT) do
+    if(type(k) == "string") then vK = sS.."[\""..k.."\"]"
+    else vK = sS.."["..tostring(k).."]" end
+    if(type(v) ~= "table") then
+      if(type(v) == "string") then logStatus(vK.." = \""..v.."\"",nil)
+      else logStatus(vK.." = "..tostring(v),nil) end
+    else loglogTable(v,vK) end
+  end
+end
+
+
+local a = {1,2,{1,["a"]=4}}
+local b = 20
+
+loglogTable(nil,"a")
+loglogTable(b,"b")
+loglogTable("","c")
+loglogTable("test","d")
+loglogTable(a,"f")
+
+
 
 

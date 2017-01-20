@@ -65,7 +65,7 @@ function CompileString(s)
 end
 
 function stringTrim( s, char )
-  if ( char ) then char = char:PatternSafe() else char = "%s" end
+  local char = char or "%s"
   return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
 end
 

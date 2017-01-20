@@ -53,32 +53,21 @@ local function regPanel(pTree, pFolders, iCall, Typ, pCateg, ptCat)
     
     --logTable(pItem,"Start")
     
-    if(bSuc) then
-      local pCurr = pCateg[Typ]
-      if(type(ptCat) == "table" and ptCat[1]) then
-        local iCnt = 1;   
-        while(ptCat[iCnt]) do
-          local sCat = tostring(ptCat[iCnt])
-          asmlib.StatusLog(nil, "Ind: <"..sCat..">")
-          if(pCurr[sCat]) then
-            pCurr, pItem = asmlib.GetDirectoryObj(pCurr, sCat)
-            asmlib.StatusLog(nil, "Jump table: <"..sCat..">")
-          else
-            pCurr, pItem = asmlib.SetDirectoryObj(pItem, pCurr, sCat,"icon16/folder.png",conPalette:Select("tx"))
-            asmlib.StatusLog(nil, "Make table: <"..sCat..">")
-          end; iCnt = iCnt + 1; 
+        if(bSuc) then
+          local pCurr = pCateg[Typ]
+          if(asmlib.IsEmptyString(ptCat)) then ptCat = nil end
+          if(ptCat and type(ptCat) ~= "table") then ptCat = {ptCat} end
+          if(ptCat and ptCat[1]) then
+            local iCnt = 1; while(ptCat[iCnt]) do
+              local sCat = tostring(ptCat[iCnt])
+              if(pCurr[sCat]) then -- Jump next if already created
+                pCurr, pItem = asmlib.GetDirectoryObj(pCurr, sCat)
+              else -- Create the last needed node regarding pItem
+                pCurr, pItem = asmlib.SetDirectoryObj(pItem, pCurr, sCat,"icon16/folder.png",conPalette:Select("tx"))
+              end; iCnt = iCnt + 1;
+            end
+          end; if(psNam and psNam ~= "") then Nam = psNam end
         end
-      elseif(asmlib.IsString(ptCat)) then
-        if(not asmlib.IsEmptyString(ptCat)) then
-          if(not pCurr[ptCat]) then
-            pCurr, pItem = asmlib.SetDirectoryObj(pItem, pCurr, ptCat,"icon16/folder.png",conPalette:Select("tx"))
-          else
-            pCurr, pItem = asmlib.GetDirectoryObj(pCurr, ptCat)
-          end
-        end
-      end
-      if(psNam and psNam ~= "") then Nam = psNam end
-    end
     
     
     pItem:SetName(pItem:GetName().."("..tostring(iCall)..")")
@@ -117,4 +106,3 @@ logTable(pTree,"pTree")
 --logTable(pCurr,"pCurr")
 
 --logTable(pFolders,"Folders")
-

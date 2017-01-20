@@ -203,27 +203,21 @@ function PrintPush(aTable,sName)
 end
 
 function Print(tT,sS)
-  if(not IsExistent(tT)) then
-    return StatusLog(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}") end
-  local S, T, Key = type(sS), type(tT), ""
-  if    (S == "string") then S = sS
-  elseif(S == "number") then S = tostring(sS)
-  else                       S = "Data" end
-  if(T ~= "table") then
-    LogInstance("{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT)); return end
-  T = tT
-  if(next(T) == nil) then
-    LogInstance(S.." = {}"); return end
-  LogInstance(S)
-  for k,v in pairs(T) do
+  local vS, vT, vK, cK = type(sS), type(tT), tostring(sS), ""
+  if(vT ~= "table") then
+    LogInstance("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">"); return end
+  if(next(tT) == nil) then
+    LogInstance(vK.." = {}"); return end
+  -- LogInstance(vK)
+  for k, v in pairs(tT) do
     if(type(k) == "string") then
-      Key = S.."[\""..k.."\"]"
-    else Key = S.."["..tostring(k).."]" end
+      cK = vK.."[\""..k.."\"]"
+    else cK = vK.."["..tostring(k).."]" end
     if(type(v) ~= "table") then
       if(type(v) == "string") then
-        LogInstance(Key.." = \""..v.."\"")
-      else LogInstance(Key.." = "..tostring(v)) end
-    else Print(v,Key) end
+        LogInstance(cK.." = \""..v.."\"")
+      else LogInstance(cK.." = "..tostring(v)) end
+    else Print(v, cK) end
   end
 end
 
