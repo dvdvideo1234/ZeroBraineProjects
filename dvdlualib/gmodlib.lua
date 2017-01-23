@@ -34,18 +34,17 @@ function CreateConVar(a, b, c, d)
 end
 
 function fileOpen(n, m)
-  local F = io.open(n, m)
-  if(not F) then
+  local f = io.open(n, m)
+  if(not f) then
     return logStatus(nil,"fileOpen: Nofile: "..tostring(n))
-  end; return F
+  end
+  return f
 end
 
 function fileExists(n)
-  local F = fileOpen(n, "r")
-  if(F) then
-    F:close()
-    return true
-  end
+  local f = fileOpen(n, "r")
+  if(f) then
+    f:close(); return true; end
   return false
 end
 
@@ -83,4 +82,19 @@ function math.Clamp(v,a,b)
   if(v <= a) then return a end
   if(v >= b) then return b end 
   return v
+end
+
+function fileCreateDir(sPath)
+  os.execute("md "..sPath)
+  return true
+end
+
+function table.GetKeys( tab )
+	local keys = {}
+	local id = 1
+	for k, v in pairs( tab ) do
+		keys[ id ] = k
+		id = id + 1
+	end
+	return keys
 end
