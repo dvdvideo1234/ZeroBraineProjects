@@ -53,17 +53,16 @@ local sPath = asmlib.GetOpVar("DIRPATH_BAS")..asmlib.GetOpVar("DIRPATH_DSV").."e
                 ..asmlib.GetOpVar("DEFTABLE_PIECES").Name..".txt"
 
 asmlib.SetOpVar("GAME_SINGLE", true)
-asmlib.SetOpVar("GAME_CLIENT", true)
+asmlib.SetOpVar("GAME_CLIENT", false)
 
 
 if(not fileExists(sPath)) then
-  asmlib.RegisterDSV("ex_","Test")
+  asmlib.RegisterDSV("ex_","Test","\t")
 end
 
 asmlib.SynchronizeDSV("PIECES","\t",true,myTable,"ex_","Test")
 
-asmlib.ProcessDSV()
-
+asmlib.ProcessDSV("\t")
 
 -- asmlib.ImportDSV("PIECES","\t",true,"ex_")
 
