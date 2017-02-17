@@ -1,6 +1,5 @@
 local type         = type
 local math         = math
-local string       = string
 local tonumber     = tonumber
 local tostring     = tostring
 local setmetatable = setmetatable
@@ -289,42 +288,40 @@ function Complex(nRe,nIm)
 end
 
 local function StrValidateComplex(sStr)
-  local Str = string.gsub(sStr," ","") -- Remove spaces
-  local S, E = 1, string.len(Str)
+  local Str = sStr:gsub("%s","") -- Remove hollows
+  local S, E = 1, Str:len()
   while(S < E) do
-    local CS = string.sub(Str,S,S)
-    local CE = string.sub(Str,E,E)
---    LogMulty("StrValidateComplex C ",CS,CE)
-    local FS = string.find(metaComplex.__bords[1],CS,1,true)
-    local FE = string.find(metaComplex.__bords[2],CE,1,true)
-    if(not FS and FE) then return logStatus(nil,"StrValidateComplex: Unbalanced end <"..CE..">") end
-    if(not FE and FS) then return logStatus(nil,"StrValidateComplex: Unbalanced beg <"..CS..">") end
---    LogMulty("StrValidateComplex F ",FS,FE)
+    local CS = Str:sub(S,S)
+    local CE = Str:sub(E,E)
+    local FS = metaComplex.__bords[1]:find(CS,1,true)
+    local FE = metaComplex.__bords[2]:find(CE,1,true)
+    if((not FS) and FE) then return logStatus(nil,"StrValidateComplex: Unbalanced end #"..CS..CE.."#") end
+    if((not FE) and FS) then return logStatus(nil,"StrValidateComplex: Unbalanced beg #"..CS..CE.."#") end
     if(FS and FE and FS > 0 and FE > 0) then
       if(FS == FE) then S = S + 1; E = E - 1
-      else return logStatus(nil,"StrValidateComplex: Unbalanced beg <"..CS..">") end
+      else return logStatus(nil,"StrValidateComplex: Bracket mismatch #"..CS..CE.."#") end
     elseif(not (FS and FE)) then break end;
   end; return Str, S, E
 end
 
 local function Str2Complex(sStr, nS, nE, sDel)
-  local Del = string.sub(tostring(sDel or ","),1,1)
-  local S, E, D = nS, nE, string.find(sStr,Del)
+  local Del = tostring(sDel or ","):sub(1,1)
+  local S, E, D = nS, nE, sStr:find(Del)
   if((not D) or (D < S) or (D > E)) then
-    return Complex(tonumber(string.sub(sStr,S,E)) or 0, 0) end
-  return Complex(tonumber(string.sub(sStr,S,D-1)) or 0, tonumber(string.sub(sStr,D+1,E)) or 0)
+    return Complex(tonumber(sStr:sub(S,E)) or 0, 0) end
+  return Complex(tonumber(sStr:sub(S,D-1)) or 0, tonumber(sStr:sub(D+1,E)) or 0)
 end
 
 local function StrI2Complex(sStr, nS, nE, nI)
   if(nI == 0) then return logStatus(nil,"StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
   local M = nI - 1 -- There will be no delimiter symbols here
-  local C = string.sub(sStr,M,M)
+  local C = sStr:sub(M,M)
   if(nI == nE) then  -- (-0.7-2.9i) Skip symbols til +/- is reached
     while(C ~= "+" and C ~= "-") do
-      M = M - 1; C = string.sub(sStr,M,M)
-    end; return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(string.sub(sStr,M,nE-1)))
+      M = M - 1; C = sStr:sub(M,M)
+    end; return Complex(tonumber(sStr:sub(nS,M-1)), tonumber(sStr:sub(M,nE-1)))
   else -- (-0.7-i2.9)
-    return Complex(tonumber(string.sub(sStr,nS,M-1)), tonumber(C..string.sub(sStr,nI+1,nE)))
+    return Complex(tonumber(sStr:sub(nS,M-1)), tonumber(C..sStr:sub(nI+1,nE)))
   end
 end
 
@@ -364,11 +361,11 @@ function ToComplex(In,Del)
   if(tIn == "string") then
     local Str, S, E = StrValidateComplex(In)
     if(not (Str and S and E)) then return logStatus(nil,"ToComplex: Failed to vlalidate <"..tostring(In)..">") end
-        Str = string.sub (Str, S ,E); E = E-S+1; S = 1
-    local I = string.find(Str,'i',S)
-          I = string.find(Str,'I',S) or I
-          I = string.find(Str,'j',S) or I
-          I = string.find(Str,'J',S) or I
+        Str = Str:sub(S ,E); E = E-S+1; S = 1
+    local I = Str:find("i",S)
+          I = Str:find("I",S) or I
+          I = Str:find("j",S) or I
+          I = Str:find("J",S) or I
     if(I and (I > 0)) then return StrI2Complex(Str, S, E, I)
     else return Str2Complex(Str, S, E, Del) end
   end

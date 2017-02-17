@@ -38,6 +38,11 @@ function fileOpen(n, m)
   if(not f) then
     return logStatus(nil,"fileOpen: Nofile: "..tostring(n))
   end
+  local mt = getmetatable(f)
+  mt.Read  = mt.read
+  mt.Write = mt.write
+  mt.Close = mt.close
+  mt.Flush = mt.flush
   return f
 end
 
@@ -60,7 +65,7 @@ function fileAppend(n, c)
 end
 
 function CompileString(s)
-  return s
+  return load(s)
 end
 
 function stringTrim( s, char )

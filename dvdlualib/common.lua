@@ -24,7 +24,7 @@ function xyText(xyP)
 end
 
 function xyLog(xyP,anyMsg)
-  logStatus(nil,tostring(anyMsg)..xyText(xyP))
+  logStatus(nil,tostring(anyMsg or "")..xyText(xyP))
 end
 
 function xyPlot(xyP,clDrw)
@@ -45,31 +45,20 @@ function logMulty(...)
 end
 
 function logTable(tT,sS)
-  if(not tT) then
-    return logStatus(nil,"Print: {nil, name="..tostring(sS or "\"Data\"").."}") end
-  local S = type(sS)
-  local T = type(tT)
-  local Key = ""
-  if    (S == "string") then S = sS
-  elseif(S == "number") then S = tostring(sS)
-  else                       S = "Data" end
-  if(T ~= "table") then logStatus(nil,"{"..T.."}["..tostring(sS or "N/A").."] = "..tostring(tT)); return end
-  T = tT
-  if(next(T) == nil) then logStatus(nil,S.." = {}"); return end
-  logStatus(nil,S)
-  for k,v in pairs(T) do
+  local vS, vT, vK, cK = type(sS), type(tT), tostring(sS or "Data"), ""
+  if(vT ~= "table") then
+    return logStatus(nil,"{"..vT.."}["..vK.."] = <"..tostring(tT)..">") end
+  logStatus(nil,vK.." = {}")
+  if(next(tT) == nil) then return end
+  for k, v in pairs(tT) do
     if(type(k) == "string") then
-      Key = S.."[\""..k.."\"]"
-    else
-      Key = S.."["..tostring(k).."]"
-    end
+      cK = vK.."[\""..k.."\"]"
+    else cK = vK.."["..tostring(k).."]" end
     if(type(v) ~= "table") then
       if(type(v) == "string") then
-        logStatus(nil,Key.." = \""..v.."\"")
-      else
-        logStatus(nil,Key.." = "..tostring(v))
-      end
-    else logTable(v,Key) end
+        logStatus(nil,cK.." = \""..v.."\"")
+      else logStatus(nil,cK.." = "..tostring(v)) end
+    else logTable(v, cK) end
   end
 end
 

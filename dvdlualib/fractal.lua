@@ -18,6 +18,7 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
   local imFac = (maxIm-minIm)/(imgH) -- Im units per pixel
   local self, frcPalet, frcNames, conKeys, uZoom, brdCl, bbrdP = {}, {}, {}, {}, 1, clbrd, bBrdP
   local uniCr, uniCi = minRe + ((maxRe - minRe) / 2), minIm + ((maxIm - minIm) / 2)
+  setmetatable(self,metaFractal)
   function self:SetControlWX(wx)
     conKeys.dirU, conKeys.dirD = (wx["WXK_UP"]   or -1), (wx["WXK_DOWN"]  or -1)
     conKeys.dirL, conKeys.dirR = (wx["WXK_LEFT"] or -1), (wx["WXK_RIGHT"] or -1)
@@ -131,8 +132,33 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
       updt()
     end
   end
+  return self
+end
 
-  setmetatable(self,metaFractal)
-
+local mtTreeY = {}
+      mtTreeY.__type = "ytree"
+function makeTreeY(iMax, clDraw)
+  local draw = clDraw
+  local self = {Lev = 0, Max = (tonumber(iMax) or 0)}
+  if(self.Max <= 0) then return logStatus(nil,"YTree depth invalid <"..tostring(self.Max)..">") end
+  setmetatable(self, mtTreeY)
+  function self:Allocate(tBranch)
+    if(not  tBranch.Lev) then tBranch.Lev = self.Lev end
+    if(tBranch.Lev == 0) then tBranch.Max = self.Max end
+    if(tBranch.Lev < self.Max) then
+      tBranch["<"] = {Lev = (tBranch.Lev + 1)}
+      tBranch[">"] = {Lev = (tBranch.Lev + 1)}
+      self:Allocate(tBranch["<"])
+      self:Allocate(tBranch[">"])
+    end
+  end
+  function self:Draw(tBranch, oX, oY, dX, dY)
+    if(not draw) then return end
+    if(tBranch.Lev < self.Max) then
+      pncl(draw); line(oX, oY, oX, oY+dY)
+      line(oX, oY+dY, oX-dX, oY+dY+dY); self:Draw(tBranch["<"], oX-dX, oY+dY+dY, dX/2, dY/2)
+      line(oX, oY+dY, oX+dX, oY+dY+dY); self:Draw(tBranch[">"], oX+dX, oY+dY+dY, dX/2, dY/2)
+    end
+  end
   return self
 end

@@ -21,6 +21,7 @@ local type                 = type
 local Angle                = Angle
 local Color                = Color
 local pairs                = pairs
+local pcall                = pcall
 local print                = print
 local tobool               = tobool
 local Vector               = Vector
@@ -432,6 +433,19 @@ function StringDefault(sBase, sDefault)
   return ""
 end
 
+local function IsZeroPOA(stPOA,sOffs)
+  if(not IsString(sOffs)) then
+    return StatusLog(nil,"IsZeroPOA: Mode {"..type(sOffs).."}<"..tostring(sOffs).."> not string") end
+  if(not IsExistent(stPOA)) then
+    return StatusLog(nil,"IsZeroPOA: Missing offset") end
+  local ctA, ctB, ctC
+  if    (sOffs == "V") then ctA, ctB, ctC = cvX, cvY, cvZ
+  elseif(sOffs == "A") then ctA, ctB, ctC = caP, caY, caR
+  else return StatusLog(nil,"IsZeroPOA: Missed offset mode "..sOffs) end
+  if(stPOA[ctA] == 0 and stPOA[ctB] == 0 and stPOA[ctC] == 0) then return true end
+  return false
+end
+
 local function IsEqualPOA(stOffsetA,stOffsetB)
   if(not IsExistent(stOffsetA)) then return StatusLog(nil,"EqualPOA: Missing OffsetA") end
   if(not IsExistent(stOffsetB)) then return StatusLog(nil,"EqualPOA: Missing OffsetB") end
@@ -441,51 +455,22 @@ local function IsEqualPOA(stOffsetA,stOffsetB)
   return true
 end
 
-local function StringPOA(arOffs,iID,sOffs)
-  if(not IsExistent(arOffs)) then return StatusLog(nil,"StringPOA: Missing Offsets") end
-  local iID = tonumber(iID)
-  if(not IsExistent(iID))    then return StatusLog(nil,"StringPOA: Missing PointID") end
-  local Offset = arOffs[iID]
-  if(not IsExistent(Offset)) then return StatusLog(nil,"StringPOA: No PointID") end
-  local sEmpty
-  local sResult = ""
-  local sOffset = tostring(sOffs)
+local function StringPOA(stPOA,sOffs)
+  if(not IsString(sOffs)) then
+    return StatusLog(nil,"StringPOA: Mode {"..type(sOffs).."}<"..tostring(sOffs).."> not string") end
+  if(not IsExistent(stPOA)) then
+    return StatusLog(nil,"StringPOA: Missing Offsets") end
   local symRevs = GetOpVar("OPSYM_REVSIGN")
   local symDisa = GetOpVar("OPSYM_DISABLE")
-  local sOffs
-  local sModeDB = tostring(GetOpVar("MODE_DATABASE"))
-  if    (sModeDB == "SQL") then sEmpty = "NULL"
-  elseif(sModeDB == "LUA") then sEmpty = ""
-  else return StatusLog("","StringPOA: Missed database mode "..sModeDB)
-  end
-  if(sOffset == "P") then
-    if(not Offset.P[csD]) then
-      if(IsEqualPOA(Offset.P,Offset.O)) then
-        sResult = sEmpty
-      else
-        sResult = ((Offset.P[csX] == -1) and symRevs or "")..tostring(Offset.P[cvX])..","
-                ..((Offset.P[csY] == -1) and symRevs or "")..tostring(Offset.P[cvY])..","
-                ..((Offset.P[csZ] == -1) and symRevs or "")..tostring(Offset.P[cvZ])
-      end
-    else
-      sResult = symDisa
-    end
-  elseif(sOffset == "O") then
-    sResult = ((Offset.O[csX] == -1) and symRevs or "")..tostring(Offset.O[cvX])..","
-            ..((Offset.O[csY] == -1) and symRevs or "")..tostring(Offset.O[cvY])..","
-            ..((Offset.O[csZ] == -1) and symRevs or "")..tostring(Offset.O[cvZ])
-  elseif(sOffset == "A") then
-    if(Offset.A[caP] == 0 and Offset.A[caY] == 0 and Offset.A[caR] == 0) then
-      sResult = sEmpty
-    else
-      sResult = ((Offset.A[csX] == -1) and symRevs or "")..tostring(Offset.A[caP])..","
-              ..((Offset.A[csY] == -1) and symRevs or "")..tostring(Offset.A[caY])..","
-              ..((Offset.A[csZ] == -1) and symRevs or "")..tostring(Offset.A[caR])
-    end
-  else
-    return StatusLog("","StringPOA: Missed offset mode "..sOffset)
-  end
-  return sResult
+  local symSepa = GetOpVar("OPSYM_SEPARATOR")
+  local sModeDB = GetOpVar("MODE_DATABASE")
+  if    (sOffs == "V") then ctA, ctB, ctC = cvX, cvY, cvZ
+  elseif(sOffs == "A") then ctA, ctB, ctC = caP, caY, caR
+  else return StatusLog(nil,"StringPOA: Missed offset mode "..sOffs) end
+  return stringGsub((stPOA[csD] and symDisa or "")  -- Get rid of the spaces
+                 ..((stPOA[csA] == -1) and symRevs or "")..tostring(stPOA[ctA])..symSepa
+                 ..((stPOA[csB] == -1) and symRevs or "")..tostring(stPOA[ctB])..symSepa
+                 ..((stPOA[csC] == -1) and symRevs or "")..tostring(stPOA[ctC])," ","")
 end
 
 function TransferPOA(stOffset,sMode)
@@ -1557,7 +1542,7 @@ local function Bsort(Data,Lo,Hi)
   end
 end
 
-function Sort(tTable,tKeys,tFields,sMethod)
+function oldSort(tTable,tKeys,tFields,sMethod)
   local Match = {}
   local tKeys = tKeys or {}
   local tFields = tFields or {}
@@ -1603,6 +1588,57 @@ function Sort(tTable,tKeys,tFields,sMethod)
   else
     return StatusLog(nil,"Sort: Method <"..sMethod.."> not found")
   end
+  return Match
+end
+
+local function Sort(tTable,tKeys,tFields)
+  local function QuickSort(Data,Lo,Hi)
+    if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
+      return StatusLog(nil,"QuickSort: Data dimensions mismatch") end
+    local iMid = mathRandom(Hi-(Lo-1))+Lo-1
+    Data[Lo], Data[iMid] = Data[iMid], Data[Lo]
+    iMid = Lo
+    local vMid = Data[Lo].Val
+    local iCnt = Lo + 1
+    while(iCnt <= Hi)do
+      if(Data[iCnt].Val < vMid) then
+        iMid = iMid + 1
+        Data[iMid], Data[iCnt] = Data[iCnt], Data[iMid]
+      end
+      iCnt = iCnt + 1
+    end
+    Data[Lo], Data[iMid] = Data[iMid], Data[Lo]
+    QuickSort(Data,Lo,iMid-1)
+    QuickSort(Data,iMid+1,Hi)
+  end
+
+  local Match = {}
+  local tKeys = tKeys or {}
+  local tFields = tFields or {}
+  local iCnt, iInd, sKey, vRec, sFld = 1, nil, nil, nil, nil
+  if(not tKeys[1]) then
+    for k,v in pairs(tTable) do
+      tKeys[iCnt] = k; iCnt = iCnt + 1
+    end; iCnt = 1
+  end
+  while(tKeys[iCnt]) do
+    sKey = tKeys[iCnt]; vRec = tTable[sKey]
+    if(not vRec) then
+      return StatusLog(nil,"Sort: Key <"..sKey.."> does not exist in the primary table") end
+    Match[iCnt] = {}
+    Match[iCnt].Key = sKey
+    if(type(vRec) == "table") then
+      Match[iCnt].Val, iInd = "", 1
+      while(tFields[iInd]) do
+        sFld = tFields[iInd]
+        if(not IsExistent(vRec[sFld])) then
+          return StatusLog(nil,"Sort: Field <"..sFld.."> not found on the current record") end
+        Match[iCnt].Val = Match[iCnt].Val..tostring(vRec[sFld])
+        iInd = iInd + 1
+      end
+    else Match[iCnt].Val = vRec end
+    iCnt = iCnt + 1
+  end; QuickSort(Match,1,iCnt-1)
   return Match
 end
 
@@ -1986,18 +2022,19 @@ function CacheQueryPanel()
   end
 end
 
-local function GetFieldsName(defTable,sDelim)
+local function GetColumns(defTable, sDelim)
   if(not IsExistent(sDelim)) then return "" end
-  if(not IsString(sDelim)) then return "" end
-  local sDelim  = stringSub(sDelim,1,1)
+  local sDelim  = tostring(sDelim or "\t"):sub(1,1)
   local sResult = ""
+  if(IsEmptyString(sDelim)) then
+    return StatusLog("","GetColumns: Invalid delimiter for <"..defTable.Name..">") end
   local iCount  = 1
   local namField
   while(defTable[iCount]) do
     namField = defTable[iCount][1]
     if(not IsString(namField)) then
-      return StatusLog("","GetFieldsName: Invalid field #"..iCount.." for "..defTable.Name)
-    end
+      return StatusLog("","GetColumns: Field #"..iCount
+               .." {"..type(namField).."}<"..tostring(namField).."> not string") end
     sResult = sResult..namField
     if(defTable[iCount + 1]) then sResult = sResult..sDelim end
     iCount = iCount + 1
@@ -2022,203 +2059,6 @@ function SetDirectoryObj(pnBase, pCurr, vName, sImage, txCol)
   pCurr[sName] = {}; pCurr[sName].__ObjPanel__ = pItem
   pItem:SetName(sName)
   return pCurr[sName], pItem
-end
-
-function ExportDB(sTable,sDelim,sPrefix,sMethod)
-  Print(debug.getinfo(1),"Info")
-  local dbFunc = debug.getinfo(1) and debug.getinfo(1).name or ""
-  print(dbFunc)
-  if(not IsString(sTable)) then
-    return StatusLog(false,"ExportIntoDSV: Table name should be string but "..type(sTable))
-  end
-  local defTable = GetOpVar("TABLEDEF_"..sTable)
-  if(not defTable) then
-    return StatusLog(false,"ExportIntoDSV: Missing: Table definition for "..sTable)
-  end
-  local namTable = defTable.Name
-  local Bas = GetOpVar("DIRPATH_BAS")
-  local Dsv = GetOpVar("DIRPATH_DSV")
-  local BasDsv = Bas..Dsv
-  local Cache = libCache[namTable]
-  if(not IsExistent(Cache)) then
-    return StatusLog(false,"ExportIntoDSV: Cache not allocated for "..namTable)
-  end
-  local F = io.open("E:/Documents/Lua-Projs/Lua/Projects/TempTest/data.txt","w+")
-            io.output(F)
-
-  local sModeDB  = tostring(GetOpVar("MODE_DATABASE"))
-  local sMethod = tostring(sMethod)
-  io.write("# Exported on: "..os.date().." [ "..sModeDB.." ]".."\n")
-  io.write("# Table info: "..namTable..sDelim..GetFieldsName(defTable,sDelim).."\n")
-  if(sModeDB == "SQL") then
-    local Q = ""
-    local sData = ""
-    local sTemp = ""
-    if(sTable == "PIECES") then
-      Q = SQLBuildSelect(defTable,nil,nil,{2,3,1,4})
-    elseif(sTable == "ADDITIONS") then
-      Q = SQLBuildSelect(defTable,nil,nil,{1,2,3})
-    elseif(sTable == "PHYSPROPERTIES") then
-      Q = SQLBuildSelect(defTable,nil,nil,{1,2})
-    else
-      Q = SQLBuildSelect(defTable,nil,nil,nil)
-    end
-    if(Q) then
-      io.write("# Query ran: >"..Q.."<\n")
-      --OLD-- local qData = sql.Query(Q)
-      -------- Just for the test
-      local qData = GetOpVar("TEST_QUERY_DATA")
-      --------
-      if(qData and qData[1]) then
-        local qRec
-        local iCnt, iInd = 1, 1
-        if(sMethod == "DSV") then
-          sData = namTable..sDelim
-        elseif(sMethod == "INS") then
-          sData = "  asmlib.InsertRecord(\""..sTable.."\", {"
-        else
-          return StatusLog(false,"ExportDB: Missed export method "..sMethod)
-        end
-        while(qData[iCnt]) do
-          iInd = 1
-          sTemp = sData
-          qRec = qData[iCnt]
-          while(defTable[iInd]) do
-            sTemp = sTemp..MatchType(defTable,qRec[defTable[iInd][1]],iInd,true,"\"")
-            if(defTable[iInd + 1]) then sTemp = sTemp..sDelim end
-            iInd = iInd + 1
-          end
-          if(sMethod == "DSV") then
-            sTemp = sTemp.."\n"
-          elseif(sMethod == "INS") then
-            sTemp = sTemp.."})\n"
-          end
-          io.write(sTemp)
-          iCnt = iCnt + 1
-        end
-        return true
-      end
-      return StatusLog(false,"ExportIntoDSV: No data found >"..Q.."<")
-    end
-    return StatusLog(false,"ExportIntoDSV: "..SQLGetBuildErr())
-  elseif(sModeDB == "LUA") then
-    local sData = ""
-    local sTemp = ""
-    local extModel = GetOpVar("FILE_EXTENSION_MODEL")
-    if(sTable == "PIECES") then
-      local tData = {}
-      local iInd iNdex = 1,1
-      for sModel, tRecord in pairs(Cache) do
-        iNdex = stringLen(sModel)
-        if(stringSub(sModel,iNdex-3,iNdex) == extModel) then
-          sData = tRecord.Type..tRecord.Name..sModel
-          tData[sModel] = {[defTable[1][1]] = sData}
-        end
-      end
-      local tSorted = Sort(tData,nil,{defTable[1][1]})
-      if(not tSorted) then
-        return StatusLog(false,"ExportDB: Cannot sort cache data")
-      end
-      iNdex = 1
-      while(tSorted[iNdex]) do
-        iInd = 1
-        tData = Cache[tSorted[iNdex].Key]
-        if(sMethod == "DSV") then
-          sData = namTable..sDelim
-        elseif(sMethod == "INS") then
-          sData = "  asmlib.InsertRecord(\""..sTable.."\", {"
-        else
-          return StatusLog(false,"ExportDB: Missed export method "..sMethod)
-        end
-        sData = sData..MatchType(defTable,tSorted[iNdex].Key,1,true,"\"")..sDelim..
-                       MatchType(defTable,tData.Type,2,true,"\"")..sDelim..
-                       MatchType(defTable,tData.Name,3,true,"\"")..sDelim
-
-        while(tData.Offs[iInd]) do
-            sTemp = sData..MatchType(defTable,tostring(iInd),4,true,"\"")..sDelim..
-                          "\""..StringPOA(tData.Offs,iInd,"P").."\""..sDelim..
-                          "\""..StringPOA(tData.Offs,iInd,"O").."\""..sDelim..
-                          "\""..StringPOA(tData.Offs,iInd,"A").."\""
-          if(sMethod == "DSV") then
-            sTemp = sTemp.."\n"
-          elseif(sMethod == "INS") then
-            sTemp = sTemp.."})\n"
-          end
-          io.write(sTemp)
-          iInd = iInd  + 1
-        end
-        iNdex = iNdex + 1
-      end
-    elseif(sTable == "ADDITIONS") then
-      local iNdex, tData
-      for sModel, tRecord in pairs(Cache) do
-        iNdex = stringLen(sModel)
-        if(stringSub(sModel,iNdex-3,iNdex) == extModel) then
-          if(sMethod == "DSV") then
-            sData = namTable..sDelim..sModel..sDelim
-          elseif(sMethod == "INS") then
-            sData = "  asmlib.InsertRecord(\""..sTable.."\", {"
-          else
-            return StatusLog(false,"ExportDB: Missed export method "..sMethod)
-          end
-          iNdex = 1
-          while(tRecord[iNdex]) do
-            tData = tRecord[iNdex]
-            sTemp = sData..MatchType(defTable,tData[defTable[2 ][1]],2 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[3 ][1]],3 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[4 ][1]],4 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[5 ][1]],5 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[6 ][1]],6 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[7 ][1]],7 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[8 ][1]],8 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[9 ][1]],9 ,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[10][1]],10,true,"\"")..sDelim..
-                           MatchType(defTable,tData[defTable[11][1]],11,true,"\"")
-            if(sMethod == "DSV") then
-              sTemp = sTemp.."\n"
-            elseif(sMethod == "INS") then
-              sTemp = sTemp.."})\n"
-            end
-            io.write(sTemp)
-            iNdex = iNdex + 1
-          end
-        end
-      end
-    elseif(sTable == "PHYSPROPERTIES") then
-      local tTypes = Cache[GetOpVar("HASH_PROPERTY_TYPES")]
-      local tNames = Cache[GetOpVar("HASH_PROPERTY_NAMES")]
-      if(not (tTypes or tNames)) then return StatusLog(false,"ExportIntoDSV: No data found") end
-      local iInd, iCnt = 1, 1
-      local sType, sName = "", ""
-      local tType
-      while(tTypes[iInd]) do
-        sType = tTypes[iInd]
-        tType = tNames[sType]
-        if(not tType) then return StatusLog(false,"ExportIntoDSV: Missing index #"..iInd.." on type "..sType) end
-        if(sMethod == "DSV") then
-          sData = namTable..sDelim
-        elseif(sMethod == "INS") then
-          sData = "  asmlib.InsertRecord(\""..sTable.."\", {"
-        else
-          return StatusLog(false,"ExportDB: Missed export method "..sMethod)
-        end
-        iCnt = 1
-        while(tType[iCnt]) do
-          sTemp = sData..MatchType(defTable,sType      ,1,true,"\"")..sDelim..
-                         MatchType(defTable,iCnt       ,2,true,"\"")..sDelim..
-                         MatchType(defTable,tType[iCnt],3,true,"\"")
-          if(sMethod == "DSV") then
-            sTemp = sTemp.."\n"
-          elseif(sMethod == "INS") then
-            sTemp = sTemp.."})\n"
-          end
-          io.write(sTemp)
-          iCnt = iCnt + 1
-        end
-        iInd = iInd + 1
-      end
-    end
-  end
 end
 
 
@@ -2294,52 +2134,6 @@ local function IsEqualPOA(stOffsetA,stOffsetB)
     if(Ind ~= csD and stOffsetB[Ind] ~= Comp) then return false end
   end
   return true
-end
-
-local function StringPOA(arOffs,iID,sOffs)
-  if(not IsExistent(arOffs)) then return StatusLog(nil,"StringPOA: Missing Offsets") end
-  local iID = tonumber(iID)
-  if(not IsExistent(iID))    then return StatusLog(nil,"StringPOA: Missing PointID") end
-  local Offset = arOffs[iID]
-  if(not IsExistent(Offset)) then return StatusLog(nil,"StringPOA: No PointID") end
-  local sEmpty
-  local sResult = ""
-  local sOffset = tostring(sOffs)
-  local symRevs = GetOpVar("OPSYM_REVSIGN")
-  local symDisa = GetOpVar("OPSYM_DISABLE")
-  local sModeDB = GetOpVar("MODE_DATABASE")
-  if    (sModeDB == "SQL") then sEmpty = "NULL"
-  elseif(sModeDB == "LUA") then sEmpty = "NULL"
-  else return StatusLog("","StringPOA: Missed database mode "..sModeDB)
-  end
-  if(sOffset == "P") then
-    if(not Offset.P[csD]) then
-      if(IsEqualPOA(Offset.P,Offset.O)) then
-        sResult = sEmpty
-      else
-        sResult = ((Offset.P[csX] == -1) and symRevs or "")..tostring(Offset.P[cvX])..","
-                ..((Offset.P[csY] == -1) and symRevs or "")..tostring(Offset.P[cvY])..","
-                ..((Offset.P[csZ] == -1) and symRevs or "")..tostring(Offset.P[cvZ])
-      end
-    else
-      sResult = symDisa
-    end
-  elseif(sOffset == "O") then
-    sResult = ((Offset.O[csX] == -1) and symRevs or "")..tostring(Offset.O[cvX])..","
-            ..((Offset.O[csY] == -1) and symRevs or "")..tostring(Offset.O[cvY])..","
-            ..((Offset.O[csZ] == -1) and symRevs or "")..tostring(Offset.O[cvZ])
-  elseif(sOffset == "A") then
-    if(Offset.A[caP] == 0 and Offset.A[caY] == 0 and Offset.A[caR] == 0) then
-      sResult = sEmpty
-    else
-      sResult = ((Offset.A[csX] == -1) and symRevs or "")..tostring(Offset.A[caP])..","
-              ..((Offset.A[csY] == -1) and symRevs or "")..tostring(Offset.A[caY])..","
-              ..((Offset.A[csZ] == -1) and symRevs or "")..tostring(Offset.A[caR])
-    end
-  else
-    return StatusLog("","StringPOA: Missed offset mode "..sOffset)
-  end
-  return stringGsub(sResult," ","") -- Get rid of the spaces
 end
 
 local function TransferPOA(stOffset,sMode)
@@ -2524,45 +2318,89 @@ function InitLocalify(sCode) -- https://en.wikipedia.org/wiki/List_of_ISO_639-1_
   for phrase, detail in pairs(tPool[sCode]) do print(phrase, detail) end
 end
 
-local function StripDSV(vVal)
+local function StripValue(vVal)
   local sVal = tostring(vVal or ""):Trim()
   if(sVal:sub( 1, 1) == "\"") then sVal = sVal:sub(2,-1) end
   if(sVal:sub(-1,-1) == "\"") then sVal = sVal:sub(1,-2) end
   return sVal:Trim()
 end
 
+function ImportCategory(vEq, sPref)
+  if(SERVER) then return StatusLog(true, "ImportCategory: Working on server") end
+  local nEq = tonumber(vEq) or 0; if(nEq <= 0) then
+    return StatusLog(false,"ImportCategory: Wrong equality <"..tostring(vEq)..">") end
+  local fName = GetOpVar("DIRPATH_BAS")..GetOpVar("DIRPATH_DSV")
+        fName = fName..tostring(sPref or GetInstPref())
+        fName = fName..GetOpVar("TOOLNAME_PU").."CATEGORY.txt"
+  local F = fileOpen(fName, "rb", "DATA")
+  if(not F) then return StatusLog(false,"ImportCategory: fileOpen("..fName..") failed") end
+  local sEq, sLine, nLen = ("="):rep(nEq), "", (nEq+2)
+  local cFr, cBk, sCh = "["..sEq.."[", "]"..sEq.."]", "X"
+  local tCat, syOff = GetOpVar("TABLE_CATEGORIES"), GetOpVar("OPSYM_DISABLE")
+  local sPar, isPar = "", false
+  while(sCh) do
+    sCh = F:Read(1)
+    if(not sCh) then break end
+    if(sCh == "\n") then
+      sLine = sLine:Trim()
+      local sFr, sBk = sLine:sub(1,nLen), sLine:sub(-nLen,-1)
+      if(sFr == cFr and sBk == cBk) then
+        sLine, isPar, sPar = sLine:sub(nLen+1,-1), true, "" end  
+      if(sFr == cFr and not isPar) then
+        sPar, isPar = sLine:sub(nLen+1,-1).."\n", true
+      elseif(sBk == cBk and isPar) then
+        sPar, isPar = sPar..sLine:sub(1,-nLen-1), false
+        local tBoo = stringExplode(sEq, sPar)
+        local key, txt = tBoo[1]:Trim(), tBoo[2]
+        if(not IsEmptyString(key)) then
+          if(txt:find("function")) then
+            if(key:sub(1,1) ~= syOff) then
+              tCat[key] = {}; tCat[key].Txt = txt:Trim()
+              tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
+              local suc, out = pcall(tCat[key].Cmp)
+              if(suc) then tCat[key].Cmp = out else
+                tCat[key].Cmp = StatusLog(nil, "ImportCategory: Compilation fail <"..key..">") end
+            else LogInstance("ImportCategory: Key skipped <"..key..">") end
+          else LogInstance("ImportCategory: Function missing <"..key..">") end
+        else LogInstance("ImportCategory: Name missing <"..txt..">") end
+      else sPar = sPar..sLine.."\n" end; sLine = ""
+    else sLine = sLine..sCh end
+  end; F:Close(); return StatusLog(true, "ImportCategory: Success")
+end
+
 function ProcessDSV(sDelim)
   local fName = GetOpVar("DIRPATH_BAS").."trackasmlib_dsv.txt"
   local F = fileOpen(fName, "rb" ,"DATA")
   if(not F) then return StatusLog(false,"ProcessDSV: fileOpen("..fName..") failed") end
-  local sCh, sLine = "X", ""
+  local sCh, sLine, symOff = "X", "", GetOpVar("OPSYM_DISABLE")
   local sNt, tProc = GetOpVar("TOOLNAME_PU"), {}
   local sDelim = tostring(sDelim or "\t"):sub(1,1)
   local sDv = GetOpVar("DIRPATH_BAS")..GetOpVar("DIRPATH_DSV")
   while(sCh) do
-    sCh = F:read(1)
+    sCh = F:Read(1)
     if(not sCh) then break end
-    if(sCh == "\n") then
-      sLine = sLine:Trim()
-      local tInf = stringExplode(sDelim, sLine)
-      local fPrf = StripDSV(tostring(tInf[1] or ""):Trim())
-      local fSrc = StripDSV(tostring(tInf[2] or ""):Trim())
-      if(not IsEmptyString(fPrf)) then -- Is there something
-        if(not tProc[fPrf]) then
-          tProc[fPrf] = {Cnt = 1, [1] = {Prog = fSrc, File = (sDv..fPrf..sNt)}}
-        else -- Prefix is processed already
-          local tStore = tProc[fPrf]
-          tStore.Cnt = tStore.Cnt + 1 -- Store the count of the repeated prefixes
-          tStore[tStore.Cnt] = {Prog = fSrc, File = (sDv..fPrf..sNt)}
-        end
-      end; sLine = ""
+    if(sCh == "\n") then sLine = sLine:Trim()
+      if(sLine:sub(1,1) ~= symOff) then
+        local tInf = stringExplode(sDelim, sLine)
+        local fPrf = StripValue(tostring(tInf[1] or ""):Trim())
+        local fSrc = StripValue(tostring(tInf[2] or ""):Trim())
+        if(not IsEmptyString(fPrf)) then -- Is there something
+          if(not tProc[fPrf]) then
+            tProc[fPrf] = {Cnt = 1, [1] = {Prog = fSrc, File = (sDv..fPrf..sNt)}}
+          else -- Prefix is processed already
+            local tStore = tProc[fPrf]
+            tStore.Cnt = tStore.Cnt + 1 -- Store the count of the repeated prefixes
+            tStore[tStore.Cnt] = {Prog = fSrc, File = (sDv..fPrf..sNt)}
+          end -- That user puts there is a problem of his own
+        end -- If the line is disabled/comment
+      else LogInstance("ProcessDSV: Skipped <"..sLine..">") end; sLine = ""
     else sLine = sLine..sCh end
-  end; F:close()
+  end; F:Close()
   for prf, tab in pairs(tProc) do
     if(tab.Cnt > 1) then
-      PrintInstance("Prefix <"..prf.."> clones #"..tostring(tab.Cnt).." @"..fName)
+      PrintInstance("ProcessDSV: Prefix <"..prf.."> clones #"..tostring(tab.Cnt).." @"..fName)
       for i = 1, tab.Cnt do
-        PrintInstance("Prefix <"..prf.."> "..tab[i].Prog)
+        PrintInstance("ProcessDSV: Prefix <"..prf.."> "..tab[i].Prog)
       end
     else
       local dir = tab[tab.Cnt].File
@@ -2573,22 +2411,22 @@ function ProcessDSV(sDelim)
         end
       end
       if(fileExists(dir.."PIECES.txt", "DATA")) then
-        if(not ImportDSV("PIECES", "\t", true, prf)) then F:Close()
+        if(not ImportDSV("PIECES", true, prf)) then F:Close()
           return StatusLog(false,"ProcessDSV("..prf.."): Failed PIECES") end
       end
       if(fileExists(dir.."ADDITIONS.txt", "DATA")) then
-        if(not ImportDSV("ADDITIONS", "\t", true, prf)) then F:Close()
+        if(not ImportDSV("ADDITIONS", true, prf)) then F:Close()
           return StatusLog(false,"ProcessDSV("..prf.."): Failed ADDITIONS") end
       end
       if(fileExists(dir.."PHYSPROPERTIES.txt", "DATA")) then
-        if(not ImportDSV("PHYSPROPERTIES", "\t", true, prf)) then F:Close()
+        if(not ImportDSV("PHYSPROPERTIES", true, prf)) then F:Close()
           return StatusLog(false,"ProcessDSV("..prf.."): Failed PHYSPROPERTIES") end
       end
     end
   end; return StatusLog(true,"ProcessDSV: Success")
 end
 
-function SynchronizeDSV(sTable, sDelim, bRepl, tData, sPref)
+function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
   local fPref = tostring(sPref or GetInstPref())
   if(not IsString(sTable)) then
     return StatusLog(false,"SynchronizeDSV("..fPref.."): Table {"..type(sTable).."}<"..tostring(sTable).."> not string") end
@@ -2604,14 +2442,14 @@ function SynchronizeDSV(sTable, sDelim, bRepl, tData, sPref)
   if(I) then
     local sLine, sCh  = "", "X"
     while(sCh) do
-      sCh = I:read(1)
+      sCh = I:Read(1)
       if(not sCh) then break end
       if(sCh == "\n") then
         sLine = sLine:Trim()
         if(sLine:sub(1,1) ~= smOff) then
           local tLine = stringExplode(sDelim,sLine)
           if(tLine[1] == defTable.Name) then
-            for i = 1, #tLine do tLine[i] = StripDSV(tLine[i]) end
+            for i = 1, #tLine do tLine[i] = StripValue(tLine[i]) end
             local sKey = tLine[2]
             if(not fData[sKey]) then fData[sKey] = {Kept = 0} end
               tKey = fData[sKey]
@@ -2620,23 +2458,23 @@ function SynchronizeDSV(sTable, sDelim, bRepl, tData, sPref)
             elseif(sTable == "ADDITIONS") then vID = tLine[5]; nID = tonumber(vID) or 0
             elseif(sTable == "PHYSPROPERTIES") then  vID = tLine[3]; nID = tonumber(vID) or 0 end
             if((tKey.Kept < 0) or (nID <= tKey.Kept) or ((nID - tKey.Kept) ~= 1)) then
-              I:close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read pont ID #"..
+              I:Close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read pont ID #"..
                 tostring(vID).." desynchronized <"..sKey.."> of <"..sTable..">") end
             tKey.Kept = nID; tKey[tKey.Kept] = {}
             local kKey, nCnt = tKey[tKey.Kept], 3
             while(tLine[nCnt]) do -- Do a value matching without automatic quotes
               local vMatch = MatchType(defTable,tLine[nCnt],nCnt-1,true,"\"",true)
               if(not IsExistent(vMatch)) then
-                I:close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read matching failed <"
+                I:Close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read matching failed <"
                   ..tostring(tLine[nCnt]).."> to <"..tostring(nCnt-1).." # "
                     ..defTable[nCnt-1][1].."> of <"..sTable..">")
               end; kKey[nCnt-2] = vMatch; nCnt = nCnt + 1
             end
-          else I:close()
+          else I:Close()
             return StatusLog(false,"SynchronizeDSV("..fPref.."): Read table name mismatch <"..sTable..">") end
         end; sLine = ""
       else sLine = sLine..sCh end
-    end; I:close()
+    end; I:Close()
   else LogInstance("SynchronizeDSV("..fPref.."): Creating file <"..fName..">") end
   for mod, rec in pairs(tData) do -- Check the given table
     for pnID = 1, #rec do
@@ -2669,8 +2507,8 @@ function SynchronizeDSV(sTable, sDelim, bRepl, tData, sPref)
     return StatusLog(false,"SynchronizeDSV("..fPref.."): Sorting failed") end
   local O = fileOpen(fName, "wb" ,"DATA")
   if(not O) then return StatusLog(false,"SynchronizeDSV("..fPref.."): Write fileOpen("..fName..") failed") end
-  O:write("# SynchronizeDSV("..fPref.."): "..osDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
-  O:write("# Data settings:\t"..GetFieldsName(defTable,sDelim).."\n")
+  O:Write("# SynchronizeDSV("..fPref.."): "..osDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
+  O:Write("# Data settings:\t"..GetColumns(defTable,sDelim).."\n")
   for rcID = 1, #tSort do
     local mod = tSort[rcID].Val
     local rec = fData[mod]
@@ -2680,22 +2518,20 @@ function SynchronizeDSV(sTable, sDelim, bRepl, tData, sPref)
       for nCnt = 1, #tItem do
         local vMatch = MatchType(defTable,tItem[nCnt],nCnt+1,true,"\"",true)
         if(not IsExistent(vMatch)) then
-          O:flush(); O:close()
+          O:Flush(); O:Close()
           return StatusLog(false,"SynchronizeDSV("..fPref.."): Write matching failed <"
             ..tostring(tItem[nCnt]).."> to <"..tostring(nCnt+1).." # "..defTable[nCnt+1][1].."> of "..sTable)
         end
         sData = sData..sDelim..tostring(vMatch)
-      end; O:write(sCash..sData.."\n"); sData = ""
+      end; O:Write(sCash..sData.."\n"); sData = ""
     end
-  end O:flush(); O:close(); return StatusLog(true,"SynchronizeDSV("..fPref.."): Success")
+  end O:Flush(); O:Close(); return StatusLog(true,"SynchronizeDSV("..fPref.."): Success")
 end
 
-function RegisterDSV(sPref, sProg, sDelim)
-  if(isClient() and gameSinglePlayer()) then
+function RegisterDSV(sProg, sPref, sDelim)
+  if(CLIENT and gameSinglePlayer()) then
     return StatusLog(true,"RegisterDSV: Single client") end
-  if(not IsString(sPref)) then
-    return StatusLog(false,"RegisterDSV: Prefix {"..type(sPref).."}<"
-      ..tostring(sPref).."> not string") end
+  local sPref = tostring(sPref or GetInstPref())
   if(IsEmptyString(sPref)) then
     return StatusLog(false,"RegisterDSV("..sPref.."): Prefix empty") end
   local sBas = GetOpVar("DIRPATH_BAS")
@@ -2708,11 +2544,11 @@ function RegisterDSV(sPref, sProg, sDelim)
   if(not F) then return StatusLog(false,"RegisterDSV("
     ..sPref.."): fileOpen("..fName..") failed") end
   local sMis, sDelim = GetOpVar("MISS_NOAV"), tostring(sDelim or "\t"):sub(1,1)
-  F:write(sPref:Trim()..sDelim..tostring(sProg or sMis).."\n"); F:flush(); F:close()
+  F:Write(sPref:Trim()..sDelim..tostring(sProg or sMis).."\n"); F:Flush(); F:Close()
   return StatusLog(true,"RegisterDSV("..sPref.."): Success")
 end
 
-function ImportDSV(sTable, sDelim, bComm, sPref)
+function ImportDSV(sTable, bComm, sPref, sDelim)
   local fPref = tostring(sPref or GetInstPref())
   if(not IsString(sTable)) then
     return StatusLog(false,"ImportDSV("..fPref.."): Table {"..type(sTable).."}<"..tostring(sTable).."> not string") end
@@ -2726,15 +2562,167 @@ function ImportDSV(sTable, sDelim, bComm, sPref)
   local symOff, sDelim = GetOpVar("OPSYM_DISABLE"), tostring(sDelim or "\t"):sub(1,1)
   local sLine, sCh, nLen = "", "X", defTable.Name:len()
   while(sCh) do
-    sCh = F:read(1)
+    sCh = F:Read(1)
     if(not sCh) then break end -- Exit the loop and close the file
     if(sCh == "\n") then
       sLine = sLine:Trim()
       if((sLine:sub(1,1) ~= symOff) and (sLine:sub(1,nLen) == defTable.Name)) then
         local tData = stringExplode(sDelim,sLine:sub(nLen+2,-1))
-        for k, _ in pairs(tData) do tData[k] = StripDSV(tData[k]) end
+        for k, _ in pairs(tData) do tData[k] = StripValue(tData[k]) end
         if(bComm) then InsertRecord(sTable, tData) end
       end; sLine = ""
     else sLine = sLine..sCh end
-  end; F:close(); return StatusLog(true, "ImportDSV("..fPref..sTable.."): Success")
+  end; F:Close(); return StatusLog(true, "ImportDSV("..fPref.."@"..sTable.."): Success")
 end
+
+function InsertsDSV(sTable, sPref, sDelim)
+  local fPref  = tostring(sPref or GetInstPref())
+  if(not IsString(sTable)) then
+    return StatusLog(false,"InsertsDSV("..fPref.."): Table {"..type(sTable).."}<"..tostring(sTable).."> not string") end
+  local defTable = GetOpVar("DEFTABLE_"..sTable)
+  if(not defTable) then
+    return StatusLog(false,"InsertsDSV("..fPref.."): Missing table definition for <"..sTable..">") end
+  local sNdsv  = GetOpVar("DIRPATH_BAS")..GetOpVar("DIRPATH_DSV")
+        sNdsv  = sNdsv..fPref..defTable.Name..".txt"
+  local sNins  = GetOpVar("DIRPATH_BAS")..GetOpVar("DIRPATH_INS")
+        sNins  = sNins..fPref..defTable.Name..".txt"
+  local sDelim = tostring(sDelim or "\t"):sub(1,1)
+  local D, I   = fileOpen(sNdsv, "rb", "DATA"), fileOpen(sNins, "wb", "DATA")
+  if(not D) then return StatusLog(false,"InsertsDSV("..fPref.."): fileOpen("..sNdsv..") failed") end
+  if(not I) then return StatusLog(false,"InsertsDSV("..fPref.."): fileOpen("..sNins..") failed") end
+  I:Write("# InsertsDSV("..fPref.."@"..sTable.."): "..osDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
+  I:Write("# Data settings:\t"..GetColumns(defTable, sDelim).."\n")
+  local sLine, sCh, symOff = "", "X", GetOpVar("OPSYM_DISABLE")
+  local sFr, sBk, sHs = "asmlib.InsertRecord(\""..sTable.."\", {", "})\n", (fPref.."@"..sTable)
+  while(sCh) do
+    sCh = D:Read(1)
+    if(not sCh) then break end
+    if(sCh == "\n") then
+      sLine = sLine:gsub(defTable.Name,""):Trim()
+      if(sLine:sub(1,1) ~= symOff) then
+        local tBoo, sCat = stringExplode(sDelim, sLine), ""
+        for nCnt = 1, #tBoo do
+          local vMatch = MatchType(defTable,StripValue(tBoo[nCnt]),nCnt,true,"\"",true)
+          if(not IsExistent(vMatch)) then D:Close(); I:Flush(); I:Close()
+            return StatusLog(false,"InsertsDSV("..sHs.."): Given matching failed <"
+              ..tostring(tBoo[nCnt]).."> to <"..tostring(nCnt).." # "
+                ..defTable[nCnt][1].."> of "..sTable) end
+          sCat = sCat..", "..tostring(vMatch)
+        end
+        I:Write(sFr..sCat:sub(3,-1)..sBk)
+      else LogInstance("InsertsDSV("..sHs.."): Ignore <"..sLine..">") end sLine = ""
+    else sLine = sLine..sCh end
+  end; D:Close(); I:Flush(); I:Close()
+  return StatusLog(true,"InsertsDSV("..sHs.."): Success")
+end
+
+function ExportDSV(sTable, sPref, sDelim)
+  if(not IsString(sTable)) then
+    return StatusLog(false,"StoreExternalDatabase: Table {"..type(sTable).."}<"..tostring(sTable).."> not string") end
+  local defTable = GetOpVar("DEFTABLE_"..sTable)
+  if(not defTable) then
+    return StatusLog(false,"ExportDSV: Missing table definition for <"..sTable..">") end
+  local fName, sPref = GetOpVar("DIRPATH_BAS"), tostring(sPref or GetInstPref())
+  if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
+  fName = fName..GetOpVar("DIRPATH_DSV")
+  if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
+  fName = fName..sPref..defTable.Name..".txt"
+  local F = fileOpen(fName, "wb", "DATA" )
+  if(not F) then return StatusLog(false,"ExportDSV("..sPref
+      .."): fileOpen("..fName..") failed") end
+  local sDelim = tostring(sDelim or "\t"):sub(1,1)
+  local sModeDB, symOff = GetOpVar("MODE_DATABASE"), GetOpVar("OPSYM_DISABLE")
+  F:Write("# ExportDSV: "..osDate().." [ "..sModeDB.." ]".."\n")
+  F:Write("# Data settings:\t"..GetColumns(defTable,sDelim).."\n")
+  if(sModeDB == "SQL") then
+    local Q = ""
+    if    (sTable == "PIECES"        ) then Q = SQLBuildSelect(defTable,nil,nil,{2,3,1,4})
+    elseif(sTable == "ADDITIONS"     ) then Q = SQLBuildSelect(defTable,nil,nil,{1,4})
+    elseif(sTable == "PHYSPROPERTIES") then Q = SQLBuildSelect(defTable,nil,nil,{1,2})
+    else                                    Q = SQLBuildSelect(defTable,nil,nil,nil) end
+    if(not IsExistent(Q)) then
+      return StatusLog(false,"ExportDSV("..sPref.."): Build statement failed") end
+    F:Write("# Query ran: <"..Q..">\n")
+    local qData = sqlQuery(Q)
+    
+    ------------
+    qData = {
+      {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 1, "NULL", "-0.02664,-47.455105,2.96593", "0,-90,0", "NULL"},
+      {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 2, "NULL", "-0.02664, 47.455105,2.96593", "0, 90,0", "NULL"}
+    }
+    ------------
+    
+    if(not qData and IsBool(qData)) then
+      return StatusLog(nil,"ExportDSV: SQL exec error <"..sqlLastError()..">") end
+    if(not (qData and qData[1])) then
+      return StatusLog(false,"ExportDSV: No data found <"..Q..">") end
+    local sData, sTab = "", defTable.Name
+    for iCnt = 1, #qData do
+      local qRec = qData[iCnt]; sData = sTab
+      for iInd = 1, defTable.Size do
+        local sHash = defTable[iInd][1]
+        LogInstance(sHash)
+        sData = sData..sDelim..tostring(MatchType(defTable,qRec[sHash],iInd,true,"\"",true))
+      end; F:Write(sData.."\n"); sData = ""
+    end
+  elseif(sModeDB == "LUA") then
+    local tCache = libCache[defTable.Name]
+    if(not IsExistent(tCache)) then
+      return StatusLog(false,"ExportDSV("..sPref.."): Table <"..sTable.."> cache not allocated") end
+    if(sTable == "PIECES") then
+      local tData = {}
+      for sModel, tRecord in pairs(tCache) do
+        local sSort   = (tRecord.Type..tRecord.Name..sModel)
+        tData[sModel] = {[defTable[1][1]] = sSort}
+      end
+      local tSorted = Sort(tData,nil,{defTable[1][1]})
+      if(not tSorted) then
+        return StatusLog(false,"ExportDSV("..sPref.."): Cannot sort cache data") end
+      for iIdx = 1, #tSorted do
+        local stRec = tSorted[iIdx]
+        local tData = tCache[stRec.Key]
+        local tOffs = tData.Offs
+        local sData = defTable.Name..sDelim..MatchType(defTable,stRec.Key,1,true,"\"")..sDelim..
+                       MatchType(defTable,tData.Type,2,true,"\"")..sDelim..
+                       MatchType(defTable,((ModelToName(stRec.Key) == tData.Name) and symOff or tData.Name),3,true,"\"")
+        -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
+        for iInd = 1, #tOffs do 
+          local stPnt = tData.Offs[iInd]
+          F:Write(sData..sDelim..MatchType(defTable,iInd,4,true,"\"")..sDelim..
+                   "\""..(IsEqualPOA(stPnt.P,stPnt.O) and "" or StringPOA(stPnt.P,"V")).."\""..sDelim..
+                   "\""..  StringPOA(stPnt.O,"V").."\""..sDelim..
+                   "\""..( IsZeroPOA(stPnt.A,"A") and "" or StringPOA(stPnt.A,"A")).."\""..sDelim..
+                   "\""..(tData.Unit and tData.Unit or "").."\"\n")
+        end
+      end
+    elseif(sTable == "ADDITIONS") then
+      for mod, rec in pairs(tCache) do
+        local sData = defTable.Name..sDelim..mod
+        for iIdx = 1, #rec do
+          local tData = rec[iIdx]; F:Write(sData)
+          for iID = 2, defTable.Size do
+            local vData = tData[defTable[iID][1]]
+            F:Write(sDelim..MatchType(defTable,tData[defTable[iID][1]],iID,true,"\""))
+          end; F:Write("\n") -- Data is already inserted, there will be no crash
+        end
+      end
+    elseif(sTable == "PHYSPROPERTIES") then
+      local tTypes = tCache[GetOpVar("HASH_PROPERTY_TYPES")]
+      local tNames = tCache[GetOpVar("HASH_PROPERTY_NAMES")]
+      if(not (tTypes or tNames)) then
+        return StatusLog(false,"ExportDSV("..sPref.."): No data found") end
+      for iInd = 1, tTypes.Kept do
+        local sType = tTypes[iInd]
+        local tType = tNames[sType]
+        if(not tType) then return StatusLog(false,"ExportDSV("..sPref
+            .."): Missing index #"..iInd.." on type <"..sType..">") end
+        for iCnt = 1, tType.Kept do
+          F:Write(defTable.Name..sDelim..MatchType(defTable,sType      ,1,true,"\"")..
+                                 sDelim..MatchType(defTable,iCnt       ,2,true,"\"")..
+                                 sDelim..MatchType(defTable,tType[iCnt],3,true,"\"").."\n")
+        end
+      end
+    end
+  end; F:Flush(); F:Close()
+end
+
