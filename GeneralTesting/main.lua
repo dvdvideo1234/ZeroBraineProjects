@@ -22,9 +22,26 @@ local surfaceScreenWidth   = surface and surface.ScreenWidth
 local surfaceScreenHeight  = surface and surface.ScreenHeight
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
 
-local a = CompileString("function (oSens) return oSens[1] end")
+function makeNode()
+  local self = {}
+  function self:SetName(sName)
+    self.Name = sName
+  end
+  function self:GetName()
+    return self.Name
+  end
+end
 
-z = {77}
+local t = makeNode()
 
-logStatus(a(Z))
+local function a(pnNode, sName)
+  pnNode:SetName(sName)
+  pnNode.DoRightClick = function(pnSelf) logStatus(nil,pnSelf:GetName()) end
+end
+
+a(t,"Test")
+
+t.DoRightClick()
+
+
 

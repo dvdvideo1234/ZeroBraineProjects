@@ -1,11 +1,14 @@
 require("ZeroBraineProjects/dvdlualib/common")
 require("ZeroBraineProjects/dvdlualib/gmodlib")
 require("ZeroBraineProjects/dvdlualib/asmlib")
+require("ZeroBraineProjects/dvdlualib/dummy")
 
 local stringExplode = string.Explode
 local stringSub   =  string.sub
 local stringFind  = string.find
 local stringFormat = string.format
+
+asmlib.SetOpVar("GAME_CLIENT",true)
 
 asmlib.InitBase("track","assembly")
 
@@ -26,16 +29,34 @@ asmlib.CreateTable("PIECES",{
 
 local defTable = asmlib.GetOpVar("DEFTABLE_PIECES")
  
-asmlib.DefaultType("Test",[[function(m)
-    local r = m:gsub("models/bobsters_trains/rails/2ft/",""):gsub("_","/")
-    local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
-          r = r:gsub("^%l", string.upper); return r end
-          ]])
+logTable(("asd"):format(""))
 
-asmlib.DefaultType("Bobster's two feet rails",[[function(m)
-  local r = m:gsub("goldels/bobsters_trains/rails/2ft/",""):gsub("_","/")
-  local s = r:find("/"); r = (s and r:sub(1,s-1) or "other");
-        r = r:gsub("^%l", string.upper); return r end]])
+--[====[
+ 
+asmlib.DefaultType("SProps",[[function(m)
+    local function conv(x) return " "..x:sub(2,2):upper() end
+    local r = m:gsub("models/sprops/mechanics/","")
+    local s = r:find("/")
+    local o = s and {r:sub(1,s-1)} or nil
+    for i = 1, #o do o[i] = ("_"..o[i]):gsub("_%w", conv):sub(2,-1) end; return o end ]])
+
+local tCat = asmlib.GetOpVar("TABLE_CATEGORIES")
+
+logTable(tCat, "tCat")
+
+local m = "models/sprops/mechanics/azzzz_bbbb/spur_10t_s.mdl"
+local n = tCat["SProps"]["Cmp"](m)
+local sDelim = ", "
+
+
+logTable(n)
+
+local f = "TRACKASSEMBLY_PIECES"..sDelim.."\"".."this:GetModel()".."\""..sDelim.."\""..
+         "sType".."\""..sDelim.."\"".."sName".."\""..sDelim..tostring(nPoint or 0)..
+         sDelim.."\"".."sP".."\""..sDelim.."\"".."sO".."\""..sDelim.."\"".."sA".."\""..
+         sDelim.."\""..("this:GetClass()").."\""
+
+logTable(f)
 
 
 local conPalette = asmlib.MakeContainer(colors)
@@ -106,3 +127,4 @@ logTable(pTree,"pTree")
 --logTable(pCurr,"pCurr")
 
 --logTable(pFolders,"Folders")
+]====]

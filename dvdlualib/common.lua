@@ -571,7 +571,7 @@ end
 
 ------------------- STRINGS --------------------------
 
-function stringExplode(sStr,sDel)
+function strExplode(sStr,sDel)
   local List, Ch, Idx, ID, dL = {""}, "", 1, 1, (sDel:len()-1)
   while(Ch) do
     Ch = sStr:sub(Idx,Idx+dL)
@@ -581,7 +581,7 @@ function stringExplode(sStr,sDel)
   end; return List
 end
 
-function stringImplode(tList,sDel)
+function strImplode(tList,sDel)
   local ID, Str = 1, ""
   local Del = tostring(sDel or "")
   while(tList and tList[ID]) do

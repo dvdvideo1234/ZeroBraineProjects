@@ -11,7 +11,7 @@ local endTm = 0.2
 local intX  = newInterval("WinX",  0,endTm, 0, W)
 local intY  = newInterval("WinY",-200,200 , H, 0)
 local APR   = newUnit(To,{0.904},{1.00, -0.569},"Aperiodic plant"):Dump()
-local PID   = newControl(To, "Test"):Setup({0.653, 0.003470, 43.3, minC, maxC}):setStruct(true,false):Dump()
+local PID   = newControl(To, "Test"):Setup({0.653, 0.005, 43.3, minC, maxC}):setStruct(true,false):Dump()
 
 local trRef = newTracer("Ref"):setInterval(intX, intY)
 local trCon = newTracer("Con"):setInterval(intX, intY)

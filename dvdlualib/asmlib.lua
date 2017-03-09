@@ -141,7 +141,7 @@ end
 
 function GetCache(anyKey)
   if(anyKey) then
-    return libCache[sKey]
+    return libCache[anyKey]
   end
   return libCache
 end
@@ -346,21 +346,35 @@ function SettingsModelToName(sMode, gCut, gSub, gApp)
   end
 end
 
-function DefaultType(anyType)
+function DefaultType(anyType,fCat)
   if(not IsExistent(anyType)) then
-    return GetOpVar("DEFAULT_TYPE") or ""
+    local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
+    local tCat = GetOpVar("TABLE_CATEGORIES")
+          tCat = tCat and tCat[sTyp] or nil
+    return sTyp, (tCat and tCat.Txt), (tCat and tCat.Cmp)
+  end; SettingsModelToName("CLR")
+  SetOpVar("DEFAULT_TYPE", tostring(anyType))
+  if(isClient()) then
+    local sTyp = GetOpVar("DEFAULT_TYPE")
+    if(IsString(fCat)) then -- Categories for the panel
+      local tCat = GetOpVar("TABLE_CATEGORIES")
+      tCat[sTyp] = {}; tCat[sTyp].Txt = fCat
+      tCat[sTyp].Cmp = CompileString("return ("..fCat..")", sTyp)
+      local suc, out = pcall(tCat[sTyp].Cmp)
+      if(not suc) then
+        return StatusLog(nil, "DefaultType: Compilation failed <"..fCat.."> ["..sTyp.."]") end
+      tCat[sTyp].Cmp = out
+    else return StatusLog(nil,"DefaultType: Avoided "..type(fCat).." <"..tostring(fCat).."> ["..sTyp.."]") end
   end
-  SetOpVar("DEFAULT_TYPE",tostring(anyType))
-  SettingsModelToName("CLR")
 end
 
 function DefaultTable(anyTable)
   if(not IsExistent(anyTable)) then
-    return GetOpVar("DEFAULT_TABLE") or ""
-  end
+    return (GetOpVar("DEFAULT_TABLE") or "") end
   SetOpVar("DEFAULT_TABLE",anyTable)
   SettingsModelToName("CLR")
 end
+
 
 function ModelToName(sModel,bNoSettings)
   if(not IsString(sModel)) then
@@ -864,30 +878,6 @@ end
 
 --SQL---------------------------------
 
-function DefaultType(anyType,fCat)
-  if(not IsExistent(anyType)) then
-    local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
-    local tCat = GetOpVar("TABLE_CATEGORIES")[sTyp]
-    return sTyp, (tCat and tCat.Cmp)
-  end; SettingsModelToName("CLR")
-  local sTyp = tostring(anyType); SetOpVar("DEFAULT_TYPE", sTyp)
-  if(IsExistent(fCat)) then
-    local tCat = GetOpVar("TABLE_CATEGORIES")
-    if(type(fCat) == "function") then
-      tCat[sTyp] = {Cmp = fCat}
-    elseif(type(fCat) == "string") then
-      tCat[sTyp] = {Txt = fCat, Cmp = CompileString("return ("..fCat..")", sTyp)}
-    end
-  end
-end
-
-function DefaultTable(anyTable)
-  if(not IsExistent(anyTable)) then
-    return (GetOpVar("DEFAULT_TABLE") or "") end
-  SetOpVar("DEFAULT_TABLE",anyTable)
-  SettingsModelToName("CLR")
-end
-
 function SQLGetBuildErr()
   return GetOpVar("SQL_BUILD_ERR") or ""
 end
@@ -1190,6 +1180,19 @@ function SQLFetchSelect(sHash,...)
   return stringFormat(tStore.Stmt,...)
 end
 
+function SQLCacheStmt(sHash,sStmt,...)
+  if(not IsExistent(sHash)) then
+    return StatusLog(nil, "SQLCacheStmt: Store hash missing") end
+  local sHash, tStore = tostring(sHash), GetOpVar("QUERY_STORE")
+  if(not IsExistent(tStore)) then
+    return StatusLog(nil, "SQLCacheStmt: Store place missing") end
+  if(IsExistent(sStmt)) then
+    tStore[sHash] = tostring(sStmt); Print(tStore,"SQLCacheStmt: stmt") end
+  local sStmt = tStore[sHash]
+  if(not sStmt) then return StatusLog(nil, "SQLCacheStmt: Store stmt <"..sHash.."> missing") end
+  return sStmt:format(...)
+end
+
 function SQLBuildSelect(defTable,tFields,tWhere,tOrderBy)
   if(not defTable) then
     return StatusLog(nil, "SQLBuildSelect: Missing table definition") end
@@ -1231,12 +1234,11 @@ function SQLBuildSelect(defTable,tFields,tWhere,tOrderBy)
         return StatusLog(nil, "SQLBuildSelect: Where clause inconsistent on "
           ..defTable.Name.." field index, {"..tostring(k)..","..tostring(v)..","..tostring(t)
           .."} value or type in the table definition") end
-      v = MatchType(defTable,v,k,true)
       if(not IsExistent(v)) then
         return StatusLog(nil, "SQLBuildSelect: Data matching failed on "
           ..defTable.Name.." field index #"..Cnt.." value <"..tostring(v)..">") end
-      if(Cnt == 1) then Command = Command.." WHERE "..defTable[k][1].." = "..v
-      else              Command = Command.." AND "  ..defTable[k][1].." = "..v end
+      if(Cnt == 1) then Command = Command.." WHERE "..defTable[k][1].." = "..tostring(v)
+      else              Command = Command.." AND "  ..defTable[k][1].." = "..tostring(v) end
       Cnt = Cnt + 1
     end
   end
@@ -1295,13 +1297,13 @@ function CreateTable(sTable,defTable,bDelete,bReload)
     return StatusLog(false,"CreateTable: Table definition missing for "..sTable) end
   if(#defTable <= 0) then
     return StatusLog(false,"CreateTable: Record definition missing for "..sTable) end
-  SetOpVar("DEFTABLE_"..sTable,defTable)
-  defTable.Size = #defTable
-  defTable.Name = GetOpVar("TOOLNAME_PU")..sTable
   local sModeDB = GetOpVar("MODE_DATABASE")
   local sTable  = stringUpper(sTable)
   local symDis  = GetOpVar("OPSYM_DISABLE")
   local iCnt, defField = 1, nil
+  SetOpVar("DEFTABLE_"..sTable,defTable)
+  defTable.Size = #defTable
+  defTable.Name = GetOpVar("TOOLNAME_PU")..sTable
   while(defTable[iCnt]) do
     defField    = defTable[iCnt]
     defField[3] = DefaultString(tostring(defField[3] or symDis), symDis)
@@ -1591,7 +1593,7 @@ function oldSort(tTable,tKeys,tFields,sMethod)
   return Match
 end
 
-local function Sort(tTable,tKeys,tFields)
+function Sort(tTable,tKeys,tFields)
   local function QuickSort(Data,Lo,Hi)
     if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
       return StatusLog(nil,"QuickSort: Data dimensions mismatch") end
