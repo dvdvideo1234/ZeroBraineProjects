@@ -12,7 +12,7 @@ function Vector(x,y,z)
 end
 
 function string.Explode(d, s)
-  return stringExplode(s, d)
+  return strExplode(s, d)
 end
 
 function string.Trim(s, char)

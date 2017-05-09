@@ -13,77 +13,67 @@ metaComplex.__tostring = function(Comp)
   local R = tostring(Comp:getReal())
   local I = tostring(Comp:getImag())
   if(R and I) then return "{"..R..","..I.."}" end
-  return "N/A"
+  return "{X,X}"
 end
 
 metaComplex.__unm = function(Comp)
-  T = type(Comp)
-  if(T and T == "table" and getmetatable(Comp) == metaComplex) then
+  if(getmetatable(Comp) == metaComplex) then
     return Complex(-Comp:getReal(),-Comp:getImag())
   end
 end
 
 metaComplex.__add = function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Add(C2)
+  O:Set(C1); O:Add(C2)
   return O
 end
 
 metaComplex.__sub = function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Sub(C2)
+  O:Set(C1); O:Sub(C2)
   return O
 end
 
 metaComplex.__mul = function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Mul(C2)
+  O:Set(C1); O:Mul(C2)
   return O
 end
 
 metaComplex.__div = function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Div(C2)
+  O:Set(C1); O:Div(C2)
   return O
 end
 
 metaComplex.__mod =  function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Mod(C2)
+  O:Set(C1); O:Mod(C2)
   return O
 end
 
 metaComplex.__concat = function(A,B)
-  local Ta, Tb = type(A), type(B)
-  if(Ta == "table" and getmetatable(A) == metaComplex) then
+  if(getmetatable(A) == metaComplex) then
     return "{"..A:getReal()..", "..A:getImag().."}"..tostring(B)
-  elseif(Tb == "table" and getmetatable(B) == metaComplex) then
+  elseif(getmetatable(B) == metaComplex) then
     return tostring(A).."{"..B:getReal()..", "..B:getImag().."}"
-  end
-  return "N/A"
+  end; return "N/A"
 end
 
 metaComplex.__pow =  function(C1,C2)
   local O = Complex()
-  O:Set(C1)
-  O:Pow(C2)
+  O:Set(C1); O:Pow(C2)
   return O
 end
 
 metaComplex.__eq =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+  if(getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+  if(getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
@@ -93,14 +83,13 @@ metaComplex.__eq =  function(C1,C2)
 end
 
 metaComplex.__le =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+  if(getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+  if(getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
@@ -110,20 +99,27 @@ metaComplex.__le =  function(C1,C2)
 end
 
 metaComplex.__lt =  function(C1,C2)
-  local T1, T2 = type(C1), type(C2)
   local R1, R2, I1, I2 = 0, 0, 0, 0
-  if(T1 and T1 == "table" and getmetatable(C1) == metaComplex) then
+  if(getmetatable(C1) == metaComplex) then
     R1, I1 = C1:getReal(), C1:getImag()
   else
     R1, I1 = (tonumber(C1) or 0), 0
   end
-  if(T2 and T2 == "table" and getmetatable(C2) == metaComplex) then
+  if(getmetatable(C2) == metaComplex) then
     R2, I2 = C2:getReal(), C2:getImag()
   else
     R2, I2 = (tonumber(C2) or 0), 0
   end
   if(R1 < R2 and I1 < I2) then return true end
   return false
+end
+
+local function asrComplex(R,I)
+  if(not I) then
+    if(getmetatable(R) == metaComplex) then
+      return R:getReal(), R:getImag()
+    else return (tonumber(R) or 0), (tonumber(I) or 0) end
+  else return (tonumber(R) or 0), (tonumber(I) or 0) end
 end
 
 function Complex(nRe,nIm)
@@ -133,14 +129,14 @@ function Complex(nRe,nIm)
 
   setmetatable(self,metaComplex)
 
-  function self:NegRe()     Re = -Re end
-  function self:NegIm()     Im = -Im end
-  function self:Conj()      Im = -Im end
-  function self:setReal(R)  Re = (tonumber(R) or 0) end
-  function self:setImag(I)  Im = (tonumber(I) or 0) end
-  function self:Floor()     Re = math.floor(Re); Im = math.floor(Im); end
-  function self:Ceil()      Re = math.ceil(Re); Im = math.ceil(Im); end
-  function self:Print(N,E)  io.write(tostring(N).."{"..tostring(Re)..","..tostring(Im).."}"..tostring(E)) end
+  function self:NegRe()     Re = -Re; return self end
+  function self:NegIm()     Im = -Im; return self end
+  function self:Conj()      Im = -Im; return self end
+  function self:setReal(R)  Re = (tonumber(R) or 0); return self end
+  function self:setImag(I)  Im = (tonumber(I) or 0); return self end
+  function self:Floor()     Re = math.floor(Re); Im = math.floor(Im); return self end
+  function self:Ceil()      Re = math.ceil(Re); Im = math.ceil(Im); return self end
+  function self:Print(sS,sE)  io.write(tostring(sS or "").."{"..tostring(Re)..","..tostring(Im).."}"..tostring(sE or "")); return self end
   function self:getReal()   return Re end
   function self:getImag()   return Im end
   function self:getDup()    return Complex(Re,Im) end
@@ -156,134 +152,84 @@ function Complex(nRe,nIm)
   function self:getAngRad() return math.atan2(Im,Re) end
   function self:getAngDeg() return (math.atan2(Im,Re) * 180) / math.pi end
 
+  function self:Round(nP)
+    Re = tonumber(string.format("%."..(nP or 0).."f", Re))
+    Im = tonumber(string.format("%."..(nP or 0).."f", Im)); return self
+  end
+
+  function self:getRound(nP)
+    return Complex(tonumber(string.format("%."..(nP or 0).."f", Re)),
+                   tonumber(string.format("%."..(nP or 0).."f", Im)))
+  end
+
   function self:Set(R,I)
-    local tR, tI = type(R), type(I)
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      Re, Im = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      Re, Im = R:getReal(), R:getImag()
-    end
+    local R,I = asrComplex(R,I)
+    Re, Im = R, I; return self
   end
 
   function self:Add(R,I)
-    local tR, tI = type(R), type(I)
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      Re, Im = (Re + (tonumber(R) or 0)), (Im + (tonumber(I) or 0))
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      Re, Im = (Re + R:getReal()), (Im + R:getImag())
-    end
+    local R,I = asrComplex(R,I)
+    Re, Im = (Re + R), (Im + I); return self
   end
 
   function self:Sub(R,I)
-    local tR, tI = type(R), type(I)
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      Re, Im = (Re - (tonumber(R) or 0)), (Im - (tonumber(I) or 0))
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      Re, Im = (Re - R:getReal()), (Im - R:getImag())
-    end
+    local R,I = asrComplex(R,I)
+    Re, Im = (Re - R), (Im - I); return self
   end
 
   function self:Scale(nNum)
-    local Typ = type(nNum)
-    if(Typ == "number" or Typ == "string" ) then
-      local M = (tonumber(Num) or 0)
-      Re, Im = (Re * M), (Im * M)
-    end
+    local N = tonumber(nNum)
+    if(N) then Re, Im = (Re * N), (Im * N) end; return self
   end
 
   function self:Mul(R,I)
-    local tR, tI = type(R), type(I)
-    local A, C, D = Re, 0, 0
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      C, D = R:getReal(), R:getImag()
-    end
-    Re = A*C - Im*D; Im = A*D + Im*C
+    local A, C, D = Re, asrComplex(R,I)
+    Re = A*C - Im*D
+    Im = A*D + Im*C; return self
   end
 
   function self:Div(R,I)
-    local tR, tI = type(R), type(I)
-    local A, C, D = Re, 0, 0
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      C, D = R:getReal(), R:getImag()
-    end
-    Z = (C*C + D*D)
-    if(Z ~= 0) then Re = (A *C + Im*D) / Z; Im = (Im*C -  A*D) / Z end
+    local A, C, D = Re, asrComplex(R,I)
+    local Z = (C*C + D*D)
+    if(Z ~= 0) then Re, Im = ((A *C + Im*D) / Z), ((Im*C -  A*D) / Z) end; return self
   end
 
   function self:Mod(R,I)
-    local tR, tI = type(R), type(I)
-    local A, C, D = Re, 0, 0
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      C, D = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      C, D = R:getReal(), R:getImag()
-    end
-    self:Div(C,D)
+    local A, C, D = Re, asrComplex(R,I); self:Div(C,D)
     local rei, ref = math.modf(Re)
     local imi, imf = math.modf(Im)
     self:Set(ref,imf)
-    self:Mul(C,D)
+    self:Mul(C,D); return self
   end
 
   function self:Pow(R,I)
-    local tR, tI = type(R), type(I)
-    local nC, nD = 0, 0
-    if( (tR == "number" or tR == "string") and
-       ((tI == "number" or tI == "string") or not I)
-    ) then
-      nC, nD = (tonumber(R) or 0), (tonumber(I) or 0)
-    elseif(tR == "table" and getmetatable(R) == metaComplex and not I) then
-      nC, nD = R:getReal(), R:getImag()
-    end
+    local C, D = asrComplex(R,I)
     local Ro = self:getNorm()
     local Th = self:getAngRad()
-    local nR = (Ro ^ nC) * math.exp(-nD * Th)
-    local nF =  nC * Th  + nD * math.log(Ro)
+    local nR = (Ro ^ C) * math.exp(-D * Th)
+    local nF =  C * Th  + D * math.log(Ro)
     Re = nR * math.cos(nF)
-    Im = nR * math.sin(nF)
+    Im = nR * math.sin(nF); return self
   end
 
   function self:getRoots(nNum)
-    local T = type(nNum)
-    if(T == "number" or T == "string") then
-      local Num = tonumber(nNum)
-      if(Num) then
-        Num = math.floor(Num)
-        local tRoots = {}
-        local Pi = math.pi
-        local R  = self:getNorm()   ^ (1 / Num)
-        local Th = self:getAngRad() * (1 / Num)
-        local CRe, CIm
-        local AngStep = (2*Pi) / Num
-        for k = 1, Num do
-          CRe = R * math.cos(Th)
-          CIm = R * math.sin(Th)
-          tRoots[k] = Complex(CRe,CIm)
-          Th = Th + AngStep
-        end
-        return tRoots
-      end
-      return nil
-    end
-    return nil
+    local N = tonumber(nNum)
+    if(N) then
+      local N = math.floor(N)
+      local tRoots = {}
+      local Pi = math.pi
+      local R  = self:getNorm()   ^ (1 / N)
+      local Th = self:getAngRad() * (1 / N)
+      local CRe, CIm
+      local AngStep = (2*Pi) / N
+      for k = 1, N do
+        CRe = R * math.cos(Th)
+        CIm = R * math.sin(Th)
+        tRoots[k] = Complex(CRe,CIm)
+        Th = Th + AngStep
+      end; return tRoots
+    end; return nil
   end
-
   return self
 end
 
@@ -359,7 +305,7 @@ function ToComplex(In,Del)
   if(tIn == "number") then return Complex(In,0) end
   if(tIn ==    "nil") then return Complex(0,0) end
   if(tIn == "string") then
-    local Str, S, E = StrValidateComplex(In)
+    local Str, S, E = StrValidateComplex(In:gsub("*",""))
     if(not (Str and S and E)) then return logStatus(nil,"ToComplex: Failed to vlalidate <"..tostring(In)..">") end
         Str = Str:sub(S ,E); E = E-S+1; S = 1
     local I = Str:find("i",S)

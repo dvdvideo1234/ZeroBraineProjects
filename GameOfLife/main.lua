@@ -72,11 +72,14 @@ F:drwLife("turtle",Arg)
 
 logStatus(nil,GG:toStringText("\n",true))
 logStatus(nil,GG:toStringText("\n",false))
+logStatus(nil,F:gewtRuleName())
+logTable(F:getRuleData())
+
 
 while true do
   Arg[5] = char()
   F:drwLife("turtle",Arg)
-  waitSeconds(0)
+ -- waitSeconds(2)
   F:evoNext()
 end
 

@@ -17,9 +17,9 @@ local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 30
-local iTer  = 300
+local iTer  = 80
 local sfrac = "mandelbrot"
-local spale = "hsl"
+local spale = "region"
 local brdcl = colr(0, 250, 100)
 local brdup = true
 
@@ -61,7 +61,7 @@ Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 
 local S = makeFractal(W,H,-szRe,szRe,-szIm,szIm,brdcl,brdup)
       S:SetControlWX(wx)
-       S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
+   --    S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
       S:Register("FUNCT","mandelbrot",function (Z, C, R) Z:Pow(2); Z:Add(C); R[1] = Z:getAngRad(); end )
       S:Register("FUNCT","mandelbar" ,function (Z, C, R) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
       S:Register("FUNCT","julia1"    ,function (Z, C, R) Z:Pow(2); Z:Add(ToComplex("-0.8+0.156i")) end )

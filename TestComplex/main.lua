@@ -35,10 +35,32 @@ logStatus(nil,"---------------Advanced: Str-I-2Complex with brackets------------
 J = ToComplex("[4+j5]")   ;  logStatus(nil,J and tostring(J) or "6 missing")
 
 
+logStatus(nil,"---------------Advanced: Operations---------------")
+logStatus(nil,"Add{0, 6}"..tostring(ToComplex("3 + 3i") + ToComplex("3 - 3i")))
+logStatus(nil,"Sub{6, 0}"..tostring(ToComplex("3 + 3i") - ToComplex("3 - 3i")))
+logStatus(nil,"Mul{4,-3}"..tostring(ToComplex("2 + i*1") * ToComplex("1 - 2i")))
+logStatus(nil,"Mul{0.8,-0.6}"..tostring(ToComplex("2 + 1*i") / ToComplex("1 + 2i")))
+
+logStatus(nil,"---------------Advanced: Roots---------------")
+local CT = ToComplex("-.5+1*i")
+
+local tAns = {"{0.898127,0.500739}",
+              "{-0.500739,0.898127}",
+              "{-0.898127,-0.500739}",
+              "{0.500739,-0.898127}"}
+local tRoo, iCnt = CT:getRoots(4), 1
+while(tRoo[iCnt]) do
+  tRoo[iCnt]:Round(6)
+  if(tAns[iCnt] == tostring(tRoo[iCnt])) then
+    logStatus(nil,"<"..tostring(tAns[iCnt]).."> = <"..tostring(tRoo[iCnt]).."> OK")
+  else logStatus(nil,"<"..tostring(tAns[iCnt]).."> ~ <"..tostring(tRoo[iCnt]).."> FAIL") end
+  iCnt = iCnt + 1
+end
+logStatus(nil,"---------------Advanced: Power---------------")
+local c = (CT ^ 5);    c:Print("\n")
+local c = (CT ^ 0.20); c:Print("\n")
+local c = (CT ^ CT);   c:Print("\n")
 
 
-
-
-
-
+logStatus(nil,"\nTests done")
 

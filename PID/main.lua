@@ -5,8 +5,8 @@ require("ZeroBraineProjects/dvdlualib/colormap")
 
 local W, H  = 1024, 464
 
-local minC, maxC = -50000, 50000
-local To    = 0.0006
+local minC, maxC = -50, 50
+local To    = 0.0012
 local endTm = 0.2
 local intX  = newInterval("WinX",  0,endTm, 0, W)
 local intY  = newInterval("WinY",-200,200 , H, 0)
