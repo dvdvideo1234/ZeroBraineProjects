@@ -1,0 +1,69 @@
+lib-sta = {}
+lib-sta["setFlags"] = function: 0x020a6508
+lib-sta["newState"] = function: 0x0310a130
+lib-sta["setPosition"] = function: 0x02141a68
+lib-sta["getType"] = function: 0x030d44d8
+lib-sta["Dump"] = function: 0x020a6860
+lib-sta["getPosition"] = function: 0x02136218
+lib-sta["getFlags"] = function: 0x020aed90
+lib-ply = {}
+lib-ply["Move"] = function: 0x030c9058
+lib-ply["Dump"] = function: 0x02130bc8
+lib-ply["newPlayer"] = function: 0x030b0888
+lib-ply["getType"] = function: 0x030b0848
+omt = {}
+omt["__type"] = "state"
+omt["__index"] = {}
+omt["__index"]["setFlags"] = function: 0x020a6508
+omt["__index"]["newState"] = function: 0x0310a130
+omt["__index"]["setPosition"] = function: 0x02141a68
+omt["__index"]["getType"] = function: 0x030d44d8
+omt["__index"]["Dump"] = function: 0x020a6860
+omt["__index"]["getPosition"] = function: 0x02136218
+omt["__index"]["getFlags"] = function: 0x020aed90
+MT: table: 0x030b07c0
+inst-sta = {}
+inst-sta["y"] = 0
+inst-sta["x"] = 5
+inst-sta["gho"] = false
+inst-sta["fix"] = false
+mt-sta = {}
+mt-sta["__type"] = "state"
+mt-sta["__index"] = {}
+mt-sta["__index"]["setFlags"] = function: 0x020a6508
+mt-sta["__index"]["newState"] = function: 0x0310a130
+mt-sta["__index"]["setPosition"] = function: 0x02141a68
+mt-sta["__index"]["getType"] = function: 0x030d44d8
+mt-sta["__index"]["Dump"] = function: 0x020a6860
+mt-sta["__index"]["getPosition"] = function: 0x02136218
+mt-sta["__index"]["getFlags"] = function: 0x020aed90
+inst-ply = {}
+inst-ply["x"] = 7
+inst-ply["gho"] = false
+inst-ply["y"] = 6
+inst-ply["fix"] = false
+inst-ply["ch"] = ">"
+mt-ply = {}
+mt-ply["__index"] = {}
+mt-ply["__index"]["Move"] = function: 0x030c9058
+mt-ply["__index"]["__index"] = {}
+mt-ply["__index"]["__index"]["setFlags"] = function: 0x020a6508
+mt-ply["__index"]["__index"]["newState"] = function: 0x0310a130
+mt-ply["__index"]["__index"]["setPosition"] = function: 0x02141a68
+mt-ply["__index"]["__index"]["getType"] = function: 0x030d44d8
+mt-ply["__index"]["__index"]["Dump"] = function: 0x020a6860
+mt-ply["__index"]["__index"]["getPosition"] = function: 0x02136218
+mt-ply["__index"]["__index"]["getFlags"] = function: 0x020aed90
+mt-ply["__index"]["Dump"] = function: 0x02130bc8
+mt-ply["__index"]["newPlayer"] = function: 0x030b0888
+mt-ply["__index"]["getType"] = function: 0x030b0848
+mt-ply["__type"] = "player > state"
+mt-ply["__proto"] = {}
+mt-ply["__proto"]["gho"] = false
+mt-ply["__proto"]["fix"] = false
+
+Typ: player > state
+Pos: 7, 6
+Flg: false, false
+Execution error:
+...BraineIDE\myprograms\ZeroBraineProjects\Sokoban\main.lua:27: attempt to call method 'setPosition' (a nil value)

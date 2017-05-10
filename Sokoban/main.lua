@@ -4,6 +4,10 @@ require("ZeroBraineProjects/dvdlualib/common")
 local sta = require("ZeroBraineProjects/Sokoban/state")
 local ply = require("ZeroBraineProjects/Sokoban/player")
 
+logTable(sta,"lib-sta")
+logTable(ply,"lib-ply")
+
+
 local tItemList = {}
 
 local function readLevel()
@@ -12,11 +16,10 @@ end
 
 local b = sta:newState(5,0)
 local a = ply:newPlayer(7,6)
-local c = ply:newPlayer(4,4)
 
-logTable(b,"sta")
+logTable(b,"inst-sta")
 logTable(getmetatable(b),"mt-sta")
-logTable(a,"ply")
+logTable(a,"inst-ply")
 logTable(getmetatable(a),"mt-ply")
 
 
