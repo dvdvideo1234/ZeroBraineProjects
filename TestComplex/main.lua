@@ -61,6 +61,7 @@ local c = (CT ^ 5);    c:Print("\n")
 local c = (CT ^ 0.20); c:Print("\n")
 local c = (CT ^ CT);   c:Print("\n")
 
+ToComplex("1.59"):Round(1):Print("\n")
 
 logStatus(nil,"\nTests done")
 
