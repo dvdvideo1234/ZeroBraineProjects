@@ -11,15 +11,15 @@ io.stdout:setvbuf("no")
 
 -- Changable parameters
 local maxCl = 255
-local W     = 200
-local H     = 200
+local W     = 300
+local H     = 300
 local szRe  = 2
 local szIm  = 2
 local nStep = 35
-local nZoom = 30
-local iTer  = 80
-local sfrac = "mandelbrot"
-local spale = "region"
+local nZoom = 15
+local iTer  = 500
+local sfrac = "julia4"
+local spale = "wikipedia"
 local brdcl = colr(0, 250, 100)
 local brdup = true
 
