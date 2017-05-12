@@ -3,8 +3,19 @@
 local frm = require("ZeroBraineProjects/Cockoban/farmer")
 local nst = require("ZeroBraineProjects/Cockoban/nest")
 local wll = require("ZeroBraineProjects/Cockoban/wall")
+local ckn = require("ZeroBraineProjects/Cockoban/chicken")
 
-local barnElements = {
+local coBarn = {} -- The library name
+
+-- Only these that use space
+local gtLevelElements = {
+  ["wall"]    = {},
+  ["chicken"] = {},
+  ["nest"]    = {},
+  ["farmer"]  = {}
+}
+
+local gtBarnElements = {
   ["#"]   = "wall"        , -- Wall
   ["@"]   = "farmer"      , -- Farmer
   ["+"]   = "farmer/nest" , -- Farmer on a nest
@@ -13,22 +24,30 @@ local barnElements = {
   ["."]   = "nest"        , -- Nest as is
   [" "]   = "floor"         -- Empty space     
 }
+gtBarnElements.__index = gtBarnElements[" "] -- All othe symbols are floors
 
-local propList = {}
-
-local makeElements = {
-  ["wall"] = function(nx,ny) return wll.makeNew{x=nx,y=ny} end
+local gtMakeElements = {
+  ["wall"] = function(nx,ny)
+    local o = wll.makeNew{x=nx,y=ny}
+          o:setDefault(); return o end
+  ["farmer"] = function(nx,ny)
+    local o = frm.makeNew{x=nx,y=ny}
+          o:setDefault(); return o end
+  ["chicken"] = function(nx,ny)
+    local o = ckn.makeNew{x=nx,y=ny}
+          o:setDefault(); return o end
+  ["nest"] = function(nx,ny)
+    local o = nst.makeNew{x=nx,y=ny}
+          o:setDefault(); return o end
+  ["floor"] = function(nx, ny) return nil end -- Do not creae anything
+  ["__index"] = function(nx, ny) return nil end -- Do not creae anything
 }
 
-barnElements.__index = barnElements[" "] -- All othe symbols are floors
-
-local coBarn = {}
-
-function coBarn.makeElement()
-  
+function coBarn.makeElement(selm, nx, ny)
+  return gtMakeElements[selm](nx, ny)
 end
 
-function coBarn.getElement(self, sE) return barnElements[tostring(sE or "")] end
+function coBarn.getElement(self, sE) return gtBarnElements[tostring(sE or ""):sub(1,1)] end
 
 coBarn.getParts = function(self, sF)
   local sNam = tostring(sF or "")
