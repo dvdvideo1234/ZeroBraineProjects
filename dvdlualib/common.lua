@@ -15,8 +15,12 @@ function waitSeconds(Add)
   end
 end
 
-function logStatus(anyData, anyMsg)
-  io.write(tostring(anyMsg).."\n"); return anyData
+function logStatus(anyMsg, ...)
+  io.write(tostring(anyMsg).."\n"); return ...
+end
+
+function logStatusLine(anyMsg, ...)
+  io.write(tostring(anyMsg)); return ...
 end
 
 function xyText(xyP)
@@ -24,7 +28,7 @@ function xyText(xyP)
 end
 
 function xyLog(xyP,anyMsg)
-  logStatus(nil,tostring(anyMsg or "")..xyText(xyP))
+  logStatus(tostring(anyMsg or "")..xyText(xyP))
 end
 
 function xyPlot(xyP,clDrw)
@@ -45,20 +49,19 @@ function logMulty(...)
 end
 
 function logTable(tT,sS)
-  local vS, vT, vK, cK = type(sS), type(tT), tostring(sS or "Data"), ""
+  local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
   if(vT ~= "table") then
-    return logStatus(nil,"{"..vT.."}["..vK.."] = <"..tostring(tT)..">") end
-  logStatus(nil,vK.." = {}")
-  if(next(tT) == nil) then return end
-  for k, v in pairs(tT) do
-    if(type(k) == "string") then
-      cK = vK.."[\""..k.."\"]"
-    else cK = vK.."["..tostring(k).."]" end
+    return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">",nil) end
+  if(next(tT) == nil) then
+    return logStatus(sS.." = {}") end
+  logStatus(sS.." = {}")
+  for k,v in pairs(tT) do
+    if(type(k) == "string") then vK = sS.."[\""..k.."\"]"
+    else vK = sS.."["..tostring(k).."]" end
     if(type(v) ~= "table") then
-      if(type(v) == "string") then
-        logStatus(nil,cK.." = \""..v.."\"")
-      else logStatus(nil,cK.." = "..tostring(v)) end
-    else logTable(v, cK) end
+      if(type(v) == "string") then logStatus(vK.." = \""..v.."\"",nil)
+      else logStatus(vK.." = "..tostring(v),nil) end
+    else logTable(v,vK) end
   end
 end
 
@@ -504,30 +507,33 @@ function addEstim(fFunction, sName)
   return {Function = fFunction, Name = sName, Times = {}, Rolled = {}}
 end
 
-function testPerformance(stCard,stEstim,sFile)
+function testPerformance(stCard,stEstim,sFile,nMrkP)
   if(sFile) then
-    logStatus(nil,"Output set to: "..sFile)
+    logStatus("Output set to: "..sFile, nil)
     io.output(sFile)
   end
   local tstCas = #stCard
   local tstEst = #stEstim
-  logStatus(nil,"Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions")
+  logStatus("Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions", nil)
   local TestID, Cases = 1, {}
   while(stCard[TestID]) do -- All tests
     local tstVal = stCard[TestID]
     local fooVal = tstVal[1]
     local fooRes = tstVal[2]
     local tstNam = tostring(tstVal[3] or "")
-    local fooCnt = tonumber(tstVal[4]) or 0
+    local fooCnt = tonumber(tstVal[4]) or 0  -- Repeat each test
     local fooCyc = tonumber(tstVal[5]) or 0
-    if(fooCnt < 1) then logStatus(nil,"No test-card count  stCard.Cnt for test ID # "..tostring(TestID)); return end
-    if(fooCyc < 1) then logStatus(nil,"No test-card cycles stCard.Cyc for test ID # "..tostring(TestID)); return end
-    if(Cases[tstNam]) then logStatus(nil,"Test case name <"..tstNam.."> already chosen under ID # "..tostring(Cases[tstNam])); return; end
-    logStatus(nil,"Testing case["..tostring(TestID).."]: <"..tostring(tstVal[3])..">")
-    logStatus(nil,"   Inp: <"..tostring(tstVal[1])..">")
-    logStatus(nil,"   Out: <"..tostring(tstVal[2])..">")
-    logStatus(nil,"   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }")
-    local Itr = 1 -- Current iteration
+    local mrkFoo = (tonumber(nMrkP) or 0); mrkFoo = (((mrkFoo > 0) and (mrkFoo < 1)) and mrkFoo or nil)
+    local mrkCyc = (mrkFoo and (fooCnt * mrkFoo * tstEst) or nil)
+    if(fooCnt < 1) then logStatus("No test-card count  stCard.Cnt for test ID # "..tostring(TestID), nil); return end
+    if(fooCyc < 1) then logStatus("No test-card cycles stCard.Cyc for test ID # "..tostring(TestID), nil); return end
+    if(Cases[tstNam]) then logStatus("Test case name <"..tstNam.."> already chosen under ID # "..tostring(Cases[tstNam]), nil); return; end
+    logStatus("Testing case["..tostring(TestID).."]: <"..tostring(tstVal[3])..">", nil)
+    logStatus("   Inp: <"..tostring(tstVal[1])..">", nil)
+    logStatus("   Out: <"..tostring(tstVal[2])..">", nil)
+    logStatus("   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }", nil)
+    logStatus("   Pro: { "..tostring(mrkFoo*100).."%, "..tostring(fooCnt*tstEst).."} ", nil)
+    local Itr, mrkCnt = 1, 0 -- Current iteration
     for Itr = 1, fooCnt, 1 do -- Repeat each test
       for Est = 1, tstEst  do -- For all functions
         local Foo = stEstim[Est]
@@ -545,8 +551,10 @@ function testPerformance(stCard,stEstim,sFile)
           else                   Roll["FAIL"] = Roll["FAIL"] + 1 end
         end
         Foo.Times[tstNam] = Foo.Times[tstNam] + (os.clock() - Time)
+        -- logStatus("{"..tostring(mrkFoo)..","..tostring(mrkCyc)..","..tostring(mrkCnt).."}")
+        mrkCnt = mrkCnt + 1; if(mrkCyc and (mrkCnt % mrkCyc == 0)) then logStatusLine((mrkCnt/(fooCnt*tstEst)*100).."% ") end
       end
-    end
+    end; logStatus("Done")
     local Min = stEstim[1].Times[tstNam]
     for Est = 1, tstEst do  -- For all functions
       local Foo = stEstim[Est]
@@ -561,12 +569,12 @@ function testPerformance(stCard,stEstim,sFile)
       local Tip =  (Min ~= 0) and (100 * (Tim / Min)) or 0
       local Nam = "Passed ["..Foo.Name.."]: "
       local Dat = string.format("%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d",Pas,Tip,Tim,(fooCnt*fooCyc/Tim),Fal)
-      logStatus(nil,Nam..Dat)
+      logStatus(Nam..Dat, nil)
     end; Cases[tstNam] = TestID;
-    logStatus(nil,"")
+    logStatus("", nil)
     TestID = TestID + 1
   end
-  logStatus(nil,"Test finished all "..tostring(tstCas).." cases successfully")
+  logStatus("Test finished all "..tostring(tstCas).." cases successfully", nil)
 end
 
 ------------------- STRINGS --------------------------

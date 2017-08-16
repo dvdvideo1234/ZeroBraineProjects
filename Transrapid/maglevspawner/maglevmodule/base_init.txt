@@ -1,0 +1,85 @@
+# What name do you want to be displayed
+{general:name}{Val:Ron's transrapid}
+
+# These two define the local coordinate system of the maglev module
+# They are selected based on the gmod entity coordinate system to
+# create a custom one to be used for defining all other offsets
+{general:fwloc}{Val:1,0,0}
+{general:uploc}{Val:0,0,1}
+
+# The center offset local vector relative to the coordinates above
+# It uses {fwloc}, {uploc} and their cross product as right
+{general:cnloc}{Val:0,0,0}
+
+# How heavy the maglev module is
+#{general:mass}{Val:1200}
+
+# How fast does the entity tick
+{general:tick}{Val:0.005}
+
+# What model is used for the maglev
+{general:model}{Val:models/ron/maglev/train/slider.mdl}
+
+# You can prepare a list for the hit-man's wet job using this ;P
+# A general list of hit classes. Used if the sensor does not have hit class list
+{general:target}{Val:prop_physics/prop_static/prop_dynamic/prop_detail}
+
+# Key to turn on on via numpad (always toggled)
+{general:keyon}{Val:42}
+
+# Is the numpad toggled or not ( for moving forward/reverse )
+{general:numtog}{Val:false}
+
+# Numpad force ( if the wire input is not connected )
+{general:numfor}{Val:5000}
+
+# Key to go forward and reverse
+{general:keyf}{Val:45}
+{general:keyr}{Val:39}
+
+# These are the list of sensor definitions
+# Origin relative to {general:cnloc}
+# Direction relative to {general:fwloc}, {general:uploc}
+{sensor:DFR}{Len:12}{Org: 17, 47,-4.3}{Dir:0, 0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DBR}{Len:12}{Org:-17, 47,-4.3}{Dir:0, 0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DFL}{Len:12}{Org: 17,-47,-4.3}{Dir:0, 0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DBL}{Len:12}{Org:-17,-47,-4.3}{Dir:0, 0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SFR}{Len:15}{Org: 17, 62, 4.0}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBR}{Len:15}{Org:-17, 62, 4.0}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SFL}{Len:15}{Org: 17,-62, 4.0}{Dir:0, 1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBL}{Len:15}{Org:-17,-62, 4.0}{Dir:0, 1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+
+# Defines the list of unit vectors for all forces
+# It is used by the control states for closing the loop feedback on the module
+# Origin relative to {general:cnloc}
+# Direction relative to {general:fwloc}, {general:uploc}
+{forcer:UR}{Org:0, 60,0}{Dir:0,0,1}
+{forcer:UL}{Org:0,-60,0}{Dir:0,0,1}
+{forcer:LR}{Org:0,  0,0}{Dir:0,1,0}
+
+# Force pair pitch front-up positive
+{forcer:APF}{Org: 250,0,0}{Dir:0,0, 1}
+{forcer:APB}{Org:-250,0,0}{Dir:0,0,-1}
+
+# Force pair yaw right-front positive
+{forcer:AYR}{Org:0, 250,0}{Dir: 1,0,0}
+{forcer:AYL}{Org:0,-250,0}{Dir:-1,0,0}
+
+# Force pair roll right-up positive with lever of 500
+{forcer:ARR}{Org:0, 500,0}{Dir:0,0, 1}
+{forcer:ARL}{Org:0,-500,0}{Dir:0,0,-1}
+
+# Controllers where every item is mapped to a forcer list using the targets
+# Tar: Controlled forcer targets
+# Cmb: Combined mode
+# Tun: Tunning P I and D / Control limit / Error power P I and D
+# Ref: Reference
+# Neg: Feedback mode flag. True for positive
+# Prs: Procedure for deviation calculated using the sensors
+{control:UR}{Tar:UR}{Cmb:true}{Tun:460,0.2,1740//1.2,1,1}{Ref:4.5/}{Neg:true}{Prs:((DFR < DBR) and DFR or DBR)}
+{control:UL}{Tar:UL}{Cmb:true}{Tun:460,0.2,1740//1.2,1,1}{Ref:4.5/}{Neg:true}{Prs:((DFL < DBL) and DFL or DBL)}
+{control:LR}{Tar:LR}{Cmb:true}{Tun:2500,0,2600//1.5,1,1.4}{Ref:0/}{Neg:true}{Prs:(((SFR < SBR) and SFR or SBR) - ((SFL < SBL) and SFL or SBL))}
+{control:AP}{Tar:APF/APB}{Cmb:true}{Tun:100,0,250//}{Ref:0/}{Neg:true}{Prs:(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))}
+{control:AY}{Tar:AYR/AYL}{Cmb:true}{Tun:510,0,450//}{Ref:0/}{Neg:false}{Prs:(4 * (((SFR < SBL) and SFR or SBL) - ((SFL < SBR) and SFL or SBR)))}
+{control:AR}{Tar:ARR/ARL}{Cmb:true}{Tun:32,0,1200//1.2,1,1.2}{Ref:0/}{Neg:true}{Prs:(4 * (((DFL < DBL) and DFL or DBL) - ((DFR < DBR) and DFR or DBR)))}
+

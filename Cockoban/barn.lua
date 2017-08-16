@@ -29,17 +29,17 @@ gtBarnElements.__index = gtBarnElements[" "] -- All othe symbols are floors
 local gtMakeElements = {
   ["wall"] = function(nx,ny)
     local o = wll.makeNew{x=nx,y=ny}
-          o:setDefault(); return o end
+          o:setDefault(); return o end,
   ["farmer"] = function(nx,ny)
     local o = frm.makeNew{x=nx,y=ny}
-          o:setDefault(); return o end
+          o:setDefault(); return o end,
   ["chicken"] = function(nx,ny)
     local o = ckn.makeNew{x=nx,y=ny}
-          o:setDefault(); return o end
+          o:setDefault(); return o end,
   ["nest"] = function(nx,ny)
     local o = nst.makeNew{x=nx,y=ny}
-          o:setDefault(); return o end
-  ["floor"] = function(nx, ny) return nil end -- Do not creae anything
+          o:setDefault(); return o end,
+  ["floor"] = function(nx, ny) return nil end, -- Do not creae anything
   ["__index"] = function(nx, ny) return nil end -- Do not creae anything
 }
 

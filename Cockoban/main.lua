@@ -1,7 +1,7 @@
 require("turtle")
 require("wx")
 require("ZeroBraineProjects/dvdlualib/common")
-local barn = require("ZeroBraineProjects/Cockoban/barn")
+--local barn = require("ZeroBraineProjects/Cockoban/barn")
 local wall = require("ZeroBraineProjects/Cockoban/wall")
 local farmer = require("ZeroBraineProjects/Cockoban/farmer")
 local nest = require("ZeroBraineProjects/Cockoban/nest")
