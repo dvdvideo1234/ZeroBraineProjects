@@ -1,15 +1,15 @@
 require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/gmodlib")
+require("ZeroBraineProjects/dvdlualib/asmlib")
+
+asmlib.SetIndexes("V","x","y","z")
+asmlib.SetIndexes("A","p","y","r")
+asmlib.InitBase("track","assembly")
 
 
-local a = {1,2,3,4,5,{},{},{}}
+asmlib.SettingsLogs("skip")
+asmlib.SettingsLogs("only")
 
-for i = 1, #a, 1 do
-  logStatus("",tostring(a[i]))
-end
+logTable(asmlib.GetOpVar("LOG_SKIP"))
+logTable(asmlib.GetOpVar("LOG_ONLY"))
 
-local s = "@@@aaa@bbb@ccc@@"
-local t = strExplode(s:sub(2,-1):Trim("@"), "@")
-for i = 1, #t, 1 do
-  logStatus("",tostring(t[i]))
-end
+

@@ -1,6 +1,15 @@
+local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 function tobool(any)
-  local s = tostring(any); if(__tobool[s]) then return false end return true
+  if(__tobool[tostring(any)]) then return false end return true
+end
+
+local type = function(any)
+  local typ = __type(any)
+  if(typ == "table") then
+    local mt = getmetatable(any)
+    return (mt.__type and tostring(mt.__type) or typ) end
+  return __type(any)
 end
 
 local mtVector = {__type = "Vector"}
@@ -51,15 +60,25 @@ mtVector.__mul = function(o1,o2)
   local v1 = isVector(o1) and o1
   local v2 = isVector(o2) and o2
   local ov = Vector()
-  if(v1 and v2) then ov:Set(v1); ov:Dot(v2); return ov end
+  if(v1 and v2) then ov:Set(v1); ov:Mul(ov:Dot(v2)); return ov end
   if(v1 and tonumber(o2)) then ov:Set(v1); ov:Mul(tonumber(o2)); return ov end
   if(v2 and tonumber(o1)) then ov:Set(v2); ov:Mul(tonumber(o1)); return ov end
   print("Cannot preform multiplication between <"..type(o1).."/"..type(o2)..">")
   return ov 
 end
 
-
-
+local mtAngle = {__type = "Angle"}
+      mtAngle.__tostring = function(self) return ("["..self.p..","..self.y..","..self.r.."]") end
+local function isAngle(a) return (getmetatable(a) == mtAngle) end
+function Angle(p,y,r)
+  local self = {}; setmetatable(self, mtAngle)
+  self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0
+  function self:Set(p,y,r)
+    if(getmetatable(p) == mtAngle) then self.p, self.y, self.r = p.p, p.y, p.r;
+    else self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0; end
+  end
+  return self
+end
 
 function string.Explode(d, s)
   return strExplode(s, d)

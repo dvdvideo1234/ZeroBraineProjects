@@ -59,10 +59,10 @@ local stEstim = {
 
 
 local stCard = {
-  {1  , 67 , "Number", 5000, 5000, .2}
+  {1  , 67 , "Number", 50, 50, .2}
 }
 
--- testPerformance(stCard,stEstim,nil,0.1)
+ testPerformance(stCard,stEstim,nil,0.1)
 
 --[[
 Passed [single]: 100.000 Time: 100.000 (1474.423[s])       16955.785[c/s] Failed: 0

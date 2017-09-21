@@ -512,15 +512,14 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
     logStatus("Output set to: "..sFile, nil)
     io.output(sFile)
   end
-  local tstCas = #stCard
-  local tstEst = #stEstim
+  local tstCas, tstEst = #stCard, #stEstim
   logStatus("Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions", nil)
-  local TestID, Cases = 1, {}
+  local TestID, Cases, tstFail = 1, {}, {Cnt = 0, Hash = {}} -- No tests have hailed
   while(stCard[TestID]) do -- All tests
     local tstVal = stCard[TestID]
     local fooVal = tstVal[1]
-    local fooRes = tstVal[2]
-    local tstNam = tostring(tstVal[3] or "")
+    local fooRes = tstVal[2] -- The test is not failed yet
+    local tstNam = tostring(tstVal[3] or ""); tstFail.Hash[tstNam] = {false, 0}
     local fooCnt = tonumber(tstVal[4]) or 0  -- Repeat each test
     local fooCyc = tonumber(tstVal[5]) or 0
     local mrkFoo = (tonumber(nMrkP) or 0); mrkFoo = (((mrkFoo > 0) and (mrkFoo < 1)) and mrkFoo or nil)
@@ -532,7 +531,8 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
     logStatus("   Inp: <"..tostring(tstVal[1])..">", nil)
     logStatus("   Out: <"..tostring(tstVal[2])..">", nil)
     logStatus("   Set: { "..tostring(fooCnt)..", "..tostring(fooCyc).." }", nil)
-    logStatus("   Pro: { "..tostring(mrkFoo*100).."%, "..tostring(fooCnt*tstEst).."} ", nil)
+    if(mrkFoo) then
+      logStatus("   Pro: { "..tostring(mrkFoo*100).."%, "..tostring(fooCnt*tstEst).."} ", nil) end
     local Itr, mrkCnt = 1, 0 -- Current iteration
     for Itr = 1, fooCnt, 1 do -- Repeat each test
       for Est = 1, tstEst  do -- For all functions
@@ -547,8 +547,13 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
         local Time = os.clock()
         for Ind = 1, fooCyc do -- N Cycles
           local Rez = Foo.Function(fooVal)
-          if(Rez == fooRes) then Roll["PASS"] = Roll["PASS"] + 1
-          else                   Roll["FAIL"] = Roll["FAIL"] + 1 end
+          if(Rez == fooRes) then Roll["PASS"] = Roll["PASS"] + 1 else
+            if(not tstFail.Hash[tstNam][1]) then
+              tstFail.Hash[tstNam][1] = true
+              tstFail.Cnt = tstFail.Cnt + 1
+            end
+            Roll["FAIL"] = Roll["FAIL"] + 1
+          end
         end
         Foo.Times[tstNam] = Foo.Times[tstNam] + (os.clock() - Time)
         -- logStatus("{"..tostring(mrkFoo)..","..tostring(mrkCyc)..","..tostring(mrkCnt).."}")
@@ -567,14 +572,23 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
       local Fal = ((100 * Foo.Rolled[tstNam]["FAIL"]) / All)
       local Tim = Foo.Times[tstNam]
       local Tip =  (Min ~= 0) and (100 * (Tim / Min)) or 0
-      local Nam = "Passed ["..Foo.Name.."]: "
+      local Nam = "Estimation for ["..Foo.Name.."]: "
       local Dat = string.format("%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d",Pas,Tip,Tim,(fooCnt*fooCyc/Tim),Fal)
+      tstFail.Hash[tstNam][2] = Fal
       logStatus(Nam..Dat, nil)
     end; Cases[tstNam] = TestID;
     logStatus("", nil)
     TestID = TestID + 1
   end
-  logStatus("Test finished all "..tostring(tstCas).." cases successfully", nil)
+  if(tstFail.Cnt == 0) then
+    logStatus("Test finished all "..tostring(tstCas).." cases successfully", nil) 
+  else
+    logStatus("Test finished "..tostring(tstCas-tstFail.Cnt).." of "..tostring(tstCas).." cases successfully", nil)
+    logStatus("The following tests have failed. Please check", nil)
+    for k, v in pairs(tstFail.Hash) do
+      if(v[1]) then logStatus("Test case <"..k.."> with fail rate: "..tostring(v[2]).."%", nil) end
+    end
+  end
 end
 
 ------------------- STRINGS --------------------------

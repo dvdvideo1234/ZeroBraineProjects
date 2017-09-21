@@ -1,5 +1,7 @@
 require("ZeroBraineProjects/dvdlualib/gmodlib")
 
+--- Because Vec[1] is actually faster than Vec.X
+
 --- Vector Component indexes ---
 local cvX -- Vector X component
 local cvY -- Vector Y component
@@ -11,87 +13,134 @@ local caY -- Angle Yaw   component
 local caR -- Angle Roll  component
 
 --- Component Status indexes ---
-local csX -- Sign of the first component
-local csY -- Sign of the second component
-local csZ -- Sign of the third component
+local csA -- Sign of the first component
+local csB -- Sign of the second component
+local csC -- Sign of the third component
 local csD -- Flag for disabling the point
 
-local next                 = next
-local type                 = type
-local Angle                = Angle
-local Color                = Color
-local pairs                = pairs
-local pcall                = pcall
-local print                = print
-local tobool               = tobool
-local Vector               = Vector
-local include              = include
-local IsValid              = IsValid
-local require              = require
-local Time                 = SysTime
-local tonumber             = tonumber
-local tostring             = tostring
-local GetConVar            = GetConVar
-local LocalPlayer          = LocalPlayer
-local CreateConVar         = CreateConVar
-local getmetatable         = getmetatable
-local setmetatable         = setmetatable
-local collectgarbage       = collectgarbage
-local CompileString        = CompileString
-local io                   = io
-local osClock              = os and os.clock
-local osDate               = os and os.date
-local sqlQuery             = sql and sql.Query or sqlQuery
-local sqlLastError         = sql and sql.LastError or sqlLastError
-local sqlTableExists       = sql and sql.TableExists or sqlTableExists
-local utilTraceLine        = util and util.TraceLine
-local utilIsInWorld        = util and util.IsInWorld
-local utilIsValidModel     = util and util.IsValidModel or utilIsValidModel
-local utilGetPlayerTrace   = util and util.GetPlayerTrace
-local entsCreate           = ents and ents.Create
-local fileOpen             = fileOpen
-local fileExists           = fileExists
-local fileAppend           = file and file.Append
-local fileDelete           = file and file.Delete
-local fileCreateDir        = fileCreateDir
-local tableGetKeys         = table and table.GetKeys
-local mathAbs              = math and math.abs
-local mathCeil             = math and math.ceil
-local mathModf             = math and math.modf
-local mathSqrt             = math and math.sqrt
-local mathFloor            = math and math.floor
-local mathClamp            = math and math.Clamp
-local mathRandom           = math and math.random
-local timerStop            = timer and timer.Stop
-local timerStart           = timer and timer.Start
-local timerExists          = timer and timer.Exists
-local timerCreate          = timer and timer.Create
-local timerDestroy         = timer and timer.Destroy
-local tableEmpty           = table and table.Empty
-local debugGetinfo         = debug and debug.getinfo
-local stringLen            = string and string.len
-local stringSub            = string and string.sub
-local stringFind           = string and string.find
-local stringGsub           = string and string.gsub
-local stringUpper          = string and string.upper
-local stringLower          = string and string.lower
-local stringFormat         = string and string.format
-local stringExplode        = string and string.Explode or stringExplode
-local surfaceSetFont       = surface and surface.SetFont
-local surfaceDrawLine      = surface and surface.DrawLine
-local surfaceDrawText      = surface and surface.DrawText
-local surfaceDrawCircle    = surface and surface.DrawCircle
-local surfaceSetTexture    = surface and surface.SetTexture
-local surfaceSetTextPos    = surface and surface.SetTextPos
-local surfaceGetTextSize   = surface and surface.GetTextSize
-local surfaceGetTextureID  = surface and surface.GetTextureID
-local surfaceSetDrawColor  = surface and surface.SetDrawColor
-local surfaceSetTextColor  = surface and surface.SetTextColor
-local constructSetPhysProp = construct and construct.SetPhysProp
-local constraintWeld       = constraint and constraint.Weld
-local constraintNoCollide  = constraint and constraint.NoCollide
+---------------- Localizing instances ------------------
+local SERVER = SERVER
+local CLIENT = CLIENT
+
+---------------- Localizing Player keys ----------------
+local IN_ALT1      = IN_ALT1
+local IN_ALT2      = IN_ALT2
+local IN_ATTACK    = IN_ATTACK
+local IN_ATTACK2   = IN_ATTACK2
+local IN_BACK      = IN_BACK
+local IN_DUCK      = IN_DUCK
+local IN_FORWARD   = IN_FORWARD
+local IN_JUMP      = IN_JUMP
+local IN_LEFT      = IN_LEFT
+local IN_MOVELEFT  = IN_MOVELEFT
+local IN_MOVERIGHT = IN_MOVERIGHT
+local IN_RELOAD    = IN_RELOAD
+local IN_RIGHT     = IN_RIGHT
+local IN_SCORE     = IN_SCORE
+local IN_SPEED     = IN_SPEED
+local IN_USE       = IN_USE
+local IN_WALK      = IN_WALK
+local IN_ZOOM      = IN_ZOOM
+
+---------------- Localizing ENT Properties ----------------
+local MASK_SOLID            = MASK_SOLID
+local SOLID_VPHYSICS        = SOLID_VPHYSICS
+local MOVETYPE_VPHYSICS     = MOVETYPE_VPHYSICS
+local COLLISION_GROUP_NONE  = COLLISION_GROUP_NONE
+local RENDERMODE_TRANSALPHA = RENDERMODE_TRANSALPHA
+
+---------------- Localizing needed functions ----------------
+local next                    = next
+local type                    = type
+local pcall                   = pcall
+local Angle                   = Angle
+local Color                   = Color
+local pairs                   = pairs
+local print                   = print
+local tobool                  = tobool
+local Vector                  = Vector
+local unpack                  = unpack
+local include                 = include
+local IsValid                 = IsValid
+local Material                = Material
+local require                 = require
+local Time                    = SysTime
+local tonumber                = tonumber
+local tostring                = tostring
+local GetConVar               = GetConVar
+local LocalPlayer             = LocalPlayer
+local CreateConVar            = CreateConVar
+local SetClipboardText        = SetClipboardText
+local CompileString           = CompileString
+local getmetatable            = getmetatable
+local setmetatable            = setmetatable
+local collectgarbage          = collectgarbage
+local osClock                 = os and os.clock
+local osDate                  = os and os.date
+local bitBand                 = bit and bit.band
+local sqlQuery                = sql and sql.Query
+local sqlLastError            = sql and sql.LastError
+local sqlTableExists          = sql and sql.TableExists
+local gameSinglePlayer        = game and game.SinglePlayer
+local utilTraceLine           = util and util.TraceLine
+local utilIsInWorld           = util and util.IsInWorld
+local utilIsValidModel        = util and util.IsValidModel
+local utilGetPlayerTrace      = util and util.GetPlayerTrace
+local entsCreate              = ents and ents.Create
+local fileOpen                = fileOpen
+local fileExists              = fileExists
+local fileAppend              = fileAppend
+local fileDelete              = fileDelete
+local fileCreateDir           = fileCreateDir
+local mathPi                  = math and math.pi
+local mathAbs                 = math and math.abs
+local mathSin                 = math and math.sin
+local mathCos                 = math and math.cos
+local mathCeil                = math and math.ceil
+local mathModf                = math and math.modf
+local mathSqrt                = math and math.sqrt
+local mathFloor               = math and math.floor
+local mathClamp               = math and math.Clamp
+local mathRandom              = math and math.random
+local undoCreate              = undo and undo.Create
+local undoFinish              = undo and undo.Finish
+local undoAddEntity           = undo and undo.AddEntity
+local undoSetPlayer           = undo and undo.SetPlayer
+local undoSetCustomUndoText   = undo and undo.SetCustomUndoText
+local timerStop               = timer and timer.Stop
+local timerStart              = timer and timer.Start
+local timerSimple             = timer and timer.Simple
+local timerExists             = timer and timer.Exists
+local timerCreate             = timer and timer.Create
+local timerDestroy            = timer and timer.Destroy
+local tableEmpty              = table and table.Empty
+local tableMaxn               = table and table.maxn
+local tableGetKeys            = table and table.GetKeys
+local tableInsert             = table and table.insert
+local debugGetinfo            = debug and debug.getinfo
+local stringExplode           = string and string.Explode
+local stringImplode           = string and string.Implode
+local stringToFileName        = string and string.GetFileFromFilename
+local renderDrawLine          = render and render.DrawLine
+local renderDrawSphere        = render and render.DrawSphere
+local renderSetMaterial       = render and render.SetMaterial
+local surfaceSetFont          = surface and surface.SetFont
+local surfaceDrawLine         = surface and surface.DrawLine
+local surfaceDrawText         = surface and surface.DrawText
+local surfaceDrawCircle       = surface and surface.DrawCircle
+local surfaceSetTexture       = surface and surface.SetTexture
+local surfaceSetTextPos       = surface and surface.SetTextPos
+local surfaceGetTextSize      = surface and surface.GetTextSize
+local surfaceGetTextureID     = surface and surface.GetTextureID
+local surfaceSetDrawColor     = surface and surface.SetDrawColor
+local surfaceSetTextColor     = surface and surface.SetTextColor
 local surfaceDrawTexturedRect = surface and surface.DrawTexturedRect
+local languageAdd             = language and language.Add
+local constructSetPhysProp    = construct and construct.SetPhysProp
+local constraintWeld          = constraint and constraint.Weld
+local constraintNoCollide     = constraint and constraint.NoCollide
 local duplicatorStoreEntityModifier = duplicator and duplicator.StoreEntityModifier
+
 local libCache  = {} -- Used to cache stuff in a Pool
 local libAction = {} -- Used to attach external function to the lib
 local libOpVars = {} -- Used to Store operational Variable Values
@@ -107,36 +156,26 @@ function stringToFileName(sName)
 end
 
 function GetIndexes(sType)
-  if(sType == "V") then
-    return cvX, cvY, cvZ
-  elseif(sType == "A") then
-    return caP, caY, caR
-  elseif(sType == "S") then
-    return csX, csY, csZ, csD
-  end
-  return nil
-end
-
-function SetIndexes(sType,I1,I2,I3,I4)
-  if(sType == "V") then
-    cvX = I1
-    cvY = I2
-    cvZ = I3
-  elseif(sType == "A") then
-    caP = I1
-    caY = I2
-    caR = I3
-  elseif(sType == "S") then
-    csX = I1
-    csY = I2
-    csZ = I3
-    csD = I4
-  end
-  return nil
+  if(not IsString(sType)) then
+    return StatusLog(nil,"GetIndexes: Type {"..type(sType).."}<"..tostring(sType).."> not string") end
+  if    (sType == "V") then return cvX, cvY, cvZ
+  elseif(sType == "A") then return caP, caY, caR
+  elseif(sType == "S") then return csA, csB, csC, csD
+  else return StatusLog(nil,"GetIndexes: Type <"..sType.."> not found") end
 end
 
 function IsString(anyValue)
   return (getmetatable(anyValue) == GetOpVar("TYPEMT_STRING"))
+end
+
+function SetIndexes(sType,...)
+  if(not IsString(sType)) then
+    return StatusLog(false,"SetIndexes: Type {"..type(sType).."}<"..tostring(sType).."> not string") end
+  if    (sType == "V") then cvX, cvY, cvZ      = ...
+  elseif(sType == "A") then caP, caY, caR      = ...
+  elseif(sType == "S") then csA, csB, csC, csD = ...
+  else return StatusLog(false,"SetIndexes: Type <"..sType.."> not found") end
+  return StatusLog(true,"SetIndexes["..sType.."]: Success")
 end
 
 function GetCache(anyKey)
@@ -156,6 +195,22 @@ function AddVectorXYZ(vBase, nX, nY, nZ)
   vBase[cvX] = vBase[cvX] + (nX or 0)
   vBase[cvY] = vBase[cvY] + (nY or 0)
   vBase[cvZ] = vBase[cvZ] + (nZ or 0)
+end
+
+function NegVector(vBase, bX, bY, bZ)
+  if(not vBase) then return StatusLog(nil,"NegVector: Base invalid") end
+  local X = (tonumber(vBase[cvX]) or 0); X = (IsExistent(bX) and (bX and -X or X) or -X)
+  local Y = (tonumber(vBase[cvY]) or 0); Y = (IsExistent(bY) and (bY and -Y or Y) or -Y)
+  local Z = (tonumber(vBase[cvZ]) or 0); Z = (IsExistent(bZ) and (bZ and -Z or Z) or -Z)
+  vBase[cvX], vBase[cvY], vBase[cvZ] = X, Y, Z
+end
+
+function NegAngle(vBase, bP, bY, bR)
+  if(not vBase) then return StatusLog(nil,"NegVector: Base invalid") end
+  local P = (tonumber(vBase[caP]) or 0); P = (IsExistent(bP) and (bP and -P or P) or -P)
+  local Y = (tonumber(vBase[caY]) or 0); Y = (IsExistent(bY) and (bY and -Y or Y) or -Y)
+  local R = (tonumber(vBase[caR]) or 0); R = (IsExistent(bR) and (bR and -R or R) or -R)
+  vBase[caP], vBase[caY], vBase[caR] = P, Y, R
 end
 
 function LogInstance(anyValue)
@@ -823,15 +878,17 @@ function InitBase(sName,sPurpose)
     return StatusPrint(false,"InitBase: Name <"..tostring(sName).."> not string") end
   if(not IsString(sPurpose)) then
     return StatusPrint(false,"InitBase: Purpose <"..tostring(sPurpose).."> not string") end
-  if(IsEmptyString(sName) or tonumber(stringSub(sName,1,1))) then
+  if(IsEmptyString(sName) or tonumber(sName:sub(1,1))) then
     return StatusPrint(false,"InitBase: Name invalid <"..sName..">") end
-  if(IsEmptyString(sPurpose) or tonumber(stringSub(sPurpose,1,1))) then
+  if(IsEmptyString(sPurpose) or tonumber(sPurpose:sub(1,1))) then
     return StatusPrint(false,"InitBase: Purpose invalid <"..sPurpose..">") end
   SetOpVar("LOG_MAXLOGS",0)
   SetOpVar("LOG_CURLOGS",0)
   SetOpVar("DELAY_FREEZE",0.01)
   SetOpVar("LOG_LOGFILE","")
   SetOpVar("LOG_LOGLAST","")
+  SetOpVar("LOG_SKIP",{})
+  SetOpVar("LOG_ONLY",{})
   SetOpVar("MAX_ROTATION",360)
   SetOpVar("OPSYM_DISABLE","#")
   SetOpVar("OPSYM_REVSIGN","@")
@@ -839,13 +896,13 @@ function InitBase(sName,sPurpose)
   SetOpVar("OPSYM_DIRECTORY","/")
   SetOpVar("OPSYM_SEPARATOR",",")
   SetOpVar("GOLDEN_RATIO",1.61803398875)
-  SetOpVar("NAME_INIT",stringLower(sName))
-  SetOpVar("NAME_PERP",stringLower(sPurpose))
-  SetOpVar("TOOLNAME_NL",stringLower(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")))
-  SetOpVar("TOOLNAME_NU",stringUpper(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")))
+  SetOpVar("NAME_INIT",sName:lower())
+  SetOpVar("NAME_PERP",sPurpose:lower())
+  SetOpVar("TOOLNAME_NL",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):lower())
+  SetOpVar("TOOLNAME_NU",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):upper())
   SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
   SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
-  SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_BAS",("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly")..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_INS","exp"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("MISS_NOID","N")    -- No ID selected
@@ -858,6 +915,54 @@ function InitBase(sName,sPurpose)
   SetOpVar("MODELNAM_FUNC",function(x) return " "..x:sub(2,2):upper() end)
   SetOpVar("QUERY_STORE", {})
   SetOpVar("TABLE_BORDERS",{})
+    SetOpVar("STRUCT_SPAWN_KEYS",{
+      {"--- Origin ---", nil },
+      {"F"     ,"VEC", "Forward direction"},
+      {"R"     ,"VEC", "Right direction"},
+      {"U"     ,"VEC", "Up direction"},
+      {"OPos"  ,"VEC", "Origin position"},
+      {"OAng"  ,"ANG", "Origin angles"},
+      {"SPos"  ,"VEC", "Spawn position"},
+      {"SAng"  ,"ANG", "Spawn angles"},
+      {"RLen"  ,"FLT", "Active radius"},
+      {"--- Holder ---", nil },
+      {"HID"   ,"INT", "Point ID"},
+      {"HPnt"  ,"VEC", "Search location"},
+      {"HPos"  ,"VEC", "Custom offset"},
+      {"HAng"  ,"ANG", "Custom angles"},
+      {"--- Traced ---", nil },
+      {"TID"   ,"INT", "Point ID"},
+      {"TPnt"  ,"VEC", "Search location"},
+      {"TPos"  ,"VEC", "Custom offset"},
+      {"TAng"  ,"ANG", "Custom angles"},
+      {"--- Offset ---", nil },
+      {"PNxt"  ,"VEC", "Custom user position"},
+      {"ANxt"  ,"VEC", "Custom user angles"}})
+  SetOpVar("STRUCT_SPAWN",{
+    F    = Vector(),
+    R    = Vector(),
+    U    = Vector(),
+    OPos = Vector(),
+    OAng = Angle (),
+    SPos = Vector(),
+    SAng = Angle (),
+    RLen = 0,
+    --- Holder ---
+    HRec = 0,
+    HID  = 0,
+    HPnt = Vector(), -- P
+    HPos = Vector(), -- O
+    HAng = Angle (), -- A
+    --- Traced ---
+    TRec = 0,
+    TID  = 0,
+    TPnt = Vector(), -- P
+    TPos = Vector(), -- O
+    TAng = Angle (), -- A
+    --- Offsets ---
+    ANxt = Angle (),
+    PNxt = Vector()
+  })
   SetOpVar("TABLE_CATEGORIES",{})
   SetOpVar("TABLE_PLAYER_KEYS",{})
   SetOpVar("TABLE_FREQUENT_MODELS",{})
@@ -2728,3 +2833,19 @@ function ExportDSV(sTable, sPref, sDelim)
   end; F:Flush(); F:Close()
 end
 
+function SettingsLogs(sHash)
+  local sKey = tostring(sHash or ""):upper():Trim()
+  if(not (sKey == "SKIP" or sKey == "ONLY")) then
+    return StatusLog(false,"SettingsLogs("..sKey.."): Invalid hash") end
+  local tLogs = GetOpVar("LOG_"..sKey)
+  if(not tLogs) then return StatusLog(true,"SettingsLogs("..sKey.."): Skip table") end
+  local fName = GetOpVar("DIRPATH_BAS").."trackasmlib_sl"..sKey:lower()..".txt"
+  local S = fileOpen(fName, "rb", "DATA")
+  if(S) then
+    local sRow = S:Read()
+    while(sRow) do sRow = sRow:Trim()
+      if(sRow ~= "") then tableInsert(tLogs, sRow) end
+      sRow = S:Read()
+    end; S:Close(); return true
+  else return StatusLog(true,"SettingsLogs("..sKey.."): Missing <"..fName..">") end
+end
