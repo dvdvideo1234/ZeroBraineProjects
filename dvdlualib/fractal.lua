@@ -152,12 +152,13 @@ function makeTreeY(iMax, clDraw)
       self:Allocate(tBranch[">"])
     end
   end
-  function self:Draw(tBranch, oX, oY, dX, dY)
+  function self:Draw(tBranch, oX, oY, dX, dY, fW, nW)
     if(not draw) then return end
+    if(fW and nW) then fW(nW) end
     if(tBranch.Lev < self.Max) then
       pncl(draw); line(oX, oY, oX, oY+dY)
-      line(oX, oY+dY, oX-dX, oY+dY+dY); self:Draw(tBranch["<"], oX-dX, oY+dY+dY, dX/2, dY/2)
-      line(oX, oY+dY, oX+dX, oY+dY+dY); self:Draw(tBranch[">"], oX+dX, oY+dY+dY, dX/2, dY/2)
+      line(oX, oY+dY, oX-dX, oY+dY+dY); self:Draw(tBranch["<"], oX-dX, oY+dY+dY, dX/2, dY/2, fW, nW)
+      line(oX, oY+dY, oX+dX, oY+dY+dY); self:Draw(tBranch[">"], oX+dX, oY+dY+dY, dX/2, dY/2, fW, nW)
     end
   end
   return self

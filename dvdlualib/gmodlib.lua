@@ -1,3 +1,4 @@
+local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 function tobool(any)
@@ -8,7 +9,9 @@ local type = function(any)
   local typ = __type(any)
   if(typ == "table") then
     local mt = getmetatable(any)
-    return (mt.__type and tostring(mt.__type) or typ) end
+    if(mt) then
+      return (mt.__type and tostring(mt.__type) or typ) end
+    return __type(any) end
   return __type(any)
 end
 
@@ -80,8 +83,29 @@ function Angle(p,y,r)
   return self
 end
 
-function string.Explode(d, s)
-  return strExplode(s, d)
+function string.Explode(separator, str, withpattern)
+	if ( separator == "" ) then return totable( str ) end
+	if ( withpattern == nil ) then withpattern = false end
+	local ret, current_pos = {}, 1
+	for i = 1, str:len() do
+		local start_pos, end_pos = str:find(separator, current_pos, not withpattern )
+		if (not start_pos) then break end
+		ret[ i ] = str:sub(current_pos, start_pos - 1 )
+		current_pos = end_pos + 1
+	end; ret[ #ret + 1 ] = str:sub(current_pos ); return ret
+end
+
+function string.GetFileFromFilename( path )
+	if (not path:find( "\\" ) and not path:find( "/" ) ) then return path end 
+	return path:match( "[\\/]([^/\\]+)$" ) or ""
+end
+
+function string.Implode( seperator, Table ) return
+	table.concat( Table, seperator )
+end
+
+function string.Split( str, delimiter )
+	return string.Explode( delimiter, str )
 end
 
 function string.Trim(s, char)

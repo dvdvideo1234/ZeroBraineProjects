@@ -71,14 +71,44 @@ function GetOpVar(anyKey)
   return (anyKey and libOpVars[anyKey])
 end
 
+function IsNil(anyVal)
+  return (anyVal == nil)
+end
+
+function IsString(sVal)
+  return (getmetatable(sVal) == GetOpVar("TYPE_METASTRING"))
+end
+
+function IsEmptyTab(tData)
+  return IsNil(next(tData))
+end
+
+function IsEmptyStr(sData)
+  return (sData == GetOpVar("STRING_ZERO"))
+end
+
+function IsNumber(sVal)
+  return (tonumber(sVal) and IsNil(getmetatable(sVal)))
+end
+
+function CaseSelect(bCas, vTru, vFls)
+  if(bCas) then return vTru else return vFls end
+end
+
 -- Function that calculates a sign
 function GetSign(anyVal)
   local nVal = (tonumber(anyVal) or 0)
   return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0) end
 
+function GetDate()
+  return (osDate(GetOpVar("DATE_FORMAT"))
+   .." "..osDate(GetOpVar("TIME_FORMAT")))
+end
+
 -- Project a vector without making a copy
-function GetProjectFRU(vVec, vF, vR, vU)
-  local X, Y, Z = vVec:Dot(vF), vVec:Dot(vR), vVec:Dot(vU)
+function ProjectAngle(vVec, aAng)
+  local F, R, U = aAng:Forward(), aAng:Right(), aAng:Up()
+  local X, Y, Z = vVec:Dot(F), vVec:Dot(R), vVec:Dot(U)
   vVec.x, vVec.y, vVec.z = X, Y, Z; return vVec
 end
 
@@ -109,6 +139,7 @@ function GetStringVector(vVec, nFrc)
 end
 
 function InitConstants()
+  libOpVars["LIBRARY_NAME"    ] = "umaglevlib"    -- Name of the library
   libOpVars["GOLDEN_RATIO"    ] = 1.61803398875   -- Golden ration for panel resolution be more appealing
   libOpVars["OPSYM_GENINDENT" ] = " "             -- What symbol is used for indent spacing readability
   libOpVars["OPSYM_ITEMSPLIT" ] = "/"             -- Primary delimiter to split multiple string items by
@@ -213,10 +244,15 @@ local function ckTargetTable(tab, dep)
 end
 
 function InitDependancies(vEnab, vFile)
+  libOpVars["NUMBER_ZERO"     ] = 10e-5
+  libOpVars["STRING_ZERO"     ] = ""
   -- More meaningful name to the one above used for labels
+  libOpVars["DATE_FORMAT"     ] = "%d-%m-%y"
+  libOpVars["TIME_FORMAT"     ] = "%H:%M:%S"
   libOpVars["FILE_ENTITY"     ] = "sent_"..GetOpVar("NAME_ENTITY") -- How is the entity controlled class called
   -- Base directory for all the data written. Defines there the library data is stored
-  libOpVars["PATH_TOOL"       ] = GetOpVar("NAME_TOOL").."/"
+  libOpVars["DIRPATH_BASE"    ] = "E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Transrapid/"..GetOpVar("NAME_TOOL").."/"
+  libOpVars["DIRPATH_SAVE"    ] = GetOpVar("NAME_ENTITY").."/"
   libOpVars["LOG_SETTINGS"    ] = {
     Skip = {},
     Last = "",
@@ -981,6 +1017,26 @@ function GetDeviation(sErr, sCon, stSen)
   end; return LogStatus("GetDeviation("..sCo.."): <"..sFc..">", fCm())
 end
 
+function InitTargetsHit(bRep)
+  local tTrgs = GetOpVar("CLASS_TARGETS")
+  local lbNam = GetOpVar("LIBRARY_NAME")
+  local fName = GetOpVar("DIRPATH_BASE")..lbNam.."_hit.txt"
+  local S = file.Open(fName, "rb", "DATA")
+  if(S) then
+    if(bRep) then
+      for key, _ in pairs(tTrgs) do tTrgs[key] = nil end end
+    local sCh, sLine = "X", ""
+    while(sCh) do sCh = S:Read(1)
+      if(not sCh) then break end
+      if(sCh == "\n") then sLine = sLine:Trim()
+        if(not IsEmptyStr(sLine)) then
+          tTrgs[sLine] = true end; sLine = ""
+      else sLine = sLine..sCh end
+    end; if(not IsEmptyStr(sLine)) then tTrgs[sLine] = true end; S:Close()
+    return LogStatus("InitTargetsHit: Success <"..fName..">", true)
+  else return LogStatus("InitTargetsHit: Missing <"..fName..">", true) end
+end
+
 --[[
  * ConvertTraceTargets: Prepares a list of targets for a wet job
  * Retrieves the table hash hit list and hires the hit-man :D
@@ -988,17 +1044,21 @@ end
  * But seriously: Converts "prop/ test " to {["prop"] = true, ["test"] = true}
  * If no arguments are provided or an empty string, uses CLASS_TARGETS
  * sCls > The string to convert to a hash format
+ * tGlb > Global hit targets table to use if provided
+ * bGlb > Whenever or not to use the global hit targets
 ]]--
-function ConvertTraceTargets(sCls)
-  local syItem = GetOpVar("OPSYM_ITEMSPLIT")
-  local tArget = GetOpVar("CLASS_TARGETS")
-  local sClass = tostring(sCls or "")
-  local tSours = ((sClass == "") and tArget or stringExplode(syItem,tostring(sClass)))
-  local arCnt, arHit = #tSours, {}  -- How many targets are there
-  for iCnt = 1, arCnt do            -- Kill targets sequentially in order
-    local cls = tSours[iCnt]:Trim() -- Remove the hit-man hair
-    arHit[cls] = true               -- Hire the hit-man to do the wet job
-  end; return arHit                 -- Report to the agency
+function ConvertTraceTargets(sCls, tGlb, bGlb)
+  local sCls = tostring(sCls or "")
+  local tArg = CaseSelect(type(tGlb)=="table",tGlb,GetOpVar("CLASS_TARGETS"))
+  local tSrc = CaseSelect(bGlb,tArg,{})
+  if(not IsEmptyStr(sCls)) then
+    tSrc = GetOpVar("OPSYM_ITEMSPLIT"):Explode(tostring(sCls))
+    for ID = 1, #tSrc do -- Kill targets sequentially in order
+      tSrc[tSrc[ID]:Trim()] = true; tSrc[ID] = nil end
+  end -- Hire the hit-man to do the wet job
+  local tHit = {}  -- How many targets are there
+  for key, val in pairs(tSrc) do tHit[key] = tSrc[key] end
+  return tHit -- Report to the agency
 end
 
 --[[
@@ -1017,7 +1077,7 @@ function TransformSettings(sLine, tBase, tSeq) -- Mecha henshin !
     if(fld == "") then
       return LogStatus("TransformSettings: Key missing <["..tostring(cnt).."],"..sBase..">", false) end
     if(val == "") then
-      return LogStatus("TransformSettings: Value missing <["..tostring(cnt).."],"..sBase..">", false) end
+      return LogStatus("TransformSettings: Value missing <["..tostring(cnt).."]["..fld.."],"..sBase..">", false) end
     if(cnt == 1) then
       typ, key = fld, val
       if(not IsType(typ)) then
@@ -1035,9 +1095,10 @@ end
 --[[
  * Does a post-processing of an initialization parameterization
  * tSet  > A value set table to be processed
- * arHit > If the hit list is not available for the sensor use the global one
+ * tgHit > If the hit list is not available for the sensor use the global one
+ * bgHit > Flag for using the global table or not
 ]]--
-function PostProcessInit(tSet, arHit)
+function PostProcessInit(tSet, tgHit, bgHit)
   if(CLIENT) then
     return LogStatus("PostProcessInit: Working on client", false) end
   if(not (tSet and type(tSet) == "table")) then
@@ -1055,42 +1116,42 @@ function PostProcessInit(tSet, arHit)
         rec["ID"]  = (tonumber(rec["ID"]) or 0); if(rec["ID"] < 1) then
           return LogStatus("PostProcessInit: Sensor <"..key.."> invalid ID", false) end
         rec["Len"] = (tonumber(rec["Len"]) or 0)
+        if(not (rec["Len"] and mathAbs(rec["Len"]) ~= 0)) then
+          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid length", false) end
         rec["Org"], rec["Val"] = GetVectorString(rec["Org"]), 0
         rec["Dir"] = GetVectorString(rec["Dir"])
-        rec["Dir"]:Mul(GetSign(rec["Len"])); rec["Len"] = mathAbs(rec["Len"])
-        if(not (rec["Len"] and rec["Len"] > 0)) then
-          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid length", false) end
-        if(rec["Hit"]) then rec["Hit"] = ConvertTraceTargets(rec["Hit"])
-        else -- If the hit list is available hire the hit-man :D
-          if(arHit) then rec["Hit"] = arHit else rec["Hit"] = {["prop_physics"] = true} end
-        end -- If the list is missing use the console variable ( if given ) or default
+        if(rec["Dir"] and rec["Dir"]:Length() == 0) then
+          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid direct", false) end
+        rec["Hit"] = ConvertTraceTargets(rec["Hit"],tgHit,bgHit)
       end
     end
-  else LogStatus("PostProcessInit: Sensors skip")end
+  else LogStatus("PostProcessInit: Sensors skip") end
   if(tFrc) then
     for key, rec in pairs(tFrc) do -- Process forcers
       if(not tonumber(rec)) then
         rec["ID"]  = (tonumber(rec["ID"]) or 0); if(rec["ID"] < 1) then
           return LogStatus("PostProcessInit: Forcer <"..key.."> invalid ID", false) end
-        rec["Org"] = GetVectorString(rec["Org"])
         rec["Dir"] = GetVectorString(rec["Dir"])
+        if(rec["Dir"] and rec["Dir"]:Length() == 0) then
+          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid direct", false) end
+        rec["Org"] = GetVectorString(rec["Org"])
       end
     end
   else LogStatus("PostProcessInit: Forcers skip")end
   if(tSen and tFrc and tCon) then
     for key, rec in pairs(tCon) do -- Process controllers
       if(not tonumber(rec)) then
-        rec["Tun"] = stringExplode(syItem, rec["Tun"])
+        rec["Tun"] = syItem:Explode(rec["Tun"])
         for k, v in pairs(rec["Tun"]) do rec["Tun"][k] = tostring(v or ""):Trim() end
         rec["Cmb"], rec["Neg"] = tobool(rec["Cmb"]), tobool(rec["Neg"])
         rec["ID"]  = (tonumber(rec["ID"]) or 0); if(rec["ID"] < 1) then
           return LogStatus("PostProcessInit: Controller <"..key.."> invalid ID", false) end
-        rec["Ref"]    = stringExplode(syItem,rec["Ref"])
+        rec["Ref"]    = syItem:Explode(rec["Ref"])
         rec["Ref"][1] = tonumber((rec["Ref"][1]):Trim()) or 0
         rec["Ref"][2] = tostring(rec["Ref"][2] or ""):Trim()
-        rec["Ref"][2] = ((rec["Ref"][2] ~= "") and rec["Ref"][2] or nil)
+        rec["Ref"][2] = CaseSelect(not IsEmptyStr(rec["Ref"][2]),rec["Ref"][2],nil)
         rec["Dev"] = GetDeviation(rec["Prs"], key, tSen) -- Define the deviation function for the error
-        rec["Tar"] = stringExplode(syItem, tostring(rec["Tar"])) -- Forcer mapping for every control
+        rec["Tar"] = syItem:Explode(tostring(rec["Tar"])) -- Forcer mapping for every control
         for k, v in pairs(rec["Tar"]) do rec["Tar"][k] = tostring(v or ""):Trim() end
       end
     end
@@ -1100,43 +1161,47 @@ end
 
 --[[
  * Creates an initialization structure from three sources
- * srSet > A source to be used either #file or @string
- * saHit > A trace targets list string to be used if a sensor has none
+ * srSet > A source set to be used either $file or @string
+ * sgHit > A trace targets list string to be used if a sensor has none
+ * bgHit > Whenever to use the global hit list or not
 ]]--
-function InitializeUnitSource(srSet, saHit)
-  local sSet , tSet  = tostring(srSet or ""):Trim(), {}
-  local arHit, sMod  = saHit and ConvertTraceTargets(tostring(saHit)), sSet:sub(1,1)
-  if(sMod == GetOpVar("OPSYM_INITFILE")) then -- Use a file
-    local sNm = sSet:sub(2,-1); if(sNm == "") then
+function InitializeUnitSource(srSet, sgHit, bgHit)
+  local sHit = tostring(sgHit or ""):Trim()
+  local sSet, tSet = tostring(srSet or ""):Trim(), {}
+  local tHit, sMod = ConvertTraceTargets(sHit,nil,bgHit), sSet:sub(1,1)
+  local mdFil, mdStr = GetOpVar("OPSYM_INITFILE"), GetOpVar("OPSYM_INITSTRING")
+  if(sMod == mdFil) then -- Use a file
+    local sNm = sSet:sub(2,-1); if(IsEmptyStr(sNm)) then
       return LogStatus("InitializeUnitSource(file): File name empty",nil) end
-    sNm = sNm..".txt"; if(not file.Exists(sNm, "DATA")) then
+    sNm = GetOpVar("DIRPATH_BASE")..GetOpVar("DIRPATH_SAVE")..sNm..".txt"
+    if(not file.Exists(sNm, "DATA")) then
       return LogStatus("InitializeUnitSource(file): File missing: "..sNm,nil) end
     local ioF = file.Open(sNm, "rb", "DATA"); if(not ioF) then
-      return LogStatus("InitializeUnitSource(file): File source failed <"..tostring(sNm)..">",nil) end
+      return LogStatus("InitializeUnitSource(file): File failed <"..tostring(sNm)..">",nil) end
     local cnt, ln, pk, seq = 1, "", false, {}
     while(true) do
       local rd = ioF:Read(1); if(not rd) then break end
       if(rd == "\n") then -- If the end of the line is reached
         if(not TransformSettings(ln, tSet, seq)) then
-          return LogStatus("InitializeUnitSource(file): Process failed <"..ln..">",nil) end
+          return LogStatus("InitializeUnitSource(file): Transform failed <"..ln..">",nil) end
           cnt, ln = (cnt + 1), ""
       else ln = ln..rd end
     end
-    if(ln ~= "") then
+    if(not IsEmptyStr(ln)) then
       if(not TransformSettings(ln, tSet, seq)) then
-        return LogStatus("InitializeUnitSource(file): Process last failed <"..ln..">",nil) end
+        return LogStatus("InitializeUnitSource(file): Transform last failed <"..ln..">",nil) end
     end; ioF:Close()
-    if(not PostProcessInit(tSet, arHit)) then
+    if(not PostProcessInit(tSet, tHit, bgHit)) then
       return LogStatus("InitializeUnitSource(file): Post-process fail", nil) end
     collectgarbage(); return LogStatus("InitializeUnitSource(file): OK", tSet)
-  elseif(sMod == GetOpVar("OPSYM_INITSTRING")) then
-    local ini, seq = stringExplode("@",sSet:sub(2,-1)), {}
+  elseif(sMod == mdStr) then
+    local ini, seq = mdStr:Explode(sSet:sub(2,-1)), {}
       for cnt  = 1, #ini, 1 do
         local ln = ini[cnt]:Trim()
         if(not TransformSettings(ln, tSet, seq)) then
-          return LogStatus("InitializeUnitSource(string): Process failed <"..ln..">",nil) end
+          return LogStatus("InitializeUnitSource(string): Transform failed <"..ln..">",nil) end
       end
-    if(not PostProcessInit(tSet, arHit)) then
+    if(not PostProcessInit(tSet, tHit, bgHit)) then
       return LogStatus("InitializeUnitSource(string): Post-process fail", nil) end
     collectgarbage(); return LogStatus("InitializeUnitSource(string): OK", tSet)
   else return LogStatus("InitializeUnitSource: Mode missed <"..sMod..">", nil) end
@@ -1151,15 +1216,16 @@ end
 ]]--
 local function ExportSensor(sKey, stSen, tData)
   local tyArg = type(stSen)
-  if(tyArg ~= "table") then return LogStatus("ExportSensor: Argument <"..tyArg.."> mismatch", false) end
+  if(tyArg ~= "table") then
+    return LogStatus("ExportSensor: Argument <"..tyArg.."> mismatch", false) end
   local symCp = GetOpVar("OPSYM_COMPONENT")
   local org, dir, len = stSen["Org"], stSen["Dir"], stSen["Len"]
   local sLin ,  ID = "{"..GetOpVar("TYPE_SENSOR")..":"..sKey.."}", (#tData + 1)
         sLin = sLin.."{Len:"..tostring(len).."}"
         sLin = sLin.."{Org:"..tostring(org.x)..symCp..tostring(org.y)..symCp..tostring(org.z).."}"
         sLin = sLin.."{Dir:"..tostring(dir.x)..symCp..tostring(dir.y)..symCp..tostring(dir.z).."}"
-  local lst = "";  for hit, _ in pairs(stSen["Hit"]) do
-    lst = lst.."/"..tostring(hit) end; sLin = sLin.."{Hit:"..lst:sub(2,-1).."}"
+  local lst = ""; for hit, _ in pairs(stSen["Hit"]) do lst = lst.."/"..tostring(hit) end
+        lst = lst:sub(2,-1); sLin = sLin..CaseSelect(IsEmptyStr(lst), "", "{Hit:"..lst.."}")
   tData[ID] = sLin; ID = ID + 1; sLin = ""; return true
 end
 
@@ -1232,7 +1298,7 @@ end
  * tRep.Key > The list of keys (ordered)
  * tRep.Ord > The list of IDs (ordered) (not needed)
 ]]--
-local function GetKeyReportID(stSet)
+function GetKeyReportID(stSet)
   local tRep, cnt = {Cnt = #stSet, Int = 0, All = 0, Key = {}, Ord = {}}, 1
   for k, v in pairs(stSet) do
     tRep.All = tRep.All + 1
@@ -1324,9 +1390,9 @@ function ExportUnitSource(eMag, sFile)
   if(sMag ~= sEnt) then -- If another entity is given
     return LogStatus("ExportUnitSource: Maglev class <"..sMag.."> invalid", nil) end
   local sNm = tostring(sFile or "default")
-  if(sNm == "") then
+  if(IsEmptyStr(sNm)) then
     return LogStatus("ExportUnitSource: File name empty", nil) end
-  local sNm = GetOpVar("PATH_TOOL")..GetOpVar("NAME_ENTITY").."/"..sNm..".txt"
+  local sNm = GetOpVar("DIRPATH_BASE")..GetOpVar("DIRPATH_SAVE")..sNm..".txt"
   local ioF = file.Open(sNm, "wb", "DATA")
   if(not ioF) then
     return LogStatus("ExportUnitSource: Failed to open file <"..sNm..">", nil) end

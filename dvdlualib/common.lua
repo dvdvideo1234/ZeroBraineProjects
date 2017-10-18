@@ -48,21 +48,34 @@ function logMulty(...)
   end; io.write(line.."}\n")
 end
 
-function logTable(tT,sS)
-  local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
-  if(vT ~= "table") then
-    return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">",nil) end
-  if(next(tT) == nil) then
-    return logStatus(sS.." = {}") end
-  logStatus(sS.." = {}")
-  for k,v in pairs(tT) do
-    if(type(k) == "string") then vK = sS.."[\""..k.."\"]"
-    else vK = sS.."["..tostring(k).."]" end
-    if(type(v) ~= "table") then
-      if(type(v) == "string") then logStatus(vK.." = \""..v.."\"",nil)
-      else logStatus(vK.." = "..tostring(v),nil) end
-    else logTable(v,vK) end
-  end
+function logTable(tT,sS,tP)
+	local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
+	if(vT ~= "table") then
+		return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">") end
+	if(next(tT) == nil) then
+		return logStatus(sS.." = {}")
+	end; logStatus(sS.." = {}")
+	for k,v in pairs(tT) do
+		if(type(k) == "string") then
+      vK = sS.."[\""..k.."\"]"
+		else
+      sK = tostring(k)
+      if(tP and tP[k]) then sK = tostring(tP[k]) end
+      vK = sS.."["..sK.."]"  
+    end
+		if(type(v) ~= "table") then
+			if(type(v) == "string") then
+				logStatus(vK.." = \""..v.."\"")
+			else
+        sK = tostring(v)
+        if(tP and tP[v]) then sK = tostring(tP[v]) end
+        logStatus(vK.." = "..sK)
+      end
+		else
+			if(v == tT) then logStatus(vK.." = "..sS)
+			else logTable(v,vK,tP) end
+		end
+	end
 end
 
 --------------- VALUES ---------------

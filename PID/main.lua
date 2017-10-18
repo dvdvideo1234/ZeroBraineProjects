@@ -5,8 +5,8 @@ require("ZeroBraineProjects/dvdlualib/colormap")
 
 local W, H  = 1024, 464
 
-local minC, maxC = -50, 50
-local To    = 0.0012
+local minC, maxC = -80, 80
+local To    = 0.0017
 local endTm = 0.2
 local intX  = newInterval("WinX",  0,endTm, 0, W)
 local intY  = newInterval("WinY",-200,200 , H, 0)
@@ -39,7 +39,7 @@ while(curTm <= endTm) do
     ref = 100
   end
   trRef:putValue(curTm, ref):Draw(clBlu)
-  logStatus(nil,ref.." > "..pvv.." > "..con)
+ -- logStatus(ref.." > "..pvv.." > "..con)
   con = PID:Process(ref,pvv):getControl()
   trCon:putValue(curTm,con):Draw(clGrn)
   pvv = APR:Process(con):getOutput()

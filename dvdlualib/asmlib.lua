@@ -1,5 +1,3 @@
-require("ZeroBraineProjects/dvdlualib/gmodlib")
-
 --- Because Vec[1] is actually faster than Vec.X
 
 --- Vector Component indexes ---
@@ -118,6 +116,7 @@ local tableMaxn               = table and table.maxn
 local tableGetKeys            = table and table.GetKeys
 local tableInsert             = table and table.insert
 local debugGetinfo            = debug and debug.getinfo
+local stringUpper             = string and string.Explode
 local stringExplode           = string and string.Explode
 local stringImplode           = string and string.Implode
 local stringToFileName        = string and string.GetFileFromFilename
@@ -185,6 +184,12 @@ function GetCache(anyKey)
   return libCache
 end
 
+function GetInstPref()
+  if    (CLIENT) then return "cl_"
+  elseif(SERVER) then return "sv_" end
+  return "na_"
+end
+
 function mathClamp( _in, low, high )
 	if (_in < low ) then return low end
 	if (_in > high ) then return high end
@@ -223,6 +228,11 @@ end
 
 function SetOpVar(sName, anyValue)
   libOpVars[sName] = anyValue
+end
+
+function GetDate()
+  return (osDate(GetOpVar("DATE_FORMAT"))
+   .." "..osDate(GetOpVar("TIME_FORMAT")))
 end
 
 function gameSinglePlayer() return GetOpVar("GAME_SINGLE") and true or false end
@@ -898,6 +908,7 @@ function InitBase(sName,sPurpose)
   SetOpVar("GOLDEN_RATIO",1.61803398875)
   SetOpVar("NAME_INIT",sName:lower())
   SetOpVar("NAME_PERP",sPurpose:lower())
+  SetOpVar("NAME_LIBRARY", GetOpVar("NAME_INIT").."asmlib")
   SetOpVar("TOOLNAME_NL",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):lower())
   SetOpVar("TOOLNAME_NU",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):upper())
   SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
@@ -995,71 +1006,60 @@ function SQLSetBuildErr(sError)
   return false
 end
 
-function MatchType(defTable,snValue,nIndex,bQuoted,sQuote)
+local function MatchType(defTable,snValue,ivIndex,bQuoted,sQuote,bStopRevise,bStopEmpty)
   if(not defTable) then
-    return StatusLog(nil,"MatchType: Missing: Table definition")
-  end
-  local nIndex = tonumber(nIndex)
-  if(not nIndex) then
-    return StatusLog(nil,"MatchType: Invalid: Field ID #"..tostring(nIndex).." on table "..defTable.Name)
-  end
+    return StatusLog(nil,"MatchType: Missing table definition") end
+  local nIndex = tonumber(ivIndex)
+  if(not IsExistent(nIndex)) then
+    return StatusLog(nil,"MatchType: Field NAN {"..type(ivIndex)"}<"
+             ..tostring(ivIndex).."> invalid on table "..defTable.Name) end
   local defField = defTable[nIndex]
-  if(not defField) then
-    return StatusLog(nil,"MatchType: Invalid: Field #"..tostring(nIndex).." on table "..defTable.Name)
-  end
+  if(not IsExistent(defField)) then
+    return StatusLog(nil,"MatchType: Invalid field #"
+             ..tostring(nIndex).." on table "..defTable.Name) end
   local snOut
   local tipField = tostring(defField[2])
-  local sModeDB  = tostring(GetOpVar("MODE_DATABASE"))
+  local sModeDB  = GetOpVar("MODE_DATABASE")
   if(tipField == "TEXT") then
     snOut = tostring(snValue)
-    if(snOut == "nil" or snOut == "") then
-      if(sModeDB == "SQL") then
-        snOut = "NULL"
-      elseif(sModeDB == "LUA") then
-        snOut = ""
-      else
-        return StatusLog(nil,"MatchType: Wrong database mode")
-      end
+    if(not bStopEmpty and (snOut == "nil" or IsEmptyString(snOut))) then
+      if    (sModeDB == "SQL") then snOut = "NULL"
+      elseif(sModeDB == "LUA") then snOut = "NULL"
+      else return StatusLog(nil,"MatchType: Wrong database mode <"..sModeDB..">") end
     end
-    if(defField[3] == "LOW") then
-      snOut = stringLower(snOut)
-    elseif(defField[3] == "CAP") then
-      snOut = stringUpper(snOut)
+    if    (defField[3] == "LOW") then snOut = snOut:lower()
+    elseif(defField[3] == "CAP") then snOut = snOut:upper() end
+    if(not bStopRevise and sModeDB == "SQL" and defField[4] == "QMK") then
+      snOut = snOut:gsub("'","''")
     end
-    if(defField[4] == "QMK" and sModeDB == "SQL") then
-      snOut = StringMakeSQL(snOut)
-    end
-    local sqChar
     if(bQuoted) then
+      local sqChar
       if(sQuote) then
-        sqChar = stringSub(tostring(sQuote),1,1)
+        sqChar = tostring(sQuote):sub(1,1)
       else
-        if(sModeDB == "SQL") then
-          sqChar = "'"
-        elseif(sModeDB == "LUA") then
-          sqChar = "\""
-        end
+        if    (sModeDB == "SQL") then sqChar = "'"
+        elseif(sModeDB == "LUA") then sqChar = "\"" end
       end
       snOut = sqChar..snOut..sqChar
     end
   elseif(tipField == "REAL" or tipField == "INTEGER") then
     snOut = tonumber(snValue)
-    if(not snOut) then
-      return StatusLog(nil,"MatchType: Failed converting >"
-               ..tostring(snValue).."< "..type(snValue)
-               .." to NUMBER for table "..defTable.Name.." field #"..nIndex)
-    end
-    if(tipField == "INTEGER") then
-      if(defField[3] == "FLR") then
-        snOut = mathFloor(snOut)
-      elseif(defField[3] == "CEL") then
-        snOut = mathCeil(snOut)
+    if(IsExistent(snOut)) then
+      if(tipField == "INTEGER") then
+        if(defField[3] == "FLR") then
+          snOut = mathFloor(snOut)
+        elseif(defField[3] == "CEL") then
+          snOut = mathCeil(snOut)
+        end
       end
+    else
+      return StatusLog(nil,"MatchType: Failed converting {"
+               ..type(snValue).."}<"..tostring(snValue).."> to NUMBER for table "
+               ..defTable.Name.." field #"..nIndex)
     end
   else
-    return StatusLog(nil,"MatchType: Invalid: Field type >"..tipField
-                                     .."< on table "..defTable.Name)
-  end
+    return StatusLog(nil,"MatchType: Invalid field type <"
+      ..tipField.."> on table "..defTable.Name) end
   return snOut
 end
 
@@ -1402,8 +1402,10 @@ function CreateTable(sTable,defTable,bDelete,bReload)
     return StatusLog(false,"CreateTable: Table definition missing for "..sTable) end
   if(#defTable <= 0) then
     return StatusLog(false,"CreateTable: Record definition missing for "..sTable) end
+  if(#defTable ~= tableMaxn(defTable)) then
+    return StatusLog(false,"CreateTable: Record definition mismatch for "..sTable) end
+  local sTable  = sTable:upper()
   local sModeDB = GetOpVar("MODE_DATABASE")
-  local sTable  = stringUpper(sTable)
   local symDis  = GetOpVar("OPSYM_DISABLE")
   local iCnt, defField = 1, nil
   SetOpVar("DEFTABLE_"..sTable,defTable)
@@ -1414,12 +1416,10 @@ function CreateTable(sTable,defTable,bDelete,bReload)
     defField[3] = DefaultString(tostring(defField[3] or symDis), symDis)
     defField[4] = DefaultString(tostring(defField[4] or symDis), symDis)
     iCnt = iCnt + 1
-  end
-  libCache[defTable.Name] = {}
+  end; libCache[defTable.Name] = {}
   if(sModeDB == "SQL") then
-    defTable.Life = tonumber(defTable.Life) or 0
     local tQ = SQLBuildCreate(defTable)
-    if(not IsExistent(tQ)) then return StatusLog(false,"CreateTable: "..SQLBuildError()) end
+    if(not IsExistent(tQ)) then return StatusLog(false,"CreateTable: Build statement failed") end
     if(bDelete and sqlTableExists(defTable.Name)) then
       local qRez = sqlQuery(tQ.Delete)
       if(not qRez and IsBool(qRez)) then
@@ -1437,8 +1437,7 @@ function CreateTable(sTable,defTable,bDelete,bReload)
       end
     end
     if(sqlTableExists(defTable.Name)) then
-      LogInstance("CreateTable: Table "..sTable.." exists!")
-      return true
+      return StatusLog(true,"CreateTable: Table "..sTable.." exists!")
     else
       local qRez = sqlQuery(tQ.Create)
       if(not qRez and IsBool(qRez)) then
@@ -1454,10 +1453,10 @@ function CreateTable(sTable,defTable,bDelete,bReload)
       else
         return StatusLog(false,"CreateTable: Table "..sTable..
           " failed to create because of "..sqlLastError().." Query ran > "..tQ.Create) end
-    end
-  elseif(sModeDB == "LUA") then sModeDB = "LUA" else -- Just to do something here.
-    return StatusLog(false,"CreateTable: Wrong database mode <"..sModeDB..">")
-  end
+    end; LogInstance("CreateTable: Created "..defTable.Name)
+  elseif(sModeDB == "LUA") then
+    LogInstance("CreateTable: Created "..defTable.Name)
+  else return StatusLog(false,"CreateTable: Wrong database mode <"..sModeDB..">") end
 end
 
 function InsertRecord(sTable,tData)
@@ -1904,9 +1903,11 @@ local function NavigateTable(oLocation,tKeys)
 end
 
 function TimerSetting(sTimerSet) -- Generates a timer settings table and keeps the defaults
-  if(not IsExistent(sTimerSet)) then return StatusLog(nil,"TimerSetting: Timer set missing for setup") end
-  if(not IsString(sTimerSet)) then return StatusLog(nil,"TimerSetting: Timer set not a string but "..type(sTimerSet)) end
-  local tBoom = StringExplode(sTimerSet,GetOpVar("OPSYM_REVSIGN"))
+  if(not IsExistent(sTimerSet)) then
+    return StatusLog(nil,"TimerSetting: Timer set missing for setup") end
+  if(not IsString(sTimerSet)) then
+    return StatusLog(nil,"TimerSetting: Timer set {"..type(sTimerSet).."}<"..tostring(sTimerSet).."> not string") end
+  local tBoom = stringExplode(GetOpVar("OPSYM_REVSIGN"),sTimerSet)
   tBoom[1] =   tostring(tBoom[1]  or "CQT")
   tBoom[2] =  (tonumber(tBoom[2]) or 0)
   tBoom[3] = ((tonumber(tBoom[3]) or 0) ~= 0) and true or false
@@ -2560,17 +2561,12 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
             local sKey = tLine[2]
             if(not fData[sKey]) then fData[sKey] = {Kept = 0} end
               tKey = fData[sKey]
-            local nID, vID = 0 -- Where the lime ID mut be read from
-            if    (sTable == "PIECES") then vID = tLine[5]; nID = tonumber(vID) or 0
-            elseif(sTable == "ADDITIONS") then vID = tLine[5]; nID = tonumber(vID) or 0
-            elseif(sTable == "PHYSPROPERTIES") then  vID = tLine[3]; nID = tonumber(vID) or 0 end
-            if((tKey.Kept < 0) or (nID <= tKey.Kept) or ((nID - tKey.Kept) ~= 1)) then
-              I:Close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read pont ID #"..
-                tostring(vID).." desynchronized <"..sKey.."> of <"..sTable..">") end
-            tKey.Kept = nID; tKey[tKey.Kept] = {}
+            local nRake, vRake = 0 -- The raking angle
+            if    (sTable == "PIECES") then vRake = tLine[5]; nRake = tonumber(vRake) or 0 end
+            tKey.Kept = 1; tKey[tKey.Kept] = {}
             local kKey, nCnt = tKey[tKey.Kept], 3
-            while(tLine[nCnt]) do -- Do a value matching without automatic quotes
-              local vMatch = MatchType(defTable,tLine[nCnt],nCnt-1,true,"\"",true)
+            while(tLine[nCnt]) do -- Do a value matching without quotes
+              local vMatch = MatchType(defTable,tLine[nCnt],nCnt-1)
               if(not IsExistent(vMatch)) then
                 I:Close(); return StatusLog(false,"SynchronizeDSV("..fPref.."): Read matching failed <"
                   ..tostring(tLine[nCnt]).."> to <"..tostring(nCnt-1).." # "
@@ -2583,43 +2579,44 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
       else sLine = sLine..sCh end
     end; I:Close()
   else LogInstance("SynchronizeDSV("..fPref.."): Creating file <"..fName..">") end
-  for mod, rec in pairs(tData) do -- Check the given table
+  Print(fData, "fData")
+  for key, rec in pairs(tData) do -- Check the given table
     for pnID = 1, #rec do
       local tRec = rec[pnID]
-      local nID, vID = 0 -- Where the lime ID mut be read from
-      if    (sTable == "PIECES") then vID = tRec[3]; nID = tonumber(vID) or 0
-      elseif(sTable == "ADDITIONS") then vID = tRec[3]; nID = tonumber(vID) or 0
-      elseif(sTable == "PHYSPROPERTIES") then vID = tRec[1]; nID = tonumber(vID) or 0 end
-      if(pnID ~= nID) then
-        return StatusLog(false,"SynchronizeDSV("..fPref.."): Given pont ID #"..
-          tostring(vID).." desynchronized <"..mod.."> of "..sTable) end
-      for nCnt = 1, #tRec do -- Do a value matching without automatic quotes
-        local vMatch = MatchType(defTable,tRec[nCnt],nCnt+1,true,"\"",true)
+      local nRake, vRake = 0 -- Where the lime ID mut be read from
+      if(sTable == "PIECES") then
+        vRake = tRec[3]; nRake = tonumber(vRake) or 0
+     --   if(not fileExists(key, "GAME")) then
+     --     LogInstance("SynchronizeDSV("..fPref.."): Missing piece <"..key..">") end
+      end
+      print(tRec, "tRec")
+      for nCnt = 1, #tRec do -- Do a value matching without quotes
+        local vMatch = MatchType(defTable,tRec[nCnt],nCnt+1)
         if(not IsExistent(vMatch)) then
           return StatusLog(false,"SynchronizeDSV("..fPref.."): Given matching failed <"
             ..tostring(tRec[nCnt]).."> to <"..tostring(nCnt+1).." # "
               ..defTable[nCnt+1][1].."> of "..sTable)
         end
       end
-    end
-  end
-  for mod, rec in pairs(tData) do -- Synchronize extended DSV
-    if((fData[mod] and bRepl) or not fData[mod]) then
-      fData[mod] = rec
-      fData[mod].Kept = #rec
-    end
+    end -- Register the read line to the output file
+    if(bRepl) then
+      if(tData[key]) then -- Update the file with the new data
+        fData[key] = rec
+        fData[key].Kept = #rec
+      end
+    else --[[ Do not modify fData ]] end
   end
   local tSort = Sort(tableGetKeys(fData))
   if(not tSort) then
     return StatusLog(false,"SynchronizeDSV("..fPref.."): Sorting failed") end
   local O = fileOpen(fName, "wb" ,"DATA")
   if(not O) then return StatusLog(false,"SynchronizeDSV("..fPref.."): Write fileOpen("..fName..") failed") end
-  O:Write("# SynchronizeDSV("..fPref.."): "..osDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
+  O:Write("# SynchronizeDSV("..fPref.."): "..GetDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
   O:Write("# Data settings:\t"..GetColumns(defTable,sDelim).."\n")
   for rcID = 1, #tSort do
-    local mod = tSort[rcID].Val
-    local rec = fData[mod]
-    local sCash, sData = defTable.Name..sDelim..mod, ""
+    local key = tSort[rcID].Val
+    local rec = fData[key]
+    local sCash, sData = defTable.Name..sDelim..key, ""
     for pnID = 1, rec.Kept do
       local tItem = rec[pnID]
       for nCnt = 1, #tItem do
@@ -2628,31 +2625,102 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
           O:Flush(); O:Close()
           return StatusLog(false,"SynchronizeDSV("..fPref.."): Write matching failed <"
             ..tostring(tItem[nCnt]).."> to <"..tostring(nCnt+1).." # "..defTable[nCnt+1][1].."> of "..sTable)
-        end
-        sData = sData..sDelim..tostring(vMatch)
+        end; sData = sData..sDelim..tostring(vMatch)
       end; O:Write(sCash..sData.."\n"); sData = ""
     end
-  end O:Flush(); O:Close(); return StatusLog(true,"SynchronizeDSV("..fPref.."): Success")
+  end O:Flush(); O:Close()
+  return StatusLog(true,"SynchronizeDSV("..fPref.."): Success")
 end
 
-function RegisterDSV(sProg, sPref, sDelim)
+function TranslateDSV(sTable, sPref, sDelim)
+  local fPref  = tostring(sPref or GetInstPref())
+  if(not IsString(sTable)) then
+    return StatusLog(false,"TranslateDSV("..fPref.."): Table {"..type(sTable).."}<"..tostring(sTable).."> not string") end
+  local defTable = GetOpVar("DEFTABLE_"..sTable)
+  if(not defTable) then
+    return StatusLog(false,"TranslateDSV("..fPref.."): Missing table definition for <"..sTable..">") end
+  local sNdsv, sNins = GetOpVar("DIRPATH_BAS"), GetOpVar("DIRPATH_BAS")
+  if(not fileExists(sNins,"DATA")) then fileCreateDir(sNins) end
+  sNdsv, sNins = sNdsv..GetOpVar("DIRPATH_DSV"), sNins..GetOpVar("DIRPATH_INS")
+  if(not fileExists(sNins,"DATA")) then fileCreateDir(sNins) end
+  sNdsv, sNins = sNdsv..fPref..defTable.Name..".txt", sNins..fPref..defTable.Name..".txt"
+  local sDelim = tostring(sDelim or "\t"):sub(1,1)
+  local D = fileOpen(sNdsv, "rb", "DATA")
+  if(not D) then return StatusLog(false,"TranslateDSV("..fPref.."): fileOpen("..sNdsv..") failed") end
+  local I = fileOpen(sNins, "wb", "DATA")
+  if(not I) then return StatusLog(false,"TranslateDSV("..fPref.."): fileOpen("..sNins..") failed") end
+  I:Write("# TranslateDSV("..fPref.."@"..sTable.."): "..GetDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
+  I:Write("# Data settings:\t"..GetColumns(defTable, sDelim).."\n")
+  local pfLib = GetOpVar("NAME_LIBRARY"):gsub(GetOpVar("NAME_INIT"),"")
+  local sLine, sCh, symOff = "", "X", GetOpVar("OPSYM_DISABLE")
+  local sFr, sBk, sHs = pfLib..".InsertRecord(\""..sTable.."\", {", "})\n", (fPref.."@"..sTable)
+  while(sCh) do
+    sCh = D:Read(1)
+    if(not sCh) then break end
+    if(sCh == "\n") then
+      sLine = sLine:gsub(defTable.Name,""):Trim()
+      if(sLine:sub(1,1) ~= symOff) then
+        local tBoo, sCat = stringExplode(sDelim, sLine), ""
+        for nCnt = 1, #tBoo do
+          local vMatch = MatchType(defTable,StripValue(tBoo[nCnt]),nCnt,true,"\"",true)
+          if(not IsExistent(vMatch)) then D:Close(); I:Flush(); I:Close()
+            return StatusLog(false,"TranslateDSV("..sHs.."): Given matching failed <"
+              ..tostring(tBoo[nCnt]).."> to <"..tostring(nCnt).." # "
+                ..defTable[nCnt][1].."> of "..sTable) end
+          sCat = sCat..", "..tostring(vMatch)
+        end; I:Write(sFr..sCat:sub(3,-1)..sBk)
+      end sLine = ""
+    else sLine = sLine..sCh end
+  end; D:Close(); I:Flush(); I:Close()
+  return StatusLog(true,"TranslateDSV("..sHs.."): Success")
+end
+
+function RegisterDSV(sProg, sPref, sDelim, bSkip)
   if(CLIENT and gameSinglePlayer()) then
     return StatusLog(true,"RegisterDSV: Single client") end
   local sPref = tostring(sPref or GetInstPref())
   if(IsEmptyString(sPref)) then
     return StatusLog(false,"RegisterDSV("..sPref.."): Prefix empty") end
   local sBas = GetOpVar("DIRPATH_BAS")
-  local sDsv = sBas..GetOpVar("DIRPATH_DSV")..sPref..GetOpVar("TOOLNAME_PU")
-  if(fileExists(sDsv.."PIECES.txt","DATA")) then
-    return StatusLog(true, "RegisterDSV("..sPref.."): Already registered") end
-  if(not fileExists(sBas,"DATA")) then fileCreateDir(sBas) end
-  local fName = sBas.."trackasmlib_dsv.txt"
-  local F = fileOpen(fName, "ab" ,"DATA")
+ -- if(not fileExists(sBas,"DATA")) then fileCreateDir(sBas) end
+  local lbNam = GetOpVar("NAME_LIBRARY")
+  local fName = (sBas..lbNam.."_dsv.txt")
+  local sMiss, sDelim = GetOpVar("MISS_NOAV"), tostring(sDelim or "\t"):sub(1,1)
+  if(bSkip) then
+    local symOff = GetOpVar("OPSYM_DISABLE")
+    local fPool, sCh, isAct = {}, "X", true
+    local F, sLine = fileOpen(fName, "rb" ,"DATA"), ""
+    if(not F) then return StatusLog(false,"RegisterDSV("
+      ..sPref.."): fileOpen("..fName..") read failed") end
+     while(sCh) do
+      sCh = F:Read(1)
+      if(not sCh) then break end
+      if(sCh == "\n") then sLine = sLine:Trim()
+        if(sLine:sub(1,1) == symOff) then
+          isAct, sLine = false, sLine:sub(2,-1) else isAct = true end
+        local tab = stringExplode(sDelim, sLine)
+        local prf, src = tab[1]:Trim(), tab[2]:Trim()
+        local inf = fPool[prf]
+        if(not inf) then
+          fPool[prf] = {Cnt = 1}; inf = fPool[prf]
+          inf[inf.Cnt] = {src, isAct}
+        else
+          inf.Cnt = inf.Cnt + 1
+          inf[inf.Cnt] = {src, isAct}
+        end; sLine = ""
+      else sLine = sLine..sCh end
+    end; F:Close()
+    if(fPool[sPref]) then
+      local inf = fPool[sPref]
+      for ID = 1, inf.Cnt do local tab = inf[ID]
+        LogInstance("RegisterDSV("..sPref.."): "..(tab[2] and "On " or "Off").." <"..tab[1]..">") end
+      return StatusLog(true,"RegisterDSV("..sPref.."): Skip <"..sProg..">")
+    end
+  end; local F = fileOpen(fName, "ab" ,"DATA")
   if(not F) then return StatusLog(false,"RegisterDSV("
-    ..sPref.."): fileOpen("..fName..") failed") end
-  local sMis, sDelim = GetOpVar("MISS_NOAV"), tostring(sDelim or "\t"):sub(1,1)
-  F:Write(sPref:Trim()..sDelim..tostring(sProg or sMis).."\n"); F:Flush(); F:Close()
-  return StatusLog(true,"RegisterDSV("..sPref.."): Success")
+    ..sPref.."): fileOpen("..fName..") append failed") end
+  F:Write(sPref..sDelim..tostring(sProg or sMiss).."\n"); F:Flush(); F:Close()
+  return StatusLog(true,"RegisterDSV("..sPref.."): Register")
 end
 
 function ImportDSV(sTable, bComm, sPref, sDelim)

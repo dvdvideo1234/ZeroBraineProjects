@@ -72,7 +72,7 @@ F:drwLife("turtle",Arg)
 
 logStatus(nil,GG:toStringText("\n",true))
 logStatus(nil,GG:toStringText("\n",false))
-logStatus(nil,F:gewtRuleName())
+logStatus(nil,F:getRuleName())
 logTable(F:getRuleData())
 
 

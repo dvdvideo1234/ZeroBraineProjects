@@ -27,7 +27,7 @@ function newInterval(sName, nL1, nH1, nL2, nH2)
   
   function self:getConv(nVal)
     if(nVal < mL1 or mVal > mH1) then
-      return logStatus(nVal, "convInterval.valConv: Source value <"..tostring(nVal).."> out of border") end
+      return logStatus("convInterval.valConv: Source value <"..tostring(nVal).."> out of border", nVal) end
     local kf = ((nVal - mL1) / (mH1 - mL1)); return (kf * (mH2 - mL2) + mL2)
   end
   
@@ -144,25 +144,25 @@ function newControl(nTo, sName)
 
   function self:Setup(arParam)
     if(type(arParam) ~= "table") then
-      return logStatus(nil,"newControl.Setup: Params table <"..type(arParam).."> invalid") end
+      return logStatus("newControl.Setup: Params table <"..type(arParam).."> invalid") end
 
     if(arParam[1] and (tonumber(arParam[1] or 0) > 0)) then
       mkP = (tonumber(arParam[1] or 0))
-    else return logStatus(nil,"newControl.Setup: P-gain <"..tostring(arParam[1]).."> invalid") end
+    else return logStatus("newControl.Setup: P-gain <"..tostring(arParam[1]).."> invalid") end
 
     if(arParam[2] and (tonumber(arParam[2] or 0) > 0)) then
       mkI = (mTo / (2 * (tonumber(arParam[2] or 0)))) -- Discrete integral approximation
       if(mbCmb) then mkI = mkI * mkP end
-    else logStatus(nil,"newControl.Setup: I-gain <"..tostring(arParam[2]).."> skipped") end
+    else logStatus("newControl.Setup: I-gain <"..tostring(arParam[2]).."> skipped") end
 
     if(arParam[3] and (tonumber(arParam[3] or 0) > 0)) then
       mkD = (tonumber(arParam[3] or 0) * mTo)  -- Discrete derivative approximation
       if(mbCmb) then mkD = mkD * mkP end
-    else logStatus(nil,"newControl.Setup: D-gain <"..tostring(arParam[3]).."> skipped") end
+    else logStatus("newControl.Setup: D-gain <"..tostring(arParam[3]).."> skipped") end
 
     if(arParam[4] and arParam[5] and ((tonumber(arParam[4]) or 0) < (tonumber(arParam[5]) or 0))) then
       mSatD, mSatU = (tonumber(arParam[4]) or 0), (tonumber(arParam[5]) or 0)
-    else logStatus(nil,"newControl.Setup: Saturation skipped <"..tostring(arParam[4]).."<"..tostring(arParam[5]).."> skipped") end
+    else logStatus("newControl.Setup: Saturation skipped <"..tostring(arParam[4]).."<"..tostring(arParam[5]).."> skipped") end
     mType = ((mkP > 0) and "P" or "")..((mkI > 0) and "I" or "")..((mkD > 0) and "D" or "")
     for ID = 1, 5, 1 do mUser[ID] = arParam[ID] end; return self -- Init multiple states using the table
   end
@@ -176,15 +176,15 @@ function newControl(nTo, sName)
 
   function self:Dump()
     local sType = (mType ~= "") and (mType.."-") or mType
-    logStatus(nil, "["..sType..metaControl.__type.."] Properties:")
-    logStatus(nil, "  Name : "..mName.." ["..tostring(mTo).."]s")
-    logStatus(nil, "  Param: {"..tostring(mUser[1])..", "..tostring(mUser[2])..", "
+    logStatus("["..sType..metaControl.__type.."] Properties:")
+    logStatus("  Name : "..mName.." ["..tostring(mTo).."]s")
+    logStatus("  Param: {"..tostring(mUser[1])..", "..tostring(mUser[2])..", "
      ..tostring(mUser[3])..", "..tostring(mUser[4])..", "..tostring(mUser[5]).."}")
-    logStatus(nil, "  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}")
-    logStatus(nil, "  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}\n")
-    logStatus(nil, "  Limit: {D="..tostring(mSatD)..",U="..tostring(mSatU).."}")
-    logStatus(nil, "  Error: {"..tostring(mErrO)..", "..tostring(mErrN).."}")
-    logStatus(nil, "  Value: ["..tostring(mvCon).."] {P="..tostring(mvP)..", I="..tostring(mvI)..", D="..tostring(mvD).."}")
+    logStatus("  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}")
+    logStatus("  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}\n")
+    logStatus("  Limit: {D="..tostring(mSatD)..",U="..tostring(mSatU).."}")
+    logStatus("  Error: {"..tostring(mErrO)..", "..tostring(mErrN).."}")
+    logStatus("  Value: ["..tostring(mvCon).."] {P="..tostring(mvP)..", I="..tostring(mvI)..", D="..tostring(mvD).."}")
     return self
   end; return self
 end
@@ -197,9 +197,9 @@ local metaUnit = {}
 function newUnit(nTo, tNum, tDen, sName)
   local mOrd = #tDen
   if(mOrd < #tNum) then
-    return logStatus(nil, "Unit physically impossible") end
+    return logStatus("Unit physically impossible") end
   if(tDen[1] == 0) then
-    return logStatus(nil, "Unit denominator invalid") end
+    return logStatus("Unit denominator invalid") end
     
   local self  = {}
   local mTo   = tDen[1] -- Store (1/ao)
@@ -243,11 +243,11 @@ function newUnit(nTo, tNum, tDen, sName)
   end
   
   function self:Dump()
-    logStatus(nil, metaUnit.__tostring(self).." Properties:")
-    logStatus(nil, "Name       : "..mName.."^"..tostring(mOrd).." ["..tostring(mTo).."]s")
-    logStatus(nil, "Numenator  : {"..strImplode(mNum,", ").."}")
-    logStatus(nil, "Denumenator: {"..strImplode(mDen,", ").."}")
-    logStatus(nil, "States     : {"..strImplode(mSta,", ").."}\n") 
+    logStatus(metaUnit.__tostring(self).." Properties:")
+    logStatus("Name       : "..mName.."^"..tostring(mOrd).." ["..tostring(mTo).."]s")
+    logStatus("Numenator  : {"..strImplode(mNum,", ").."}")
+    logStatus("Denumenator: {"..strImplode(mDen,", ").."}")
+    logStatus("States     : {"..strImplode(mSta,", ").."}\n") 
     return self
   end
   

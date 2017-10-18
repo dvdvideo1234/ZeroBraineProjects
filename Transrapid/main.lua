@@ -38,6 +38,7 @@ local stringExplode         = string and string.Explode
 local cleanupRegister       = cleanup and cleanup.Register
 local languageAdd           = language and language.Add
 local duplicatorRegisterEntityClass = duplicator and duplicator.RegisterEntityClass
+local libOpVars = umgl.GetLibraryData()
 
 umgl.InitConstants() -- Initialize direct constant values
 
@@ -53,7 +54,48 @@ umgl.InitDataMapping()  -- Setup the mapping data to be able to import and expor
 umgl.InitColumnNames()  -- Columns that are enabled for processing
 umgl.InitDescription()  -- Initialize description
 
-umgl.GetLibraryData()["PATH_TOOL"] = "E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Transrapid/maglevspawner/"
+libOpVars["CLASS_TARGETS"   ] = {
+  ["prop_physics"] = true,
+  ["prop_dynamic"] = true,
+  ["prop_static"]  = true,
+  ["prop_ragdoll"] = true
+}
+
+local mtTest = {}
+mtTest.__index = {
+  GetV = function(self) return self.v end
+}
+local function test(v)
+  local me = 10
+  local self = {v=(tonumber(v) or 0)}
+  setmetatable(self, mtTest)
+  return self
+end
+
+
+local t = test(6)
+
+
+print(t:GetV())
+
+
+local t = function() end
+local a = {b = {},5,6,c={m=1}}
+a.b[1] = a.b
+a[a] = a
+a[6]=a
+a[t]=t
+
+local z = {[a]="a",[t] ="t"}
+
+logTable(a,"a",z)
+
+
+--[==[
+umgl.InitTargetsHit()
+
+logTable(libOpVars["CLASS_TARGETS"   ], "TARG")
+
 
 if(false) then
   local obVar = [[
@@ -72,7 +114,7 @@ if(false) then
   logTable(rep,"rep")
 end
 
-if(true) then
+if(false) then
   local m = umgl.GetOpVar("MAPPING_GENERAL")
   local d = umgl.GetOpVar("MAPPING_MAGDATA")
   local e = {[umgl.GetOpVar("HASH_ENTITY")]={}}; b = e[umgl.GetOpVar("HASH_ENTITY")]
@@ -90,13 +132,13 @@ if(true) then
   b.KeyR = 55
   b.NumFor = 5000
   b.NumTog = true
-  b.Target = "prop_physics/prop_static/prop_dynamic/prop_detail"
+  b.Target = ""
   b.Control ={}
   b.Sensors = {}
   b.Forcers = {}
   local t = umgl.GetGeneralTable(e)
-  local p = "#"..umgl.GetOpVar("PATH_TOOL")..umgl.GetOpVar("NAME_ENTITY").."/base_init"
-  local u = umgl.InitializeUnitSource(p,b.Target)
+  local p = "#base_comp"
+  local u = umgl.InitializeUnitSource(p,b.Target,false)
   b.Sensors = u["sensor"]
   b.Forcers = u["forcer"]
   b.Control = u["control"]
@@ -115,14 +157,13 @@ if(true) then
   umgl.SetGeneralTable(b,g)
   
   umgl.ValidateTable("DataMGL", b, d)
-  umgl.ExportUnitSource(e,"base_comp")
+  umgl.ExportUnitSource(e,"base_comp_")
   
- -- logTable(m,"mAP")
- -- logTable(g,"GE")
+ logTable(m,"mAP")
+ logTable(g,"GE")
  logTable(b.Control, "FRC")
- --logTable(d, "D")
+ logTable(b.Sensors, "SEN")
+ logTable(d, "D")
 end
 
-
-
-
+]==]--

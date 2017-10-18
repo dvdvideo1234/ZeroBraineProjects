@@ -47,7 +47,7 @@
 {sensor:SFR}{Len:15}{Org: 17, 62, 4.0}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
 {sensor:SBR}{Len:15}{Org:-17, 62, 4.0}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
 {sensor:SFL}{Len:15}{Org: 17,-62, 4.0}{Dir:0, 1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
-{sensor:SBL}{Len:15}{Org:-17,-62, 4.0}{Dir:0, 1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBL}{Len:15}{Org:-17,-62, 4.0}{Dir:0, 1,0}
 
 # Defines the list of unit vectors for all forces
 # It is used by the control states for closing the loop feedback on the module

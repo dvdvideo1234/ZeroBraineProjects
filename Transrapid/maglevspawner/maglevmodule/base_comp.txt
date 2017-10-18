@@ -1,8 +1,8 @@
 {general:name}{Val:Ron's transrapid}
 {general:model}{Val:models/ron/maglev/train/slider.mdl}
-{general:fwloc}{Val:1,0,0}
-{general:uploc}{Val:0,0,1}
-{general:cnloc}{Val:0,0,0}
+{general:fwloc}{Val:[1,0,0]}
+{general:uploc}{Val:[0,0,1]}
+{general:cnloc}{Val:[0,0,0]}
 {general:mass}{Val:70}
 {general:tick}{Val:0.005}
 {general:keyon}{Val:42}
@@ -19,7 +19,7 @@
 {sensor:SFR}{Len:15}{Org:17,62,4}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
 {sensor:SBR}{Len:15}{Org:-17,62,4}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
 {sensor:SFL}{Len:15}{Org:17,-62,4}{Dir:0,1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
-{sensor:SBL}{Len:15}{Org:-17,-62,4}{Dir:0,1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBL}{Len:15}{Org:-17,-62,4}{Dir:0,1,0}
 
 {forcer:UR}{Org:0,60,0}{Dir:0,0,1}
 {forcer:UL}{Org:0,-60,0}{Dir:0,0,1}
