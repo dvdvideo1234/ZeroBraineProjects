@@ -1,0 +1,41 @@
+{general:name}{Val:Ron's transrapid}
+{general:model}{Val:models/ron/maglev/train/slider.mdl}
+{general:fwloc}{Val:[1,0,0]}
+{general:uploc}{Val:[0,0,1]}
+{general:cnloc}{Val:[0,0,0]}
+{general:mass}{Val:70}
+{general:tick}{Val:0.005}
+{general:keyon}{Val:42}
+{general:keyf}{Val:45}
+{general:keyr}{Val:39}
+{general:target}{Val:prop_physics/prop_static/prop_dynamic/prop_detail}
+{general:numfor}{Val:5000}
+{general:numtog}{Val:false}
+
+{sensor:DFR}{Len:12}{Org:17,47,-4.3}{Dir:0,0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DBR}{Len:12}{Org:-17,47,-4.3}{Dir:0,0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DFL}{Len:12}{Org:17,-47,-4.3}{Dir:0,0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:DBL}{Len:12}{Org:-17,-47,-4.3}{Dir:0,0,1}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SFR}{Len:15}{Org:17,62,4}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBR}{Len:15}{Org:-17,62,4}{Dir:0,-1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SFL}{Len:15}{Org:17,-62,4}{Dir:0,1,0}{Hit:prop_detail/prop_dynamic/prop_static/prop_physics}
+{sensor:SBL}{Len:15}{Org:-17,-62,4}{Dir:0,1,0}
+
+{forcer:UR}{Org:0,60,0}{Dir:0,0,1}
+{forcer:UL}{Org:0,-60,0}{Dir:0,0,1}
+{forcer:LR}{Org:0,0,0}{Dir:0,1,0}
+{forcer:APF}{Org:250,0,0}{Dir:0,0,1}
+{forcer:APB}{Org:-250,0,0}{Dir:0,0,-1}
+{forcer:AYR}{Org:0,250,0}{Dir:1,0,0}
+{forcer:AYL}{Org:0,-250,0}{Dir:-1,0,0}
+{forcer:ARR}{Org:0,500,0}{Dir:0,0,1}
+{forcer:ARL}{Org:0,-500,0}{Dir:0,0,-1}
+
+{control:UR}{Cmb:true}{Neg:true}{Tar:UR}{Ref:4.5/}{Tun:460,0.2,1740//1.2,1,1}{Prs:((DFR < DBR) and DFR or DBR)}
+{control:UL}{Cmb:true}{Neg:true}{Tar:UL}{Ref:4.5/}{Tun:460,0.2,1740//1.2,1,1}{Prs:((DFL < DBL) and DFL or DBL)}
+{control:LR}{Cmb:true}{Neg:true}{Tar:LR}{Ref:0/}{Tun:2500,0,2600//1.5,1,1.4}{Prs:(((SFR < SBR) and SFR or SBR) - ((SFL < SBL) and SFL or SBL))}
+{control:AP}{Cmb:true}{Neg:true}{Tar:APF/APB}{Ref:0/}{Tun:100,0,250//}{Prs:(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))}
+{control:BB}{Cmb:true}{Neg:true}{Tar:AAA/BBB/3}{Ref:0/RefGap}{Tun:1,2,3/1,2,3/1,2,3}{Prs:A+B}
+{control:AY}{Cmb:true}{Neg:false}{Tar:AYR/AYL}{Ref:0/}{Tun:510,0,450//}{Prs:(4 * (((SFR < SBL) and SFR or SBL) - ((SFL < SBR) and SFL or SBR)))}
+{control:AR}{Cmb:true}{Neg:true}{Tar:ARR/ARL}{Ref:0/}{Tun:32,0,1200//1.2,1,1.2}{Prs:(4 * (((DFL < DBL) and DFL or DBL) - ((DFR < DBR) and DFR or DBR)))}
+

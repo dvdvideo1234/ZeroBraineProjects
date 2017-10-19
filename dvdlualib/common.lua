@@ -49,33 +49,33 @@ function logMulty(...)
 end
 
 function logTable(tT,sS,tP)
-	local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
-	if(vT ~= "table") then
-		return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">") end
-	if(next(tT) == nil) then
-		return logStatus(sS.." = {}")
-	end; logStatus(sS.." = {}")
-	for k,v in pairs(tT) do
-		if(type(k) == "string") then
+  local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
+  if(vT ~= "table") then
+    return logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">") end
+  if(next(tT) == nil) then
+    return logStatus(sS.." = {}")
+  end; logStatus(sS.." = {}")
+  for k,v in pairs(tT) do
+    if(type(k) == "string") then
       vK = sS.."[\""..k.."\"]"
-		else
+    else
       sK = tostring(k)
       if(tP and tP[k]) then sK = tostring(tP[k]) end
-      vK = sS.."["..sK.."]"  
+      vK = sS.."["..sK.."]"
     end
-		if(type(v) ~= "table") then
-			if(type(v) == "string") then
-				logStatus(vK.." = \""..v.."\"")
-			else
+    if(type(v) ~= "table") then
+      if(type(v) == "string") then
+        logStatus(vK.." = \""..v.."\"")
+      else
         sK = tostring(v)
         if(tP and tP[v]) then sK = tostring(tP[v]) end
         logStatus(vK.." = "..sK)
       end
-		else
-			if(v == tT) then logStatus(vK.." = "..sS)
-			else logTable(v,vK,tP) end
-		end
-	end
+    else
+      if(v == tT) then logStatus(vK.." = "..sS)
+      else logTable(v,vK,tP) end
+    end
+  end
 end
 
 --------------- VALUES ---------------
@@ -157,7 +157,7 @@ function arExtend(tArr, nCnt)
   if(nCnt == nArl) then return logStatus(tArr, "arZerofilLeft: Array size unchanged") end
   local vEmp = (type(tArr[1]) == "string") and "" or 0
   if(nCnt > 0) then
-    local nEnd = (nArl > nCnt) and nArl or nCnt      
+    local nEnd = (nArl > nCnt) and nArl or nCnt
     for iK = 1, nEnd, 1 do
       tArr[iK] = (iK <= nCnt) and (tArr[iK] or vEmp) or nil
     end
@@ -166,7 +166,7 @@ function arExtend(tArr, nCnt)
     if(nDif > 0) then -- Cut in the front
       for iK = 1, nArl, 1 do
         tArr[iK] = ((iK+nDif) <= nArl) and tArr[iK+nDif] or nil
-      end 
+      end
     else -- Extended in the front
       local aCnt = math.abs(nCnt)
       for iK = aCnt, 1, -1 do
@@ -594,7 +594,7 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
     TestID = TestID + 1
   end
   if(tstFail.Cnt == 0) then
-    logStatus("Test finished all "..tostring(tstCas).." cases successfully", nil) 
+    logStatus("Test finished all "..tostring(tstCas).." cases successfully", nil)
   else
     logStatus("Test finished "..tostring(tstCas-tstFail.Cnt).." of "..tostring(tstCas).." cases successfully", nil)
     logStatus("The following tests have failed. Please check", nil)

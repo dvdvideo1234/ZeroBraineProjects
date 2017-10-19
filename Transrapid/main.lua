@@ -86,7 +86,7 @@ a[a] = a
 a[6]=a
 a[t]=t
 
-local z = {[a]="a",[t] ="t"}
+local z = {[a]="a",[t] ="myFoo"}
 
 logTable(a,"a",z)
 
