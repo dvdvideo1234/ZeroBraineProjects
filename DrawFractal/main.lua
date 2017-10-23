@@ -17,9 +17,9 @@ local szRe  = 2
 local szIm  = 2
 local nStep = 35
 local nZoom = 15
-local iTer  = 500
-local sfrac = "julia4"
-local spale = "wikipedia"
+local iTer  = 60
+local sfrac = "mandelbar"
+local spale = "region"
 local brdcl = colr(0, 250, 100)
 local brdup = true
 
@@ -89,9 +89,9 @@ while true do
   local rx, ry = clck('rd')
   local key = char()
   if(key or (lx and ly) or (rx and ry)) then
-    logStatus(nil,"LFT: {"..tostring(lx)..","..tostring(ly).."}")
-    logStatus(nil,"RGH: {"..tostring(rx)..","..tostring(ry).."}")
-    logStatus(nil,"KEY: {"..tostring(key).."}")
+    logStatus("LFT: {"..tostring(lx)..","..tostring(ly).."}")
+    logStatus("RGH: {"..tostring(rx)..","..tostring(ry).."}")
+    logStatus("KEY: {"..tostring(key).."}")
     if    (lx and ly) then
       S:SetCenter(lx,ly)
       S:Zoom( nZoom)
@@ -99,7 +99,7 @@ while true do
       S:SetCenter(rx,ry)
       S:Zoom(-nZoom)
     end
-    logStatus(nil,S:GetKey("dirU"))
+    logStatus(S:GetKey("dirU"))
     if    (key == S:GetKey("dirU")) then S:MoveCenter(0,-nStep)
     elseif(key == S:GetKey("dirD")) then S:MoveCenter(0, nStep)
     elseif(key == S:GetKey("dirL")) then S:MoveCenter(-nStep,0)

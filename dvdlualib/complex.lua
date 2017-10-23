@@ -139,7 +139,7 @@ function Complex(nRe,nIm)
   function self:Print(sS,sE)  io.write(tostring(sS or "").."{"..tostring(Re)..","..tostring(Im).."}"..tostring(sE or "")); return self end
   function self:getReal()   return Re end
   function self:getImag()   return Im end
-  function self:getDup()    return Complex(Re,Im) end
+  function self:getDupe()   return Complex(Re,Im) end
   function self:getFloor()  return Complex(math.floor(Re),math.floor(Im)) end
   function self:getCeil()   return Complex(math.ceil(Re),math.ceil(Im)) end
   function self:toPointXY() return {x = Re, y = Im} end

@@ -56,23 +56,23 @@ function getColorHCL(h,c,l)
          RoundValue(clClamp[2] * (b + m),1)
 end
 
-function printColorMap(r,g,b) logStatus(nil,"colorMap: {"..r..","..g..","..b.."}") end
+function printColorMap(r,g,b) logStatus("colorMap: {"..r..","..g..","..b.."}") end
 
 function setColorMap(sKey,tTable,bReplace)
   local tyTable = type(tTable)
-  if(tyTable ~= "table") then logStatus(nil,"getColorMap: Missing tabe argument"); return nil end
+  if(tyTable ~= "table") then logStatus("getColorMap: Missing tabe argument"); return nil end
   local sKey = tostring(sKey)
   local rgb = clMapping[sKey]
-  if(rgb and not bReplace) then logStatus(nil,"getColorMap: Exists mapping for <"..sKey..">"); return nil end
+  if(rgb and not bReplace) then logStatus("getColorMap: Exists mapping for <"..sKey..">"); return nil end
   clMapping[sKey] = tTable; return clMapping[sKey]
 end
 
 function getColorMap(sKey,iNdex)
   local iNdex = tonumber(iNdex) or 0
-  if(iNdex <= 0) then logStatus(nil,"getColorMap: Missing index #"..tostring(iNdex)); return getColorBlackRGB() end
+  if(iNdex <= 0) then logStatus("getColorMap: Missing index #"..tostring(iNdex)); return getColorBlackRGB() end
   local sKey = tostring(sKey)
   local rgb = clMapping[sKey]
-  if(not rgb) then logStatus(nil,"getColorMap: Missing mapping for <"..sKey..">"); return getColorBlackRGB() end
+  if(not rgb) then logStatus("getColorMap: Missing mapping for <"..sKey..">"); return getColorBlackRGB() end
   local cid = iNdex % #rgb; rgb = rgb[cid]
   if(not rgb) then return getColorBlackRGB() end
   return rgb[1], rgb[2], rgb[3]
@@ -81,11 +81,11 @@ end
 function getColorRegion(iDepth, maxDepth, iRegions)
   local sKey = "getColorRegion"
   local iDepth = tonumber(iDepth) or 0
-  if(iDepth <= 0) then logStatus(nil,"getColorRegion: Missing Region depth #"..iDepth); return getColorBlackRGB() end
+  if(iDepth <= 0) then logStatus("getColorRegion: Missing Region depth #"..iDepth); return getColorBlackRGB() end
   local maxDepth = tonumber(maxDepth) or 0
-  if(maxDepth <= 0) then logStatus(nil,"getColorRegion: Missing Region max depth #"..maxDepth); return getColorBlackRGB() end
+  if(maxDepth <= 0) then logStatus("getColorRegion: Missing Region max depth #"..maxDepth); return getColorBlackRGB() end
   local iRegions = tonumber(iRegions) or 0
-  if(iRegions <= 0) then logStatus(nil,"getColorRegion: Missing Regions count #"..iRegions); return getColorBlackRGB() end
+  if(iRegions <= 0) then logStatus("getColorRegion: Missing Regions count #"..iRegions); return getColorBlackRGB() end
   if (iDepth == maxDepth) then return getColorBlackRGB() end
   -- Cache the damn thing as it is too heavy
   if(not clMapping[sKey]) then clMapping[sKey] = {} end

@@ -35,32 +35,32 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
   function self:SetCenter(xCen,yCen,sMode)
     local xCen = tonumber(xCen)
     local yCen = tonumber(yCen)
-    if(not xCen) then logStatus(nil,"Fractal.SetCenter: X nan"); return end
-    if(not yCen) then logStatus(nil,"Fractal.SetCenter: Y nan"); return end
+    if(not xCen) then logStatus("Fractal.SetCenter: X nan"); return end
+    if(not yCen) then logStatus("Fractal.SetCenter: Y nan"); return end
     local sMode = tostring(sMode or "IMG")
-    logStatus(nil,"Center("..sMode.."): {"..xCen..","..yCen.."}")
+    logStatus("Center("..sMode.."): {"..xCen..","..yCen.."}")
     if(sMode == "IMG") then -- Use the win center in pixels
-      if(xCen < 0 or xCen > imgW) then logStatus(nil,"Fractal.SetCenter: X outbound"); return end
-      if(yCen < 0 or yCen > imgH) then logStatus(nil,"Fractal.SetCenter: Y outbound"); return end
+      if(xCen < 0 or xCen > imgW) then logStatus("Fractal.SetCenter: X outbound"); return end
+      if(yCen < 0 or yCen > imgH) then logStatus("Fractal.SetCenter: Y outbound"); return end
       local dxP, dyP = (xCen - imgCx), (yCen - imgCy)
       local dxU, dyU = (reFac  * dxP), (imFac *  dyP)
-      logStatus(nil,"Center: DX = "..dxP.." >> "..dxU)
-      logStatus(nil,"Center: DY = "..dyP.." >> "..dyU)
+      logStatus("Center: DX = "..dxP.." >> "..dxU)
+      logStatus("Center: DY = "..dyP.." >> "..dyU)
       self:SetArea((minRe + dxU), (maxRe + dxU), (minIm + dyU), (maxIm + dyU))
     elseif(sMode == "POS") then -- Use the fractal center
       local disRe = (maxRe - minRe) / 2
       local disIm = (maxIm - minIm) / 2
       self:SetArea((xCen - disRe), (xCen + disRe), (yCen - disIm), (yCen + disIm))
-    else logStatus(nil,"Fractal.SetCenter: Mode <"..sMode.."> missing")
+    else logStatus("Fractal.SetCenter: Mode <"..sMode.."> missing")
     end
   end
   function self:MoveCenter(dX, dY)
-    logStatus(nil,"MoveCenter: {"..dX..","..dY.."}")
+    logStatus("MoveCenter: {"..dX..","..dY.."}")
     self:SetCenter(imgCx + (tonumber(dX) or 0), imgCy + (tonumber(dY) or 0))
   end
   function self:Zoom(nZoom)
     local nZoom = tonumber(nZoom) or 0
-    if(nZoom == 0) then logStatus(nil,"Fractal.Zoom("..tostring(nZoom).."): Skipped") return end
+    if(nZoom == 0) then logStatus("Fractal.Zoom("..tostring(nZoom).."): Skipped") return end
     local disRe = (maxRe - minRe) / 2
     local disIm = (maxIm - minIm) / 2
     local midRe = minRe + disRe
@@ -84,12 +84,12 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
       local foo = tArgs[iNdex + 1]
       if(key and foo) then
         if(type(key) ~= "string") then
-          logStatus(nil,"Unoin.Register: Key not string <"..type(key)..">"); return end
+          logStatus("Unoin.Register: Key not string <"..type(key)..">"); return end
         if(type(foo) ~= "function") then
-          logStatus(nil,"Unoin.Register: Unable to register non-function under <"..key..">"); return end
+          logStatus("Unoin.Register: Unable to register non-function under <"..key..">"); return end
         if    (sMode == "FUNCT") then frcNames[key] = foo
         elseif(sMode == "PALET") then frcPalet[key] = foo
-        else logStatus(nil,"Unoin.Register: Mode <"..sMode.."> skipped for <"..tostring(tArgs[1]).."> !"); return end
+        else logStatus("Unoin.Register: Mode <"..sMode.."> skipped for <"..tostring(tArgs[1]).."> !"); return end
       end
     end
   end
@@ -97,13 +97,13 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
   function self:Draw(sName,sPalet,maxItr)
     local maxItr = tonumber(maxItr) or 0
     if(maxItr < 1) then
-      logStatus(nil,"Fractal.Draw: Iteretion depth #"..tostring(maxItr).." invalid"); return end
+      logStatus("Fractal.Draw: Iteretion depth #"..tostring(maxItr).." invalid"); return end
     local r, g, b, iDepth, isInside, nrmZ = 0, 0, 0, 0, true
     local sName, sPalet = tostring(sName), tostring(sPalet)
     local C, Z, R = Complex(), Complex(), {}
-    logStatus(nil,"Zoom: {"..uZoom.."}")
-    logStatus(nil,"Cent: {"..uniCr..","..uniCi.."}")
-    logStatus(nil,"Area: {"..minRe..","..maxRe..","..minIm..","..maxIm.."}")
+    logStatus("Zoom: {"..uZoom.."}")
+    logStatus("Cent: {"..uniCr..","..uniCi.."}")
+    logStatus("Area: {"..minRe..","..maxRe..","..minIm..","..maxIm.."}")
     for y = 0, imgH do -- Row
       if(brdCl) then pncl(brdCl); line(0,y,imgW,y); updt() end
       C:setImag(minIm + y*imFac)
@@ -116,13 +116,13 @@ function makeFractal(w,h,minw,maxw,minh,maxh,clbrd,bBrdP)
           nrmZ = Z:getNorm2()
           if(nrmZ > 4) then iDepth, isInside = n, false; break end
           if(not frcNames[sName]) then
-            logStatus(nil,"Fractal.Draw: Invalid fractal name <"..sName.."> given"); return end
+            logStatus("Fractal.Draw: Invalid fractal name <"..sName.."> given"); return end
           frcNames[sName](Z, C, R) -- Call the fractal formula
         end
         r, g, b = 0, 0, 0
         if(not isInside) then
           if(not frcPalet[sPalet]) then
-            logStatus(nil,"Fractal.Draw: Invalid palet <"..sPalet.."> given"); return end
+            logStatus("Fractal.Draw: Invalid palet <"..sPalet.."> given"); return end
           r, g, b = frcPalet[sPalet](Z, C, iDepth, x, y, R) -- Call the fractal coloring
           r, g, b = clampValue(r,0,255), clampValue(g,0,255), clampValue(b,0,255)
         end
@@ -140,7 +140,7 @@ local mtTreeY = {}
 function makeTreeY(iMax, clDraw)
   local draw = clDraw
   local self = {Lev = 0, Max = (tonumber(iMax) or 0)}
-  if(self.Max <= 0) then return logStatus(nil,"YTree depth invalid <"..tostring(self.Max)..">") end
+  if(self.Max <= 0) then return logStatus("YTree depth invalid <"..tostring(self.Max)..">") end
   setmetatable(self, mtTreeY)
   function self:Allocate(tBranch)
     if(not  tBranch.Lev) then tBranch.Lev = self.Lev end
