@@ -241,11 +241,11 @@ local function StrValidateComplex(sStr)
     local CE = Str:sub(E,E)
     local FS = metaComplex.__bords[1]:find(CS,1,true)
     local FE = metaComplex.__bords[2]:find(CE,1,true)
-    if((not FS) and FE) then return logStatus(nil,"StrValidateComplex: Unbalanced end #"..CS..CE.."#") end
-    if((not FE) and FS) then return logStatus(nil,"StrValidateComplex: Unbalanced beg #"..CS..CE.."#") end
+    if((not FS) and FE) then return logStatus("StrValidateComplex: Unbalanced end #"..CS..CE.."#",nil) end
+    if((not FE) and FS) then return logStatus("StrValidateComplex: Unbalanced beg #"..CS..CE.."#",nil) end
     if(FS and FE and FS > 0 and FE > 0) then
       if(FS == FE) then S = S + 1; E = E - 1
-      else return logStatus(nil,"StrValidateComplex: Bracket mismatch #"..CS..CE.."#") end
+      else return logStatus("StrValidateComplex: Bracket mismatch #"..CS..CE.."#",nil) end
     elseif(not (FS and FE)) then break end;
   end; return Str, S, E
 end
@@ -259,7 +259,7 @@ local function Str2Complex(sStr, nS, nE, sDel)
 end
 
 local function StrI2Complex(sStr, nS, nE, nI)
-  if(nI == 0) then return logStatus(nil,"StrI2Complex: Complex not in plain format [a+ib] or [a+bi]") end
+  if(nI == 0) then return logStatus("StrI2Complex: Complex not in plain format [a+ib] or [a+bi]",nil) end
   local M = nI - 1 -- There will be no delimiter symbols here
   local C = sStr:sub(M,M)
   if(nI == nE) then  -- (-0.7-2.9i) Skip symbols til +/- is reached
@@ -296,7 +296,7 @@ local function Tab2Complex(tTab)
     V1 = tonumber(V1) or 0
     return Complex(V1,V2)
   end
-  return logStatus(nil,"StrI2Complex: Table format not supported")
+  return logStatus("StrI2Complex: Table format not supported",nil)
 end
 
 function ToComplex(In,Del)
@@ -306,7 +306,7 @@ function ToComplex(In,Del)
   if(tIn ==    "nil") then return Complex(0,0) end
   if(tIn == "string") then
     local Str, S, E = StrValidateComplex(In:gsub("*",""))
-    if(not (Str and S and E)) then return logStatus(nil,"ToComplex: Failed to vlalidate <"..tostring(In)..">") end
+    if(not (Str and S and E)) then return logStatus("ToComplex: Failed to vlalidate <"..tostring(In)..">",nil) end
         Str = Str:sub(S ,E); E = E-S+1; S = 1
     local I = Str:find("i",S)
           I = Str:find("I",S) or I
@@ -315,5 +315,5 @@ function ToComplex(In,Del)
     if(I and (I > 0)) then return StrI2Complex(Str, S, E, I)
     else return Str2Complex(Str, S, E, Del) end
   end
-  return logStatus(nil,"ToComplex: Type <"..Tin.."> not supported")
+  return logStatus("ToComplex: Type <"..Tin.."> not supported",nil)
 end
