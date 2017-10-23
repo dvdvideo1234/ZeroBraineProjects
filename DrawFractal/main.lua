@@ -18,10 +18,10 @@ local szIm  = 2
 local nStep = 35
 local nZoom = 15
 local iTer  = 60
-local sfrac = "mandelbar"
-local spale = "region"
-local brdcl = colr(0, 250, 100)
-local brdup = true
+local sfrac = "julia6"
+local spale = "wikipedia"
+local brdcl = nil -- colr(0, 250, 100)
+local brdup = nil -- true
 
 --- Dinamic parameters and constants
 local cexp   = ToComplex(math.exp(1))
@@ -106,6 +106,6 @@ while true do
     elseif(key == S:GetKey("dirR")) then S:MoveCenter( nStep,0) end
     S:Draw(sfrac,spale,iTer)
   end
-  updt()
+ -- updt()
   --wait(0.2)
 end

@@ -218,7 +218,7 @@ end
 
 local function initFileLif105(sName)
   local N = ShapePath.."lif/"..string.lower(sName).."_105.lif"; F = io.open(N,"r")
-  if(not F) then return logStatus(nil, "initFileLif105: Invalid file: <"..N..">") end
+  if(not F) then return logStatus("initFileLif105: Invalid file: <"..N..">",nil) end
   local Line, Ind = "", 1
   local FilePos
   local Shape = {
@@ -264,7 +264,7 @@ end
 
 local function initFileLif106(sName)
   local N = ShapePath.."lif/"..string.lower(sName).."_106.lif"; F = io.open(N,"r")
-  if(not F) then return logStatus(nil, "initFileLif106: Invalid file: <"..N..">") end
+  if(not F) then return logStatus("initFileLif106: Invalid file: <"..N..">",nil) end
   local FilePos
   local Line, Ind = "", 1
   local MinX, MaxX, MinY, MaxY, x, y
@@ -300,7 +300,7 @@ local function initFileLif106(sName)
           if(x < MinX) then MinX = x end
           if(y > MaxY) then MaxY = y end
           if(y < MinY) then MinY = y end
-        else return logStatus(nil, "Coordinates conversion failed !") end
+        else return logStatus("Coordinates conversion failed !", nil) end
       else
         x = tonumber(string.sub(Line,1,Ind-1)) or 0
         y = tonumber(string.sub(Line,Ind+1,leLine)) or 0
@@ -332,7 +332,7 @@ local function initFileLif106(sName)
     y = tonumber(string.sub(Line,Ind+1,leLine))
     if(x and y) then
       Shape[(Shape.Offset.Cent[2]+y)*Shape.w+Shape.Offset.Cent[1]+x+1] = 1
-    else return logStatus(nil, "Convert failed: >"..Line.."<") end
+    else return logStatus("Convert failed: >"..Line.."<",nil) end
   end
   Ind = 1
   while(Ind <= Shape.w * Shape.h) do
@@ -343,7 +343,7 @@ end
 
 local function initFileRle(sName)
   local N = ShapePath.."rle/"..string.lower(sName)..".rle"; F = io.open(N,"r")
-  if(not F) then return logStatus("initFileRle: Invalid file: <"..N..">") end
+  if(not F) then return logStatus("initFileRle: Invalid file: <"..N..">",nil) end
   local FilePos, ChCnt, leLine
   local Line, cFirst =  "",  ""
   local nS, nE, Ind, Cel = 1, 1, 1, 1
@@ -397,7 +397,7 @@ end
 
 local function initFileCells(sName)
   local N = ShapePath.."cells/"..string.lower(sName)..".cells"; F = io.open(N,"r")
-  if(not F) then return logStatus(nil, "initFileCells: Invalid file: <"..N..">") end
+  if(not F) then return logStatus("initFileCells: Invalid file: <"..N..">",nil) end
   local FilePos
   local Firs, Line = "", ""
   local x, y, Lenw, Ind = 0, 0, 0, 1
@@ -433,11 +433,11 @@ local function drawConsole(F)
   local tArr = F:getArray()
   local fx   = F:getW()
   local fy   = F:getH()
-  logStatus(nil, "Generation: "..(F:getGenerations() or "N/A"))
+  logStatus("Generation: "..(F:getGenerations() or "N/A"))
   local Line=""
   for y = 1, fy do for x = 1, fx do
       Line = Line..(((tArr[y][x]~=0) and Aliv) or Dead)
-  end; logStatus(nil, Line); Line = "" end
+  end; logStatus(Line); Line = "" end
 end
 
 local function getSumStatus(nStatus,nSum,tRule)
@@ -471,7 +471,7 @@ lifelib.makeField = function(w,h,sRule)
     Rule.Name = sRule
     Rule.Data = getRuleBS(sRule)
     if(Rule.Data == nil) then
-      return logStatus(nil, "Field creator: Please redefine your life rule !") end
+      return logStatus("Field creator: Please redefine your life rule !",nil) end
   end
   --[[
    * Internal data primitives
@@ -495,11 +495,11 @@ lifelib.makeField = function(w,h,sRule)
     local Px = (Px or 1) % w
     local Py = (Py or 1) % h
     if(Shape == nil) then
-      return logStatus(nil, "Field.setShape(Shape,PosX,PosY): Shape: Not present !") end
+      return logStatus("Field.setShape(Shape,PosX,PosY): Shape: Not present !",nil) end
     if(getmetatable(Shape) ~= metaShape) then
-      return logStatus(nil, "Field.setShape(Shape,PosX,PosY): Shape: SHAPE obj invalid !") end
+      return logStatus("Field.setShape(Shape,PosX,PosY): Shape: SHAPE obj invalid !",nil) end
     if(Rule.Name ~= Shape:getRuleName()) then
-      return logStatus(nil, "Field.setShape(Shape,PosX,PosY): Shape: Different kind of life !") end
+      return logStatus("Field.setShape(Shape,PosX,PosY): Shape: Different kind of life !",nil) end
     local sw = Shape:getW()
     local sh = Shape:getH()
     local ar = Shape:getArray()
@@ -533,7 +533,7 @@ lifelib.makeField = function(w,h,sRule)
   ]]--
   function self:regDraw(sKey,fFoo)
     if(type(sKey) == "string" and type(fFoo) == "function") then Draw[sKey] = fFoo
-    else logStatus(nil, "Field.drwLife(sMode,tArgs): Drawing method @"..tostring(sKey).." registration skipped !") end
+    else logStatus("Field.drwLife(sMode,tArgs): Drawing method @"..tostring(sKey).." registration skipped !") end
   end
   --[[
    * Visualizates the field on the screen using the draw method given
@@ -542,7 +542,7 @@ lifelib.makeField = function(w,h,sRule)
     local Mode = tostring(sMode or "text")
     local Args = tArgs or {}
     if(Draw[Mode]) then Draw[Mode](self,Args)
-    else logStatus(nil, "Field.drwLife(sMode,tArgs): Drawing mode <"..Mode.."> not found !") end
+    else logStatus("Field.drwLife(sMode,tArgs): Drawing mode <"..Mode.."> not found !") end
   end
   --[[
    * Converts the field to a number, beware they are big
@@ -579,26 +579,26 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
     elseif(sExt == "cells" ) then tInit = initFileCells(sName)
     elseif(sExt == "lif105") then tInit = initFileLif105(sName)
     elseif(sExt == "lif106") then tInit = initFileLif106(sName)
-    else return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">") end
+    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">",nil) end
   elseif(sSrc == "string") then
     if    (sExt == "rle" ) then tInit = initStringRle(sName,tArg[1],tArg[2])
     elseif(sExt == "txt" ) then tInit = initStringText(sName,tArg[1])
-    else return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">") end
+    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">",nil) end
   elseif(sSrc == "strict") then tInit = initStruct(sName)
-  else return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Source <"..sSrc.."> not suported for <"..sName..">") end
+  else return logStatus("makeShape(sName, sSrc, sExt, tArg): Source <"..sSrc.."> not suported for <"..sName..">",nil) end
 
   if(not tInit) then
-    return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): No initialization table") end
+    return logStatus("makeShape(sName, sSrc, sExt, tArg): No initialization table",nil) end
   if(not (tInit.w and tInit.h)) then
-    return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Initialization table bad dimensions\n") end
+    return logStatus("makeShape(sName, sSrc, sExt, tArg): Initialization table bad dimensions\n",nil) end
   if(not (tInit.w > 0 and tInit.h > 0)) then
-    return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Check Shape unit structure !\n") end
+    return logStatus("makeShape(sName, sSrc, sExt, tArg): Check Shape unit structure !\n",nil) end
 
   while(tInit[iCnt]) do
     if(tInit[iCnt] == 1) then isEmpty = false end
     iCnt = iCnt + 1
   end
-  if(isEmpty) then return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Shape <"..sName.."> empty for <"..sExt.."> <"..sSrc..">") end
+  if(isEmpty) then return logStatus("makeShape(sName, sSrc, sExt, tArg): Shape <"..sName.."> empty for <"..sExt.."> <"..sSrc..">",nil) end
   local self = {}
         self.Init = tInit
   local w    = tInit.w
@@ -609,13 +609,13 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
   if(type(sRule) == "string") then
     local Data = getRuleBS(sRule)
     if(Data ~= nil) then Rule = sRule
-    else return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Check creator's Rule !") end
+    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Check creator's Rule !",nil) end
   elseif(type(tInit.Rule) == "table") then
     if(type(tInit.Rule.Name) == "string") then
       local Data = lifelib.getRuleBS(Rule)
       if(Data ~= nil) then Rule = tInit.Rule.Name
       else Rule = lifelib.getDefaultRule().Name end
-    else return logStatus(nil, "makeShape(sName, sSrc, sExt, tArg): Check init Rule !") end
+    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Check init Rule !",nil) end
   else Rule = lifelib.getDefaultRule().Name end
   --[[
    * Internal data primitives
@@ -635,7 +635,7 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
   ]]--
   function self:regDraw(sKey,fFoo)
     if(type(sKey) == "string" and type(fFoo) == "function") then Draw[sKey] = fFoo
-    else logStatus(nil, "Drawing method {"..tostring(sKey)..","..tostring(fFoo).."} registration skipped !") end
+    else logStatus("Drawing method {"..tostring(sKey)..","..tostring(fFoo).."} registration skipped !") end
   end
   --[[
    * Visualizates the shape on the screen using the draw method given
@@ -644,7 +644,7 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
     local Mode = sMode or "text"
     local Args = tArgs or {}
     if(Draw[Mode]) then Draw[Mode](self, Args)
-    else logStatus(nil, "Shape.drwLife(sMode,tArgs): Drawing mode not found !\n") end
+    else logStatus("Shape.drwLife(sMode,tArgs): Drawing mode not found !\n") end
   end
   --[[
    * Converts the shape to a number, beware they are big
@@ -692,8 +692,8 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
    * bAll Draw the shape to the end of the line
   ]]--
   function self:toStringText(sDel,bTrim)
-    if(sDel == Aliv) then return logStatus("", "Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches alive") end
-    if(sDel == Dead) then return logStatus("", "Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches dead")  end
+    if(sDel == Aliv) then return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches alive","") end
+    if(sDel == Dead) then return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches dead","")  end
     local Line, Len = ""
     for i = 1,h do Len = w
       if(bTrim) then while(Data[i][Len] == 0) do Len = Len - 1 end end
