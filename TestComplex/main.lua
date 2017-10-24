@@ -1,6 +1,8 @@
-require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/complex")
-
+-- require("ZeroBraineProjects/dvdlualib/common")
+lib = require("ZeroBraineProjects/dvdlualib/complex")
+local Complex   = lib.New
+local ToComplex = lib.Convert
+local logStatus = print
 io.stdout:setvbuf("no")
 
 logStatus("---------------Basic: Complex---------------")
@@ -61,7 +63,7 @@ local c = (CT ^ 5);    c:Print("\n")
       c = (CT ^ 0.20); c:Print("\n")
       c = (CT ^ CT);   c:Print("\n")
 
-ToComplex("1.59"):Round(-1):Print("\n")
+ToComplex("155.56"):Round(-6):Print("\n")
 
 logStatus("\nTests done")
 

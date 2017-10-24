@@ -5,7 +5,6 @@ local tonumber  = tonumber
 local tostring  = tostring
 local type      = type
 local io        = io
-local string    = string
 local metaShape = {}
 local metaField = {}
 
@@ -15,16 +14,219 @@ local Aliv = "O"
 local Dead = "-"
 local ShapePath = "game-of-life/shapes/"
 
+local function logStatus(anyMsg, ...)
+  io.write(tostring(anyMsg).."\n"); return ...
+end
+
+local function getSign(anyVal)
+  local nVal = (tonumber(anyVal) or 0); return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0)
+end
+
+local function getValuesSED(Val,Min,Max)
+  local s = (Val > 0) and Min or Max
+  local e = (Val > 0) and Max or Min
+  local d = getSign(e - s)
+  return s, e, d
+end
+
+local function arMalloc2D(w,h)
+  local Arr = {}
+  for y=1,h do
+    Arr[y] = {}
+    for x=1,w do
+      Arr[y][x]=0
+    end
+  end
+  return Arr
+end
+
+local function arRotateR(Arr,sX,sY)
+  local Tmp = arMalloc2D(sY,sX)
+  local ii = 1
+  local jj = 1
+  for j = 1, sX, 1 do
+    for i = sY, 1, -1  do
+      if(jj > sY) then
+        ii = ii + 1
+        jj = 1
+      end
+      Tmp[ii][jj] = Arr[i][j]
+      Arr[i][j]   = nil
+      jj = jj + 1
+    end
+  end
+  for i = 1, sX do
+    Arr[i] = {}
+    for j = 1, sY  do
+      Arr[i][j] = Tmp[i][j]
+    end
+  end
+end
+
+local function arRotateL(Arr,sX,sY)
+  local Tmp = arMalloc2D(sY,sX)
+  local ii = 1
+  local jj = 1
+  for j = sX, 1, -1 do
+    for i = 1, sY, 1  do
+      if(jj > sY) then
+        ii = ii + 1
+        jj = 1
+      end
+      Tmp[ii][jj] = Arr[i][j]
+      Arr[i][j]   = nil
+      jj = jj + 1
+    end
+  end
+  for i = 1, sX do
+    Arr[i] = {}
+    for j = 1, sY  do
+      Arr[i][j] = Tmp[i][j]
+    end
+  end
+end
+
+local function arShift2D(Arr,sX,sY,nX,nY)
+  if( not( sX > 0 and sY > 0) ) then return end
+  local x = math.floor(nX or 0)
+  local y = math.floor(nY or 0)
+  local Tmp = 0
+  if(x ~= 0) then
+    local sx,ex,dx = getValuesSED(x,sX,1)
+    local M
+    for i = 1,sY do
+      for j = sx,ex,dx do
+        M = j-x
+        if(M >= 1 and M <= sX) then
+          Arr[i][j] = Arr[i][M]
+        else
+          Arr[i][j] = 0
+        end
+      end
+    end
+  end
+  if(y ~= 0) then
+    local sy,ey,dy = getValuesSED(y,sY,1)
+    local M
+    for i = sy,ey,dy do
+      for j = 1,sX do
+        M = i-y
+        if(M >= 1 and M <= sY) then
+          Arr[i][j] = Arr[M][j]
+        else
+          Arr[i][j] = 0
+        end
+      end
+    end
+  end
+end
+
+local function arRoll2D(Arr,sX,sY,nX,nY)
+  if( not( sX > 0 and sY > 0) ) then return end
+  local x = math.floor(nX or 0)
+  local y = math.floor(nY or 0)
+  if(y ~= 0) then
+    local MaxY = (y > 0) and sY or 1
+    local MinY = (y > 0) and 1 or sY
+    local siY  = getSign(y)
+          y    = y * siY
+    local arTmp = {}
+    while(y > 0) do
+      for i = 1,sX do
+        arTmp[i] = Arr[MaxY][i]
+      end
+      arShift2D(Arr,sX,sY,0,siY)
+      for i = 1,sX do
+        Arr[MinY][i] = arTmp[i]
+      end
+      y = y - 1
+    end
+  end
+  if(x ~= 0) then
+    local MaxX = (x > 0) and sX or 1
+    local MinX = (x > 0) and 1 or sX
+    local siX  = getSign(x)
+          x    = x * siX
+    local arTmp = {}
+    while(x > 0) do
+      for i = 1,sY do
+        arTmp[i] = Arr[i][MaxX]
+      end
+      arShift2D(Arr,sX,sY,siX)
+      for i = 1,sY do
+        Arr[i][MinX] = arTmp[i]
+      end
+      x = x - 1
+    end
+  end
+end
+
+local function arMirror2D(Arr,sX,sY,fX,fY)
+  local Tmp, s
+  if(fY) then
+    Tmp = 0
+    s   = 1
+    local e = sY
+    while(s < e) do
+      for k = 1,sX do
+        Tmp = Arr[s][k]
+        Arr[s][k] = Arr[e][k]
+        Arr[e][k] = Tmp
+      end
+      s = s + 1
+      e = e - 1
+    end
+  end
+  if(fX) then
+    Tmp = 0
+    s   = 1
+    local e = sX
+    while(s < e) do
+      for k = 1,sY do
+        Tmp = Arr[k][s]
+        Arr[k][s] = Arr[k][e]
+        Arr[k][e] = Tmp
+      end
+      s = s + 1
+      e = e - 1
+    end
+  end
+end
+
+function strExplode(sStr,sDel)
+  local List, Ch, Idx, ID, dL = {""}, "", 1, 1, (sDel:len()-1)
+  while(Ch) do
+    Ch = sStr:sub(Idx,Idx+dL)
+    if    (Ch ==  "" ) then return List
+    elseif(Ch == sDel) then ID = ID + 1; List[ID], Idx = "", (Idx + dL)
+    else List[ID] = List[ID]..Ch:sub(1,1) end; Idx = Idx + 1
+  end; return List
+end
+
+function strImplode(tList,sDel)
+  local ID, Str = 1, ""
+  local Del = tostring(sDel or "")
+  while(tList and tList[ID]) do
+    Str = Str..tList[ID]; ID = ID + 1
+    if(tList[ID] and sDel ~= "") then Str = Str..Del end
+  end; return Str
+end
+
+function stringTrim(sStr, sWhat)
+  local sWhat = (sWhat or "%s")
+  return sStr:match("^"..sWhat.."*(.-)"..sWhat.."*$") or sStr
+end
+
 lifelib.charAliv = function (sA)
   if(not sA) then return Aliv end
-  local sA = string.sub(tostring(sA),1,1)
+  local sA = tostring(sA):sub(1,1)
   if(sA ~= "" and sA ~= Dead) then Aliv = sA; return true end
   return false
 end
 
 lifelib.charDead = function(sD)
   if(not sD) then return Dead end
-  local sD = string.sub(tostring(sD),1,1)
+  local sD = tostring(sD):sub(1,1)
   if(sD ~= "" and sD ~= Aliv) then Dead = sD; return true end
   return false
 end
@@ -32,8 +234,10 @@ end
 lifelib.shapesPath = function(sData)
   if(not sData) then return ShapePath end
   local Typ = type(sData)
-  if(Typ == "string" and sData ~= "") then ShapePath = sData; return true end
-  return false
+  if(Typ == "string" and sData ~= "") then
+    ShapePath = stringTrim(sData:gsub("\\","/"),"/")
+    return logStatus("Shapes location: "..ShapePath,true)
+  end; return false
 end
 
 --------------------------- RULES -------------------------------
@@ -45,14 +249,14 @@ end
 lifelib.getRuleBS = function(sStr)
   local cB, cS
   local BS = {B = {}, S = {}}
-  local Len = string.len(sStr)
+  local Len = sStr:len()
   local BI, bI, sI = 1, 1, 1
-  local SI = string.find(sStr,"/")
+  local SI = sStr:find("/")
   if(SI == nil) then return nil end
   SI = SI + 1
   while(cS ~= "" and cB ~= "/") do
-    cB = string.sub(sStr,BI,BI)
-    cS = string.sub(sStr,SI,SI)
+    cB = sStr:sub(BI,BI)
+    cS = sStr:sub(SI,SI)
     if(cB ~= "/") then
       if(tonumber(cB)) then
         BS.B[bI] = tonumber(cB)
@@ -72,22 +276,16 @@ end
 
 lifelib.getRleSettings = function(sStr)
   local Cpy = sStr..","
-  local Len = string.len(Cpy)
-  local Che = ""
-  local Exp = {}
-  local S = 1
-  local E = 1
-  local Key
+  local Len, Key = Cpy:len(), nil
+  local Che, Exp, S, E = "", {}, 1, 1
   while(E <= Len) do
-    Che = string.sub(Cpy,E,E)
+    Che = Cpy:sub(E,E)
     if(Che == "=") then
-      Key = StrTrimSpaces(string.sub(Cpy,S,E-1))
-      S = E + 1
-      E = E + 1
+      Key = stringTrim(Cpy:sub(S,E-1))
+      S = E + 1; E = E + 1
     elseif(Che == ",") then
-      Exp[Key] = StrTrimSpaces(string.sub(Cpy,S,E-1))
-      S = E + 1
-      E = E + 1
+      Exp[Key] = stringTrim(Cpy:sub(S,E-1))
+      S = E + 1; E = E + 1
     end
     E = E + 1
   end
@@ -165,30 +363,30 @@ local function initStruct(sName)
                     0,0,1,1,1,0,0,0,1,1,1,0,0;
                     w = 13, h = 13}
   }
-  return Shapes[string.lower(sName)]
+  return Shapes[sName:lower()]
 end
 
 local function initStringText(sStr,sDel)
   local sStr = tostring(sStr or "")
-  local sDel = string.sub(tostring(sDel or "\n"),1,1)
-  local Rows = StrExplode(sStr,sDel)
+  local sDel = tostring(sDel or "\n"):sub(1,1)
+  local Rows = strExplode(sStr,sDel)
   local Rall = StrImplode(Rows)
-  local Shape = {w = string.len(Rows[1]), h = #Rows}
+  local Shape = {w = Rows[1]:len(), h = #Rows}
   for k = 1,(Shape.w * Shape.h) do
-    Shape[k] = (string.sub(Rall,k,k) == Aliv) and 1 or 0
+    Shape[k] = (Rall:sub(k,k) == Aliv) and 1 or 0
   end; return Shape
 end
 
 local function initStringRle(sStr, sDel, sEnd)
   local nS, nE, Ch
   local Cnt, Ind, Lin = 1, 1, true
-  local Len = string.len(sStr)
+  local Len = sStr:len()
   local Num, toNum, isNum = 0, 0, false
   local Shape = {w = 0, h = 0}
-  local sDel = string.sub(tostring(sDel or "$"),1,1)
-  local sEnd = string.sub(tostring(sEnd or "!"),1,1)
+  local sDel = tostring(sDel or "$"):sub(1,1)
+  local sEnd = tostring(sEnd or "!"):sub(1,1)
   while(Cnt <= Len) do
-    Ch = string.sub(sStr,Cnt,Cnt)
+    Ch = sStr:sub(Cnt,Cnt)
     if(Ch == sEnd) then Shape.h = Shape.h + 1; break end
     toNum = tonumber(Ch)
     if(not isNum and toNum) then
@@ -197,7 +395,7 @@ local function initStringRle(sStr, sDel, sEnd)
     elseif(not toNum and isNum) then
       -- End of a number
       isNum = false; nE = Cnt - 1
-      Num   = tonumber(string.sub(sStr,nS,nE)) or 0
+      Num   = tonumber(sStr:sub(nS,nE)) or 0
     end
     if(Num > 0) then
       if(Lin) then Shape.w = Shape.w + Num end
@@ -206,8 +404,7 @@ local function initStringRle(sStr, sDel, sEnd)
         Ind = Ind + 1
         Num = Num - 1
       end;
-    elseif(Ch ~= sDel and
-           Ch ~= sEnd and not isNum) then
+    elseif(Ch ~= sDel and Ch ~= sEnd and not isNum) then
       if(Lin) then Shape.w = Shape.w + 1 end
       Shape[Ind] = (((Ch == Aliv) and 1) or 0)
       Ind = Ind + 1
@@ -217,84 +414,57 @@ local function initStringRle(sStr, sDel, sEnd)
 end
 
 local function initFileLif105(sName)
-  local N = ShapePath.."lif/"..string.lower(sName).."_105.lif"; F = io.open(N,"r")
+  local N = ShapePath.."/lif/"..sName:lower().."_105.lif"; F = io.open(N,"r")
   if(not F) then return logStatus("initFileLif105: Invalid file: <"..N..">",nil) end
-  local Line, Ind = "", 1
-  local FilePos
-  local Shape = {
-    w = 0,
-    h = 0,
-    Header = {},
-    Offset = {
-      Cent = {}
-    }
-  }
+  local Line, ID, CH, Data = "", 1, 1, {}
+  local Shape = {w = 0, h = 0, Header = {}, Offset = {Cent = {}}}
   while(Line) do
-    Line = StrTrimSpaces(F:read())
+    Line = F:read()
     if(not Line) then break end
-    if(Line == "") then break end
-    cFirst = string.sub(Line,1,1)
-    leLine = string.len(Line)
+    Line = stringTrim(Line)
+    cFirst = Line:sub(1,1)
+    leLine = Line:len()
     if(cFirst == "#") then
-      FilePos = F:seek("cur",0)
-      local cSecond = string.sub(Line,2,2)
+      local lnData  = stringTrim(Line:sub(2,-1))
+      local cSecond = lnData:sub(1,1)
       if(cSecond == "P") then
-        local sCoord = StrTrimSpaces(string.sub(Line,3,leLine))
-        local Center = string.find(sCoord," ")
-        Shape.Offset.Cent[1] = -tonumber(string.sub(sCoord,1,Center-1))
-        Shape.Offset.Cent[2] = -tonumber(string.sub(sCoord,Center+1,string.len(sCoord)))
-      else Shape.Header[Ind] = string.sub(Line,2,leLine); Ind = Ind + 1 end
-    elseif(cFirst == Aliv or cFirst == Dead) then
-      Shape.h = Shape.h + 1
+        local sCoord = stringTrim(lnData:sub(2,leLine))
+        local Center = sCoord:find(" ")
+        Shape.Offset.Cent[1] = -tonumber(sCoord:sub(1,Center-1))
+        Shape.Offset.Cent[2] = -tonumber(sCoord:sub(Center+1,sCoord:len()))
+      else Shape.Header[ID] = Line:sub(2,leLine); ID = ID + 1 end
+    else
+      Shape.h = Shape.h + 1; Data[Shape.h] = {}
       if(leLine >= Shape.w) then Shape.w = leLine end
+      for CH = 1, leLine do
+        Data[Shape.h][CH] = ((Line:sub(CH,CH) == Aliv) and 1 or 0) end
     end
-  end
-  Line, Ind = "", 1
-  F:seek("set",FilePos)
-  for y = 1,Shape.h do
-    Line = StrTrimSpaces(F:read())
-    if(not Line) then break end
-    for x = 1,Shape.w do
-      cFirst = string.sub(Line,x,x)
-      if(cFirst == Aliv) then Shape[Ind] = 1
-      else Shape[Ind] = 0 end; Ind = Ind + 1
+  end; F:close()
+  for ID = 1, Shape.h do
+    for CH = 1, Shape.w do
+      Shape[(ID-1)*Shape.w+CH] = (Data[ID][CH] or 0)
     end
-  end; F:close(); return Shape
+  end; return Shape
 end
 
 local function initFileLif106(sName)
-  local N = ShapePath.."lif/"..string.lower(sName).."_106.lif"; F = io.open(N,"r")
+  local N = ShapePath.."/lif/"..sName:lower().."_106.lif"; F = io.open(N,"r")
   if(not F) then return logStatus("initFileLif106: Invalid file: <"..N..">",nil) end
-  local FilePos
-  local Line, Ind = "", 1
+  local Line, ID, CH, Data, Offset = "", 1, 1, {}, {}
   local MinX, MaxX, MinY, MaxY, x, y
-  local Shape = {
-    w      = 0,
-    h      = 0,
-    Header = {},
-    Offset = {
-      Cent = {},
-      TopL = {},
-      TopR = {},
-      BotL = {},
-      BotR = {}
-    }
-  }
+  local Shape = {w = 0, h = 0, Header = {}}
   while(Line) do
-    Line = StrTrimSpaces(F:read())
+    Line = F:read()
     if(not Line) then break end
-    if(Line == "") then break end
-    cFirst = string.sub(Line,1,1)
-    leLine = string.len(Line)
+    Line = stringTrim(Line)
+    cFirst, leLine = Line:sub(1,1), Line:len()
     if(not (tonumber(cFirst) or cFirst == "+" or cFirst == "-" )) then
-      FilePos = F:seek("cur",0)
-      Shape.Header[Ind] = string.sub(Line,2,leLine) or ""
-      Ind = Ind + 1
+      Shape.Header[ID] = Line:sub(2,leLine) or ""; ID = ID + 1
     else
-      Ind = string.find(Line,"%s")
+      ID = Line:find("%s")
       if(MinX and MaxX and MinY and MaxY and x and y) then
-        x = tonumber(string.sub(Line,1,Ind-1))
-        y = tonumber(string.sub(Line,Ind+1,leLine))
+        x = tonumber(Line:sub(1,ID-1))
+        y = tonumber(Line:sub(ID+1,leLine))
         if(x and y) then
           if(x > MaxX) then MaxX = x end
           if(x < MinX) then MinX = x end
@@ -302,131 +472,105 @@ local function initFileLif106(sName)
           if(y < MinY) then MinY = y end
         else return logStatus("Coordinates conversion failed !", nil) end
       else
-        x = tonumber(string.sub(Line,1,Ind-1)) or 0
-        y = tonumber(string.sub(Line,Ind+1,leLine)) or 0
+        x = tonumber(Line:sub(1,ID-1)) or 0
+        y = tonumber(Line:sub(ID+1,leLine)) or 0
         MaxX, MinX = x, x
         MaxY, MinY = y, y
       end
+      Data[CH] = {x=x,y=y}; CH = CH + 1
     end
   end
   Shape.w = MaxX - MinX + 1
   Shape.h = MaxY - MinY + 1
-  Shape.Offset.TopL = { MinX, MinY }
-  Shape.Offset.TopR = { MaxX, MinY }
-  Shape.Offset.BotL = { MinX, MaxY }
-  Shape.Offset.BotR = { MaxX, MaxY }
-  Shape.Offset.Cent = {
-    math.floor(Shape.w/2),
-    math.floor(Shape.h/2)
-  }
-  Line = ""
-  F:seek("set",FilePos)
-  while(Line) do
-    Line = StrTrimSpaces(F:read())
-    if(not Line) then break end
-    if(Line == "") then break end
-    cFirst = string.sub(Line,1,1)
-    leLine = string.len(Line)
-    Ind    = string.find(Line,"%s")
-    x = tonumber(string.sub(Line,1,Ind-1))
-    y = tonumber(string.sub(Line,Ind+1,leLine))
-    if(x and y) then
-      Shape[(Shape.Offset.Cent[2]+y)*Shape.w+Shape.Offset.Cent[1]+x+1] = 1
-    else return logStatus("Convert failed: >"..Line.."<",nil) end
-  end
-  Ind = 1
-  while(Ind <= Shape.w * Shape.h) do
-    if(not Shape[Ind]) then Shape[Ind] = 0 end
-    Ind = Ind + 1
+  Offset.TopL = { MinX, MinY }
+  Offset.TopR = { MaxX, MinY }
+  Offset.BotL = { MinX, MaxY }
+  Offset.BotR = { MaxX, MaxY }
+  Offset.Cent = {x=math.floor(Shape.w/2), y=math.floor(Shape.h/2)}
+  for ID = 1, Shape.w*Shape.h do Shape[ID] = 0 end
+  CH = 1; while(Data[CH]) do
+    local xyAlv = Data[CH]
+    local xAlv  = Offset.Cent.x + Data[CH].x
+    local yAlv  = Offset.Cent.y + Data[CH].y
+    Shape[yAlv*Shape.w+xAlv+1], CH = 1, (CH + 1)
   end; F:close(); return Shape
 end
 
 local function initFileRle(sName)
-  local N = ShapePath.."rle/"..string.lower(sName)..".rle"; F = io.open(N,"r")
-  if(not F) then return logStatus("initFileRle: Invalid file: <"..N..">",nil) end
+  local N = ShapePath.."/rle/"..sName:lower()..".rle"; F = io.open(N,"r")
+  if(not F) then
+    return logStatus("initFileRle: Invalid file: <"..N..">",nil) end
   local FilePos, ChCnt, leLine
   local Line, cFirst =  "",  ""
   local nS, nE, Ind, Cel = 1, 1, 1, 1
   local Num, isNum, toNum = 0, false, nil
   local Shape = {w = 0, h = 0, Rule = { Name = "", Data = {}}, Header = {}}
   while(Line) do
-    Line = StrTrimSpaces(F:read())
-    if(not Line)   then break end
-    if(Line == "") then break end
-    cFirst = string.sub(Line,1,1)
-    leLine = string.len(Line)
+    Line = F:read()
+    if(not Line) then break end
+    Line = stringTrim(Line)
+    cFirst = Line:sub(1,1)
+    leLine = Line:len()
     if(cFirst == "#") then
-      FilePos = F:seek("cur",0)
-      Shape.Header[Ind] = string.sub(Line,2,leLine)
+      Shape.Header[Ind] = Line:sub(2,leLine)
       Ind = Ind + 1
     elseif(cFirst == "x") then
-      FilePos = F:seek("cur",0)
       local Settings = lifelib.getRleSettings(Line)
       Shape.w = tonumber(Settings["x"])
       Shape.h = tonumber(Settings["y"])
       Shape.Rule.Name = Settings["rule"]
       Shape.Rule.Data = lifelib.getRuleBS(Shape.Rule.Name)
-    end
-  end
-  Line = ""
-  F:seek("set",FilePos)
-  while(Line) do
-    Line = StrTrimSpaces(F:read())
-    if(not Line)   then break end
-    if(Line == "") then break end
-    nS, nE, ChCnt = 1, 1, 1
-    leLine = string.len(Line)
-    while(ChCnt <= leLine) do
-      cFirst = string.sub(Line,ChCnt,ChCnt)
-      if(cFirst == "!") then break end
-      toNum = tonumber(cFirst)
-      if    (not isNum and toNum) then isNum = true ; nS = ChCnt -- Start of a number
-      elseif(not toNum and isNum) then isNum = false; nE = ChCnt - 1 -- End of a number
-        Num = tonumber(string.sub(Line,nS,nE)) or 0 end
-      if(Num > 0) then
-        while(Num > 0) do
-          Shape[Cel] = (((cFirst == Aliv) and 1) or 0)
-          Cel = Cel + 1; Num = Num - 1
-        end
-      elseif(cFirst ~= "$" and cFirst ~= "!" and not isNum ) then
-        Shape[Cel] = (((cFirst == Aliv) and 1) or 0); Cel = Cel + 1
-      end; ChCnt = ChCnt + 1
+    else
+      nS, nE, ChCnt, leLine = 1, 1, 1, Line:len()
+      while(ChCnt <= leLine) do
+        cFirst = Line:sub(ChCnt,ChCnt)
+        if(cFirst == "!") then break end
+        toNum = tonumber(cFirst)
+        if    (not isNum and toNum) then isNum = true ; nS = ChCnt -- Start of a number
+        elseif(not toNum and isNum) then isNum = false; nE = ChCnt - 1 -- End of a number
+          Num = tonumber(Line:sub(nS,nE)) or 0 end
+        if(Num > 0) then
+          while(Num > 0) do
+            Shape[Cel] = (((cFirst == Aliv) and 1) or 0)
+            Cel = Cel + 1; Num = Num - 1
+          end
+        elseif(cFirst ~= "$" and cFirst ~= "!" and not isNum ) then
+          Shape[Cel] = (((cFirst == Aliv) and 1) or 0); Cel = Cel + 1
+        end; ChCnt = ChCnt + 1
+      end
     end
   end; F:close(); return Shape
 end
 
 local function initFileCells(sName)
-  local N = ShapePath.."cells/"..string.lower(sName)..".cells"; F = io.open(N,"r")
-  if(not F) then return logStatus("initFileCells: Invalid file: <"..N..">",nil) end
-  local FilePos
-  local Firs, Line = "", ""
-  local x, y, Lenw, Ind = 0, 0, 0, 1
+  local N = ShapePath.."/cells/"..sName:lower()..".cells"; F = io.open(N,"r")
+  if(not F) then
+    return logStatus("initFileCells: Invalid file: <"..N..">",nil) end
+  local x, y, Lenw = 0, 0, 0, 1
+  local Line, ID, CH, Data = "", 1, 1, {}
   local Shape = {w = 0, h = 0, Header = {}}
   while(Line) do
-    Line = StrTrimSpaces(F:read())
-    if(not Line) then break end
-    Firs = string.sub(Line,1,1)
-    Lenw = string.len(Line)
-    if(Firs ~= "!") then
-      Shape.h = Shape.h + 1
-      if(Lenw >= Shape.w) then Shape.w = Lenw end
-    else
-      Shape.Header[Ind] = string.sub(Line,2,Lenw)
-      FilePos = F:seek("cur",0)
-    end
-  end
-  Line, Ind = "", 1
-  F:seek("set",FilePos)
-  for y = 1,Shape.h do
     Line = F:read()
     if(not Line) then break end
-    for x = 1,Shape.w do
-      Firs = string.sub(Line,x,x)
-      if(Firs == Aliv) then Shape[Ind] = 1
-      else Shape[Ind] = 0 end
-      Ind = Ind + 1
+    Line = stringTrim(Line)
+    print("1", Line)
+    Firs = Line:sub(1,1)
+    Lenw = Line:len()
+    if(Firs ~= "!") then
+      Shape.h = Shape.h + 1; Data[Shape.h] = {}
+      if(Lenw >= Shape.w) then Shape.w = Lenw end
+      for CH = 1, Lenw do
+        Data[Shape.h][CH] = ((Line:sub(CH,CH) == Aliv) and 1 or 0) end
+    else
+      Shape.Header[ID] = Line:sub(2,Lenw)
+      ID = ID + 1
     end
-  end; F:close(); return Shape
+  end; F:close()
+  for ID = 1, Shape.h do
+    for CH = 1, Shape.w do
+      Shape[(ID-1)*Shape.w+CH] = (Data[ID][CH] or 0)
+    end
+  end; return Shape
 end
 
 local function drawConsole(F)
@@ -451,9 +595,10 @@ local function getSumStatus(nStatus,nSum,tRule)
     end; return 0
   end
 end
-  --[[
-   * Creates a field object used for living environment for the shapes ( organisms )
-  ]]--
+
+--[[
+ * Creates a field object used for living environment for the shapes ( organisms )
+]]--
 lifelib.makeField = function(w,h,sRule)
   local self  = {}
   local w = tonumber(w) or 0
@@ -481,13 +626,13 @@ lifelib.makeField = function(w,h,sRule)
   function self:getSellCount() return (w * h) end
   function self:getRuleName() return Rule.Name end
   function self:getRuleData() return Rule.Data end
-  function self:shiftXY (nX,nY) arShift2D (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)) end
-  function self:rollXY  (nX,nY) arRoll2D  (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)) end
-  function self:mirrorXY(bX,bY) arMirror2D(Old,w,h,bX,bY) end
+  function self:shiftXY (nX,nY) arShift2D (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)); return self end
+  function self:rollXY  (nX,nY) arRoll2D  (Old,w,h,(tonumber(nX) or 0),(tonumber(nY) or 0)); return self end
+  function self:mirrorXY(bX,bY) arMirror2D(Old,w,h,bX,bY); return self end
   function self:getArray()       return Old end
   function self:getGenerations() return Gen end
-  function self:rotRght() arRotateR(Old,w,h); h,w = w,h end
-  function self:rotLeft() arRotateL(Old,w,h); h,w = w,h end
+  function self:rotR() arRotateR(Old,w,h); h,w = w,h; return self end
+  function self:rotL() arRotateL(Old,w,h); h,w = w,h; return self end
   --[[
    * Give birth to a shape inside the field array
   ]]--
@@ -510,7 +655,7 @@ lifelib.makeField = function(w,h,sRule)
       if(y > h) then y = y-h end
       if(y < 1) then y = y+h end
       Old[y][x] = ar[i][j]
-    end end
+    end end; return self
   end
   --[[
    * Calcolates the next generation
@@ -526,15 +671,18 @@ lifelib.makeField = function(w,h,sRule)
         New[y][x] = getSumStatus(Old[y][x],sum,Rule)
         xm1, x, xp1, xi = x, xp1, (xp1 + 1), (xi - 1)
       end; ym1, y, yp1, yi = y, yp1, (yp1 + 1), (yi - 1)
-    end; Old, New, Gen = New, Old, (Gen + 1)
+    end; Old, New, Gen = New, Old, (Gen + 1); return self
   end
+  
   --[[
    * Registers a draw method under a particular key
   ]]--
   function self:regDraw(sKey,fFoo)
     if(type(sKey) == "string" and type(fFoo) == "function") then Draw[sKey] = fFoo
-    else logStatus("Field.drwLife(sMode,tArgs): Drawing method @"..tostring(sKey).." registration skipped !") end
+    else logStatus("Field.drwLife(sMode,tArgs): Drawing method @"..tostring(sKey).." registration skipped !")
+    end; return self
   end
+  
   --[[
    * Visualizates the field on the screen using the draw method given
   ]]--
@@ -542,8 +690,10 @@ lifelib.makeField = function(w,h,sRule)
     local Mode = tostring(sMode or "text")
     local Args = tArgs or {}
     if(Draw[Mode]) then Draw[Mode](self,Args)
-    else logStatus("Field.drwLife(sMode,tArgs): Drawing mode <"..Mode.."> not found !") end
+    else logStatus("Field.drwLife(sMode,tArgs): Drawing mode <"..Mode.."> not found !")
+    end; return self
   end
+  
   --[[
    * Converts the field to a number, beware they are big
   ]]--
@@ -554,6 +704,7 @@ lifelib.makeField = function(w,h,sRule)
       Num = Num + Flg * 2 ^ Pow; Pow  = Pow + 1
     end end; return Num
   end
+
   --[[
    * Exports a field to a non-delimited string format
   ]]--
@@ -563,11 +714,13 @@ lifelib.makeField = function(w,h,sRule)
         Line = Line .. tostring((Old[i][j] ~= 0) and Aliv or Dead)
     end end; return Line
   end
+
   setmetatable(self, metaField); return self
 end
-  --[[
-   * Crates a shape ( life form ) object
-  ]]--
+
+--[[
+ * Crates a shape ( life form ) object
+]]--
 lifelib.makeShape = function(sName, sSrc, sExt, tArg)
   local sName = tostring(sName or "")
   local sSrc  = tostring(sSrc  or "")
@@ -579,7 +732,7 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
     elseif(sExt == "cells" ) then tInit = initFileCells(sName)
     elseif(sExt == "lif105") then tInit = initFileLif105(sName)
     elseif(sExt == "lif106") then tInit = initFileLif106(sName)
-    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName">",nil) end
+    else return logStatus("makeShape(sName, sSrc, sExt, tArg): Extension <"..sExt.."> not supported on the source <"..sSrc.."> for <"..sName..">",nil) end
   elseif(sSrc == "string") then
     if    (sExt == "rle" ) then tInit = initStringRle(sName,tArg[1],tArg[2])
     elseif(sExt == "txt" ) then tInit = initStringText(sName,tArg[1])
@@ -595,10 +748,9 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
     return logStatus("makeShape(sName, sSrc, sExt, tArg): Check Shape unit structure !\n",nil) end
 
   while(tInit[iCnt]) do
-    if(tInit[iCnt] == 1) then isEmpty = false end
-    iCnt = iCnt + 1
-  end
-  if(isEmpty) then return logStatus("makeShape(sName, sSrc, sExt, tArg): Shape <"..sName.."> empty for <"..sExt.."> <"..sSrc..">",nil) end
+    if(tInit[iCnt] == 1) then isEmpty = false end; iCnt = iCnt + 1 end
+  if(isEmpty) then
+    return logStatus("makeShape(sName, sSrc, sExt, tArg): Shape <"..sName.."> empty for <"..sExt.."> <"..sSrc..">",nil) end
   local self = {}
         self.Init = tInit
   local w    = tInit.w
@@ -622,14 +774,14 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
   ]]--
   function self:getW() return w end
   function self:getH() return h end
-  function self:rotRigh() arRotateR(Data,w,h); h,w = w,h end
-  function self:rotLeft() arRotateL(Data,w,h); h,w = w,h end
+  function self:rotR() arRotateR(Data,w,h); h,w = w,h; return self end
+  function self:rotL() arRotateL(Data,w,h); h,w = w,h; return self end
   function self:getArray() return Data end
   function self:getRuleName() return Rule end
   function self:getCellCount() return (w * h) end
   function self:getGenerations() return nil end
-  function self:mirrorXY(bX,bY) arMirror2D(Data,w,h,bX,bY) end
-  function self:rollXY(nX,nY) arRoll2D(Data,w,h,tonumber(nX) or 0,tonumber(nY) or 0) end
+  function self:mirrorXY(bX,bY) arMirror2D(Data,w,h,bX,bY); return self end
+  function self:rollXY(nX,nY) arRoll2D(Data,w,h,tonumber(nX) or 0,tonumber(nY) or 0); return self end
   --[[
    * Registers a draw method under a particular key
   ]]--
@@ -668,8 +820,9 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
   --[[
    * Exports the shape in RLE format
   ]]--
-  function self:toStringRle()
+  function self:toStringRle(sD, sE)
     local BaseCh, CurCh, Line, Cnt  = "", "", "", 0
+    local sD, sE = tostring(sD):sub(1,1), tostring(sE):sub(1,1)
     for i = 1,h do
       BaseCh = tostring(((Data[i][1] ~= 0) and Aliv) or Dead); Cnt = 0
       for j = 1,w do
@@ -683,8 +836,8 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
       end
       if(Cnt > 1) then Line  = Line..Cnt..BaseCh
       else Line  = Line .. BaseCh end
-      if(i ~= h) then Line = Line.."$" end
-    end; return Line.."!"
+      if(i ~= h) then Line = Line..sD end
+    end; return Line..sE
   end
   --[[
    * Exports the shape in text format
@@ -692,8 +845,10 @@ lifelib.makeShape = function(sName, sSrc, sExt, tArg)
    * bAll Draw the shape to the end of the line
   ]]--
   function self:toStringText(sDel,bTrim)
-    if(sDel == Aliv) then return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches alive","") end
-    if(sDel == Dead) then return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches dead","")  end
+    if(sDel == Aliv) then
+      return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches alive","") end
+    if(sDel == Dead) then
+      return logStatus("Shape.toStringText(sMode,tArgs) Delimiter <"..sDel.."> matches dead","")  end
     local Line, Len = ""
     for i = 1,h do Len = w
       if(bTrim) then while(Data[i][Len] == 0) do Len = Len - 1 end end

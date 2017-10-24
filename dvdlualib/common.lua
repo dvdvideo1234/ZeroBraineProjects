@@ -4,6 +4,7 @@ local tostring  = tostring
 local type      = type
 local io        = io
 local string    = string
+local common    = {}
 
 io.stdout:setvbuf("no")
 
@@ -120,9 +121,9 @@ function roundValue(nvExact, nFrac)
   return nFrac * (q + (f > 0.5 and 1 or 0))
 end
 
-  function getSignAnd(anyVal)
-    local nVal = (tonumber(anyVal) or 0); return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0)
-  end
+function getSignAnd(anyVal)
+  local nVal = (tonumber(anyVal) or 0); return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0)
+end
 
 function getSignAbs(anyVal)
   local nVal = (tonumber(anyVal) or 0); return (nVal and (nVal / math.abs(nVal)) or nil)

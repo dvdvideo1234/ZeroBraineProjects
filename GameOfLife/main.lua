@@ -1,11 +1,14 @@
 require("turtle")
 require("wx")
-require("ZeroBraineProjects/dvdlualib/common")
 local life = require("ZeroBraineProjects/dvdlualib/lifelib")
 
 io.stdout:setvbuf("no")
 
-function TurtleDraw(F,Arg)
+function logStatus(anyMsg, ...)
+  io.write(tostring(anyMsg).."\n"); return ...
+end
+
+local function TurtleDraw(F,Arg)
   local sx = 0
   local sy = 18
   local fx = F:getW()
@@ -34,18 +37,7 @@ function TurtleDraw(F,Arg)
   end
 end
 
-function getKeyboardKeyNonBlock()
-  local Ch = io.read(1)
-             io.write("\n\r")
-  return Ch
-end
-
 local Arg = {500, 220,0,0}
-
-life.shapesPath("ZeroBraineProjects/GameOfLife/shapes/")
-
-life.charAliv("O")
-life.charDead(".")
 
 local F = life.makeField(80,50)
       F:regDraw("turtle",TurtleDraw)
@@ -55,31 +47,27 @@ size(Arg[1],Arg[2])
 updt(true)
 zero(0, 0)
 
-ggrle = "24.O11.G22.O.O11.G12.2O6.2O12.2OG11.O3.O4.2O12.2OG2O8.O5.O3.2O14.G2O8.O3.O.2O4.O.O11.G10.O5.O7.O11.G11.O3.O20.G12.2O22.E"
+life.charAliv("o"); life.charDead("b")
+life.shapesPath("E:\\Documents\\Lua-Projs\\ZeroBraineIDE\\myprograms\\ZeroBraineProjects\\GameOfLife\\shapes")
 
+local gg1 = life.makeShape("gosperglidergun","file","rle")
+local gg2 = life.makeShape("gosperglidergun","file","rle")
 
-local GG = life.makeShape(ggrle,"string","rle",{"G","E"})
+if(gg1 and gg2) then
+  -- Used for mouse clicks and keys
+  Arg[3] = 10
+  Arg[4] = 57
+  Arg[5] = ""
 
-
--- Used for mouse clicks and keys
-Arg[3] = 10
-Arg[4] = 57
-Arg[5] = ""
-
-F:setShape(GG,1,1)
-
-F:drwLife("turtle",Arg)
-
-logStatus(nil,GG:toStringText("\n",true))
-logStatus(nil,GG:toStringText("\n",false))
-logStatus(nil,F:getRuleName())
-logTable(F:getRuleData())
-
-
-while true do
-  Arg[5] = char()
+  gg1:rotR():mirrorXY(true,true)
+  gg2:rotR():mirrorXY(false,true)
+  F:setShape(gg1,1,1):setShape(gg2,50,1)
+  
   F:drwLife("turtle",Arg)
- -- waitSeconds(2)
-  F:evoNext()
-end
 
+  while true do
+    Arg[5] = char()
+    F:drwLife("turtle",Arg):evoNext()
+  end
+  
+end
