@@ -1,6 +1,6 @@
-# InsertsDSV(ex_@PIECES): 01/25/17 13:28:22 [SQL]
+# TranslateDSV(ex_@PIECES): 10-11-17 14:58:14 [LUA]
 # Data settings:	MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS
-asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 34, "NULL", "-0.02664,-47.455105,2.96593", "0,-90,0", "NULL"})
-asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 2, "NULL", "-0.02664, 47.455105,2.96593", "0, 90,0", "NULL"})
-asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "NULL", "#", 1, "NULL", "-0.02664,-23.73248,2.96593", "0,-90,0", "NULL"})
-asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "NULL", "#", 2, "NULL", "-0.02664, 71.17773,2.96593", "0, 90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "TYPE", "#", 1, "NULL", "-0.02664,-47.455105,2.96593", "0,-90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "TYPE", "#", 2, "NULL", "-0.02664,47.455105,2.96593", "0,90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "TYPE", "#", 1, "NULL", "-0.02664,-23.73248,2.96593", "0,-90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "TYPE", "#", 2, "NULL", "-0.02664,71.17773,2.96593", "0,90,0", "NULL"})

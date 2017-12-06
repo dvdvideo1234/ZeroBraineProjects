@@ -63,7 +63,7 @@ local tim, id, sta, dt = newTimer():Init(), 1, true, 0
 while(sta) do
   sta = tim:Think(1+dt);  waitSeconds(2-dt); logTable(tim, ("State_%d"):format(id))
   id = id + 1;
-  dt = dt + 0;
+  dt = dt + 0.4;
 end
 
 print("Test complete !")

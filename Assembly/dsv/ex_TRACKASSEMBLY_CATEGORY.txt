@@ -1,0 +1,10 @@
+# ExportCategory( 3 )(cl_): 01/27/17 21:18:00 [ SQL ]
+[===[SligWolf's Minis===function(m)
+    local function conv(x) return " "..x:sub(2,2):upper() end
+    local r = m:gsub("models/minitrains/",""):gsub("_","/")
+    local s = r:find("/") or r:find("%.");
+    r = (s and r:sub(1,s-1) or "other"); o = {r}
+    if(r == "sw") then o = {"buffer"} end;
+    for i = 1, #o do o[i] = ("_"..o[i]):gsub("_%w", conv):sub(2,-1) end; return o end]===]
+    [===[Test===function(m) return "" end]===]
+    [===[AAAA===function(m) aaaa]===]

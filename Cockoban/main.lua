@@ -13,10 +13,10 @@ local c = farmer:makeNew{x=2,y=2} c:setDefault():dumpMe()
 local d = nest:makeNew{x=2,y=2} d:setDefault():dumpMe("test")
 
 logTable(a,"wall")
-logTable(getmetatable(a))
+logTable(getmetatable(a),"mt_wall")
 
-logTable(c)
-logTable(getmetatable(c))
+logTable(c,"farmer")
+logTable(getmetatable(c),"mt_farmer")
 
 logTable(d,"nest")
-logTable(getmetatable(d))
+logTable(getmetatable(d),"mt_nest")

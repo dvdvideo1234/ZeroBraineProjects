@@ -486,18 +486,17 @@ function ModelToName(sModel,bNoSettings)
     end
   end
   -- Trigger the capital-space using the divider
-  if(stringSub(gModel,1,1) ~= sSymDiv) then gModel = sSymDiv..gModel end
+  if(gModel:sub(1,1) ~= sSymDiv) then gModel = sSymDiv..gModel end
   -- Here in gModel we have: _aaaaa_bbbb_ccccc
   return gModel:gsub("_%w",GetOpVar("MODELNAM_FUNC")):sub(2,-1)
 end
 
 function StringDisable(sBase, anyDisable, anyDefault)
   if(IsString(sBase)) then
-    if(stringLen(sBase) > 0 and
-       stringSub(sBase,1,1) ~= GetOpVar("OPSYM_DISABLE")
+    if(sBase:len() > 0 and sBase:sub(1,1) ~= GetOpVar("OPSYM_DISABLE")
     ) then
       return sBase
-    elseif(stringSub(sBase,1,1) == GetOpVar("OPSYM_DISABLE")) then
+    elseif(sBase:sub(1,1) == GetOpVar("OPSYM_DISABLE")) then
       return anyDisable
     end
   end
@@ -1597,6 +1596,115 @@ function InsertRecord(sTable,tData)
   end
 end
 
+local function ReloadPOA(nXP,nYY,nZR,nSX,nSY,nSZ,nSD)
+  local arPOA = GetOpVar("ARRAY_DECODEPOA")
+        arPOA[1] = tonumber(nXP) or 0
+        arPOA[2] = tonumber(nYY) or 0
+        arPOA[3] = tonumber(nZR) or 0
+        arPOA[4] = tonumber(nSX) or 1
+        arPOA[5] = tonumber(nSY) or 1
+        arPOA[6] = tonumber(nSZ) or 1
+        arPOA[7] = (tonumber(nSD) and (nSD ~= 0)) and true or false
+  return arPOA
+end
+
+local function IsEqualPOA(stOffsetA,stOffsetB)
+  if(not IsExistent(stOffsetA)) then return StatusLog(nil,"EqualPOA: Missing OffsetA") end
+  if(not IsExistent(stOffsetB)) then return StatusLog(nil,"EqualPOA: Missing OffsetB") end
+  for Ind, Comp in pairs(stOffsetA) do
+    if(Ind ~= csD and stOffsetB[Ind] ~= Comp) then return false end
+  end
+  return true
+end
+
+local function TransferPOA(stOffset,sMode)
+  if(not IsExistent(stOffset)) then
+    return StatusLog(nil,"TransferPOA: Destination needed") end
+  if(not IsString(sMode)) then
+    return StatusLog(nil,"TransferPOA: Mode {"..type(sMode).."}<"..tostring(sMode).."> not string") end
+  local arPOA = GetOpVar("ARRAY_DECODEPOA")
+  if    (sMode == "V") then stOffset[cvX] = arPOA[1]; stOffset[cvY] = arPOA[2]; stOffset[cvZ] = arPOA[3]
+  elseif(sMode == "A") then stOffset[caP] = arPOA[1]; stOffset[caY] = arPOA[2]; stOffset[caR] = arPOA[3]
+  else return StatusLog(nil,"TransferPOA: Missed mode "..sMode) end
+  stOffset[csA] = arPOA[4]; stOffset[csB] = arPOA[5]; stOffset[csC] = arPOA[6]; stOffset[csD] = arPOA[7]
+  return arPOA
+end
+
+local function DecodePOA(sStr)
+  if(not IsString(sStr)) then
+    return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
+  local strLen = sStr:len(); ReloadPOA()
+  local symOff, symRev = GetOpVar("OPSYM_DISABLE"), GetOpVar("OPSYM_REVSIGN")
+  local symSep, arPOA = GetOpVar("OPSYM_SEPARATOR"), GetOpVar("ARRAY_DECODEPOA")
+  local S, E, iCnt, dInd, iSep, sCh = 1, 1, 1, 1, 0, ""
+  if(sStr:sub(iCnt,iCnt) == symOff) then
+    arPOA[7] = true; iCnt = iCnt + 1; S = S + 1 end
+  while(iCnt <= strLen) do
+    sCh = sStr:sub(iCnt,iCnt)
+    if(sCh == symRev) then
+      arPOA[3+dInd] = -arPOA[3+dInd]; S = S + 1
+    elseif(sCh == symSep) then
+      iSep = iSep + 1; E = iCnt - 1
+      if(iSep > 2) then break end
+      arPOA[dInd] = tonumber(sStr:sub(S,E)) or 0
+      dInd = dInd + 1; S = iCnt + 1; E = S
+    else E = E + 1 end
+    iCnt = iCnt + 1
+  end; arPOA[dInd] = (tonumber(sStr:sub(S,E)) or 0); return arPOA
+end
+
+local function RegisterPOA(stPiece, ivID, sP, sO, sA)
+  if(not stPiece) then
+    return StatusLog(nil,"RegisterPOA: Cache record invalid") end
+  local iID = tonumber(ivID)
+  if(not IsExistent(iID)) then
+    return StatusLog(nil,"RegisterPOA: OffsetID NAN {"..type(ivID).."}<"..tostring(ivID)..">") end
+  local sP = sP or "NULL"
+  local sO = sO or "NULL"
+  local sA = sA or "NULL"
+  if(not IsString(sP)) then
+    return StatusLog(nil,"RegisterPOA: Point  {"..type(sP).."}<"..tostring(sP)..">") end
+  if(not IsString(sO)) then
+    return StatusLog(nil,"RegisterPOA: Origin {"..type(sO).."}<"..tostring(sO)..">") end
+  if(not IsString(sA)) then
+    return StatusLog(nil,"RegisterPOA: Angle  {"..type(sA).."}<"..tostring(sA)..">") end
+  if(not stPiece.Offs) then
+    if(iID > 1) then return StatusLog(nil,"RegisterPOA: First ID cannot be #"..tostring(iID)) end
+    stPiece.Offs = {}
+  end
+  local tOffs = stPiece.Offs
+  if(tOffs[iID]) then
+    return StatusLog(nil,"RegisterPOA: Exists ID #"..tostring(iID))
+  else
+    if((iID > 1) and (not tOffs[iID - 1])) then
+      return StatusLog(nil,"RegisterPOA: No sequential ID #"..tostring(iID - 1))
+    end
+    tOffs[iID]   = {}
+    tOffs[iID].P = {}
+    tOffs[iID].O = {}
+    tOffs[iID].A = {}
+    tOffs        = tOffs[iID]
+  end
+  ---------------- Origin ----------------
+  if((sO ~= "NULL") and not IsEmptyString(sO)) then DecodePOA(sO) else ReloadPOA() end
+  if(not IsExistent(TransferPOA(tOffs.O,"V"))) then
+    return StatusLog(nil,"RegisterPOA: Cannot transfer origin") end
+  ---------------- Point ----------------
+  local sD = sP:gsub(GetOpVar("OPSYM_DISABLE"),"")
+  if((sP ~= "NULL") and not IsEmptyString(sP)) then DecodePOA(sP) else ReloadPOA() end
+  if(not IsExistent(TransferPOA(tOffs.P,"V"))) then
+    return StatusLog(nil,"RegisterPOA: Cannot transfer point") end
+  if((sD == "NULL") or IsEmptyString(sD)) then -- If empty use origin
+    tOffs.P[cvX] = tOffs.O[cvX]; tOffs.P[cvY] = tOffs.O[cvY]; tOffs.P[cvZ] = tOffs.O[cvZ];
+    tOffs.P[csA] = tOffs.O[csA]; tOffs.P[csB] = tOffs.O[csB]; tOffs.P[csC] = tOffs.O[csC];
+  end
+  ---------------- Angle ----------------
+  if((sA ~= "NULL") and not IsEmptyString(sA)) then DecodePOA(sA) else ReloadPOA() end
+  if(not IsExistent(TransferPOA(tOffs.A,"A"))) then
+    return StatusLog(nil,"RegisterPOA: Cannot transfer angle") end
+  return tOffs
+end
+
 local function Qsort(Data,Lo,Hi)
   if(Lo and Hi and Lo > 0 and Lo < Hi) then
     local Mid = mathRandom(Hi-(Lo-1))+Lo-1
@@ -2223,122 +2331,6 @@ end
 
 SetOpVar("TIME_EPOCH",osClock())
 
-local function ReloadPOA(nXP,nYY,nZR,nSX,nSY,nSZ,nSD)
-  local arPOA = GetOpVar("ARRAY_DECODEPOA")
-        arPOA[1] = tonumber(nXP) or 0
-        arPOA[2] = tonumber(nYY) or 0
-        arPOA[3] = tonumber(nZR) or 0
-        arPOA[4] = tonumber(nSX) or 1
-        arPOA[5] = tonumber(nSY) or 1
-        arPOA[6] = tonumber(nSZ) or 1
-        arPOA[7] = (tonumber(nSD) and (nSD ~= 0)) and true or false
-  return arPOA
-end
-
-local function IsEqualPOA(stOffsetA,stOffsetB)
-  if(not IsExistent(stOffsetA)) then return StatusLog(nil,"EqualPOA: Missing OffsetA") end
-  if(not IsExistent(stOffsetB)) then return StatusLog(nil,"EqualPOA: Missing OffsetB") end
-  for Ind, Comp in pairs(stOffsetA) do
-    if(Ind ~= csD and stOffsetB[Ind] ~= Comp) then return false end
-  end
-  return true
-end
-
-local function TransferPOA(stOffset,sMode)
-  if(not IsExistent(stOffset)) then return StatusLog(nil,"TransferPOA: Destination needed") end
-  if(not IsString(sMode)) then return StatusLog(nil,"TransferPOA: Mode must be string") end
-  local arPOA = GetOpVar("ARRAY_DECODEPOA")
-  if(sMode == "POS") then
-    stOffset[cvX] = arPOA[1]
-    stOffset[cvY] = arPOA[2]
-    stOffset[cvZ] = arPOA[3]
-  elseif(sMode == "ANG") then
-    stOffset[caP] = arPOA[1]
-    stOffset[caY] = arPOA[2]
-    stOffset[caR] = arPOA[3]
-  end
-  stOffset[csX] = arPOA[4]
-  stOffset[csY] = arPOA[5]
-  stOffset[csZ] = arPOA[6]
-  stOffset[csD] = arPOA[7]
-  return arPOA
-end
-
-local function DecodePOA(sStr)
-  if(not IsString(sStr)) then return StatusLog(nil,"DecodePOA: Argument must be string") end
-  local DatInd = 1
-  local ComCnt = 0
-  local Len    = stringLen(sStr)
-  local SymOff = GetOpVar("OPSYM_DISABLE")
-  local SymRev = GetOpVar("OPSYM_REVSIGN")
-  local arPOA  = GetOpVar("ARRAY_DECODEPOA")
-  local Ch = ""
-  local S = 1
-  local E = 1
-  local Cnt = 1
-  ReloadPOA()
-  if(stringSub(sStr,Cnt,Cnt) == SymOff) then
-    arPOA[7] = true
-    Cnt = Cnt + 1
-    S   = S   + 1
-  end
-  while(Cnt <= Len) do
-    Ch = stringSub(sStr,Cnt,Cnt)
-    if(Ch == SymRev) then
-      arPOA[3+DatInd] = -arPOA[3+DatInd]
-      S   = S + 1
-    elseif(Ch == ",") then
-      ComCnt = ComCnt + 1
-      E = Cnt - 1
-      if(ComCnt > 2) then break end
-      arPOA[DatInd] = tonumber(stringSub(sStr,S,E)) or 0
-      DatInd = DatInd + 1
-      S = Cnt + 1
-      E = S
-    else
-      E = E + 1
-    end
-    Cnt = Cnt + 1
-  end
-  arPOA[DatInd] = tonumber(stringSub(sStr,S,E)) or 0
-  return arPOA
-end
-
-function RegisterPOA(stPiece, nID, sP, sO, sA)
-  if(not stPiece) then return StatusLog(nil,"RegisterPOA: Cache record invalid") end
-  local nID = tonumber(nID)
-  if(not nID) then return StatusLog(nil,"RegisterPOA: OffsetID is not a number") end
-  local sP = sP or "NULL"
-  local sO = sO or "NULL"
-  local sA = sA or "NULL"
-  if(not IsString(sP)) then return StatusLog(nil,"RegisterPOA: Point is not a string") end
-  if(not IsString(sO)) then return StatusLog(nil,"RegisterPOA: Origin is not a string") end
-  if(not IsString(sA)) then return StatusLog(nil,"RegisterPOA: Angle is not a string") end
-  if(not stPiece.Offs) then
-    if(nID > 1) then return StatusLog(nil,"RegisterPOA: First ID cannot be "..tostring(nID)) end
-    stPiece.Offs = {}
-  end
-  local tOffs = stPiece.Offs
-  if(tOffs[nID]) then
-    return StatusLog(nil,"RegisterPOA: Exists ID #"..tostring(nID))
-  else
-    if((nID > 1) and (not tOffs[nID - 1])) then return StatusLog(nil,"RegisterPOA: Not sequential ID #"..tostring(nID - 1)) end
-    tOffs[nID]   = {}
-    tOffs[nID].P = {}
-    tOffs[nID].O = {}
-    tOffs[nID].A = {}
-    tOffs        = tOffs[nID]
-  end
-  if((sO ~= "") and (sO ~= "NULL")) then DecodePOA(sO)
-  else ReloadPOA() end TransferPOA(tOffs.O,"POS")
-  if((sP ~= "") and (sP ~= "NULL")) then DecodePOA(sP) end
-  TransferPOA(tOffs.P,"POS") -- in the POA array still persists the decoded Origin
-  if(stringSub(sP,1,1) == GetOpVar("OPSYM_DISABLE")) then tOffs.P[csD] = true end
-  if((sA ~= "") and (sA ~= "NULL")) then DecodePOA(sA)
-  else ReloadPOA() end TransferPOA(tOffs.A,"ANG")
-  return tOffs
-end
-
 function RoundValue(nvExact, nFrac)
   local nExact = tonumber(nvExact)
   if(not IsExistent(nExact)) then
@@ -2433,6 +2425,16 @@ local function StripValue(vVal)
   return sVal:Trim()
 end
 
+-- Golden retriever reads file line as string
+-- But seriously returns the sting line and EOF flag
+local function GetStringFile(pFile)
+  if(not pFile) then return StatusLog("", "GetStringFile: No file"), true end
+  local sCh, sLine = "X", "" -- Use a value to start cycle with
+  while(sCh) do sCh = pFile:Read(1); if(not sCh) then break end
+    if(sCh == "\n") then return sLine:Trim(), false else sLine = sLine..sCh end
+  end; return sLine:Trim(), true -- EOF has been reached. Return the last data
+end
+
 function ImportCategory(vEq, sPref)
   if(SERVER) then return StatusLog(true, "ImportCategory: Working on server") end
   local nEq = tonumber(vEq) or 0; if(nEq <= 0) then
@@ -2444,35 +2446,30 @@ function ImportCategory(vEq, sPref)
   if(not F) then return StatusLog(false,"ImportCategory: fileOpen("..fName..") failed") end
   local sEq, sLine, nLen = ("="):rep(nEq), "", (nEq+2)
   local cFr, cBk, sCh = "["..sEq.."[", "]"..sEq.."]", "X"
-  local tCat, syOff = GetOpVar("TABLE_CATEGORIES"), GetOpVar("OPSYM_DISABLE")
-  local sPar, isPar = "", false
-  while(sCh) do
-    sCh = F:Read(1)
-    if(not sCh) then break end
-    if(sCh == "\n") then
-      sLine = sLine:Trim()
-      local sFr, sBk = sLine:sub(1,nLen), sLine:sub(-nLen,-1)
-      if(sFr == cFr and sBk == cBk) then
-        sLine, isPar, sPar = sLine:sub(nLen+1,-1), true, "" end  
-      if(sFr == cFr and not isPar) then
-        sPar, isPar = sLine:sub(nLen+1,-1).."\n", true
-      elseif(sBk == cBk and isPar) then
-        sPar, isPar = sPar..sLine:sub(1,-nLen-1), false
-        local tBoo = stringExplode(sEq, sPar)
-        local key, txt = tBoo[1]:Trim(), tBoo[2]
-        if(not IsEmptyString(key)) then
-          if(txt:find("function")) then
-            if(key:sub(1,1) ~= syOff) then
-              tCat[key] = {}; tCat[key].Txt = txt:Trim()
-              tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
-              local suc, out = pcall(tCat[key].Cmp)
-              if(suc) then tCat[key].Cmp = out else
-                tCat[key].Cmp = StatusLog(nil, "ImportCategory: Compilation fail <"..key..">") end
-            else LogInstance("ImportCategory: Key skipped <"..key..">") end
-          else LogInstance("ImportCategory: Function missing <"..key..">") end
-        else LogInstance("ImportCategory: Name missing <"..txt..">") end
-      else sPar = sPar..sLine.."\n" end; sLine = ""
-    else sLine = sLine..sCh end
+  local tCat, symOff = GetOpVar("TABLE_CATEGORIES"), GetOpVar("OPSYM_DISABLE")
+  local sPar, isPar, isEOF = "", false, false
+  while(not isEOF) do sLine, isEOF = GetStringFile(F)
+    local sFr, sBk = sLine:sub(1,nLen), sLine:sub(-nLen,-1)
+    if(sFr == cFr and sBk == cBk) then
+      sLine, isPar, sPar = sLine:sub(nLen+1,-1), true, "" end
+    if(sFr == cFr and not isPar) then
+      sPar, isPar = sLine:sub(nLen+1,-1).."\n", true
+    elseif(sBk == cBk and isPar) then
+      sPar, isPar = sPar..sLine:sub(1,-nLen-1), false
+      local tBoo = sEq:Explode(sPar)
+      local key, txt = tBoo[1]:Trim(), tBoo[2]
+      if(not IsEmptyString(key)) then
+        if(txt:find("function")) then
+          if(key:sub(1,1) ~= symOff) then
+            tCat[key] = {}; tCat[key].Txt = txt:Trim()
+            tCat[key].Cmp = CompileString("return ("..tCat[key].Txt..")",key)
+            local suc, out = pcall(tCat[key].Cmp)
+            if(suc) then tCat[key].Cmp = out else
+              tCat[key].Cmp = StatusLog(nil, "ImportCategory: Compilation fail <"..key..">") end
+          else LogInstance("ImportCategory: Key skipped <"..key..">") end
+        else LogInstance("ImportCategory: Function missing <"..key..">") end
+      else LogInstance("ImportCategory: Name missing <"..txt..">") end
+    else sPar = sPar..sLine.."\n" end; sLine = ""
   end; F:Close(); return StatusLog(true, "ImportCategory: Success")
 end
 
@@ -2652,25 +2649,21 @@ function TranslateDSV(sTable, sPref, sDelim)
   I:Write("# TranslateDSV("..fPref.."@"..sTable.."): "..GetDate().." ["..GetOpVar("MODE_DATABASE").."]\n")
   I:Write("# Data settings:\t"..GetColumns(defTable, sDelim).."\n")
   local pfLib = GetOpVar("NAME_LIBRARY"):gsub(GetOpVar("NAME_INIT"),"")
-  local sLine, sCh, symOff = "", "X", GetOpVar("OPSYM_DISABLE")
+  local sLine, isEOF, symOff = "", false, GetOpVar("OPSYM_DISABLE")
   local sFr, sBk, sHs = pfLib..".InsertRecord(\""..sTable.."\", {", "})\n", (fPref.."@"..sTable)
-  while(sCh) do
-    sCh = D:Read(1)
-    if(not sCh) then break end
-    if(sCh == "\n") then
-      sLine = sLine:gsub(defTable.Name,""):Trim()
-      if(sLine:sub(1,1) ~= symOff) then
-        local tBoo, sCat = stringExplode(sDelim, sLine), ""
-        for nCnt = 1, #tBoo do
-          local vMatch = MatchType(defTable,StripValue(tBoo[nCnt]),nCnt,true,"\"",true)
-          if(not IsExistent(vMatch)) then D:Close(); I:Flush(); I:Close()
-            return StatusLog(false,"TranslateDSV("..sHs.."): Given matching failed <"
-              ..tostring(tBoo[nCnt]).."> to <"..tostring(nCnt).." # "
-                ..defTable[nCnt][1].."> of "..sTable) end
-          sCat = sCat..", "..tostring(vMatch)
-        end; I:Write(sFr..sCat:sub(3,-1)..sBk)
-      end sLine = ""
-    else sLine = sLine..sCh end
+  while(not isEOF) do sLine, isEOF = GetStringFile(D)
+    sLine = sLine:gsub(defTable.Name,""):Trim()
+    if(not IsEmptyString(sLine) and sLine:sub(1,1) ~= symOff) then
+      local tBoo, sCat = sDelim:Explode(sLine), ""
+      for nCnt = 1, #tBoo do
+        local vMatch = MatchType(defTable,StripValue(tBoo[nCnt]),nCnt,true,"\"",true)
+        if(not IsExistent(vMatch)) then D:Close(); I:Flush(); I:Close()
+          return StatusLog(false,"TranslateDSV("..sHs.."): Given matching failed <"
+            ..tostring(tBoo[nCnt]).."> to <"..tostring(nCnt).." # "
+              ..defTable[nCnt][1].."> of "..sTable) end
+        sCat = sCat..", "..tostring(vMatch)
+      end; I:Write(sFr..sCat:sub(3,-1)..sBk)
+    end
   end; D:Close(); I:Flush(); I:Close()
   return StatusLog(true,"TranslateDSV("..sHs.."): Success")
 end
@@ -2682,23 +2675,21 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
   if(IsEmptyString(sPref)) then
     return StatusLog(false,"RegisterDSV("..sPref.."): Prefix empty") end
   local sBas = GetOpVar("DIRPATH_BAS")
- -- if(not fileExists(sBas,"DATA")) then fileCreateDir(sBas) end
+  if(not fileExists(sBas,"DATA")) then fileCreateDir(sBas) end
   local lbNam = GetOpVar("NAME_LIBRARY")
   local fName = (sBas..lbNam.."_dsv.txt")
   local sMiss, sDelim = GetOpVar("MISS_NOAV"), tostring(sDelim or "\t"):sub(1,1)
   if(bSkip) then
     local symOff = GetOpVar("OPSYM_DISABLE")
-    local fPool, sCh, isAct = {}, "X", true
+    local fPool, isEOF, isAct = {}, false, true
     local F, sLine = fileOpen(fName, "rb" ,"DATA"), ""
     if(not F) then return StatusLog(false,"RegisterDSV("
       ..sPref.."): fileOpen("..fName..") read failed") end
-     while(sCh) do
-      sCh = F:Read(1)
-      if(not sCh) then break end
-      if(sCh == "\n") then sLine = sLine:Trim()
+    while(not isEOF) do sLine, isEOF = GetStringFile(F)
+      if(not IsEmptyString(sLine)) then
         if(sLine:sub(1,1) == symOff) then
           isAct, sLine = false, sLine:sub(2,-1) else isAct = true end
-        local tab = stringExplode(sDelim, sLine)
+        local tab = sDelim:Explode(sLine)
         local prf, src = tab[1]:Trim(), tab[2]:Trim()
         local inf = fPool[prf]
         if(not inf) then
@@ -2707,8 +2698,8 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
         else
           inf.Cnt = inf.Cnt + 1
           inf[inf.Cnt] = {src, isAct}
-        end; sLine = ""
-      else sLine = sLine..sCh end
+        end
+      end
     end; F:Close()
     if(fPool[sPref]) then
       local inf = fPool[sPref]
@@ -2735,18 +2726,14 @@ function ImportDSV(sTable, bComm, sPref, sDelim)
   local F = fileOpen(fName, "rb", "DATA")
   if(not F) then return StatusLog(false,"ImportDSV("..fPref.."): fileOpen("..fName..") failed") end
   local symOff, sDelim = GetOpVar("OPSYM_DISABLE"), tostring(sDelim or "\t"):sub(1,1)
-  local sLine, sCh, nLen = "", "X", defTable.Name:len()
-  while(sCh) do
-    sCh = F:Read(1)
-    if(not sCh) then break end -- Exit the loop and close the file
-    if(sCh == "\n") then
-      sLine = sLine:Trim()
-      if((sLine:sub(1,1) ~= symOff) and (sLine:sub(1,nLen) == defTable.Name)) then
-        local tData = stringExplode(sDelim,sLine:sub(nLen+2,-1))
-        for k, _ in pairs(tData) do tData[k] = StripValue(tData[k]) end
-        if(bComm) then InsertRecord(sTable, tData) end
-      end; sLine = ""
-    else sLine = sLine..sCh end
+  local sLine, isEOF, nLen = "", false, defTable.Name:len()
+  while(not isEOF) do sLine, isEOF = GetStringFile(F)
+    if((sLine:sub(1,1) ~= symOff) and (sLine:sub(1,nLen) == defTable.Name)) then
+      local tData = sDelim:Explode(sLine:sub(nLen+2,-1))
+      for iCnt = 1, defTable.Size do
+        tData[iCnt] = StripValue(tData[iCnt]) end
+      if(bComm) then InsertRecord(sTable, tData) end
+    end; sLine = ""
   end; F:Close(); return StatusLog(true, "ImportDSV("..fPref.."@"..sTable.."): Success")
 end
 
@@ -2905,15 +2892,14 @@ function SettingsLogs(sHash)
   local sKey = tostring(sHash or ""):upper():Trim()
   if(not (sKey == "SKIP" or sKey == "ONLY")) then
     return StatusLog(false,"SettingsLogs("..sKey.."): Invalid hash") end
-  local tLogs = GetOpVar("LOG_"..sKey)
+  local tLogs, lbNam = GetOpVar("LOG_"..sKey), GetOpVar("NAME_LIBRARY")
   if(not tLogs) then return StatusLog(true,"SettingsLogs("..sKey.."): Skip table") end
-  local fName = GetOpVar("DIRPATH_BAS").."trackasmlib_sl"..sKey:lower()..".txt"
+  local fName = GetOpVar("DIRPATH_BAS")..lbNam.."_sl"..sKey:lower()..".txt"
   local S = fileOpen(fName, "rb", "DATA")
   if(S) then
-    local sRow = S:Read()
-    while(sRow) do sRow = sRow:Trim()
-      if(sRow ~= "") then tableInsert(tLogs, sRow) end
-      sRow = S:Read()
-    end; S:Close(); return true
+    local sCh, sLine, isEOF = "X", "", false
+    while(not isEOF) do sLine, isEOF = GetStringFile(S)
+      if(sLine ~= "") then tableInsert(tLogs, sLine) end; sLine = ""
+    end; S:Close(); return StatusLog(true,"SettingsLogs("..sKey.."): Success <"..fName..">")
   else return StatusLog(true,"SettingsLogs("..sKey.."): Missing <"..fName..">") end
 end

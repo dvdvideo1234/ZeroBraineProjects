@@ -1,3 +1,5 @@
+local language = {__data = {}}
+
 local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
@@ -206,4 +208,12 @@ function table.getn( tab )
 	for k, v in pairs( tab ) do
     local n = tonumber(k) if(n and k >= n) then m = n end end
 	return m
+end
+
+function languageAdd(key,val)
+  language.__data[key] = val
+end
+
+function languageGetPhrase(key)
+  local a = language.__data[key]; print(key); return a
 end

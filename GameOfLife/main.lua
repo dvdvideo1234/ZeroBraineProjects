@@ -1,8 +1,12 @@
 require("turtle")
 require("wx")
+require("ZeroBraineProjects/dvdlualib/common")
 local life = require("ZeroBraineProjects/dvdlualib/lifelib")
 
 io.stdout:setvbuf("no")
+
+logTable(life.getRuleBS("Bf3g7/S23"),"aaa")
+
 
 function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg).."\n"); return ...
@@ -47,11 +51,12 @@ size(Arg[1],Arg[2])
 updt(true)
 zero(0, 0)
 
-life.charAliv("o"); life.charDead("b")
-life.shapesPath("E:\\Documents\\Lua-Projs\\ZeroBraineIDE\\myprograms\\ZeroBraineProjects\\GameOfLife\\shapes")
+life.shapesPath("ZeroBraineProjects/GameOfLife/shapes")
 
+life.charAliv("o"); life.charDead("b")
 local gg1 = life.makeShape("gosperglidergun","file","rle")
-local gg2 = life.makeShape("gosperglidergun","file","rle")
+life.charAliv("O"); life.charDead(".")
+local gg2 = life.makeShape("gosperglidergun","file","cells")
 
 if(gg1 and gg2) then
   -- Used for mouse clicks and keys

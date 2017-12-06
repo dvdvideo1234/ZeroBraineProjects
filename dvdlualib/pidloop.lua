@@ -2,9 +2,28 @@ local type         = type
 local tonumber     = tonumber
 local tostring     = tostring
 local setmetatable = setmetatable
-local getSign      = getSignAnd
 local math         = math
-local tobool       = function(bV) return (bV and true or false) end
+local logStatus    = function(anyMsg, ...) io.write(tostring(anyMsg).."\n"); return ... end
+local pidloop      = {}
+
+-- Defines what should return /false/ when converted to a boolean
+local __tobool = {
+  [0]       = true,
+  ["0"]     = true,
+  ["false"] = true,
+  [false]   = true
+}
+
+local function tobool(anyVal) -- http://lua-users.org/lists/lua-l/2005-11/msg00207.html
+  if(not anyVal) then return false end
+  if(__tobool[anyVal]) then return false end
+  return true
+end
+
+local function getSign(anyVal)
+  local nVal = (tonumber(anyVal) or 0)
+  return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0)
+end
 
 --[[
  * newInterval: Class that maps one interval onto another
@@ -14,23 +33,34 @@ local tobool       = function(bV) return (bV and true or false) end
  * nL2   > Lower  value second border
  * nH2   > Higher value second border
 ]]--
-function newInterval(sName, nL1, nH1, nL2, nH2)
-  local self = {}
+local metaInterval = {}
+      metaInterval.__index = metaInterval
+      metaInterval.__type  = "pidloop.Interval"
+      metaInterval.__tostring = function(oInterval) return oInterval:getString() end
+function pidloop.newInterval(sName, nL1, nH1, nL2, nH2)
+  local self, mVal = {}, 0
   local mNam = tostring(sName or "")
-  local mVal = (tonumber(nVal) or 0)
   local mL1  = (tonumber(nL1) or 0)
   local mH1  = (tonumber(nH1) or 0)
   local mL2  = (tonumber(nL2) or 0)
   local mH2  = (tonumber(nH2) or 0)
-  
+  setmetatable(self, metaInterval)
   function self:getName() return mNam end
-  
-  function self:getConv(nVal)
-    if(nVal < mL1 or mVal > mH1) then
-      return logStatus("convInterval.valConv: Source value <"..tostring(nVal).."> out of border", nVal) end
-    local kf = ((nVal - mL1) / (mH1 - mL1)); return (kf * (mH2 - mL2) + mL2)
+  function self:setName(sName) mNam = tostring(sName or "N/A") end
+  function self:getValue() return mVal end
+  function self:getBorderIn() return mL1, mH1 end
+  function self:setBorderIn(nL1, nH1) mL1, mH1 = (tonumber(nL1) or 0), (tonumber(nH1) or 0) end
+  function self:getBorderOut() return mL2, mH2 end
+  function self:setBorderOut(nL2, nH2) mL2, mH2 = (tonumber(nL2) or 0), (tonumber(nH2) or 0) end
+  function self:getString() return "["..metaInterval.__type.."] "..mNam.." {"..mL1..","..mH1.."} >> {"..mL2..","..mH2.."}" end
+  function self:Convert(nVal)
+    local val = tonumber(nVal); if(not val) then
+      return logStatus("newInterval.Convert("..mNam.."): Source <"..tostring(nVal).."> NaN", self) end
+    if(val < mL1 or val > mH1) then
+      return logStatus("newInterval.Convert("..mNam.."): Source <"..tostring(val).."> out of border", self) end
+    local kf = ((val - mL1) / (mH1 - mL1)); mVal = (kf * (mH2 - mL2) + mL2); return self
   end
-  
+    
   return self
 end
 
@@ -38,8 +68,12 @@ end
  * newTracer: Class that plots a process variable
  * sName > A porper name to be identified as
 ]]--
-function newTracer(sName)
-  local self = {}
+local metaTracer = {}
+      metaTracer.__index = metaTracer
+      metaTracer.__type  = "pidloop.Tracer"
+      metaTracer.__tostring = function(oTracer) return oTracer:getString() end
+function pidloop.newTracer(sName)
+  local self = {}; setmetatable(self, metaTracer)
   local mName = tostring(sName or "")
   local mValO, mValN = 0, 0
   local mTimO, mTimN = 0, 0
@@ -47,47 +81,47 @@ function newTracer(sName)
   local mPntO = {x=0,y=0}
   local mMatX, mMatY
   local enDraw = false
-  
+  function self:getString() return "["..metaTracer.__type.."] "..mName end
+  function self:getValue() return mTimN, mValN end
   function self:setInterval(oIntX, oIntY)
     mMatX, mMatY = oIntX, oIntY; return self end
-  
-  function self:getValue() return mTimN, mValN end
+  function self:Reset()
+    mPntN.x, mPntN.y, mPntO.x, mPntO.y = 0,0,0,0
+    enDraw, mValO, mValN = false,0,0; return self end
+      
   function self:putValue(nTime, nVal)
     mValO, nValN = nValN, nVal
     mTimO, mTimN = mTimN, nTime
     mPntO.x, mPntO.y = mPntN.x, mPntN.y
     if(mMatX) then
-      mPntN.x = mMatX:getConv(nTime)
-    else
-      mPntN.x = nTime
-    end;
+      mPntN.x = mMatX:Convert(nTime):getValue()
+    else mPntN.x = nTime end;
     if(mMatY) then
-      mPntN.y = mMatY:getConv(nValN)
-    else
-      mPntN.y = nValN
-    end; return self
+      mPntN.y = mMatY:Convert(nValN):getValue()
+    else mPntN.y = nValN end; return self
   end
     
   function self:Draw(cCol)
     if(enDraw) then
       pncl(cCol);
       line(mPntO.x,mPntO.y,mPntN.x,mPntN.y)
-      xyPlot(mPntN,cCol); updt()
-    else enDraw = true end
+      rect(mPntO.x-2,mPntO.y-2,5,5)
+    else enDraw = true end; return self
   end
-
+  
   return self
 end
 
 --[[
-* newControl: Class maglev state processing manager
+* newControl: Class state processing manager
 * nTo   > Controller sampling time in seconds
 * arPar > Parameter array {Kp, Ti, Td, satD, satU}
 ]]
 local metaControl = {}
       metaControl.__index = metaControl
-      metaControl.__type  = "Control"
-function newControl(nTo, sName)
+      metaControl.__type  = "pidloop.Control"
+      metaControl.__tostring = function(oControl) return oControl:getString() end
+function pidloop.newControl(nTo, sName)
   local mTo = (tonumber(nTo) or 0); if(mTo <= 0) then -- Sampling time [s]
     return logStatus(nil, "newControl: Sampling time <"..tostring(nTo).."> invalid") end
   local self  = {}                 -- Place to store the methods
@@ -103,8 +137,8 @@ function newControl(nTo, sName)
 
   setmetatable(self, metaControl)
 
-  local function getTerm(kV,eV,pV) return (kV*mfSgn(eV)*mfAbs(eV)^pV) end
-
+  function self:getTerm(kV,eV,pV) return (kV*mfSgn(eV)*mfAbs(eV)^pV) end
+  function self:Dump() return logStatus(self:getString(), self) end
   function self:getGains() return mkP, mkI, mkD end
   function self:setEnIntegral(bEn) meInt = tobool(bEn); return self end
   function self:getEnIntegral() return meInt end
@@ -129,17 +163,31 @@ function newControl(nTo, sName)
     mErrO = mErrN -- Refresh error state sample
     mErrN = (mbInv and (vOut-vRef) or (vRef-vOut))
     if(mkP > 0) then -- P-Term
-      mvP = getTerm(mkP, mErrN, mpP) end
+      mvP = self:getTerm(mkP, mErrN, mpP) end
     if((mkI > 0) and (mErrN ~= 0) and meInt) then -- I-Term
-      mvI = getTerm(mkI, mErrN + mErrO, mpI) + mvI end
+      mvI = self:getTerm(mkI, mErrN + mErrO, mpI) + mvI end
     if((mkD > 0) and (mErrN ~= mErrO)) then -- D-Term
-      mvD = getTerm(mkD, mErrN - mErrO, mpD) end
+      mvD = self:getTerm(mkD, mErrN - mErrO, mpD) end
     mvCon = mvP + mvI + mvD  -- Calculate the control signal
     if(mSatD and mSatU) then -- Apply anti-windup effect
       if    (mvCon < mSatD) then mvCon, meInt = mSatD, false
       elseif(mvCon > mSatU) then mvCon, meInt = mSatU, false
       else meInt = true end
     end; return self
+  end
+  
+  function self:getString()
+    local sInfo = (mType ~= "") and (mType.."-") or mType
+          sInfo = "["..sInfo..metaControl.__type.."] Properties:\n"
+          sInfo = sInfo.."  Name : "..mName.." ["..tostring(mTo).."]s\n"
+          sInfo = sInfo.."  Param: {"..tostring(mUser[1])..", "..tostring(mUser[2])..", "
+          sInfo = sInfo..tostring(mUser[3])..", "..tostring(mUser[4])..", "..tostring(mUser[5]).."}\n"
+          sInfo = sInfo.."  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}\n"
+          sInfo = sInfo.."  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}\n"
+          sInfo = sInfo.."  Limit: {D="..tostring(mSatD)..",U="..tostring(mSatU).."}\n"
+          sInfo = sInfo.."  Error: {"..tostring(mErrO)..", "..tostring(mErrN).."}\n"
+          sInfo = sInfo.."  Value: ["..tostring(mvCon).."] {P="..tostring(mvP)
+          sInfo = sInfo..", I="..tostring(mvI)..", D="..tostring(mvD).."}\n"; return sInfo
   end
 
   function self:Setup(arParam)
@@ -173,83 +221,81 @@ function newControl(nTo, sName)
     for ID = 1, 5, 1 do mUser[ID] = mUser[ID] * nMul end
     self:Setup(mUser); return self -- Init multiple states using the table
   end
-
-  function self:Dump()
-    local sType = (mType ~= "") and (mType.."-") or mType
-    logStatus("["..sType..metaControl.__type.."] Properties:")
-    logStatus("  Name : "..mName.." ["..tostring(mTo).."]s")
-    logStatus("  Param: {"..tostring(mUser[1])..", "..tostring(mUser[2])..", "
-     ..tostring(mUser[3])..", "..tostring(mUser[4])..", "..tostring(mUser[5]).."}")
-    logStatus("  Gains: {P="..tostring(mkP)..", I="..tostring(mkI)..", D="..tostring(mkD).."}")
-    logStatus("  Power: {P="..tostring(mpP)..", I="..tostring(mpI)..", D="..tostring(mpD).."}\n")
-    logStatus("  Limit: {D="..tostring(mSatD)..",U="..tostring(mSatU).."}")
-    logStatus("  Error: {"..tostring(mErrO)..", "..tostring(mErrN).."}")
-    logStatus("  Value: ["..tostring(mvCon).."] {P="..tostring(mvP)..", I="..tostring(mvI)..", D="..tostring(mvD).."}")
-    return self
-  end; return self
+  
+  return self
 end
 
 -- https://www.mathworks.com/help/simulink/slref/discretefilter.html
 local metaUnit = {}
       metaUnit.__index    = metaUnit
-      metaUnit.__type     = "Unit"
-      metaUnit.__tostring = function(oUnit) return "["..metaUnit.__type.."]" end
-function newUnit(nTo, tNum, tDen, sName)
-  local mOrd = #tDen
-  if(mOrd < #tNum) then
+      metaUnit.__type     = "pidloop.Unit"
+      metaUnit.__tostring = function(oUnit) return oUnit:getString() end
+function pidloop.newUnit(nTo, tNum, tDen, sName)
+  local mOrd = #tDen; if(mOrd < #tNum) then
     return logStatus("Unit physically impossible") end
   if(tDen[1] == 0) then
     return logStatus("Unit denominator invalid") end
-    
-  local self  = {}
-  local mTo   = tDen[1] -- Store (1/ao)
-  local mName, mOut = sName, nil
+  local self, mTo  = {}, (tonumber(nTo) or 0)
+  if(mTo <= 0) then return logStatus("Unit sampling time <"..tostring(nTo).."> invalid") end
+  local mName, mOut = tostring(sName or "Unit plant"), nil
   local mSta, mDen, mNum = {}, {}, {}
   
-  for ik = 1, mOrd , 1 do mSta[ik] = 0 end
-  for iK = 1, mOrd , 1 do mDen[iK] = (tonumber(tDen[iK]) or 0) / mTo end
-  for iK = 1, #tNum, 1 do mNum[iK] = (tonumber(tNum[iK]) or 0) / mTo end; arExtend(mNum,-mOrd)
+  for ik = 1, mOrd, 1 do mSta[ik] = 0 end
+  for iK = 1, mOrd, 1 do mDen[iK] = (tonumber(tDen[iK]) or 0) end
+  for iK = 1, mOrd, 1 do mNum[iK] = (tonumber(tNum[iK]) or 0) end
+  for iK = 1, (mOrd - #tNum), 1 do table.insert(mNum,1,0); mNum[#mNum] = nil end
   
-  mTo = nTo -- Refresh the sampling time
+  function self:Scale()
+    local nK = mDen[1]
+    for iK = 1, mOrd do
+      mNum[iK] = (mNum[iK] / nK)
+      mDen[iK] = (mDen[iK] / nK)
+    end; return self
+  end
   
+  function self:getString()
+    local sInfo = "["..metaUnit.__type.."] Properties:\n"
+    sInfo = sInfo.."  Name       : "..mName.."^"..tostring(mOrd).." ["..tostring(mTo).."]s\n"
+    sInfo = sInfo.."  Numenator  : {"..table.concat(mNum,", ").."}\n"
+    sInfo = sInfo.."  Denumenator: {"..table.concat(mDen,", ").."}\n"
+    sInfo = sInfo.."  States     : {"..table.concat(mSta,", ").."}\n"; return sInfo
+  end
+  function self:Dump() return logStatus(self:getString(), self)  end
   function self:getOutput() return mOut end
   
-  local function getBeta()
-    local vOut, iK = 0, mOrd
+  function self:getBeta()
+    local nOut, iK = 0, mOrd
     while(iK > 0) do
-      vOut = vOut + mSta[iK] * (mNum[iK] or 0)
+      nOut = nOut + (mNum[iK] or 0) * mSta[iK]
       iK = iK - 1 -- Get next state
-    end; return vOut
+    end; return nOut
   end
     
-  local function getAlpha()
-    local vOut, iK = 0, mOrd
+  function self:getAlpha()
+    local nOut, iK = 0, mOrd
     while(iK > 1) do
-      vOut = vOut + mSta[iK] * (mDen[iK] or 0)
+      nOut = nOut - (mDen[iK] or 0) * mSta[iK]
       iK = iK - 1 -- Get next state
-    end; return vOut
+    end; return nOut
   end
     
-  local function putState(vX)
-    local iK = mOrd
-    while(iK > 0 and mSta[iK] and mSta[iK-1]) do
-      mSta[iK] = mSta[iK-1]; iK = iK - 1 -- Get next state
-    end; mSta[1] = vX
+  function self:putState(vX)
+    local iK, nX = mOrd, (tonumber(vX) or 0)
+    while(iK > 0 and mSta[iK]) do
+      mSta[iK] = (mSta[iK-1] or 0); iK = iK - 1 -- Get next state
+    end; mSta[1] = nX; return self
   end
   
   function self:Process(vU)
-    putState(((tonumber(vU) or 0) - getAlpha()) / mDen[1])
-    mOut = getBeta(false); return self
+    local nU, nA = (tonumber(vU) or 0), self:getAlpha()
+    self:putState((nU + nA) / mDen[1]); mOut = self:getBeta(); return self
   end
   
-  function self:Dump()
-    logStatus(metaUnit.__tostring(self).." Properties:")
-    logStatus("Name       : "..mName.."^"..tostring(mOrd).." ["..tostring(mTo).."]s")
-    logStatus("Numenator  : {"..strImplode(mNum,", ").."}")
-    logStatus("Denumenator: {"..strImplode(mDen,", ").."}")
-    logStatus("States     : {"..strImplode(mSta,", ").."}\n") 
-    return self
+  function self:Reset()
+    for iK = 1, #mSta, 1 do mSta[iK] = 0 end; mOut = 0; return self
   end
   
   return self
 end
+
+return pidloop

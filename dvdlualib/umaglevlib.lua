@@ -21,6 +21,7 @@ local type                  = function(any)
   end
   return t
 end
+local languageGetPhrase     = languageGetPhrase
 local CompileString         = CompileString
 local tobool                = tobool
 local next                  = next
@@ -244,6 +245,7 @@ local function ckTargetTable(tab, dep)
 end
 
 function InitDependancies(vEnab, vFile)
+  libOpVars["TRANSLATE_KEYTAB"] = {[2]="nam",[4]="cat",[7]="tip"}
   libOpVars["NUMBER_ZERO"     ] = 10e-5
   libOpVars["STRING_ZERO"     ] = ""
   -- More meaningful name to the one above used for labels
@@ -272,6 +274,7 @@ function InitDependancies(vEnab, vFile)
   }
   libOpVars["TYPE_DEFCOLUMN"  ] = {} -- Columns that are enabled for processing
   libOpVars["UNIT_DESCRIPTION"] = {} -- The maglev unit description
+  libOpVars["TYPE_METASTRING" ] = getmetatable("") -- Store string meta-table
   --[[
    * This is used for data mapping
    * [1] > Data type
@@ -378,22 +381,31 @@ function InitDescription()
     }
 end
 
-function LogTable(tT,sS)
+function LogTable(tT,sS,tP)
   local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
   if(vT ~= "table") then
-    return LogStatus("{"..vT.."}["..sS.."] = <"..tostring(tT)..">",nil) end
-  if(next(tT) == nil) then
-    return LogStatus(vS.." = {}",nil) end
-  LogStatus(sS.." = {}",nil)
+    return LogStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">") end
+  if(IsEmptyTab(tT)) then
+    return LogStatus(sS.." = {}") end; LogStatus(sS.." = {}")
   for k,v in pairs(tT) do
     if(type(k) == "string") then vK = sS.."[\""..k.."\"]"
-    else vK = sS.."["..tostring(k).."]" end
+    else sK = tostring(k)
+      if(tP and tP[k]) then sK = tostring(tP[k]) end
+      vK = sS.."["..sK.."]"
+    end
     if(type(v) ~= "table") then
-      if(type(v) == "string") then LogStatus(vK.." = \""..v.."\"",nil)
-      else LogStatus(vK.." = "..tostring(v),nil) end
-    else LogTable(v,vK) end
+      if(type(v) == "string") then LogStatus(vK.." = \""..v.."\"")
+      else sK = tostring(v)
+        if(tP and tP[v]) then sK = tostring(tP[v]) end
+        LogStatus(vK.." = "..sK)
+      end
+    else
+      if(v == tT) then LogStatus(vK.." = "..sS)
+      else LogTable(v,vK,tP) end
+    end
   end
 end
+
 
 --[[
  * ValidateTable: Validates a stricture based
@@ -1454,3 +1466,16 @@ function NewMaglevModule(oPly, vPos, aAng, stMaglevData)
 end
 
 function GetLibraryData() return libOpVars end
+
+function TranslateProperty(tProp)
+  if(not IsString(tProp.Type)) then
+    return LogStatus("TranslateProperty: Property type invalid", false) end
+  local kTab, sNam = GetOpVar("TRANSLATE_KEYTAB"), GetOpVar("NAME_TOOL")
+  local sPrf = ("tool."..sNam.."."..tProp.Type.."_")
+  for ID = 1, #tProp do
+    local key = tProp[ID][2]; if(not key) then
+      return LogStatus("TranslateProperty: Key missing {"..tProp.Type..":"..ID.."}", false) end
+    for k, v in pairs(kTab) do
+      tProp[ID][k] = languageGetPhrase(sPrf..v..key:lower()) end
+  end; return true
+end

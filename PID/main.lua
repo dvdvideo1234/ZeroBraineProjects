@@ -1,49 +1,62 @@
 require("turtle")
 require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/pidloop")
-require("ZeroBraineProjects/dvdlualib/colormap")
+local pid = require("ZeroBraineProjects/dvdlualib/pidloop")
+local col = require("ZeroBraineProjects/dvdlualib/colormap")
 
-local W, H  = 1024, 464
+local W, H  = 1200, 800
 
-local minC, maxC = -80, 80
-local To    = 0.0017
-local endTm = 0.2
-local intX  = newInterval("WinX",  0,endTm, 0, W)
-local intY  = newInterval("WinY",-200,200 , H, 0)
-local APR   = newUnit(To,{0.904},{1.00, -0.569},"Aperiodic plant"):Dump()
-local PID   = newControl(To, "Test"):Setup({0.653, 0.005, 43.3, minC, maxC}):setStruct(true,false):Dump()
+local minC, maxC = -150, 150
+local To    = 0.001
+local endTm = 0.1
+local intX  = pid.newInterval("WinX",  0,endTm, 0, W)
+local intY  = pid.newInterval("WinY",-10,150 , H, 0)
+local APR   = pid.newUnit(To,{0.54,-0.114},{1.282,-0.98,0.258},"Hesitating plant"):Scale():Dump()
+local PID   = pid.newControl(To,"Lin-QR"):Setup({0.825, 0.0036, 33.8, minC, maxC}):setStruct(true,false):Dump()
 
-local trRef = newTracer("Ref"):setInterval(intX, intY)
-local trCon = newTracer("Con"):setInterval(intX, intY)
-local trPV  = newTracer("PV" ):setInterval(intX, intY)
+local trRef = pid.newTracer("Ref"):setInterval(intX, intY)
+local trCon = pid.newTracer("Con"):setInterval(intX, intY)
+local trPV  = pid.newTracer("PV" ):setInterval(intX, intY)
+
+print(tostring(intX))
+print(tostring(trRef))
 
 open("Trasition processes")
 size(W,H)
 zero(0, 0)
 updt(false) -- disable auto updates
+local curTm, yTx, dyTx = 0, 0, 15
+local clRed = colr(col.getColorRedRGB())
+local clGrn = colr(col.getColorGreenRGB())
+local clBlu = colr(col.getColorBlueRGB())
+local clBlk = colr(col.getColorBlackRGB())
 
-local clRed = colr(getColorRedRGB())
-local clGrn = colr(getColorGreenRGB())
-local clBlu = colr(getColorBlueRGB())
-local clBlk = colr(getColorBlackRGB())
+text("( Blue ) System reference", 0, 0, yTx); yTx = yTx + dyTx
+text("( Green ) Control signal", 0, 0, yTx); yTx = yTx + dyTx
+text("( Black ) Plant uncontrolled step responce", 0, 0, yTx); yTx = yTx + dyTx
+text("( Red ) Plant controlled step responce", 0, 0, yTx); yTx = yTx + dyTx
 
 local pvv, con, ref = 0, 0, 100
 
-local curTm = 0
+curTm = 0
 while(curTm <= endTm) do
-  waitSeconds(To)
-  ----------------------
-  if(curTm > 0.3*endTm and curTm <= 0.6*endTm) then
-    ref = -100
-  elseif(curTm > 0.6*endTm) then
-    ref = 100
-  end
+  if(curTm > 0.1 * endTm) then con = 100 else con = 0 end
+  wait(To)
+  pvv = APR:Process(con):getOutput()
+  trPV:putValue(curTm, pvv):Draw(clBlk)
+  curTm = curTm + To; updt()
+end; APR:Reset(); trPV:Reset(); wait(0.5)
+
+-- wipe();
+
+curTm, pvv = 0, 0
+while(curTm <= endTm) do
+  wait(To)
+  if(curTm > 0.1 * endTm) then ref = 100 else ref = 0 end
   trRef:putValue(curTm, ref):Draw(clBlu)
- -- logStatus(ref.." > "..pvv.." > "..con)
   con = PID:Process(ref,pvv):getControl()
   trCon:putValue(curTm,con):Draw(clGrn)
   pvv = APR:Process(con):getOutput()
   trPV:putValue(curTm, pvv):Draw(clRed)
-  curTm = curTm + To
+  print(ref.." > "..con.." $ "..pvv)
+  curTm = curTm + To; updt()
 end
-

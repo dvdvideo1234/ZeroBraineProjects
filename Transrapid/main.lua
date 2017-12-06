@@ -61,35 +61,19 @@ libOpVars["CLASS_TARGETS"   ] = {
   ["prop_ragdoll"] = true
 }
 
-local mtTest = {}
-mtTest.__index = {
-  GetV = function(self) return self.v end
-}
-local function test(v)
-  local me = 10
-  local self = {v=(tonumber(v) or 0)}
-  setmetatable(self, mtTest)
-  return self
-end
+
+tfPro = {
+        Icon = "icon16/lorry_go.png",
+        Type = "forcer",
+        List = "Forcers",
+        Offs = {Pos = xyPos, Siz = xySiz, Dsz = xyDsz},
+        Cvar = varForcers }
+tfPro[1] = { true, "aaa" , 50  , "Identification", "Generic"    , {""}}
+tfPro[2] = {"Org", "Origin"   ,  0  , "Orientation"   , "VectorColor", {Vector(0,0,0)}}
+tfPro[3] = {"Dir", "Direction",  0  , "Orientation"   , "VectorColor", {Vector(0,0,0)}}
 
 
-local t = test(6)
-
-
-print(t:GetV())
-
-
-local t = function() end
-local a = {b = {},5,6,c={m=1}}
-a.b[1] = a.b
-a[a] = a
-a[6]=a
-a[t]=t
-
-local z = {[a]="a",[t] ="myFoo"}
-
-logTable(a,"a",z)
-
+print(umgl.TranslateProperty(tfPro))
 
 --[==[
 umgl.InitTargetsHit()
