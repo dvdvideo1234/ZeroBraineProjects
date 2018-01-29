@@ -1,7 +1,7 @@
 local complex      = require("complex")
 local colormap     = require("colormap")
 local blocks       = require("blockBraker/blocks")
-local common       = require("blockBraker/common")
+local common       = require("common")
 local type         = type
 local getmetatable = getmetatable
 local level        = {}
@@ -30,7 +30,7 @@ end
 function level.addActor(vKey, oAct)
   if(not vKey) then return logStatus("level.addActor: Key invalid", false) end
   local tAct = metaActors.stack
-  if(common.getType(oAct) == "blocks.block") then
+  if(common.GetType(oAct) == "blocks.block") then
     tAct[vKey] = oAct; return true
   end; return logStatus("level.addActor: Object wrong type", false)
 end
@@ -47,8 +47,8 @@ metaActors.store = {
   [2] = {"setVert"     , complex.Convert},
   [3] = {"setAng"      , tonumber},
   [4] = {"setVel"      , complex.Convert},
-  [5] = {"setStat"     , common.getBool},
-  [6] = {"setHard"     , common.getBool},
+  [5] = {"setStat"     , common.ToBool},
+  [6] = {"setHard"     , common.ToBool},
   [7] = {"setLife"     , tonumber},
   [8] = {"setDrawColor", colormap.Convert}
 }
@@ -57,11 +57,11 @@ function level.Read(sF, bLog)
   local pF, actSt = io.open("blockBraker/"..sF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.Read: No file <"..tostring(sF)..">", ""), true end
   local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
-  while(not isEOF) do sLn, isEOF = common.fgetLine(pF)
+  while(not isEOF) do sLn, isEOF = common.GetLineFile(pF)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then tAct[iID] = blocks.New()
-      local tCmp, bNew = common.stringExplode(sLn,"/"), tAct[iID]
+      local tCmp, bNew = common.StringExplode(sLn,"/"), tAct[iID]
       for I = 1, #actSt do local tPar = actSt[I]
-        local tItm = common.stringExplode(common.stringTrim(tCmp[I]),";")
+        local tItm = common.StringExplode(common.StringTrim(tCmp[I]),";")
         for J = 1, #tItm do bNew[tPar[1]](bNew,tPar[2](tItm[J]))
          -- logStatus("levels.Read: "..tPar[1].." ("..J..") : "..tItm[J])
         end
