@@ -52,6 +52,7 @@ if(gbSuc) then
   complex.Draw("drawComplexOrigin", drawComplexOrigin)
   complex.Draw("drawComplexLine", drawComplexLine)
 
+--[[
   local fild = blocks.New():setPos(0,0):setWrap(false)
         fild:setVert(0,0):setVert(W-1,0)
         fild:setVert(W-1,H-1):setVert(0,H-1)
@@ -60,14 +61,16 @@ if(gbSuc) then
   local bord = blocks.New():setVert(-50,-7):setVert(50,-7):setVert(50,7):setVert(-50,7)
         bord:setStat(false):setLife(1):setHard(true)
         bord:setPos(W/2, H-math.abs(bord:getVert(1):getImag())-4)
-        bord:setDrawColor(colormap.getColorRedRGB()):setTable({Vel = 10, Type = "board", Ang = 45})
+        bord:setDrawColor(colormap.getColorRedRGB()):setTable({Vel = 10, Type = "board"})
               
   local ball = blocks.New()
         ball:setStat(false)
         ball:setLife(1):setHard(true)
-        ball:setPos(10,10)
-        ball:setVel(-1,10):setDrawColor(colormap.getColorGreenRGB())
+        ball:setPos(401,332)
+        ball:setVel(0,-20):setDrawColor(colormap.getColorGreenRGB())
         ball:setTable({Type = "ball", Size = 5, Dmg = 0.5})
+]]
+
 
   local function actBoard(oBoard)
     local lx, ly = clck('ld')
@@ -103,50 +106,40 @@ if(gbSuc) then
   end
 
   local function actBall(oBall)
-    local baVel = oBall:getVel()
     local baPos = oBall:getPos()
+    local baVel = oBall:getVel()
     local tData = oBall:getTable()
-    local tFilt = {[oBall:getKey()]=true}
-    local tTr   = level.smpActor(baPos, baVel, tFilt)
-    print("1z", baPos, baVel)
-    if(tTr.Hit) then
-      local nrVel = baVel:getNorm()
-      local nrPrt = baVel:getNorm()
-      local cfPos = baPos:getNew()
-      local cfVel = baVel:getNew()
-      local cpInt = baPos:getNew()
-      local cvRef = baVel:getNew()
-      while(tTr.Hit) do
+    local tKey  = {[oBall:getKey()] = true}
+    local tTr = level.smpActor(baPos, baVel, tKey)
+    local tBr = level.getBorder(baPos, baVel, tData.Size)
+    if(tBr.Hit) then -- Is there a hit to tavke cate in the frame
+      local nvPrt, nmBnc = baVel:getNorm(), 0
+      local cfPos, cfVel = baPos:getNew(), baVel:getNew()
+      local cpInt, cvRef = baPos:getNew(), baVel:getNew()
+      while(tBr.Hit) do nmBnc = nmBnc + 1
+        tBr.VtxStr:Draw("drawComplexLine", tBr.VtxEnd)
         tTr.HitAct:Damage(tData.Dmg)
         if(tTr.HitAct:isDead()) then level.delActor(tTr.HitKey) end
-        local bO = (tData.Size * tTr.HitNrm)
-        local vS = tTr.VtxStr:getNew():Add(bO)
-        local vE = tTr.VtxEnd:getNew():Add(bO)
-       -- vS:Draw("drawComplexLine",vE)
-        print(vS, vE)
-        local bSuc, nT, nU, xX = complex.Intersect(cpInt, cvRef, vS, vE - vS)
-        if(bSuc) then local rV = xX:getSub(cpInt):getNorm()
-          xX:Draw("drawComplexOrigin")
-          print("1a", xX, cpInt, cvRef, rV, nrPrt)
-          if(rV < nrPrt) then nrPrt = nrPrt - rV
-            print("1b", xX, cpInt, cvRef, rV, nrPrt)
-            local cN, cR = complex.Reflect(cpInt, cvRef, vS, vE)
-            cpInt:Set(xX); cvRef:Set(cR):Mul(nrPrt) -- The rest of the vector to trace
-            -- Adjust the next frame position according to the trace
-            cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(nrVel)
-            -- Draw the ball trajectory if enabled
-            oBall:addTrace(cpInt):addTrace(cfPos)
-          end
+        if(tBr.HitDst < nvPrt) then nvPrt = nvPrt - tBr.HitDst
+          local cN, cR = complex.Reflect(cpInt, cvRef, tBr.VtxStr, tBr.VtxEnd)
+          cpInt:Set(tBr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
+          -- Adjust the next frame position according to the trace
+          cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
+          -- Draw the ball trajectory if enabled
+          oBall:addTrace(cpInt):addTrace(cfPos)
         end
-        tTr = level.smpActor(cpInt, cvRef, tFilt)
-      end
-      oBall:setPosFrm(cfPos):setVel(cfVel)
+        tTr = level.smpActor(cpInt, cvRef, tKey)
+        tBr = level.getBorder(cpInt, cvRef, tData.Size, nmBnc)
+      end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
+      oBall:setPos(cfPos):setFrame(true):setVel(cfVel)
     else
       -- Update the OOP accordingly and move in 2D space if nothing is hit
       oBall:setVel(baVel)
     end
   end
-
+  
+  
+--[[
   bord:setAction(actBoard)
   ball:setAction(actBall)
   ball:setDraw(drawBall)
@@ -155,13 +148,13 @@ if(gbSuc) then
   level.addActor("fild", fild)
   level.addActor("ball", ball)
 
-  ball:setTrace(30)
+  ball:setTrace(2)
 
   while true do wipe()
     for k, v in pairs(gtActors) do v:Act():Draw() end
     for k, v in pairs(gtActors) do v:Move() end
     updt();
-    wait(0.5)
+    wait(0.05)
   end
- 
+ ]]
 end

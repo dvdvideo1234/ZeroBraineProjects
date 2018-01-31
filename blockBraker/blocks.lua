@@ -3,6 +3,7 @@ local complex      = require("complex")
 local turtle       = require("turtle")
 local colormap     = require("colormap")
 local common       = require("common")
+local export       = require("export")
 local blocks       = {}
 local metaBlock    = {}
 local toBool       = common.ToBool
@@ -16,7 +17,7 @@ metaBlock.__type  = "blocks.block"
 metaBlock.__index = metaBlock
 function blocks.New()
   local self = {}; setmetatable(self, metaBlock)
-  local mcPfr, mbPfr, mbTrc = complex.New(), false, false
+  local mbPfr, mbTrc = false, false
   local mcAxx, mcAxy, mnAng, maKey = complex.New(), complex.New(), 0
   local mcPos, mcVel, mtVtx = complex.New(), complex.New(), {__size = 0}
   local mbSta, mbHrd, mbWrp, miLif, mtTrc, mclDr, mfAct, mfDrw, mtDat = true, true, true, 0, {}
@@ -26,7 +27,6 @@ function blocks.New()
   function self:getLife() return miLif end
   function self:setPos(x,y) mcPos:Set(x,y):Abs(true,true); return self end
   function self:getPos() return mcPos:getNew() end
-  function self:setPosFrm(x,y) mcPfr:Set(x,y):Abs(true,true); mbPfr = true return self end
   function self:setVel(x,y) mcVel:Set(x,y); return self end
   function self:getVel() return mcVel:getNew() end
   function self:isDead() return (miLif <= 0) end
@@ -118,7 +118,7 @@ function blocks.New()
   end
   function self:Move()
     if(self:isStat()) then return self end
-    if(self:isFrame()) then self:setPos(mcPfr):setFrame(false) else mcPos:Add(mcVel) end
+    if(self:isFrame()) then self:setFrame(false) else mcPos:Add(mcVel) end
     if(self:isTrace()) then self:addTrace() end; return self
   end
   function self:Damage(iDmg)
@@ -161,6 +161,56 @@ function blocks.New()
     end; return self;
   end
   return self
+end
+
+local function concatInternal(tIn, sCh)
+  local aAr, aID, aIN = {}, 1, 0
+  for ID = 1, #tIn do
+    local sVal = common.StringTrim(tIn[ID])
+    if(sVal:find("{")) then aIN = aIN + 1 end
+    if(sVal:find("}")) then aIN = aIN - 1 end
+    if(not aAr[aID]) then aAr[aID] = "" end
+    if(aIN == 0) then
+      aAr[aID] = aAr[aID]..sVal; aID = (aID + 1)
+    else
+      aAr[aID] = aAr[aID]..sVal..sCh
+    end
+  end; return aAr
+end
+
+local function importRecursive(sRc) 
+  local sIn = common.StringTrim(tostring(sRc or ""))
+  logStatus("blocks.getTable: Table input <"..sIn..">")
+  if(sIn:sub(1,1)..sIn:sub(-1,-1) ~= "{}") then
+    return logStatus("blocks.getTable: Table format invalid <"..sIn..">", false) end
+  local aIn, tOut = common.StringExplode(sIn:sub(2,-2),","), {}
+  local tIn = concatInternal(aIn, ",")
+  for ID = 1, #tIn do local sVal = common.StringTrim(tIn[ID])
+    if(sVal ~= "") then
+      local aVal = common.StringExplode(sVal,"=")
+      local tVal = concatInternal(aVal, "=")      
+      local kVal, vVal = tVal[1], tVal[2]
+      -- Handle keys
+      if(kVal == "") then return logStatus("blocks.getTable: Table key fail at <"..vVal..">", false) end
+      if(kVal:sub(1,1)..kVal:sub(-1,-1) == "\"\"") then kVal = tostring(kVal):sub(2,-2)
+      elseif(tonumber(kVal)) then kVal = tonumber(kVal)
+      else kVal = tostring(kVal) end
+      -- Handle values
+      if(vVal == "") then vVal = nil
+      elseif(vVal:sub(1,1)..vVal:sub(-1,-1) == "\"\"") then vVal = vVal:sub(2,-2)
+      elseif(vVal:sub(1,1)..vVal:sub(-1,-1) == "{}")   then vVal = importRecursive(vVal)
+      else vVal = (tonumber(vVal) or 0) end
+      -- Write stuff
+      logStatus("blocks.getTable: Table key <"..kVal.."> <"..tostring(vVal)..">")
+      tOut[kVal] = vVal
+    end
+  end; return tOut
+end
+
+function blocks.getTable(sIn)
+  local tOut = importRecursive(sIn)
+  export.Table(tOut, "tOut", {[tOut] = "tOut"})
+  return tOut
 end
 
 return blocks

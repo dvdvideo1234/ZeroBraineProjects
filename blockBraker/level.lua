@@ -15,13 +15,21 @@ metaActors.trace   = {
   HitNrm = complex.New(),
   VtxStr = complex.New(),
   VtxEnd = complex.New(),
-  Hit    = false,
   HitAct = 0,
   HitKey = 0,
   MinLen = 0,
   HitFlt = {}
 }
-      
+metaActors.border = {
+  Hit    = false,
+  HitDst = 0,
+  HitPos = complex.New(),
+  HitOrg = complex.New(),
+  HitDir = complex.New(),
+  VtxStr = complex.New(),
+  VtxEnd = complex.New()
+}
+
 local function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg).."\n"); return ...
 end
@@ -53,7 +61,7 @@ end
   tKey > Table containing the actor keys to be skipped
 ]]
 function level.smpActor(oPos, oVel, tKey)
-  local tTr, fTr = metaActors.trace, tKey or {}; tTr.Hit = false
+  local tTr, fTr, trHit = metaActors.trace, tKey or {}, false
   for k, v in pairs(metaActors.stack) do
     if(v and not fTr[k]) then local nVtx = v:getVertN()
       if(nVtx > 0) then -- Polygon
@@ -64,19 +72,19 @@ function level.smpActor(oPos, oVel, tKey)
           cE:Set(vP):Add(v:getVert(ID) or vI)
           local bSuc, nT, nU, xX = complex.Intersect(oPos, oVel, cS, cE-cS)
           if(bSuc) then -- Chech only non-parallel surfaces
-            if(complex.OnSegment(xX, cS, cE, 1e-10)) then -- Make sure that the point belongs to a surface
+            if(xX:isAmong(cS, cE, 1e-10)) then -- Make sure that the point belongs to a surface
               local cV = (xX - oPos); local nD = cV:getDot(oVel)
               if(nD > 0) then -- Chech only these in front of us
-                if(not tTr.Hit) then tTr.MinLen, tTr.Hit = nD, true
+                if(not trHit) then tTr.MinLen, trHit = nD, true
                   tTr.HitPos:Set(xX); tTr.HitAim:Set(cV); tTr.HitAct = v
                   tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE); tTr.HitKey = k
-                  tTr.HitNrm:Set(complex.Project(oPos, cS, cE)):Neg():Add(oPos):Unit()
+                  tTr.HitNrm:Set(oPos:getProj(cS, cE)):Neg():Add(oPos):Unit()
                 else -- For all the others that we must compare minimum to
                   if(nD < tTr.MinLen) then
                     tTr.HitAct = v; tTr.HitKey = k
                     tTr.MinLen = nD; tTr.HitPos:Set(xX); tTr.HitAim:Set(cV);
                     tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE)
-                    tTr.HitNrm:Set(complex.Project(oPos, cS, cE)):Neg():Add(oPos):Unit()
+                    tTr.HitNrm:Set(oPos:getProj(cS, cE)):Neg():Add(oPos):Unit()
                   end
                 end
               end
@@ -88,10 +96,14 @@ function level.smpActor(oPos, oVel, tKey)
       end
     end
   end
-  
-  if((tTr.HitPos - oPos):getNorm() > oVel:getNorm()) then tTr.Hit = false end
-    
   return tTr
+end
+
+function level.getHit(oPos, oVel, vHit)
+  local tTr  = metaActors.trace
+  local cHit = (vHit and vHit or tTr.HitPos)
+  if((cHit - oPos):getNorm() > oVel:getNorm()) then return false end
+  return true
 end
 
 function level.Clear()
@@ -99,17 +111,34 @@ function level.Clear()
   collectgarbage(); return true
 end
 
+function level.getBorder(oPos, oVel, nOfs)
+  local tTr = metaActors.trace
+  local tBr = metaActors.border; tBr.Hit = false
+  local vnO = tBr.HitOrg:Set(tTr.HitNrm):Mul(nOfs)
+  local cpS = tBr.VtxStr:Set(tTr.VtxStr):Add(vnO)
+  local cpE = tBr.VtxEnd:Set(tTr.VtxEnd):Add(vnO)  
+  local bSuc, nT, nU, xX = complex.Intersect(oPos, oVel, cpS, cpE-cpS)
+  if(bSuc) then
+    local cpH  = tBr.HitPos:Set(xX)
+    local vdH  = tBr.HitDir:Set(cpH):Sub(oPos)
+    tBr.HitDst = vdH:getNorm()
+    if(tBr.HitDst < oVel:getNorm()) then tBr.Hit = true end
+  end
+  return tBr
+end
+
 function level.getActors() return metaActors.stack end
 
 metaActors.store = {
-  [1] = {"setPos"      , complex.Convert},
-  [2] = {"setVert"     , complex.Convert},
-  [3] = {"setAng"      , tonumber},
-  [4] = {"setVel"      , complex.Convert},
-  [5] = {"setStat"     , common.ToBool},
-  [6] = {"setHard"     , common.ToBool},
-  [7] = {"setLife"     , tonumber},
-  [8] = {"setDrawColor", colormap.Convert}
+  [1] = {"setTable"    , blocks.getTable},
+  [2] = {"setPos"      , complex.Convert},
+  [3] = {"setVel"      , complex.Convert},
+  [4] = {"setVert"     , complex.Convert},
+  [5] = {"setAng"      , tonumber},
+  [6] = {"setStat"     , common.ToBool},
+  [7] = {"setHard"     , common.ToBool},
+  [8] = {"setLife"     , tonumber},
+  [9] = {"setDrawColor", colormap.Convert}
 }
 
 function level.Read(sF, bLog)
@@ -118,11 +147,14 @@ function level.Read(sF, bLog)
   local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
   while(not isEOF) do sLn, isEOF = common.GetLineFile(pF)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then tAct[iID] = blocks.New():setKey(iID)
+      logStatus("\nlevels.Read: <"..sLn..">")
       local tCmp, bNew = common.StringExplode(sLn,"/"), tAct[iID]
       for I = 1, #actSt do local tPar = actSt[I]
+        logStatus("  levels.Read: Start ["..I.."] <"..tostring(tCmp[I])..">")
         local tItm = common.StringExplode(common.StringTrim(tCmp[I]),";")
-        for J = 1, #tItm do bNew[tPar[1]](bNew,tPar[2](tItm[J]))
-         -- logStatus("levels.Read: "..tPar[1].." ("..J..") : "..tItm[J])
+        for J = 1, #tItm do
+          logStatus("  levels.Read:   "..tPar[1].." ("..J..") : "..tItm[J])
+          bNew[tPar[1]](bNew,tPar[2](tItm[J]))
         end
         if(bLog) then bNew:Dump() end
       end; iID = (iID + 1)
