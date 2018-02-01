@@ -1,4 +1,5 @@
 local complex      = require("complex")
+local export       = require("export")
 local colormap     = require("colormap")
 local blocks       = require("blockBraker/blocks")
 local common       = require("common")
@@ -50,7 +51,7 @@ end
 function level.addActor(vKey, oAct)
   if(not vKey) then return logStatus("level.addActor: Key invalid", false) end
   local tAct = metaActors.stack
-  if(common.GetType(oAct) == "blocks.block") then
+  if(common.getType(oAct) == "blocks.block") then
     tAct[vKey] = oAct; oAct:setKey(vKey) return true
   end; return logStatus("level.addActor: Object wrong type", false)
 end
@@ -130,30 +131,31 @@ end
 function level.getActors() return metaActors.stack end
 
 metaActors.store = {
-  [1] = {"setTable"    , blocks.getTable},
-  [2] = {"setPos"      , complex.Convert},
-  [3] = {"setVel"      , complex.Convert},
-  [4] = {"setVert"     , complex.Convert},
-  [5] = {"setAng"      , tonumber},
-  [6] = {"setStat"     , common.ToBool},
-  [7] = {"setHard"     , common.ToBool},
-  [8] = {"setLife"     , tonumber},
-  [9] = {"setDrawColor", colormap.Convert}
+  [1]  = {"setTable"    , export.stringTable},
+  [2]  = {"setPos"      , complex.Convert},
+  [3]  = {"setVel"      , complex.Convert},
+  [4]  = {"setVert"     , complex.Convert},
+  [5]  = {"setAng"      , tonumber},
+  [6]  = {"setStat"     , common.toBool},
+  [7]  = {"setHard"     , common.toBool},
+  [8]  = {"setLife"     , tonumber},
+  [9]  = {"setDrawColor", colormap.Convert},
+  [10] = {"setTrace"    , tonumber}
 }
 
 function level.Read(sF, bLog)
   local pF, actSt = io.open("blockBraker/"..sF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.Read: No file <"..tostring(sF)..">", ""), true end
   local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
-  while(not isEOF) do sLn, isEOF = common.GetLineFile(pF)
+  while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then tAct[iID] = blocks.New():setKey(iID)
-      logStatus("\nlevels.Read: <"..sLn..">")
-      local tCmp, bNew = common.StringExplode(sLn,"/"), tAct[iID]
+      if(bLog) then logStatus("\nlevels.Read: <"..sLn..">") end
+      local tCmp, bNew = common.stringExplode(sLn,"/"), tAct[iID]
       for I = 1, #actSt do local tPar = actSt[I]
-        logStatus("  levels.Read: Start ["..I.."] <"..tostring(tCmp[I])..">")
-        local tItm = common.StringExplode(common.StringTrim(tCmp[I]),";")
+        if(bLog) then logStatus("  levels.Read: Start ["..I.."] <"..tostring(tCmp[I])..">") end
+        local tItm = common.stringExplode(common.stringTrim(tCmp[I]),";")
         for J = 1, #tItm do
-          logStatus("  levels.Read:   "..tPar[1].." ("..J..") : "..tItm[J])
+          if(bLog) then logStatus("  levels.Read:   "..tPar[1].." ("..J..") : "..tItm[J]) end
           bNew[tPar[1]](bNew,tPar[2](tItm[J]))
         end
         if(bLog) then bNew:Dump() end

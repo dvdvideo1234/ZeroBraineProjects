@@ -4,13 +4,11 @@ local turtle       = require("turtle")
 local colormap     = require("colormap")
 local common       = require("common")
 local export       = require("export")
+local toBool       = common.toBool
+local logStatus    = common.logStatus
+
 local blocks       = {}
 local metaBlock    = {}
-local toBool       = common.ToBool
-
-local function logStatus(anyMsg, ...)
-  io.write(tostring(anyMsg).."\n"); return ...
-end
 
 metaBlock.__trace = {}
 metaBlock.__type  = "blocks.block"
@@ -108,13 +106,14 @@ function blocks.New()
     end
     if(not self:isHard()) then
       local px, py = mcPos:getSub(mcSiz):Floor():getParts()
-      pncl(mclDr); text(("%4.2f"):format(self:getLife()),0, px, py)
+      pncl(mclDr); text(("%4.1f"):format(self:getLife()),0, px, py)
     end
     return self
   end
   function self:Act()
     if(self:isStat()) then return self end
-    if(mfAct) then mfAct(self); return self end
+    if(mfAct) then mfAct(self) end
+    return self
   end
   function self:Move()
     if(self:isStat()) then return self end
@@ -161,56 +160,6 @@ function blocks.New()
     end; return self;
   end
   return self
-end
-
-local function concatInternal(tIn, sCh)
-  local aAr, aID, aIN = {}, 1, 0
-  for ID = 1, #tIn do
-    local sVal = common.StringTrim(tIn[ID])
-    if(sVal:find("{")) then aIN = aIN + 1 end
-    if(sVal:find("}")) then aIN = aIN - 1 end
-    if(not aAr[aID]) then aAr[aID] = "" end
-    if(aIN == 0) then
-      aAr[aID] = aAr[aID]..sVal; aID = (aID + 1)
-    else
-      aAr[aID] = aAr[aID]..sVal..sCh
-    end
-  end; return aAr
-end
-
-local function importRecursive(sRc) 
-  local sIn = common.StringTrim(tostring(sRc or ""))
-  logStatus("blocks.getTable: Table input <"..sIn..">")
-  if(sIn:sub(1,1)..sIn:sub(-1,-1) ~= "{}") then
-    return logStatus("blocks.getTable: Table format invalid <"..sIn..">", false) end
-  local aIn, tOut = common.StringExplode(sIn:sub(2,-2),","), {}
-  local tIn = concatInternal(aIn, ",")
-  for ID = 1, #tIn do local sVal = common.StringTrim(tIn[ID])
-    if(sVal ~= "") then
-      local aVal = common.StringExplode(sVal,"=")
-      local tVal = concatInternal(aVal, "=")      
-      local kVal, vVal = tVal[1], tVal[2]
-      -- Handle keys
-      if(kVal == "") then return logStatus("blocks.getTable: Table key fail at <"..vVal..">", false) end
-      if(kVal:sub(1,1)..kVal:sub(-1,-1) == "\"\"") then kVal = tostring(kVal):sub(2,-2)
-      elseif(tonumber(kVal)) then kVal = tonumber(kVal)
-      else kVal = tostring(kVal) end
-      -- Handle values
-      if(vVal == "") then vVal = nil
-      elseif(vVal:sub(1,1)..vVal:sub(-1,-1) == "\"\"") then vVal = vVal:sub(2,-2)
-      elseif(vVal:sub(1,1)..vVal:sub(-1,-1) == "{}")   then vVal = importRecursive(vVal)
-      else vVal = (tonumber(vVal) or 0) end
-      -- Write stuff
-      logStatus("blocks.getTable: Table key <"..kVal.."> <"..tostring(vVal)..">")
-      tOut[kVal] = vVal
-    end
-  end; return tOut
-end
-
-function blocks.getTable(sIn)
-  local tOut = importRecursive(sIn)
-  export.Table(tOut, "tOut", {[tOut] = "tOut"})
-  return tOut
 end
 
 return blocks

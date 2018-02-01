@@ -7,7 +7,8 @@ local common   = require("common")
 
 io.stdout:setvbuf("no")
 
-local W, H = 800, 400
+local W, H   = 800, 400
+local gnTick = 0.05 
 
 open("Complex block braker")
 size(W,H)
@@ -23,9 +24,14 @@ local clGry180 = colr(colormap.getColorPadRGB(180))
 local clRed = colr(colormap.getColorRedRGB())
 local vlMgn = colr(colormap.getColorMagenRGB())
 local gbSuc = level.Read("1")
+
 if(gbSuc) then
 
-  local gtActors = level.getActors()
+  local world = blocks.New():setPos(0,0):setWrap(false)
+        world:setVert(0,0):setVert(W-1,0):setVert(W-1,H-1):setVert(0,H-1)
+        world:setStat(true):setLife(1):setHard(true):setDrawColor(colormap.getColorGreenRGB())
+  local wkey = common.randomGetString(50)
+  level.addActor(wkey, world) -- Make sure the key is unique enough
 
   local function drawComplexOrigin(oC, nS, oO, tX)
     local ss = (tonumber(nS) or 2)
@@ -52,42 +58,22 @@ if(gbSuc) then
   complex.Draw("drawComplexOrigin", drawComplexOrigin)
   complex.Draw("drawComplexLine", drawComplexLine)
 
---[[
-  local fild = blocks.New():setPos(0,0):setWrap(false)
-        fild:setVert(0,0):setVert(W-1,0)
-        fild:setVert(W-1,H-1):setVert(0,H-1)
-        fild:setStat(true):setLife(1):setHard(true):setDrawColor(colormap.getColorGreenRGB())
-        
-  local bord = blocks.New():setVert(-50,-7):setVert(50,-7):setVert(50,7):setVert(-50,7)
-        bord:setStat(false):setLife(1):setHard(true)
-        bord:setPos(W/2, H-math.abs(bord:getVert(1):getImag())-4)
-        bord:setDrawColor(colormap.getColorRedRGB()):setTable({Vel = 10, Type = "board"})
-              
-  local ball = blocks.New()
-        ball:setStat(false)
-        ball:setLife(1):setHard(true)
-        ball:setPos(401,332)
-        ball:setVel(0,-20):setDrawColor(colormap.getColorGreenRGB())
-        ball:setTable({Type = "ball", Size = 5, Dmg = 0.5})
-]]
-
-
   local function actBoard(oBoard)
     local lx, ly = clck('ld')
     if(lx and ly) then print(lx..","..ly) end
-    
     local tData = oBoard:getTable()
-    local brVel = oBoard:getVel()
-    local brPos = oBoard:getPos()  
-    local key, vel, sgn, vtx = char(), tData.Vel, 0, 0
+    local brPos, brVel = oBoard:getPos(), oBoard:getVel()
+    local key, vel, sgn, vtx = char(), tData.Vel, 0, 0    
     if(keys.Check(key, "right"))    then sgn, vtx =  1, 2
     elseif(keys.Check(key, "left")) then sgn, vtx = -1, 1
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
-    local wW, dD, bB = fild:getVert(vtx), brVel:getNew(0,1), bord:getVert(vtx)
+    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVert(vtx)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
     local suc, nT, nU, xX = complex.Intersect(brPos, brVel, wW, dD)
     if(suc) then local rN = rR:Sub(xX):getNorm()
-      if(rN <= vel) then brVel:Set(rN*sgn,0) end
+      if(rN <= vel) then  
+        brVel:Set(rN*sgn,0)
+      end
     end
     oBoard:setVel(brVel)
   end
@@ -138,23 +124,44 @@ if(gbSuc) then
     end
   end
   
+  -- Retrice the current actor stack
+  local gtActors = level.getActors()
   
---[[
-  bord:setAction(actBoard)
-  ball:setAction(actBall)
-  ball:setDraw(drawBall)
-
-  level.addActor("bord", bord)
-  level.addActor("fild", fild)
-  level.addActor("ball", ball)
-
-  ball:setTrace(2)
-
+  -- Apply actions and drawings
+  local gtBehave = {
+    ["board"] = {__act = actBoard, __drw = nil     , __cnt = 0, __all = 0},
+    ["ball" ] = {__act = actBall , __drw = drawBall, __cnt = 0, __all = 0},
+    ["brick"] = {__act = nil     , __drw = nil     , __cnt = 0, __all = 0}
+  }
+  
+  for k, v in pairs(gtActors) do
+    local tDat = v:getTable()
+    if(tDat and tDat.Type) then
+      local setUp = gtBehave[tDat.Type]
+      if(setUp) then
+        setUp.__all = setUp.__all + 1
+        if(tDat.Type == "board" and setUp.__cnt >= 1) then
+          common.logStatus("main.lua: Only one player is allowed. You have <"..setUp.__all..">")
+        else
+          v:setAction(setUp.__act)
+          v:setDraw  (setUp.__drw)
+          setUp.__cnt = setUp.__cnt + 1
+        end
+      end
+    end
+  end
+  
+  common.logStatus("main.lua: Here is the level summary:")
+  common.logStatus("  Boards: "..gtBehave["board"].__cnt)
+  common.logStatus("  Balls : "..gtBehave["ball" ].__cnt)
+  common.logStatus("  Blocks: "..gtBehave["brick"].__cnt)
+  
   while true do wipe()
     for k, v in pairs(gtActors) do v:Act():Draw() end
     for k, v in pairs(gtActors) do v:Move() end
-    updt();
-    wait(0.05)
+    updt(); wait(gnTick)
   end
- ]]
+
+else
+  common.logStatus("main.lua: Failed reading the first level !")
 end

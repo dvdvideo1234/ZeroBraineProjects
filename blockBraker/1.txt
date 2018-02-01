@@ -2,10 +2,16 @@
 # table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB
 
 # Board block
-{"Type"="board",lol={1=a,2={a=5},c=3},Vel=10}/200,780/0,0/-50,-7;50,-7;50,7;-50,7/0/false/true/1/255,0,0
+{"Type"="board",Vel=10}/400,390/0,0/-50,-7;50,-7;50,7;-50,7/0/false/true/1/255,0,0/3
 
 # Ball block
-#{Type="ball",Size=5,Dmg=1}/401,332/0,-20//0/false/true/1/0,255,0
+{Type="ball",Size=5,Dmg=1}/401,332/0,-20//0/false/true/1/0,255,0/15
 
 # Ordinary bracable blocks
-#{Type="brick"}/400,200/-30,-18;30,-18;30,30;-18,18/15/0,0/true/false/3/0,0,255
+{Type="brick"}/80,80/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+{Type="brick"}/160,160/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+{Type="brick"}/240,240/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+{Type="brick"}/80,160/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+{Type="brick"}/400,80/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+{Type="brick"}/160,240/0,0/-30,-18;30,-18;30,30;-18,18/15/true/false/3/0,0,255/0
+
