@@ -16,8 +16,8 @@ metaBlock.__index = metaBlock
 function blocks.New()
   local self = {}; setmetatable(self, metaBlock)
   local mbPfr, mbTrc = false, false
-  local mcAxx, mcAxy, mnAng, maKey = complex.New(), complex.New(), 0
-  local mcPos, mcVel, mtVtx = complex.New(), complex.New(), {__size = 0}
+  local mcAxx, mcAxy, mnAng, maKey = complex.getNew(), complex.getNew(), 0
+  local mcPos, mcVel, mtVtx = complex.getNew(), complex.getNew(), {__size = 0}
   local mbSta, mbHrd, mbWrp, miLif, mtTrc, mclDr, mfAct, mfDrw, mtDat = true, true, true, 0, {}
   function self:setHard(bHrd) mbHrd = bHrd; return self end
   function self:setStat(bSta) mbSta = bSta; return self end
@@ -44,7 +44,7 @@ function blocks.New()
   function self:getVertN() return mtVtx.__size end
   function self:setVert(x,y)
     mtVtx.__size = mtVtx.__size + 1
-    mtVtx[mtVtx.__size] = complex.New(x,y); return self
+    mtVtx[mtVtx.__size] = complex.getNew(x,y); return self
   end
   function self:getVert(vID)
     local iID = math.floor(tonumber(vID) or 0)

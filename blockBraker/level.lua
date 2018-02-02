@@ -11,11 +11,11 @@ metaActors.stack   = {}
 metaActors.garbage = 10
 metaActors.curcoll = 0
 metaActors.trace   = {
-  HitPos = complex.New(),
-  HitAim = complex.New(),
-  HitNrm = complex.New(),
-  VtxStr = complex.New(),
-  VtxEnd = complex.New(),
+  HitPos = complex.getNew(),
+  HitAim = complex.getNew(),
+  HitNrm = complex.getNew(),
+  VtxStr = complex.getNew(),
+  VtxEnd = complex.getNew(),
   HitAct = 0,
   HitKey = 0,
   MinLen = 0,
@@ -24,11 +24,11 @@ metaActors.trace   = {
 metaActors.border = {
   Hit    = false,
   HitDst = 0,
-  HitPos = complex.New(),
-  HitOrg = complex.New(),
-  HitDir = complex.New(),
-  VtxStr = complex.New(),
-  VtxEnd = complex.New()
+  HitPos = complex.getNew(),
+  HitOrg = complex.getNew(),
+  HitDir = complex.getNew(),
+  VtxStr = complex.getNew(),
+  VtxEnd = complex.getNew()
 }
 
 local function logStatus(anyMsg, ...)
@@ -71,7 +71,7 @@ function level.smpActor(oPos, oVel, tKey)
         while(ID <= nVtx) do
           cS:Set(vP):Add(v:getVert(ID) or vI); ID = ID + 1
           cE:Set(vP):Add(v:getVert(ID) or vI)
-          local bSuc, nT, nU, xX = complex.Intersect(oPos, oVel, cS, cE-cS)
+          local bSuc, nT, nU, xX = complex.getIntersectRayRay(oPos, oVel, cS, cE-cS)
           if(bSuc) then -- Chech only non-parallel surfaces
             if(xX:isAmong(cS, cE, 1e-10)) then -- Make sure that the point belongs to a surface
               local cV = (xX - oPos); local nD = cV:getDot(oVel)
@@ -118,7 +118,7 @@ function level.getBorder(oPos, oVel, nOfs)
   local vnO = tBr.HitOrg:Set(tTr.HitNrm):Mul(nOfs)
   local cpS = tBr.VtxStr:Set(tTr.VtxStr):Add(vnO)
   local cpE = tBr.VtxEnd:Set(tTr.VtxEnd):Add(vnO)  
-  local bSuc, nT, nU, xX = complex.Intersect(oPos, oVel, cpS, cpE-cpS)
+  local bSuc, nT, nU, xX = complex.getIntersectRayRay(oPos, oVel, cpS, cpE-cpS)
   if(bSuc) then
     local cpH  = tBr.HitPos:Set(xX)
     local vdH  = tBr.HitDir:Set(cpH):Sub(oPos)
@@ -132,9 +132,9 @@ function level.getActors() return metaActors.stack end
 
 metaActors.store = {
   [1]  = {"setTable"    , export.stringTable},
-  [2]  = {"setPos"      , complex.Convert},
-  [3]  = {"setVel"      , complex.Convert},
-  [4]  = {"setVert"     , complex.Convert},
+  [2]  = {"setPos"      , complex.convNew},
+  [3]  = {"setVel"      , complex.convNew},
+  [4]  = {"setVert"     , complex.convNew},
   [5]  = {"setAng"      , tonumber},
   [6]  = {"setStat"     , common.toBool},
   [7]  = {"setHard"     , common.toBool},

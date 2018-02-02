@@ -8,15 +8,15 @@ local common   = require("common")
 io.stdout:setvbuf("no")
 
 local W, H   = 800, 400
-local gnTick = 0.05 
+local gnTick = 0.01 
 
 open("Complex block braker")
 size(W,H)
 zero(0, 0)
 updt(false) 
 
-local axOx  = complex.New(1,0)
-local axOy  = complex.New(0,1)
+local axOx  = complex.getNew(1,0)
+local axOy  = complex.getNew(0,1)
 local clBlu = colr(colormap.getColorBlueRGB())
 local clBlk = colr(colormap.getColorBlackRGB())
 local clGrn = colr(colormap.getColorGreenRGB())
@@ -55,8 +55,8 @@ if(gbSuc) then
     pncl(vlMgn); rect(ex-ss, ey-ss, 2*ss+1, 2*ss+1)
   end
 
-  complex.Draw("drawComplexOrigin", drawComplexOrigin)
-  complex.Draw("drawComplexLine", drawComplexLine)
+  complex.setAction("drawComplexOrigin", drawComplexOrigin)
+  complex.setAction("drawComplexLine", drawComplexLine)
 
   local function actBoard(oBoard)
     local lx, ly = clck('ld')
@@ -69,7 +69,7 @@ if(gbSuc) then
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
     local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVert(vtx)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
-    local suc, nT, nU, xX = complex.Intersect(brPos, brVel, wW, dD)
+    local suc, nT, nU, xX = complex.getIntersectRayRay(brPos, brVel, wW, dD)
     if(suc) then local rN = rR:Sub(xX):getNorm()
       if(rN <= vel) then  
         brVel:Set(rN*sgn,0)
@@ -103,11 +103,11 @@ if(gbSuc) then
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
       while(tBr.Hit) do nmBnc = nmBnc + 1
-        tBr.VtxStr:Draw("drawComplexLine", tBr.VtxEnd)
+        tBr.VtxStr:Act("drawComplexLine", tBr.VtxEnd)
         tTr.HitAct:Damage(tData.Dmg)
         if(tTr.HitAct:isDead()) then level.delActor(tTr.HitKey) end
         if(tBr.HitDst < nvPrt) then nvPrt = nvPrt - tBr.HitDst
-          local cN, cR = complex.Reflect(cpInt, cvRef, tBr.VtxStr, tBr.VtxEnd)
+          local cN, cR = complex.getReflectRayLine(cpInt, cvRef, tBr.VtxStr, tBr.VtxEnd)
           cpInt:Set(tBr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
           -- Adjust the next frame position according to the trace
           cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())

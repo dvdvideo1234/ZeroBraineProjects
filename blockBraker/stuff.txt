@@ -1,0 +1,26 @@
+
+
+        
+  local bord = blocks.New():setVert(-50,-7):setVert(50,-7):setVert(50,7):setVert(-50,7)
+        bord:setStat(false):setLife(1):setHard(true)
+        bord:setPos(W/2, H-math.abs(bord:getVert(1):getImag())-4)
+        bord:setDrawColor(colormap.getColorRedRGB()):setTable({Vel = 10, Type = "board"})
+              
+  local ball = blocks.New()
+        ball:setStat(false)
+        ball:setLife(1):setHard(true)
+        ball:setPos(401,332)
+        ball:setVel(0,-20):setDrawColor(colormap.getColorGreenRGB())
+        ball:setTable({Type = "ball", Size = 5, Dmg = 0.5})
+
+--[[
+  bord:setAction(actBoard)
+  ball:setAction(actBall)
+  ball:setDraw(drawBall)
+
+  level.addActor("bord", bord)
+  level.addActor("fild", fild)
+  level.addActor("ball", ball)
+
+  ball:setTrace(2)
+]]
