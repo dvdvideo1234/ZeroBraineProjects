@@ -7,26 +7,28 @@ local common   = require("common")
 
 io.stdout:setvbuf("no")
 
-local W, H   = 800, 400
-local gnTick = 0.01 
+local gnTick  = 0.03 
+local gtDebug = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
-open("Complex block braker")
-size(W,H)
-zero(0, 0)
-updt(false) 
-
-local axOx  = complex.getNew(1,0)
-local axOy  = complex.getNew(0,1)
-local clBlu = colr(colormap.getColorBlueRGB())
-local clBlk = colr(colormap.getColorBlackRGB())
-local clGrn = colr(colormap.getColorGreenRGB())
-local clGry180 = colr(colormap.getColorPadRGB(180))
-local clRed = colr(colormap.getColorRedRGB())
-local vlMgn = colr(colormap.getColorMagenRGB())
-local gbSuc = level.Read("1")
+local gbSuc = level.Read("bumpy")
 
 if(gbSuc) then
+  local W, H = level.getScreenSize()
+  
+  open("Complex block braker")
+  size(W, H)
+  zero(0, 0)
+  updt(false) 
 
+  local axOx  = complex.getNew(1,0)
+  local axOy  = complex.getNew(0,1)
+  local clBlu = colr(colormap.getColorBlueRGB())
+  local clBlk = colr(colormap.getColorBlackRGB())
+  local clGrn = colr(colormap.getColorGreenRGB())
+  local clGry180 = colr(colormap.getColorPadRGB(180))
+  local clRed = colr(colormap.getColorRedRGB())
+  local vlMgn = colr(colormap.getColorMagenRGB())
+  
   local world = blocks.New():setPos(0,0):setWrap(false)
         world:setVert(0,0):setVert(W-1,0):setVert(W-1,H-1):setVert(0,H-1)
         world:setStat(true):setLife(1):setHard(true):setDrawColor(colormap.getColorGreenRGB())
@@ -59,21 +61,32 @@ if(gbSuc) then
   complex.setAction("drawComplexLine", drawComplexLine)
 
   local function actBoard(oBoard)
-    local lx, ly = clck('ld')
-    if(lx and ly) then print(lx..","..ly) end
     local tData = oBoard:getTable()
     local brPos, brVel = oBoard:getPos(), oBoard:getVel()
-    local key, vel, sgn, vtx = char(), tData.Vel, 0, 0    
-    if(keys.Check(key, "right"))    then sgn, vtx =  1, 2
-    elseif(keys.Check(key, "left")) then sgn, vtx = -1, 1
+    local key, vel, sgn, vtx = keys.getKey(), tData.Vel, 0, 0
+    if(gtDebug and gtDebug.en) then
+      local lx, ly = clck('ld')
+      if(lx and ly) then gtDebug.data.lxy = "<"..tostring(lx)..", "..tostring(ly)..">" end
+      local rx, ry = clck('rd')
+      if(rx and ry) then gtDebug.data.rxy = "<"..tostring(rx)..", "..tostring(ry)..">" end
+      if(key) then gtDebug.data.key = tostring(key) end
+      local tX = gtDebug.data.lxy.." # "..gtDebug.data.rxy.." # "..gtDebug.data.key
+      text(tX, 0, 0, 0)
+    end
+    if(keys.getPress(key, "right"))    then sgn, vtx =  1, 2
+    elseif(keys.getPress(key, "left")) then sgn, vtx = -1, 1
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
-    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVert(vtx)
+    local vtb, max, uvel = 0, 0, brVel:getUnit()
+    for ID = 1, oBoard:getVertN() do
+      local vtt = oBoard:getVert(ID)
+      local dot = vtt:getDot(uvel)
+      if(dot > max) then vtb, max = ID, dot end
+    end
+    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVert(vtb)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
     local suc, nT, nU, xX = complex.getIntersectRayRay(brPos, brVel, wW, dD)
     if(suc) then local rN = rR:Sub(xX):getNorm()
-      if(rN <= vel) then  
-        brVel:Set(rN*sgn,0)
-      end
+      if(rN <= vel) then brVel:Set(rN*sgn,0) end
     end
     oBoard:setVel(brVel)
   end

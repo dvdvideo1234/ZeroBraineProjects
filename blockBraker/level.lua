@@ -3,6 +3,7 @@ local export       = require("export")
 local colormap     = require("colormap")
 local blocks       = require("blockBraker/blocks")
 local common       = require("common")
+local logStatus    = common.logStatus
 local type         = type
 local getmetatable = getmetatable
 local level        = {}
@@ -10,6 +11,7 @@ local metaActors   = {}
 metaActors.stack   = {}
 metaActors.garbage = 10
 metaActors.curcoll = 0
+metaActors.scrsize = {W = 800, H = 400}
 metaActors.trace   = {
   HitPos = complex.getNew(),
   HitAim = complex.getNew(),
@@ -31,8 +33,8 @@ metaActors.border = {
   VtxEnd = complex.getNew()
 }
 
-local function logStatus(anyMsg, ...)
-  io.write(tostring(anyMsg).."\n"); return ...
+function level.getScreenSize()
+  return metaActors.scrsize.W, metaActors.scrsize.H
 end
 
 function level.setGarbage(vGrb)
@@ -79,13 +81,13 @@ function level.smpActor(oPos, oVel, tKey)
                 if(not trHit) then tTr.MinLen, trHit = nD, true
                   tTr.HitPos:Set(xX); tTr.HitAim:Set(cV); tTr.HitAct = v
                   tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE); tTr.HitKey = k
-                  tTr.HitNrm:Set(oPos:getProj(cS, cE)):Neg():Add(oPos):Unit()
+                  tTr.HitNrm:Set(oPos:getProject(cS, cE)):Neg():Add(oPos):Unit()
                 else -- For all the others that we must compare minimum to
                   if(nD < tTr.MinLen) then
                     tTr.HitAct = v; tTr.HitKey = k
                     tTr.MinLen = nD; tTr.HitPos:Set(xX); tTr.HitAim:Set(cV);
                     tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE)
-                    tTr.HitNrm:Set(oPos:getProj(cS, cE)):Neg():Add(oPos):Unit()
+                    tTr.HitNrm:Set(oPos:getProject(cS, cE)):Neg():Add(oPos):Unit()
                   end
                 end
               end
@@ -144,7 +146,7 @@ metaActors.store = {
 }
 
 function level.Read(sF, bLog)
-  local pF, actSt = io.open("blockBraker/"..sF..".txt"), metaActors.store
+  local pF, actSt = io.open("blockBraker/levels/"..sF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.Read: No file <"..tostring(sF)..">", ""), true end
   local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
   while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
