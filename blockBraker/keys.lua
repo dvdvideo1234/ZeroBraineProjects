@@ -73,6 +73,8 @@ __keymap["f10"   ] = 349
 __keymap["f11"   ] = 350
 __keymap["f12"   ] = 351
 __keymap["nument"] = 370
+__keymap["num+"  ] = 388
+__keymap["num-"  ] = 390
 
 for but, asc in pairs(__keymap) do
   __revmap[asc] = but

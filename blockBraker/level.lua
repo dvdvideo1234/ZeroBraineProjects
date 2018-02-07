@@ -26,6 +26,7 @@ metaActors.trace   = {
 metaActors.border = {
   Hit    = false,
   HitDst = 0,
+  HitCnt = 0,
   HitPos = complex.getNew(),
   HitOrg = complex.getNew(),
   HitDir = complex.getNew(),
@@ -81,13 +82,13 @@ function level.smpActor(oPos, oVel, tKey)
                 if(not trHit) then tTr.MinLen, trHit = nD, true
                   tTr.HitPos:Set(xX); tTr.HitAim:Set(cV); tTr.HitAct = v
                   tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE); tTr.HitKey = k
-                  tTr.HitNrm:Set(oPos:getProject(cS, cE)):Neg():Add(oPos):Unit()
+                  tTr.HitNrm:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
                 else -- For all the others that we must compare minimum to
                   if(nD < tTr.MinLen) then
                     tTr.HitAct = v; tTr.HitKey = k
                     tTr.MinLen = nD; tTr.HitPos:Set(xX); tTr.HitAim:Set(cV);
                     tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE)
-                    tTr.HitNrm:Set(oPos:getProject(cS, cE)):Neg():Add(oPos):Unit()
+                    tTr.HitNrm:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
                   end
                 end
               end
@@ -116,16 +117,18 @@ end
 
 function level.getBorder(oPos, oVel, nOfs)
   local tTr = metaActors.trace
-  local tBr = metaActors.border; tBr.Hit = false
+  local tBr = metaActors.border; tBr.Hit, tBr.HitCnt = false, 0
   local vnO = tBr.HitOrg:Set(tTr.HitNrm):Mul(nOfs)
   local cpS = tBr.VtxStr:Set(tTr.VtxStr):Add(vnO)
   local cpE = tBr.VtxEnd:Set(tTr.VtxEnd):Add(vnO)  
   local bSuc, nT, nU, xX = complex.getIntersectRayRay(oPos, oVel, cpS, cpE-cpS)
   if(bSuc) then
     local cpH  = tBr.HitPos:Set(xX)
-    local vdH  = tBr.HitDir:Set(cpH):Sub(oPos)
+    local vdH  = tBr.HitDir:Set(xX):Sub(oPos)
     tBr.HitDst = vdH:getNorm()
-    if(tBr.HitDst < oVel:getNorm()) then tBr.Hit = true end
+    if(tBr.HitDst < oVel:getNorm()) then
+      tBr.Hit, tBr.HitCnt = true, (tBr.HitCnt + 1)
+    end
   end
   return tBr
 end

@@ -7,8 +7,8 @@ local common   = require("common")
 
 io.stdout:setvbuf("no")
 
-local gnTick  = 0.03 
-local gtDebug = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
+local gnTick  = 0.5 
+local gtDebug = {en = true, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 local gbSuc = level.Read("bumpy")
 
@@ -63,7 +63,7 @@ if(gbSuc) then
   local function actBoard(oBoard)
     local tData = oBoard:getTable()
     local brPos, brVel = oBoard:getPos(), oBoard:getVel()
-    local key, vel, sgn, vtx = keys.getKey(), tData.Vel, 0, 0
+    local key, vel, sgn, vtx = keys.getKey(), tData.Velocity, 0, 0
     if(gtDebug and gtDebug.en) then
       local lx, ly = clck('ld')
       if(lx and ly) then gtDebug.data.lxy = "<"..tostring(lx)..", "..tostring(ly)..">" end
@@ -111,26 +111,42 @@ if(gbSuc) then
     local tKey  = {[oBall:getKey()] = true}
     local tTr = level.smpActor(baPos, baVel, tKey)
     local tBr = level.getBorder(baPos, baVel, tData.Size)
+    
+    tTr.HitPos:Action("drawComplexOrigin")
+    tBr.HitPos:Action("drawComplexOrigin")
+    tBr.VtxStr:Action("drawComplexLine", tBr.VtxEnd)
+    
     if(tBr.Hit) then -- Is there a hit to tavke cate in the frame
-      local nvPrt, nmBnc = baVel:getNorm(), 0
+      local nvPrt = baVel:getNorm()
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
-      while(tBr.Hit) do nmBnc = nmBnc + 1
-        tBr.VtxStr:Act("drawComplexLine", tBr.VtxEnd)
-        tTr.HitAct:Damage(tData.Dmg)
+      print("str", nvPrt)
+      while(tBr.Hit) do
+        
+        
+
+        tBr.VtxStr:Action("drawComplexLine", tBr.VtxEnd)
+        
+        tTr.HitAct:Damage(tData.Damage)
         if(tTr.HitAct:isDead()) then level.delActor(tTr.HitKey) end
-        if(tBr.HitDst < nvPrt) then nvPrt = nvPrt - tBr.HitDst
+        print(tBr.HitDst, nvPrt)
+        
+        
+        if(tBr.HitDst < nvPrt) then nvPrt = (nvPrt - tBr.HitDst)
           local cN, cR = complex.getReflectRayLine(cpInt, cvRef, tBr.VtxStr, tBr.VtxEnd)
+          
           cpInt:Set(tBr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
           -- Adjust the next frame position according to the trace
-          cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
+          cfPos:Set(cpInt); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
           -- Draw the ball trajectory if enabled
           oBall:addTrace(cpInt):addTrace(cfPos)
         end
+        
+        
         tTr = level.smpActor(cpInt, cvRef, tKey)
-        tBr = level.getBorder(cpInt, cvRef, tData.Size, nmBnc)
+        tBr = level.getBorder(cpInt, cvRef, tData.Size)
       end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
-      oBall:setPos(cfPos):setFrame(true):setVel(cfVel)
+      oBall:setFrame(true):setPos(cfPos):setVel(cfVel)
     else
       -- Update the OOP accordingly and move in 2D space if nothing is hit
       oBall:setVel(baVel)
