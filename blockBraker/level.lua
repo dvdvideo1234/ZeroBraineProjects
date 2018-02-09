@@ -144,23 +144,23 @@ metaActors.store = {
   [6]  = {"setStat"     , common.toBool},
   [7]  = {"setHard"     , common.toBool},
   [8]  = {"setLife"     , tonumber},
-  [9]  = {"setDrawColor", colormap.Convert},
+  [9]  = {"setDrawColor", colormap.convRGB},
   [10] = {"setTrace"    , tonumber}
 }
 
-function level.Read(sF, bLog)
+function level.readStage(sF, bLog)
   local pF, actSt = io.open("blockBraker/levels/"..sF..".txt"), metaActors.store
-  if(not pF) then return logStatus("levels.Read: No file <"..tostring(sF)..">", ""), true end
+  if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", ""), true end
   local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
   while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then tAct[iID] = blocks.New():setKey(iID)
-      if(bLog) then logStatus("\nlevels.Read: <"..sLn..">") end
+      if(bLog) then logStatus("\nlevels.readStage: <"..sLn..">") end
       local tCmp, bNew = common.stringExplode(sLn,"/"), tAct[iID]
       for I = 1, #actSt do local tPar = actSt[I]
-        if(bLog) then logStatus("  levels.Read: Start ["..I.."] <"..tostring(tCmp[I])..">") end
+        if(bLog) then logStatus("  levels.readStage: Start ["..I.."] <"..tostring(tCmp[I])..">") end
         local tItm = common.stringExplode(common.stringTrim(tCmp[I]),";")
-        for J = 1, #tItm do
-          if(bLog) then logStatus("  levels.Read:   "..tPar[1].." ("..J..") : "..tItm[J]) end
+        for J = 1, #tItm do if(bLog) then logStatus("  levels.readStage:   "..tPar[1].." ("..J..") : "..tItm[J]) end
+          if(not tPar[2]) then return logStatus("levels.readStage: Data convertor ["..J.."] missing <"..tPar[1]..">", false) end
           bNew[tPar[1]](bNew,tPar[2](tItm[J]))
         end
         if(bLog) then bNew:Dump() end

@@ -1,15 +1,15 @@
-local wx       = require("wx")
-local turtle   = require("turtle")
-local colormap = require("colormap")
-local complex  = require("complex")
-local keys     = require("blockBraker/keys")
-local common   = require("common")
-local level    = require("blockBraker/level")
-local export   = require("export") 
+local wx        = require("wx")
+local turtle    = require("turtle")
+local colormap  = require("colormap")
+local complex   = require("complex")
+local keys      = require("blockBraker/keys")
+local common    = require("common")
+local level     = require("blockBraker/level")
+local export    = require("export") 
 
 local logStatus = common.logStatus
 
-local W, H     = level.getScreenSize()
+local W, H      = level.getScreenSize()
 
 local clBlu = colr(colormap.getColorBlueRGB())
 local clBlk = colr(colormap.getColorBlackRGB())
@@ -18,7 +18,7 @@ local clGry180 = colr(colormap.getColorPadRGB(180))
 local clRed = colr(colormap.getColorRedRGB())
 local vlMgn = colr(colormap.getColorMagenRGB())
 
-local __items = {} -- Items stack
+local __items = {__size = 0} -- Items stack
 local __setup = {}
 local __mode  = {
   ID = 1,
@@ -63,10 +63,36 @@ local __mode  = {
       {"Trail"  , 0    , 1, {0}}
     }
   },
-  SL = {0, 0, 0}
+  SL = {0, 0, 0},
   -- table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB/trail
   EX = { Base = "{Type=\"%s\"%s}/%s/%s/%s/%f/%s/%s/%f/%d,%d,%d/%d", ",Velocity=%f", ",Size=%f,Damage=%f", ""}
 }
+
+local function typeID(iID)
+  if(iID) then __mode.ID = iID end
+  return __mode.ID
+end
+
+local function typeSelect(iID, vID)
+  if(vID) then __mode.SL[iID] = vID end
+  return __mode.SL[iID]
+end
+
+local function typeName(iID)     return __mode.ST[iID] end
+local function typeData(iID)     return __mode.DT[iID] end
+local function typeComment(iID)  return __mode.CM[iID] end
+local function typeExport(iID)   return __mode.EX[iID] end
+local function getItems()        return __items end
+local function getItem(iID)      return __items[iID] end
+local function setItem(iID, vI)         __items[iID] = vI end
+local function addItem(iID)
+  setItem(iID, {__top = 0, __data = {}, __name = typeName(iID)})
+  if(__items.__size <= iID) then __items.__size = iID end
+  return getItem(iID)
+end
+local function getItemsN()   return __items.__size end
+local function isSelected(aKey) return (aKey == typeSelect(typeID())) end
+
 
 local function getVertex(tBlk)
   local vT, vtx = "", tBlk.vtx
@@ -77,25 +103,31 @@ local function getVertex(tBlk)
 end
 
 local function getValueSet(sNam, tSet, iD, vF)
-  local exp = tostring(__mode.ST[iD])
+  local exp = typeName(iD)
   if(not (sNam and tSet)) then
     return logStatus("getValueSet("..exp.."): <"..tostring(sNam).."/"..tostring(tSet)..">", vF) end
   local ID = __setup[iD][sNam]; if(not ID) then 
     return logStatus("getValueSet("..exp.."): Cannot retrieve ID for <"..tostring(sNam)..">", vF) end   
   local tDat = tSet[ID]; if(not tDat) then 
+    export.tableString(tSet, "getValueSet: tSet")
     return logStatus("getValueSet("..exp.."): No table provided <"..tostring(ID)..">", vF) end   
   local out = tDat[2]; return common.getPick(out~=nil, out, vF)
 end
 
-local function getStringTableSet(tSet, iD)
-  local tPar, tOut, I = __mode.DT[iD], {}, 1
-  while(tPar[I][4]) do
-    tOut[I] = getValueSet(tPar[I][1], tSet, iD); I = I + 1
-  end; return __mode.EX[iD]:format(unpack(tOut))
+local function getItemColor(tSet, iD)
+  return getValueSet("Color R", tSet, iD),
+         getValueSet("Color G", tSet, iD),
+         getValueSet("Color B", tSet, iD)
 end
 
-local function saveFile(tStu)
-  local fNam, key = "", char()
+local function getStringSet(tSet, iD)
+  local tPar, tOut, I = typeData(iD), {}, 1
+  while(tPar[I][5]) do tOut[I] = getValueSet(tPar[I][1], tSet, iD); I = I + 1
+  end; return typeExport(iD):format(unpack(tOut))
+end
+
+local function saveFile()
+  local fNam, tStu, key = "", getItems(), char()
   while(not (keys.getPress(key, "enter") or keys.getPress(key, "nument"))) do wipe()
     if(key) then
       fNam = fNam..tostring(keys.getChar(key) or ""):sub(1,1)
@@ -109,27 +141,29 @@ local function saveFile(tStu)
     return common.logStatus("saveLevel: File invalid <"..fNam..">", false) end
   iO:write("# Blocks general parameters\n")
   iO:write("# table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB/trail\n\n")
-  for ID = 1, #__items do
-    local tInfo, sType = __items[ID], __mode.ST[ID]
-    if(tInfo) then
-      iO:write("# "..__mode.CM[ID].."\n")
-      local tDat = tInfo.__data
+  local tItems = getItems()
+  for ID = 1, getItemsN() do
+    local tInfo, sType = getItem(ID), typeName(ID)
+    if(tInfo) then local tDat = tInfo.__data
+      iO:write("# "..typeComment(ID).."\n")
       for I = 1, #tDat do
-        local v = tDat[I] if(v) then local set = v.set
-          local vtx = getVertex(v)
-          local pos = tostring(v.pos):sub(2,-2)
-          local vel = tostring(v.vel):sub(2,-2)
-          local parE = __mode.EX.Base:format(sType, "%s", pos, vel, vtx,
-                     getValueSet("Angle"  , set, ID),
-            tostring(getValueSet("Static" , set, ID)),
-            tostring(getValueSet("Hard"   , set, ID)),
-                     getValueSet("Life"   , set, ID),
-                     getValueSet("Color R", set, ID),
-                     getValueSet("Color G", set, ID),
-                     getValueSet("Color B", set, ID),
-                     getValueSet("Trail"  , set, ID))
-          -- Generate table and format it inside the string second stage          
-          iO:write(parE:format(getStringTableSet(set, ID))); iO:write("\n")
+        local v = tDat[I]
+          if(v) then
+            local tSet = v.set
+            local sVtx = getVertex(v)
+            local sPos = tostring(v.pos):sub(2,-2)
+            local sVel = tostring(v.vel):sub(2,-2)
+            local parE = typeExport("Base"):format(sType, "%s", sPos, sVel, sVtx,
+                     getValueSet("Angle"  , tSet, ID),
+            tostring(getValueSet("Static" , tSet, ID)),
+            tostring(getValueSet("Hard"   , tSet, ID)),
+                     getValueSet("Life"   , tSet, ID),
+                     getValueSet("Color R", tSet, ID),
+                     getValueSet("Color G", tSet, ID),
+                     getValueSet("Color B", tSet, ID),
+                     getValueSet("Trail"  , tSet, ID))
+          -- Generate table and format it inside the string second stage
+          iO:write(parE:format(getStringSet(tSet, ID))); iO:write("\n")
         end
       end; iO:write("\n") 
     end
@@ -139,42 +173,52 @@ local function saveFile(tStu)
   return true
 end
 
-local function drawComplexOrigin(oC, nS, oO, tX)
-  local ss = (tonumber(nS) or 2)
-  local xx, yy = oC:getParts()
-  if(oO) then
-    local ox, ox = oO:getParts()
-    pncl(clGry180); line(ox, ox, xx, yy)
-  end
-  if(tX) then
-    pncl(clBlk); text(tostring(tX),0,xx,yy)
-  end
-  pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss+1, 2*ss+1)
+local function drawComplexOrigin(oC)
+  local ss, xx, yy = 3, oC:getParts()
+  pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
+end
+
+local function drawComplexSelect(oC)
+  local ss, xx, yy = 10, oC:getParts()
+  pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
 end
 
 complex.setAction("xy", drawComplexOrigin)
+complex.setAction("sel", drawComplexSelect)
 
 local function drawBricks(tInfo)
-  for k, v  in pairs(tInfo.__data) do
-    local ang = getValueSet("Angle", v.set, __mode.ID)
-    local pos, vtx = v.pos, v.vtx; pos:Action("xy")
-    local len, ftx = #vtx, vtx[1]
-    for i = 1, len do
+  local tDat = tInfo.__data
+  for k, v  in pairs(tDat) do
+    local ang = getValueSet("Angle", v.set, typeID())
+    local r, g, b = getItemColor(v.set, typeID())
+    local clr = colr(r, g, b)
+    local pos, vtx = v.pos, v.vtx
+    if(isSelected(k)) then pos:Action("sel") end
+    local len, ftx = #vtx, vtx[1]; pos:Action("xy")
+    for i = 1, len do 
       local s = (vtx[i]   or ftx):getRotDeg(ang):Add(pos)
       local e = (vtx[i+1] or ftx):getRotDeg(ang):Add(pos)
       local sx, sy = s:getParts()
       local ex, ey = e:getParts()
-      if(not vtx[i+1]) then pncl(vlMgn) else pncl(clBlu) end
+      if(not vtx[i+1]) then
+        pncl(vlMgn)
+      else
+        pncl(clr)
+      end
       line(sx, sy, ex, ey)
     end
   end
 end
 
 local function drawBalls(tInfo)
-  for k, v  in pairs(tInfo.__data) do
-    local pos, vel = v.pos, v.vel; pos:Action("xy")
+  local tDat = tInfo.__data
+  for k, v  in pairs(tDat) do
+    local pos, vel = v.pos, v.vel
+    local r, g, b = getItemColor(v.set, typeID())
+    local clr = colr(r, g, b)
+    if(isSelected(k)) then pos:Action("sel") end
     local px, py = pos:getParts()
-    pncl(clBlk); oval(px, py, 5, 5, clGrn)
+    pncl(clBlk); oval(px, py, 5, 5, clr)
     if(vel) then
       local vx, vy = vel:getParts()
       pncl(clBlk); line(px, py, px+vx, py+vy)
@@ -183,23 +227,26 @@ local function drawBalls(tInfo)
 end
 
 local function modPoly(tInfo, bUndo)
-  local tTop = tInfo.__data[tInfo.__top]
+  local tDat = tInfo.__data
+  local tTop = tDat[tInfo.__top]
   if(not bUndo) then
     local rx, ry = keys.getMouseRD()      
     if(rx and ry) then
       if(tTop and tTop.vtx and #tTop.vtx <= 2) then
-        local sType = __mode.ST[__mode.ID]
-        tInfo.__data[tInfo.__top] = nil
+        local sType = typeName(typeID()); tDat[tInfo.__top] = nil
         common.logStatus("Add ["..sType.."]: Deleted missing vertex #"..#tTop.vtx)
       end; if(tTop) then tTop.cmp = true end
       tInfo.__top = tInfo.__top + 1
-      tInfo.__data[tInfo.__top] = {
+      tDat[tInfo.__top] = {
         vtx = {},
         cmp = false,
         vel = complex.getNew(0,0),
         pos = complex.getNew(rx, ry),
-        set = export.copyItem(__mode.DT[__mode.ID])
-      }; tTop = tInfo.__data[tInfo.__top]
+        set = export.copyItem(typeData(typeID())),
+        __pos = complex.getNew(rx, ry)
+      }
+      tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modPoly"
+      typeSelect(typeID(), tInfo.__top)
     end
     local lx, ly = keys.getMouseLD()
     if(lx and ly) then
@@ -209,7 +256,16 @@ local function modPoly(tInfo, bUndo)
       end
     end
   else
-    if(tTop and tTop.vtx) then tTop.vtx[#tTop.vtx] = nil end
+    if(tTop) then local nVtx = common.getPick(tTop.vtx, #tTop.vtx, 0)
+      if(nVtx == 0) then
+        tDat[tInfo.__top] = nil
+        tInfo.__top = (tInfo.__top - 1)
+        tTop = tDat[tInfo.__top]
+      else
+        if(tTop and tTop.vtx) then
+          tTop.vtx[#tTop.vtx] = nil end
+      end
+    end
   end
 end
 
@@ -238,62 +294,62 @@ local function setSettings(key, tInfo)
 end
 
 local function modBall(tInfo, bUndo)
-  local tTop = tInfo.__data[tInfo.__top]
+  local tDat = tInfo.__data
+  local tTop = tDat[tInfo.__top]
+  local tSel = tDat[typeSelect(typeID())]
   if(not bUndo) then
     local rx, ry = keys.getMouseRD()      
     if(rx and ry) then
-      if(tTop) then tTop.cmp = true end
       if(tTop and ((tTop.vel and tTop.vel:getNorm() == 0) or not tTop.vel)) then
-        local sType = __mode.ST[__mode.ID]
-        tInfo.__data[tInfo.__top] = nil
-        common.logStatus("Add ["..sType.."]: Deleted invalid velocity <"..tostring(tTop.vel)..">")
-      end
+        tDat[tInfo.__top] = nil; tInfo.__top = (tInfo.__top - 1)
+        common.logStatus("Add ["..typeName(typeID()).."]: Deleted invalid velocity <"..tostring(tTop.vel)..">")
+      end; if(tTop) then tTop.cmp = true end
       tInfo.__top = tInfo.__top + 1
-      tInfo.__data[tInfo.__top] = {
+      tDat[tInfo.__top] = {
         vtx = {},
         cmp = false,
         vel = complex.getNew(0, 0),
         pos = complex.getNew(rx, ry), 
-        set = export.copyItem(__mode.DT[__mode.ID])
-      }; tTop = tInfo.__data[tInfo.__top]
+        set = export.copyItem(typeData(typeID())),
+        __vel = complex.getNew(0, 0),
+        __pos = complex.getNew(rx, ry)
+      }
+      tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modBall"
+      typeSelect(typeID(), tInfo.__top)
     end
     local lx, ly = keys.getMouseLD()
-    if(lx and ly) then local tDat = tInfo.__data[tInfo.__top]
-      if(tDat) then
-        tDat.vel:Set(lx, ly):Sub(tDat.pos)
-      end
+    if(lx and ly and tSel) then
+      tSel.__vel:Set(lx, ly):Sub(tSel.__pos); tSel.vel:Set(tSel.__vel)
+    end
+    if(tSel and tSel.vel and tSel.__vel) then
+      tSel.vel:Set(tSel.__vel):RotDeg(getValueSet("Angle", tSel.set, typeID()))
     end
   else
     if(tTop) then
-      local iTop, tDat = tInfo.__top, tInfo.__data
-      tDat[iTop] = nil; iTop = iTop - 1
-      while(iTop > 0 and not tDat[iTop]) do iTop = iTop - 1 end
-      tInfo.__top = iTop
+      tDat[tInfo.__top] = nil
+      tInfo.__top = tInfo.__top - 1
+      while(tInfo.__top > 0 and not tDat[tInfo.__top]) do
+        tInfo.__top = tInfo.__top - 1
+      end
     end
   end
 end
 
 local function mainStart()
-  for ID = 1, #__mode.DT do
-    __setup[ID] = {}
-    local tSet = __mode.DT[ID]
-    for I = 1, #tSet do
-      __setup[ID][tSet[I][1]] = I
-    end
+  for ID = 1, #__mode.DT do __setup[ID] = {}
+    local tSet = typeData(ID)
+    for I = 1, #tSet do __setup[ID][tSet[I][1]] = I end
   end
-  local key = keys.getKey()
+  local key  = keys.getKey()
   while(not keys.getPress(key, "escape")) do wipe()
-    local tInfo = __items[__mode.ID]
-    local sType = __mode.ST[__mode.ID]
-    if(not tInfo) then
-      __items[__mode.ID] = {__top = 0, __data = {}}
-      tInfo = __items[__mode.ID]
-    end
-    if    (keys.getPress(key, "f1")) then __mode.ID = 1
-    elseif(keys.getPress(key, "f2")) then __mode.ID = 2
-    elseif(keys.getPress(key, "f3")) then __mode.ID = 3
-    elseif(keys.getPress(key, "S")) then saveFile(__items) end
-    text("Adding: "..tostring(__mode.ST[__mode.ID]),0,0,0)
+    local tInfo = getItem(typeID())
+    if    (keys.getPress(key, "f1")) then tInfo = getItem(typeID(1))
+    elseif(keys.getPress(key, "f2")) then tInfo = getItem(typeID(2))
+    elseif(keys.getPress(key, "f3")) then tInfo = getItem(typeID(3))
+    elseif(keys.getPress(key, "S")) then saveFile() end
+    if(not tInfo) then tInfo = addItem(typeID()) end
+    local sType = typeName(typeID())
+    text("Adding: "..sType,0,0,0)
     if(sType == "brick" or sType == "board") then
       modPoly(tInfo, keys.getPress(key, "Z"))
       drawBricks(tInfo)

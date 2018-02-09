@@ -7,10 +7,10 @@ local common   = require("common")
 
 io.stdout:setvbuf("no")
 
-local gnTick  = 0.5 
+local gnTick  = 0.04 
 local gtDebug = {en = true, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
-local gbSuc = level.Read("bumpy")
+local gbSuc = level.readStage("test", true)
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
