@@ -123,7 +123,7 @@ function blocks.New()
   function self:Damage(iDmg)
     if(self:isHard()) then return self end
     local dmg = (tonumber(iDmg) or 0)
-    if(self:isDead() or dmg <= 0) then return self end
+    if(self:isDead() or dmg == 0) then return self end
     miLif = (miLif - dmg); return self
   end
   function self:Dump(iID)

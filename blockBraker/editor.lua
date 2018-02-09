@@ -91,7 +91,7 @@ local function addItem(iID)
   return getItem(iID)
 end
 local function getItemsN()   return __items.__size end
-local function isSelected(aKey) return (aKey == typeSelect(typeID())) end
+local function isSelected(aKey, iID) return (aKey == typeSelect(iID)) end
 
 
 local function getVertex(tBlk)
@@ -186,14 +186,15 @@ end
 complex.setAction("xy", drawComplexOrigin)
 complex.setAction("sel", drawComplexSelect)
 
-local function drawBricks(tInfo)
+local function drawPoly(tInfo, vID)
+  local iID  = common.getPick(vID, vID, typeID())
   local tDat = tInfo.__data
   for k, v  in pairs(tDat) do
-    local ang = getValueSet("Angle", v.set, typeID())
-    local r, g, b = getItemColor(v.set, typeID())
+    local ang = getValueSet("Angle", v.set, iID)
+    local r, g, b = getItemColor(v.set, iID)
     local clr = colr(r, g, b)
     local pos, vtx = v.pos, v.vtx
-    if(isSelected(k)) then pos:Action("sel") end
+    if(isSelected(k, iID)) then pos:Action("sel") end
     local len, ftx = #vtx, vtx[1]; pos:Action("xy")
     for i = 1, len do 
       local s = (vtx[i]   or ftx):getRotDeg(ang):Add(pos)
@@ -210,15 +211,17 @@ local function drawBricks(tInfo)
   end
 end
 
-local function drawBalls(tInfo)
+local function drawBall(tInfo, vID)
+  local iID  = common.getPick(vID, vID, typeID())
   local tDat = tInfo.__data
   for k, v  in pairs(tDat) do
     local pos, vel = v.pos, v.vel
-    local r, g, b = getItemColor(v.set, typeID())
+    local r, g, b = getItemColor(v.set, iID)
     local clr = colr(r, g, b)
-    if(isSelected(k)) then pos:Action("sel") end
+    if(isSelected(k, iID)) then pos:Action("sel") end
     local px, py = pos:getParts()
-    pncl(clBlk); oval(px, py, 5, 5, clr)
+    local sz = getValueSet("Size", v.set, iID)
+    pncl(clBlk); oval(px, py, sz, sz, clr)
     if(vel) then
       local vx, vy = vel:getParts()
       pncl(clBlk); line(px, py, px+vx, py+vy)
@@ -229,11 +232,13 @@ end
 local function modPoly(tInfo, bUndo)
   local tDat = tInfo.__data
   local tTop = tDat[tInfo.__top]
+  local tSel = tDat[typeSelect(typeID())]
   if(not bUndo) then
     local rx, ry = keys.getMouseRD()      
     if(rx and ry) then
       if(tTop and tTop.vtx and #tTop.vtx <= 2) then
-        local sType = typeName(typeID()); tDat[tInfo.__top] = nil
+        local sType = typeName(typeID())
+        tDat[tInfo.__top] = nil; tInfo.__top = tInfo.__top - 1
         common.logStatus("Add ["..sType.."]: Deleted missing vertex #"..#tTop.vtx)
       end; if(tTop) then tTop.cmp = true end
       tInfo.__top = tInfo.__top + 1
@@ -242,17 +247,16 @@ local function modPoly(tInfo, bUndo)
         cmp = false,
         vel = complex.getNew(0,0),
         pos = complex.getNew(rx, ry),
-        set = export.copyItem(typeData(typeID())),
-        __pos = complex.getNew(rx, ry)
+        set = export.copyItem(typeData(typeID()))
       }
       tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modPoly"
       typeSelect(typeID(), tInfo.__top)
     end
     local lx, ly = keys.getMouseLD()
     if(lx and ly) then
-      if(tTop) then
-        local v = (complex.getNew(lx, ly) - tTop.pos)
-        tTop.vtx[#tTop.vtx + 1] = v 
+      if(tSel) then
+        local v = (complex.getNew(lx, ly) - tSel.pos)
+        tSel.vtx[#tSel.vtx + 1] = v 
       end
     end
   else
@@ -271,7 +275,8 @@ end
 
 local function adjustParam(key, aP, aW, tL)
   local typ = type(aP)
-  local cng = ((keys.getPress(key, "up") and 1 or 0) - (keys.getPress(key, "down" ) and 1 or 0))
+  local cng = ((keys.getPress(key, "up") and 1 or 0) - 
+               (keys.getPress(key, "down" ) and 1 or 0))
   if(typ == "boolean") then return common.getPick(cng == 0, aP, not aP) end
   if(typ == "number") then local new = (aP + aW * cng)
     if(tL and tL[1] and new < tL[1]) then return tL[1] end
@@ -282,14 +287,33 @@ local function adjustParam(key, aP, aW, tL)
 end
 
 local function setSettings(key, tInfo)
-  local tTop = tInfo.__data[tInfo.__top]
-  if(tTop and tTop.set) then local tSet = tTop.set
-    tSet.ID = tSet.ID + ((keys.getPress(key, "right") and 1 or 0) - 
-                         (keys.getPress(key, "left" ) and 1 or 0))
-    tSet.ID = common.getClamp(tSet.ID, 1, #tSet)
-    tCnt = tSet[tSet.ID]
-    tCnt[2] = adjustParam(key, tCnt[2], tCnt[3], tCnt[4])
-    text("Configure: "..tostring(tSet[tSet.ID][1]).." > "..tostring(tSet[tSet.ID][2]),0,150,0)
+  local iTyp = typeID()
+  local tDat = tInfo.__data
+  local tTop = tDat[tInfo.__top]
+  local iSel = typeSelect(iTyp)
+  local tSel = tDat[iSel]
+  if(tSel) then
+    iSel = iSel + ((keys.getPress(key, "pgup") and 1 or 0) - 
+                   (keys.getPress(key, "pgdn") and 1 or 0))
+    iSel = common.getClamp(iSel, 1, tInfo.__top)
+    typeSelect(iTyp, iSel)
+    -- Adjust the settings union for every item
+    if(tSel.set) then local tSet = tSel.set
+      tSet.ID = tSet.ID + ((keys.getPress(key, "right") and 1 or 0) - 
+                           (keys.getPress(key, "left" ) and 1 or 0))
+      tSet.ID = common.getClamp(tSet.ID, 1, #tSet); tCnt = tSet[tSet.ID]
+      tCnt[2] = adjustParam(key, tCnt[2], tCnt[3], tCnt[4])
+      text("Configure: "..tostring(tSet[tSet.ID][1]).." > "..tostring(tSet[tSet.ID][2]),0,100,0)
+    end
+    if(tSel.pos) then
+      local px, py = tSel.pos:getParts()
+            px = px + ((keys.getPress(key, "num6") and 1 or 0) - 
+                       (keys.getPress(key, "num4") and 1 or 0))
+            py = py + ((keys.getPress(key, "num2") and 1 or 0) - 
+                       (keys.getPress(key, "num8") and 1 or 0))
+      tSel.pos:Set(px, py)
+      text("Position ["..typeSelect(iTyp).."]: "..tostring(tSel.pos),0,280,0)
+    end
   end
 end
 
@@ -311,15 +335,14 @@ local function modBall(tInfo, bUndo)
         vel = complex.getNew(0, 0),
         pos = complex.getNew(rx, ry), 
         set = export.copyItem(typeData(typeID())),
-        __vel = complex.getNew(0, 0),
-        __pos = complex.getNew(rx, ry)
+        __vel = complex.getNew(0, 0)
       }
       tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modBall"
       typeSelect(typeID(), tInfo.__top)
     end
     local lx, ly = keys.getMouseLD()
     if(lx and ly and tSel) then
-      tSel.__vel:Set(lx, ly):Sub(tSel.__pos); tSel.vel:Set(tSel.__vel)
+      tSel.__vel:Set(lx, ly):Sub(tSel.pos); tSel.vel:Set(tSel.__vel)
     end
     if(tSel and tSel.vel and tSel.__vel) then
       tSel.vel:Set(tSel.__vel):RotDeg(getValueSet("Angle", tSel.set, typeID()))
@@ -330,6 +353,25 @@ local function modBall(tInfo, bUndo)
       tInfo.__top = tInfo.__top - 1
       while(tInfo.__top > 0 and not tDat[tInfo.__top]) do
         tInfo.__top = tInfo.__top - 1
+      end
+    end
+  end
+end
+
+local function drawStuff()
+  local tItems, nCnt = getItems(), getItemsN()
+  for ID = 1, nCnt do
+    local tInfo = getItem(ID)
+    local sType = typeName(ID)
+    if(tInfo) then
+      local tData = tInfo.__data
+      local niTop = tInfo.__top
+      for DI = 1, niTop do
+        if(sType == "brick" or sType == "board") then
+          drawPoly(tInfo, ID)
+        elseif(sType == "ball") then
+          drawBall(tInfo, ID)
+        end
       end
     end
   end
@@ -352,11 +394,10 @@ local function mainStart()
     text("Adding: "..sType,0,0,0)
     if(sType == "brick" or sType == "board") then
       modPoly(tInfo, keys.getPress(key, "Z"))
-      drawBricks(tInfo)
     elseif(sType == "ball") then
       modBall(tInfo, keys.getPress(key, "Z"))
-      drawBalls(tInfo)
     end
+    drawStuff()
     setSettings(key, tInfo)
     key = keys.getKey(); updt()
   end

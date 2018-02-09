@@ -8,9 +8,9 @@ local common   = require("common")
 io.stdout:setvbuf("no")
 
 local gnTick  = 0.04 
-local gtDebug = {en = true, data = {lxy = "<>", rxy = "<>", key = "#"}}
+local gtDebug = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
-local gbSuc = level.readStage("test", true)
+local gbSuc = level.readStage("2", true)
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
@@ -120,10 +120,8 @@ if(gbSuc) then
       local nvPrt = baVel:getNorm()
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
-      print("str", nvPrt)
+
       while(tBr.Hit) do
-        
-        
 
         tBr.VtxStr:Action("drawComplexLine", tBr.VtxEnd)
         
