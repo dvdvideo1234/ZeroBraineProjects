@@ -1,41 +1,46 @@
-local complex      = require("complex")
-local export       = require("export")
-local colormap     = require("colormap")
-local blocks       = require("blockBraker/blocks")
-local common       = require("common")
-local logStatus    = common.logStatus
-local type         = type
-local getmetatable = getmetatable
-local level        = {}
-local metaActors   = {}
-metaActors.stack   = {}
-metaActors.garbage = 10
-metaActors.curcoll = 0
-metaActors.scrsize = {W = 800, H = 400}
-metaActors.trace   = {
+local complex       = require("complex")
+local export        = require("export")
+local colormap      = require("colormap")
+local blocks        = require("blockBraker/blocks")
+local common        = require("common")
+local logStatus     = common.logStatus
+local type          = type
+local getmetatable  = getmetatable
+local level         = {}
+local metaActors    = {}
+metaActors.stack    = {}
+metaActors.garbage  = 10
+metaActors.curcoll  = 0
+metaActors.trace    = {
   HitPos = complex.getNew(),
   HitAim = complex.getNew(),
   HitNrm = complex.getNew(),
   VtxStr = complex.getNew(),
   VtxEnd = complex.getNew(),
+  HitDst = 0,
   HitAct = 0,
   HitKey = 0,
-  MinLen = 0,
   HitFlt = {}
 }
-metaActors.border = {
-  Hit    = false,
-  HitDst = 0,
-  HitCnt = 0,
-  HitPos = complex.getNew(),
-  HitOrg = complex.getNew(),
-  HitDir = complex.getNew(),
-  VtxStr = complex.getNew(),
-  VtxEnd = complex.getNew()
-}
 
+metaActors.scrsize  = {W = 800, H = 400}
 function level.getScreenSize()
   return metaActors.scrsize.W, metaActors.scrsize.H
+end
+
+metaActors.priorkey = {"board","brick","world","ball"}
+function level.getPriorityKeys()
+  return export.copyItem(metaActors.priorkey)
+end
+
+metaActors.keyprior = {} for I = 1, #metaActors.priorkey do
+  metaActors.keyprior[metaActors.priorkey[I]] = I end
+function level.getKeysPriority()
+  return export.copyItem(metaActors.keyprior)
+end
+
+function level.getKey()
+  return common.randomGetString(50)
 end
 
 function level.setGarbage(vGrb)
@@ -43,20 +48,45 @@ function level.setGarbage(vGrb)
   if(metaActors.garbage < 1) then metaActors.garbage = 1 end
 end
 
-function level.delActor(vKey)
-  if(not vKey) then return logStatus("level.delActor: Key invalid", false) end
-  if(metaActors.stack[vKey]) then metaActors.stack[vKey] = nil
-     metaActors.curcoll = metaActors.curcoll + 1
-     if(metaActors.curcoll >= metaActors.garbage) then collectgarbage() end; return true
-  end; return false
+function level.delActor(oAct)
+  if(common.getType(oAct) == "blocks.block") then
+    local tTab, tAct = oAct:getTable(), metaActors.stack
+    if(not tTab) then return logStatus("level.addActor: Object setup invalid", false) end
+    local sKey, sTyp = oAct:getKey(), tTab.Type
+    if(not metaActors.keyprior[sTyp]) then 
+      return logStatus("level.addActor: Object type invalid <"..tostring(sTyp)..">", false) end
+    local tPlc = tAct[sTyp]; if(not tPlc) then tAct[sTyp] = {}; tPlc = tAct[sTyp] end
+    tPlc[sKey], metaActors.curcoll = nil, (metaActors.curcoll + 1)
+    if(metaActors.curcoll >= metaActors.garbage) then
+      collectgarbage(); metaActors.curcoll = 0 end
+    return true
+  end; return logStatus("level.delActor: Object wrong type", false)  
 end
 
-function level.addActor(vKey, oAct)
-  if(not vKey) then return logStatus("level.addActor: Key invalid", false) end
-  local tAct = metaActors.stack
-  if(common.getType(oAct) == "blocks.block") then
-    tAct[vKey] = oAct; oAct:setKey(vKey) return true
-  end; return logStatus("level.addActor: Object wrong type", false)
+function level.addActor(oAct)
+  local tAct, oTyp = metaActors.stack, common.getType(oAct)
+  if(oTyp == "blocks.block") then
+    local tTab = oAct:getTable()
+    if(not tTab) then return logStatus("level.addActor: Object setup invalid", false) end
+    local sKey, sTyp = level.getKey(), tTab.Type
+    if(not metaActors.keyprior[sTyp]) then 
+      return logStatus("level.addActor: Object type invalid <"..tostring(sTyp)..">", false) end
+    local tPlc = tAct[sTyp]; if(not tPlc) then tAct[sTyp] = {}; tPlc = tAct[sTyp] end
+    tPlc[sKey] = oAct; oAct:setKey(sKey); return true
+  end; return logStatus("level.addActor: Object wrong type <"..oTyp..">", false)
+end
+
+function level.procStackType(vID)
+  local iID  = common.getClamp(tonumber(vID) or 0, 1, #metaActors.priorkey)
+  local sTyp = metaActors.priorkey[iID]; if(not sTyp) then
+    return logStatus("level.procTypeStack: ID missing <"..tostring(iID)..">", false) end
+  local tAct = metaActors.stack[sTyp]; if(not tAct) then
+    return logStatus("level.procTypeStack: Stack missing <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
+  for key, val in pairs(tAct) do
+    val:Act()
+    val:Move()
+    val:Draw()
+  end
 end
 
 --[[
@@ -64,99 +94,92 @@ end
   oVel > Direction of the the trace ( usually the velocity )
   tKey > Table containing the actor keys to be skipped
 ]]
-function level.smpActor(oPos, oVel, tKey)
-  local tTr, fTr, trHit = metaActors.trace, tKey or {}, false
-  for k, v in pairs(metaActors.stack) do
-    if(v and not fTr[k]) then local nVtx = v:getVertN()
-      if(nVtx > 0) then -- Polygon
-        local cS, cE = oPos:getNew(), oPos:getNew()
-        local ID, vI, vP = 1, v:getVert(1), v:getPos()
-        while(ID <= nVtx) do
-          cS:Set(vP):Add(v:getVert(ID) or vI); ID = ID + 1
-          cE:Set(vP):Add(v:getVert(ID) or vI)
-          local bSuc, nT, nU, xX = complex.getIntersectRayRay(oPos, oVel, cS, cE-cS)
-          if(bSuc) then -- Chech only non-parallel surfaces
-            if(xX:isAmong(cS, cE, 1e-10)) then -- Make sure that the point belongs to a surface
-              local cV = (xX - oPos); local nD = cV:getDot(oVel)
-              if(nD > 0) then -- Chech only these in front of us
-                if(not trHit) then tTr.MinLen, trHit = nD, true
-                  tTr.HitPos:Set(xX); tTr.HitAim:Set(cV); tTr.HitAct = v
-                  tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE); tTr.HitKey = k
-                  tTr.HitNrm:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
-                else -- For all the others that we must compare minimum to
-                  if(nD < tTr.MinLen) then
-                    tTr.HitAct = v; tTr.HitKey = k
-                    tTr.MinLen = nD; tTr.HitPos:Set(xX); tTr.HitAim:Set(cV);
-                    tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cE)
-                    tTr.HitNrm:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
+function level.traceRay(oPos, oVel, nOfs, tKey)
+  local tTr, fTr = metaActors.trace, tKey or {}
+  local keyPri, actStk = metaActors.priorkey, metaActors.stack
+  trHit, tTr.HitDst = false, 0
+  for ID = 1, #keyPri do
+    local nam = keyPri[ID]
+    local stk = actStk[nam]
+    for key, val in pairs(stk) do
+      if(val and not fTr[key]) then
+        local nVtx = val:getVertN()
+        if(nVtx > 0) then -- Polygon
+          local vS, vE, vN = oPos:getNew(), oPos:getNew(), oPos:getNew()
+          local cS, cE, vA = oPos:getNew(), oPos:getNew(), oPos:getNew()
+          local ID, vI, vP = 1, val:getVert(1), val:getPos()
+          while(ID <= nVtx) do
+            cS:Set(vP):Add(val:getVert(ID) or vI); ID = ID + 1
+            cE:Set(vP):Add(val:getVert(ID) or vI)
+            vN:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
+            vS:Set(vN):Mul(nOfs):Add(cS)
+            vE:Set(vN):Mul(nOfs):Add(cE)
+            local xX = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
+            if(xX) then -- Chech only non-parallel surfaces
+              if(xX:isAmong(vS, vE)) then vA:Set(xX):Sub(oPos)
+                -- Make sure that the point belongs to a surface
+                if(vA:getDot(oVel) > 0) then local nA = vA:getNorm()
+                  -- Chech only these in front of us
+                  if(not trHit) then tTr.HitAct, tTr.HitKey = val, key
+                    tTr.HitPos:Set(xX); trHit = true
+                    tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                    tTr.HitAim:Set(vA); tTr.HitDst = nA
+                  else -- For all the others that we must compare minimum to
+                    if(nA < tTr.HitDst) then  tTr.HitAct, tTr.HitKey = val, key
+                      tTr.HitPos:Set(xX)
+                      tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                      tTr.HitAim:Set(vA); tTr.HitDst = nA
+                    end
                   end
                 end
               end
             end
           end
+        else -- Another ball
+          xF, xC = cmp.getIntersectRayCircle(cRay1[1], dd, cRay2[1], rad)
         end
-      else -- Another ball
-
       end
     end
   end
   return tTr
 end
 
-function level.getHit(oPos, oVel, vHit)
-  local tTr  = metaActors.trace
-  local cHit = (vHit and vHit or tTr.HitPos)
-  if((cHit - oPos):getNorm() > oVel:getNorm()) then return false end
-  return true
+function level.gonnaHit(oPos, oVel, pHit)
+  local cHit = (pHit and pHit or metaActors.trace.HitPos)
+  if((cHit - oPos):getNorm() < oVel:getNorm()) then return true end
+  return false
 end
 
 function level.Clear()
-  for k, _ in pairs(metaActors.stack) do metaActors.stack[k] = nil end
+  for k, _ in pairs(metaActors.stack) do
+    metaActors.stack[k] = nil end
   collectgarbage(); return true
-end
-
-function level.getBorder(oPos, oVel, nOfs)
-  local tTr = metaActors.trace
-  local tBr = metaActors.border; tBr.Hit, tBr.HitCnt = false, 0
-  local vnO = tBr.HitOrg:Set(tTr.HitNrm):Mul(nOfs)
-  local cpS = tBr.VtxStr:Set(tTr.VtxStr):Add(vnO)
-  local cpE = tBr.VtxEnd:Set(tTr.VtxEnd):Add(vnO)  
-  local bSuc, nT, nU, xX = complex.getIntersectRayRay(oPos, oVel, cpS, cpE-cpS)
-  if(bSuc) then
-    local cpH  = tBr.HitPos:Set(xX)
-    local vdH  = tBr.HitDir:Set(xX):Sub(oPos)
-    tBr.HitDst = vdH:getNorm()
-    if(tBr.HitDst < oVel:getNorm()) then
-      tBr.Hit, tBr.HitCnt = true, (tBr.HitCnt + 1)
-    end
-  end
-  return tBr
 end
 
 function level.getActors() return metaActors.stack end
 
 metaActors.store = {
-  [1]  = {"setTable"    , export.stringTable},
-  [2]  = {"setPos"      , complex.convNew},
-  [3]  = {"setVel"      , complex.convNew},
-  [4]  = {"setVert"     , complex.convNew},
-  [5]  = {"setAng"      , tonumber},
-  [6]  = {"setStat"     , common.toBool},
-  [7]  = {"setHard"     , common.toBool},
-  [8]  = {"setLife"     , tonumber},
-  [9]  = {"setDrawColor", colormap.convRGB},
+  [1 ] = {"setTable"    , export.stringTable},
+  [2 ] = {"setPos"      , complex.convNew},
+  [3 ] = {"setVel"      , complex.convNew},
+  [4 ] = {"setVert"     , complex.convNew},
+  [5 ] = {"setAng"      , tonumber},
+  [6 ] = {"setStat"     , common.toBool},
+  [7 ] = {"setHard"     , common.toBool},
+  [8 ] = {"setLife"     , tonumber},
+  [9 ] = {"setDrawColor", colormap.convColorRGB},
   [10] = {"setTrace"    , tonumber}
 }
-
 function level.readStage(sF, bLog)
   local pF, actSt = io.open("blockBraker/levels/"..sF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", ""), true end
-  local sLn, isEOF, tAct, iID = "", false, metaActors.stack, (#metaActors.stack + 1) 
+  local sLn, isEOF = "", false
   while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
-    if(sLn ~= "" and sLn:sub(1,1) ~= "#") then tAct[iID] = blocks.New():setKey(iID)
+    if(sLn ~= "" and sLn:sub(1,1) ~= "#") then 
       if(bLog) then logStatus("\nlevels.readStage: <"..sLn..">") end
-      local tCmp, bNew = common.stringExplode(sLn,"/"), tAct[iID]
+      local tCmp, bNew = common.stringExplode(sLn,"/")
       for I = 1, #actSt do local tPar = actSt[I]
+        if(tPar[1] == "setTable") then bNew = blocks.New() end
         if(bLog) then logStatus("  levels.readStage: Start ["..I.."] <"..tostring(tCmp[I])..">") end
         local tItm = common.stringExplode(common.stringTrim(tCmp[I]),";")
         for J = 1, #tItm do if(bLog) then logStatus("  levels.readStage:   "..tPar[1].." ("..J..") : "..tItm[J]) end
@@ -164,7 +187,7 @@ function level.readStage(sF, bLog)
           bNew[tPar[1]](bNew,tPar[2](tItm[J]))
         end
         if(bLog) then bNew:Dump() end
-      end; iID = (iID + 1)
+      end; level.addActor(bNew)
     end
   end; return true
 end
