@@ -12,11 +12,13 @@ metaActors.stack    = {}
 metaActors.garbage  = 10
 metaActors.curcoll  = 0
 metaActors.trace    = {
+  Hit    = false,
   HitPos = complex.getNew(),
   HitAim = complex.getNew(),
   HitNrm = complex.getNew(),
   VtxStr = complex.getNew(),
   VtxEnd = complex.getNew(),
+  HitTyp = "",
   HitDst = 0,
   HitAct = 0,
   HitKey = 0,
@@ -89,20 +91,25 @@ function level.procStackType(vID)
   end
 end
 
+
+
 --[[
   oPos > Start position of the trace
   oVel > Direction of the the trace ( usually the velocity )
   tKey > Table containing the actor keys to be skipped
 ]]
 function level.traceRay(oPos, oVel, nOfs, tKey)
-  local tTr, fTr = metaActors.trace, tKey or {}
+  local nCnt = 0
+  local clBlu = colr(colormap.getColorBlueRGB())
+  local tTr, fTr = metaActors.trace, (tKey or {})
   local keyPri, actStk = metaActors.priorkey, metaActors.stack
-  trHit, tTr.HitDst = false, 0
+  tTr.Hit, tTr.HitDst = false, 0
   for ID = 1, #keyPri do
     local nam = keyPri[ID]
     local stk = actStk[nam]
+    local ftr = fTr[nam]
     for key, val in pairs(stk) do
-      if(val and not fTr[key]) then
+      if(val and not (ftr and ftr[key])) then
         local nVtx = val:getVertN()
         if(nVtx > 0) then -- Polygon
           local vS, vE, vN = oPos:getNew(), oPos:getNew(), oPos:getNew()
@@ -114,43 +121,55 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
             vN:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
             vS:Set(vN):Mul(nOfs):Add(cS)
             vE:Set(vN):Mul(nOfs):Add(cE)
+            
+            vS:Action("drawComplexLine", vE, 3, true)
+            
+            
             local xX = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
             if(xX) then -- Chech only non-parallel surfaces
               if(xX:isAmong(vS, vE)) then vA:Set(xX):Sub(oPos)
                 -- Make sure that the point belongs to a surface
-                if(vA:getDot(oVel) > 0) then local nA = vA:getNorm()
-                  -- Chech only these in front of us
-                  if(not trHit) then tTr.HitAct, tTr.HitKey = val, key
-                    tTr.HitPos:Set(xX); trHit = true
-                    tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
-                    tTr.HitAim:Set(vA); tTr.HitDst = nA
-                  else -- For all the others that we must compare minimum to
-                    if(nA < tTr.HitDst) then  tTr.HitAct, tTr.HitKey = val, key
+                if(vA:getDot(oVel) > 0 and vN:getDot(oVel) < 0) then
+                  -- Chech only these in front of us and these that we are probably gonna hit
+                  local nA = vA:getNorm() -- Lngth to the trace position to check if a hit is present
+                  if(tTr.Hit) then -- If we have registered a hit with the new trace call
+                    if(nA < tTr.HitDst) then
                       tTr.HitPos:Set(xX)
-                      tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                      tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
                       tTr.HitAim:Set(vA); tTr.HitDst = nA
-                    end
+                      tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                      tTr.HitPos:Action("drawComplexOrigin", clBlu, 4, nil, nCnt, true)
+                      nCnt = nCnt + 1
+                    end -- For all the others that we must compare minimum to
+                  else tTr.Hit = true
+                    tTr.HitPos:Set(xX)
+                    tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
+                    tTr.HitAim:Set(vA); tTr.HitDst = nA
+                    tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                    tTr.HitPos:Action("drawComplexOrigin", clBlu, 4, nil, nCnt, true)
+                    nCnt = nCnt + 1
                   end
                 end
               end
             end
           end
-        else -- Another ball
-          xF, xC = cmp.getIntersectRayCircle(cRay1[1], dd, cRay2[1], rad)
+        else -- Ball
+         -- xF, xC = cmp.getIntersectRayCircle(oPos, oVel, cRay2[1], nOfs)
         end
       end
     end
   end
+  
   return tTr
 end
 
-function level.gonnaHit(oPos, oVel, pHit)
-  local cHit = (pHit and pHit or metaActors.trace.HitPos)
-  if((cHit - oPos):getNorm() < oVel:getNorm()) then return true end
-  return false
+function level.gonnaHit(oPos, oVel)
+  local tTr = metaActors.trace
+  if(tTr.Hit and (tTr.HitPos - oPos):getNorm() < oVel:getNorm())
+  then return true end; return false
 end
 
-function level.Clear()
+function level.clearAll()
   for k, _ in pairs(metaActors.stack) do
     metaActors.stack[k] = nil end
   collectgarbage(); return true
@@ -186,8 +205,7 @@ function level.readStage(sF, bLog)
           if(not tPar[2]) then return logStatus("levels.readStage: Data convertor ["..J.."] missing <"..tPar[1]..">", false) end
           bNew[tPar[1]](bNew,tPar[2](tItm[J]))
         end
-        if(bLog) then bNew:Dump() end
-      end; level.addActor(bNew)
+      end; level.addActor(bNew); if(bLog) then bNew:Dump() end
     end
   end; return true
 end

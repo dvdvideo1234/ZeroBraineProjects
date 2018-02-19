@@ -8,10 +8,10 @@ local export   = require("export")
 
 io.stdout:setvbuf("no")
 
-local gnTick  = 1 
+local gnTick  = 0.1
 local gtDebug = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
-local gbSuc = level.readStage("internals")
+local gbSuc = level.readStage("out", true)
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
@@ -36,7 +36,7 @@ if(gbSuc) then
         world:setKey(level.getKey())
   level.addActor(world) -- Make sure the key is unique enough
 
-  local function drawComplexOrigin(oC, nS, oO, tX)
+  local function drawComplexOrigin(oC, clDrw, nS, oO, tX, bUp)
     local ss = (tonumber(nS) or 2)
     local xx, yy = oC:getParts()
     if(oO) then
@@ -46,16 +46,18 @@ if(gbSuc) then
     if(tX) then
       pncl(clBlk); text(tostring(tX),0,xx,yy)
     end
-    pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
+    pncl(clDrw or vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
+    if(bUp) then updt() end
   end
 
-  local function drawComplexLine(S,E,nS)
+  local function drawComplexLine(S,E,nS,bUp)
     local ss = (tonumber(nS) or 2)
     local sx, sy = S:getParts()
     local ex, ey = E:getParts()
     pncl(vlMgn); line(sx, sy, ex, ey)
     pncl(vlMgn); rect(sx-ss, sy-ss, 2*ss+1, 2*ss+1)
     pncl(vlMgn); rect(ex-ss, ey-ss, 2*ss+1, 2*ss+1)
+    if(bUp) then updt() end
   end
 
   complex.setAction("drawComplexOrigin", drawComplexOrigin)
@@ -109,51 +111,74 @@ if(gbSuc) then
     local baPos = oBall:getPos()
     local baVel = oBall:getVel()
     local tData = oBall:getTable()
-    local tKey  = {[oBall:getKey()] = true}
-    local tTr   = level.traceRay(baPos, baVel, tData.Size, tKey)
+    local tfSlf = {[oBall:getKey()] = true}
+    local tfAll = {[tData.Type] = tfSlf}
+    local tTr   = level.traceRay(baPos, baVel, tData.Size, tfAll)
     local bHit  = level.gonnaHit(baPos, baVel)
-    tTr.HitPos:Action("drawComplexOrigin", 2)
+    tTr.HitPos:Action("drawComplexOrigin", nil, 2)
     tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)
     local T = (tTr.HitPos + tTr.HitNrm * 20)
-    T:Action("drawComplexOrigin", 1.8, tTr.HitPos)
+    T:Action("drawComplexOrigin", nil, 1.8, tTr.HitPos)
     
+  --  print("hit_beg", bHit)
     
+    print("pos", baPos, baVel)
     
     if(bHit) then -- Is there a hit to tavke cate in the frame
-      local nvPrt = baVel:getNorm()
+      local nvPrt, niCnt = baVel:getNorm(), 0
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
       
-      print("pos", baPos, baVel)
+    --  print("pos", baPos, baVel)
       
-      while(bHit) do
-        
+      while(bHit and (tTr.HitDst < nvPrt)) do
+   --     print(niCnt, "hit_loop", bHit)
         tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)        
         
+   --     print(niCnt,"dif1", tTr.HitDst, nvPrt)
+        
+        nvPrt = (nvPrt - tTr.HitDst)
+        
+        tTr.HitAct:Damage(tData.Damage)
         if(tTr.HitAct:isDead()) then
-          level.delActor(tTr.HitAct)
-        else
-          tTr.HitAct:Damage(tData.Damage)
-        end
-        print(1, tTr.HitDst, nvPrt)
-        if(tTr.HitDst < nvPrt) then nvPrt = (nvPrt - tTr.HitDst)
-          local cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
-          print(2, cN, cR)
-          
-          local T = (tTr.HitPos + cR * 30)
-          T:Action("drawComplexOrigin", 1.8, tTr.HitPos)
-          
-          cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
-          -- Adjust the next frame position according to the trace
-          cfPos:Set(cpInt); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
-          -- Draw the ball trajectory if enabled
-          oBall:addTrace(cpInt):addTrace(cfPos)
+          level.delActor(tTr.HitAct)          
         end
         
+    --    print(niCnt,"dif2", tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
         
-        tTr  = level.traceRay(cpInt, cvRef, tData.Size, tKey)
+        local cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+   --     print(niCnt,"ref", cN, cR, nvPrt)
+        
+    --    local R = (tTr.HitPos + cR * 70)
+    --    R:Action("drawComplexOrigin", clGrn, 1.8, tTr.HitPos, niCnt, true)
+        
+    --    local N = (tTr.VtxEnd + cN * 70)
+    --    N:Action("drawComplexOrigin", clRed, 1.8, tTr.VtxEnd, niCnt, true)
+        
+      --  wait(3)
+        
+        cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
+        
+   --     print(niCnt,"trs", tTr.HitPos, cpInt, cvRef)
+        
+        -- Adjust the next frame position according to the trace
+        cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
+        
+     --   print(niCnt,"nve", cfPos, cfVel)
+        -- Draw the ball trajectory if enabled
+        oBall:addTrace(cpInt):addTrace(cfPos)
+        
+   --     print(niCnt,"loop_end")
+        
+        tfAll = {[tData.Type] = tfSlf, [tTr.HitTyp] = {[tTr.HitKey] = true}}
+        
+        tTr  = level.traceRay(cpInt, cvRef, tData.Size, tfAll)
         bHit = level.gonnaHit(cpInt, cvRef)
+   --     print(niCnt,"new_trace", bHit, tTr.HitPos, cpInt, cvRef)
+    --    print(niCnt,"loop_end\n\n")
+        niCnt = niCnt + 1
       end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
+      
       oBall:setFrame(true):setPos(cfPos):setVel(cfVel)
     else
       -- Update the OOP accordingly and move in 2D space if nothing is hit

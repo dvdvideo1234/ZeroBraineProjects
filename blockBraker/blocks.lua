@@ -10,15 +10,14 @@ local logStatus    = common.logStatus
 local blocks       = {}
 local metaBlock    = {}
 
-metaBlock.__trace = {}
 metaBlock.__type  = "blocks.block"
 metaBlock.__index = metaBlock
 function blocks.New()
   local self = {}; setmetatable(self, metaBlock)
-  local mbPfr, mbTrc = false, false
+  local mbPfr, mbTrc, mtTrc = false, false, {}
   local mcAxx, mcAxy, mnAng, maKey = complex.getNew(), complex.getNew(), 0
   local mcPos, mcVel, mtVtx = complex.getNew(), complex.getNew(), {__size = 0}
-  local mbSta, mbHrd, mbWrp, miLif, mtTrc, mclDr, mfAct, mfDrw, mtDat = true, true, true, 0, {}
+  local mbSta, mbHrd, mbWrp, miLif, mclDr, mfAct, mfDrw, mtDat = true, true, true, 0
   function self:setHard(bHrd) mbHrd = bHrd; return self end
   function self:setStat(bSta) mbSta = bSta; return self end
   function self:setLife(nLif) miLif = (tonumber(nLif) or 0); return self end
@@ -40,7 +39,7 @@ function blocks.New()
   function self:setWrap(bR) mbWrp = toBool(bR); return self end
   function self:setAction(fAct) mfAct = ((type(fAct) == "function") and fAct or nil); return self end
   function self:setDraw(fDrw) mfDrw = ((type(fDrw) == "function") and fDrw or nil); return self end
-  function self:setTable(tDat) mtDat = ((type(tDat) == "table") and tDat or nil); return self end  
+  function self:setTable(tDat) mtDat = ((type(tDat) == "table") and tDat or nil); return self end
   function self:getVertN() return mtVtx.__size end
   function self:setVert(x,y)
     mtVtx.__size = mtVtx.__size + 1
@@ -64,8 +63,8 @@ function blocks.New()
   function self:isAround(cP)
     local ID, N, bO = 1, self:getVertN(), true
     local VI, cS, cE = self:getVert(1), mcPos:getNew(), mcPos:getNew()
-    while(ID <= N) do 
-      cS:Set(mcPos):Add(self:getVert(ID) or VI); ID = ID + 1 
+    while(ID <= N) do
+      cS:Set(mcPos):Add(self:getVert(ID) or VI); ID = ID + 1
       cE:Set(mcPos):Add(self:getVert(ID) or VI)
       if(complex.Lay(cP, cS, cE) < 0) then bO = false; break end
     end; if(not self:isWrap()) then bO = (not bO) end
@@ -74,18 +73,16 @@ function blocks.New()
   function self:Draw(bVel) -- tect(x,y,w,h)
     if(self:isDead()) then return self end
     if(self:isTrace()) then
-      local vKey = self:getKey()
-      local tVtx = metaBlock.__trace[vKey]
-      if(tVtx and tVtx.__top > 0) then local N, O
-        if(tVtx.__top == tVtx.__max) then
-          N, E = tVtx.__pos, tVtx.__pos
-          E = E + 1; if(E > tVtx.__max) then E = 1 end
-          E = E + 1; if(E > tVtx.__max) then E = 1 end
-        else N, E = tVtx.__pos, 1 end
-        while(N ~= E) do     
-          local xp, yp = tVtx[N]:getParts()
-          N = N - 1; if(N < 1) then N = tVtx.__max end
-          local xm, ym = tVtx[N]:getParts()
+      if(mtTrc and mtTrc.__top > 0) then local N, O
+        if(mtTrc.__top == mtTrc.__max) then
+          N, E = mtTrc.__pos, mtTrc.__pos
+          E = E + 1; if(E > mtTrc.__max) then E = 1 end
+          E = E + 1; if(E > mtTrc.__max) then E = 1 end
+        else N, E = mtTrc.__pos, 1 end
+        while(N ~= E) do
+          local xp, yp = mtTrc[N]:getParts()
+          N = N - 1; if(N < 1) then N = mtTrc.__max end
+          local xm, ym = mtTrc[N]:getParts()
           pncl(mclDr); line(xp, yp, xm, ym)
           pncl(mclDr); rect(xp-2, yp-2, 5, 5)
         end
@@ -94,8 +91,8 @@ function blocks.New()
     if(mfDrw) then mfDrw(self); return self end
     local ID, N = 1, self:getVertN()
     local CT, VI = mcPos:getNew(), self:getVert(1)
-    while(ID <= N) do local xs, ys, xs, ys     
-      xs, ys = CT:Set(mcPos):Add(self:getVert(ID) or VI):getParts(); ID = ID + 1 
+    while(ID <= N) do local xs, ys, xs, ys
+      xs, ys = CT:Set(mcPos):Add(self:getVert(ID) or VI):getParts(); ID = ID + 1
       xe, ye = CT:Set(mcPos):Add(self:getVert(ID) or VI):getParts()
       pncl(mclDr); line(xs, ys, xe, ye)
     end
@@ -126,8 +123,8 @@ function blocks.New()
     if(self:isDead() or dmg == 0) then return self end
     miLif = (miLif - dmg); return self
   end
-  function self:Dump(iID)
-    logStatus("\n["..metaBlock.__type.."]["..tostring(iID).."]")
+  function self:Dump()
+    logStatus("\n["..metaBlock.__type.."]["..tostring(self:getKey()).."]")
     logStatus("  Position: "..tostring(mcPos))
     logStatus("  Velocity: "..tostring(mcVel))
     logStatus("  Hard    : "..tostring(mbHrd))
@@ -139,24 +136,22 @@ function blocks.New()
   end
   function self:setTrace(nMax)
     local nM = math.floor(math.abs(tonumber(nMax) or 0))
-    if(nM > 0) then  mbTrc = toBool(nM)
-      metaBlock.__trace[self:getKey()] = {__pos = 0, __max = (nM+2), __top = 0}
+    if(nM > 0) then mbTrc = toBool(nM)
+      mtTrc = {__pos = 0, __max = (nM+2), __top = 0}
     end
-  end  
+  end
   function self:addTrace(cPos)
     if(not self:isTrace()) then return self end;
-    local vKey = self:getKey()
-    local tVtx = metaBlock.__trace[vKey]
-    if(not tVtx) then return self end
+    if(not mtTrc) then return self end
     local cVal = (cPos and cPos:getNew() or self:getPos())
-    if(tVtx.__top < tVtx.__max) then -- The stack is filling
-      tVtx.__top = tVtx.__top + 1
-      tVtx.__pos = tVtx.__top
-      tVtx[tVtx.__top] = cVal
+    if(mtTrc.__top < mtTrc.__max) then -- The stack is filling
+      mtTrc.__top = mtTrc.__top + 1
+      mtTrc.__pos = mtTrc.__top
+      mtTrc[mtTrc.__top] = cVal
     else -- Top is the came as max. Stack is filled
-      tVtx.__pos = tVtx.__pos + 1
-      if(tVtx.__pos > tVtx.__max) then tVtx.__pos = 1 end
-      tVtx[tVtx.__pos]:Set(cVal)
+      mtTrc.__pos = mtTrc.__pos + 1
+      if(mtTrc.__pos > mtTrc.__max) then mtTrc.__pos = 1 end
+      mtTrc[mtTrc.__pos]:Set(cVal)
     end; return self;
   end
   return self
