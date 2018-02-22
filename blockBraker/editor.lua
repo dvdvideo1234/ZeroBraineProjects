@@ -307,10 +307,18 @@ local function setSettings(key, tInfo)
     end
     if(tSel.pos) then
       local px, py = tSel.pos:getParts()
-            px = px + ((keys.getPress(key, "num6") and 1 or 0) - 
-                       (keys.getPress(key, "num4") and 1 or 0))
-            py = py + ((keys.getPress(key, "num2") and 1 or 0) - 
-                       (keys.getPress(key, "num8") and 1 or 0))
+            px  = px + ((keys.getPress(key, "num3") and 1 or 0) +
+                        (keys.getPress(key, "num6") and 1 or 0) +
+                        (keys.getPress(key, "num9") and 1 or 0) - 
+                        (keys.getPress(key, "num1") and 1 or 0) -
+                        (keys.getPress(key, "num4") and 1 or 0) -
+                        (keys.getPress(key, "num7") and 1 or 0))
+            py  = py + ((keys.getPress(key, "num1") and 1 or 0) +
+                        (keys.getPress(key, "num2") and 1 or 0) +
+                        (keys.getPress(key, "num3") and 1 or 0) - 
+                        (keys.getPress(key, "num7") and 1 or 0) -
+                        (keys.getPress(key, "num8") and 1 or 0) - 
+                        (keys.getPress(key, "num9") and 1 or 0))
       tSel.pos:Set(px, py)
       text("Position ["..typeSelect(iTyp).."]: "..tostring(tSel.pos),0,280,0)
     end

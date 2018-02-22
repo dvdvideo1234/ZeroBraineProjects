@@ -75,12 +75,24 @@ __keymap["f12"   ] = 351
 __keymap["pgup"  ] = 366
 __keymap["pgdn"  ] = 367
 __keymap["nument"] = 370
+__keymap["num*"  ] = 387
 __keymap["num+"  ] = 388
 __keymap["num-"  ] = 390
-__keymap["num8"  ] = 332
+__keymap["numdel"] = 391
+__keymap["num/"  ] = 392
+__keymap["num0"  ] = 324
+__keymap["num1"  ] = 325
 __keymap["num2"  ] = 326
+__keymap["num3"  ] = 327
 __keymap["num4"  ] = 328
+__keymap["num5"  ] = 329
 __keymap["num6"  ] = 330
+__keymap["num7"  ] = 331
+__keymap["num8"  ] = 332
+__keymap["num9"  ] = 333
+
+
+
 
 for but, asc in pairs(__keymap) do
   __revmap[asc] = but

@@ -8,10 +8,10 @@ local export   = require("export")
 
 io.stdout:setvbuf("no")
 
-local gnTick  = 0.1
-local gtDebug = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
-
-local gbSuc = level.readStage("out", true)
+local gnTick   = 0.01
+local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
+local mainLoop = true
+local gbSuc    = level.readStage("test")
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
@@ -46,7 +46,7 @@ if(gbSuc) then
     if(tX) then
       pncl(clBlk); text(tostring(tX),0,xx,yy)
     end
-    pncl(clDrw or vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
+    pncl(clDrw or vlMgn); rect(xx-ss, yy-ss, 2*ss+1, 2*ss+1)
     if(bUp) then updt() end
   end
 
@@ -59,8 +59,19 @@ if(gbSuc) then
     pncl(vlMgn); rect(ex-ss, ey-ss, 2*ss+1, 2*ss+1)
     if(bUp) then updt() end
   end
-
+  
+  local function drawComplexCircle(S,nR,clDrw,sTx,bUp)
+    local ss = (tonumber(nS) or 2)
+    local sx, sy = S:getParts()
+    if(tX) then
+      pncl(clBlk); text(tostring(tX),0,sx+nR,sy-nR)
+    end
+    pncl(clBlk); oval(sx, sy, nR, nR, clDrw)
+    if(bUp) then updt() end
+  end
+  
   complex.setAction("drawComplexOrigin", drawComplexOrigin)
+  complex.setAction("drawComplexCircle", drawComplexCircle)
   complex.setAction("drawComplexLine", drawComplexLine)
 
   local function actBoard(oBoard)
@@ -117,12 +128,10 @@ if(gbSuc) then
     local bHit  = level.gonnaHit(baPos, baVel)
     tTr.HitPos:Action("drawComplexOrigin", nil, 2)
     tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)
-    local T = (tTr.HitPos + tTr.HitNrm * 20)
-    T:Action("drawComplexOrigin", nil, 1.8, tTr.HitPos)
     
-  --  print("hit_beg", bHit)
+  -- print("hit_beg", bHit)
     
-    print("pos", baPos, baVel)
+   print("pos", baPos, baVel)
     
     if(bHit) then -- Is there a hit to tavke cate in the frame
       local nvPrt, niCnt = baVel:getNorm(), 0
@@ -140,22 +149,24 @@ if(gbSuc) then
         nvPrt = (nvPrt - tTr.HitDst)
         
         tTr.HitAct:Damage(tData.Damage)
-        if(tTr.HitAct:isDead()) then
-          level.delActor(tTr.HitAct)          
-        end
+        if(tTr.HitAct:isDead()) then level.delActor(tTr.HitAct) end
         
     --    print(niCnt,"dif2", tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
+        local cN, cR
+        if(level.traceReflect("surf")) then
+          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+        elseif(level.traceReflect("edge")) then
+          cN, cR = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
+        elseif(level.traceReflect("ball")) then
+          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+        else
+          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+        end
         
-        local cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
-   --     print(niCnt,"ref", cN, cR, nvPrt)
         
-    --    local R = (tTr.HitPos + cR * 70)
-    --    R:Action("drawComplexOrigin", clGrn, 1.8, tTr.HitPos, niCnt, true)
+        print(niCnt,"ref", cN, cR, nvPrt)
         
-    --    local N = (tTr.VtxEnd + cN * 70)
-    --    N:Action("drawComplexOrigin", clRed, 1.8, tTr.VtxEnd, niCnt, true)
-        
-      --  wait(3)
+        if(common.isNaN(cN:getReal()) or common.isNaN(cN:getImag())) then mainLoop = false end
         
         cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
         
@@ -234,7 +245,7 @@ if(gbSuc) then
   common.logStatus("  Balls : "..gtBehave["ball" ].__cnt)
   common.logStatus("  Bricks: "..gtBehave["brick"].__cnt)
    
-  while true do wipe()
+  while mainLoop do wipe()
     for ID = 1, nPrior do level.procStackType(ID) end    
     updt(); wait(gnTick)
   end

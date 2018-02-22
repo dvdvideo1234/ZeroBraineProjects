@@ -13,12 +13,18 @@ metaActors.garbage  = 10
 metaActors.curcoll  = 0
 metaActors.trace    = {
   Hit    = false,
+  HitRef = {
+    ["surf"] = false,
+    ["edge"] = false,
+    ["ball"] = false
+  },
   HitPos = complex.getNew(),
   HitAim = complex.getNew(),
   HitNrm = complex.getNew(),
   VtxStr = complex.getNew(),
   VtxEnd = complex.getNew(),
   HitTyp = "",
+  HitOfs = 0,
   HitDst = 0,
   HitAct = 0,
   HitKey = 0,
@@ -91,7 +97,15 @@ function level.procStackType(vID)
   end
 end
 
-
+function level.traceReflect(sTyp, vSta)
+  local bSt = common.toBool(vSta)
+  local sTy = tostring(sTyp or "")
+  local tRf = metaActors.trace.HitRef
+  if(not common.isNil(tRf[sTy])) then
+    if(vSta) then tRf[sTy] = bSt end
+    return tRf[sTy]
+  end return nil
+end
 
 --[[
   oPos > Start position of the trace
@@ -103,7 +117,10 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
   local clBlu = colr(colormap.getColorBlueRGB())
   local tTr, fTr = metaActors.trace, (tKey or {})
   local keyPri, actStk = metaActors.priorkey, metaActors.stack
-  tTr.Hit, tTr.HitDst = false, 0
+  tTr.Hit, tTr.HitDst, tTr.HitOfs = false, 0, nOfs
+  level.traceReflect("surf", false)
+  level.traceReflect("edge", false)
+  level.traceReflect("ball", false)
   for ID = 1, #keyPri do
     local nam = keyPri[ID]
     local stk = actStk[nam]
@@ -112,43 +129,71 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
       if(val and not (ftr and ftr[key])) then
         local nVtx = val:getVertN()
         if(nVtx > 0) then -- Polygon
-          local vS, vE, vN = oPos:getNew(), oPos:getNew(), oPos:getNew()
           local cS, cE, vA = oPos:getNew(), oPos:getNew(), oPos:getNew()
-          local ID, vI, vP = 1, val:getVert(1), val:getPos()
+          local vS, vE, vN = oPos:getNew(), oPos:getNew(), oPos:getNew()
+          local ID, vI, vP = 1, val:getVert(1), val:getPos(), oPos:getNew()
           while(ID <= nVtx) do
             cS:Set(vP):Add(val:getVert(ID) or vI); ID = ID + 1
             cE:Set(vP):Add(val:getVert(ID) or vI)
-            vN:Set(oPos):Project(cS, cE):Neg():Add(oPos):Unit()
-            vS:Set(vN):Mul(nOfs):Add(cS)
-            vE:Set(vN):Mul(nOfs):Add(cE)
+            vN:Set(oPos):ProjectLine(cS, cE):Neg():Add(oPos):Unit()
+            vS:Set(vN):Mul(tTr.HitOfs):Add(cS)
+            vE:Set(vN):Mul(tTr.HitOfs):Add(cE)
+         --   vS:Action("drawComplexLine", vE, 1, true)
+         --   cS:Action("drawComplexCircle", tTr.HitOfs, nil, nCnt, true)
+            local xS = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
+                  xS = common.getPick(xS and xS:isAmongLine(vS, vE), xS, nil)
+            local xE = complex.getIntersectRayCircle(oPos, oVel, cS, tTr.HitOfs)
+            local hitSurf, hitEdge, hitPos, hitNorm = false, false
+            if(xS and xE) then
+              local nS = (xS - oPos):getNorm()
+              local nE = (xE - oPos):getNorm()
+              local bPick  = (nS < nE)
+              hitPos  = common.getPick(bPick, xS, xE)
+              hitEdge = common.getPick(bPick, false, true)
+              hitSurf = common.getPick(bPick, (vN:getDot(oVel) < 0), false)
+              hitNorm = common.getPick(bPick, vN, xE:getSub(cS):Unit())
+            elseif(xS and not xE) then
+              hitPos  = xS
+              hitEdge = false
+              hitSurf = (vN:getDot(oVel) < 0)
+              hitNorm = vN
+            elseif(not xS and xE) then
+              hitPos  = xE
+              hitEdge = true
+              hitSurf = false
+              hitNorm = xE:getSub(cS):Unit()
+            else
+              hitPos  = nil
+              hitEdge = false
+              hitSurf = false
+            end
             
-            vS:Action("drawComplexLine", vE, 3, true)
-            
-            
-            local xX = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
-            if(xX) then -- Chech only non-parallel surfaces
-              if(xX:isAmong(vS, vE)) then vA:Set(xX):Sub(oPos)
+            if(hitPos and (hitSurf or hitEdge)) then -- Chech only non-parallel surfaces
+              vA:Set(hitPos):Sub(oPos)
                 -- Make sure that the point belongs to a surface
-                if(vA:getDot(oVel) > 0 and vN:getDot(oVel) < 0) then
-                  -- Chech only these in front of us and these that we are probably gonna hit
-                  local nA = vA:getNorm() -- Lngth to the trace position to check if a hit is present
-                  if(tTr.Hit) then -- If we have registered a hit with the new trace call
-                    if(nA < tTr.HitDst) then
-                      tTr.HitPos:Set(xX)
-                      tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
-                      tTr.HitAim:Set(vA); tTr.HitDst = nA
-                      tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
-                      tTr.HitPos:Action("drawComplexOrigin", clBlu, 4, nil, nCnt, true)
-                      nCnt = nCnt + 1
-                    end -- For all the others that we must compare minimum to
-                  else tTr.Hit = true
-                    tTr.HitPos:Set(xX)
+              if(vA:getDot(oVel) > 0) then
+                -- Chech only these in front of us and these that we are probably gonna hit
+                local nA = vA:getNorm() -- Lngth to the trace position to check if a hit is present
+                if(tTr.Hit) then -- If we have registered a hit with the new trace call
+                  if(nA < tTr.HitDst) then
+                    tTr.HitPos:Set(hitPos)
+                    level.traceReflect("surf", hitSurf)
+                    level.traceReflect("edge", hitEdge)
                     tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
                     tTr.HitAim:Set(vA); tTr.HitDst = nA
-                    tTr.HitNrm:Set(vN); tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
-                    tTr.HitPos:Action("drawComplexOrigin", clBlu, 4, nil, nCnt, true)
-                    nCnt = nCnt + 1
-                  end
+                    tTr.HitNrm:Set(hitNorm)
+                    if(hitSurf) then     tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                    elseif(hitEdge) then tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cS) end
+                  end -- For all the others that we must compare minimum to
+                else tTr.Hit = true
+                  tTr.HitPos:Set(hitPos)
+                  level.traceReflect("surf", hitSurf)
+                  level.traceReflect("edge", hitEdge)
+                  tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
+                  tTr.HitAim:Set(vA); tTr.HitDst = nA
+                  tTr.HitNrm:Set(hitNorm);
+                  if(hitSurf) then     tTr.VtxStr:Set(vS); tTr.VtxEnd:Set(vE)
+                  elseif(hitEdge) then tTr.VtxStr:Set(cS); tTr.VtxEnd:Set(cS) end
                 end
               end
             end
