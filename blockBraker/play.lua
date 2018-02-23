@@ -4,7 +4,6 @@ local keys     = require("blockBraker/keys")
 local blocks   = require("blockBraker/blocks")
 local level    = require("blockBraker/level")
 local common   = require("common")
-local export   = require("export")
 
 io.stdout:setvbuf("no")
 
@@ -12,6 +11,25 @@ local gnTick   = 0.01
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 local mainLoop = true
 local gbSuc    = level.readStage("test")
+
+function stopExecution(tTr, sMsg)
+  mainLoop = false
+  print("surf: ", level.traceReflect("surf"))
+  print("edge: ", level.traceReflect("edge"))
+  print("ball: ", level.traceReflect("ball"))
+  for k, v in pairs(tTr) do
+    local typ = common.getType(v)
+    if(typ == "blocks.block") then
+      v:Dump()
+    elseif(typ == "table") then
+      common.logTable(v, k)
+    else
+      print("key: ", k, tostring(v))
+    end
+  end
+  print(sMsg.."\n")
+end
+
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
@@ -131,14 +149,18 @@ if(gbSuc) then
     
   -- print("hit_beg", bHit)
     
-   print("pos", baPos, baVel)
-    
+    print("pos", baPos, baVel)
+   
+    local bx, by = baPos:getParts()
+    if(not common.isAmong(bx,-50,W+50)) then
+      stopExecution(tTr, "Ball ["..oBall:getKey().."] action cannot continue because X posision "..baPos.." is out of bounds") end
+    if(not common.isAmong(by,-50,H+50)) then
+      stopExecution(tTr, "Ball ["..oBall:getKey().."] action cannot continue because Y posision "..baPos.." is out of bounds") end
+   
     if(bHit) then -- Is there a hit to tavke cate in the frame
       local nvPrt, niCnt = baVel:getNorm(), 0
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
-      
-    --  print("pos", baPos, baVel)
       
       while(bHit and (tTr.HitDst < nvPrt)) do
    --     print(niCnt, "hit_loop", bHit)
@@ -166,7 +188,9 @@ if(gbSuc) then
         
         print(niCnt,"ref", cN, cR, nvPrt)
         
-        if(common.isNaN(cN:getReal()) or common.isNaN(cN:getImag())) then mainLoop = false end
+        if(common.isNaN(cN:getReal()) or common.isNaN(cN:getImag())) then
+          stopExecution(tTr, "Cannot reflect velocity at iteration #"..niCnt)
+        end
         
         cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
         
@@ -212,7 +236,7 @@ if(gbSuc) then
     ["world"] = {__act = nil     , __drw = nil     , __cnt = 0, __all = 0}
   }
   
- -- export.tableString(gtActors)
+ -- common.logTable(gtActors)
   
   for ID = 1, nPrior do
     sTyp = tPrior[ID]

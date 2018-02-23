@@ -5,7 +5,6 @@ local complex   = require("complex")
 local keys      = require("blockBraker/keys")
 local common    = require("common")
 local level     = require("blockBraker/level")
-local export    = require("export") 
 
 local logStatus = common.logStatus
 
@@ -109,7 +108,7 @@ local function getValueSet(sNam, tSet, iD, vF)
   local ID = __setup[iD][sNam]; if(not ID) then 
     return logStatus("getValueSet("..exp.."): Cannot retrieve ID for <"..tostring(sNam)..">", vF) end   
   local tDat = tSet[ID]; if(not tDat) then 
-    export.tableString(tSet, "getValueSet: tSet")
+    common.logTable(tSet, "getValueSet: tSet")
     return logStatus("getValueSet("..exp.."): No table provided <"..tostring(ID)..">", vF) end   
   local out = tDat[2]; return common.getPick(out~=nil, out, vF)
 end
@@ -173,18 +172,17 @@ local function saveFile()
   return true
 end
 
-local function drawComplexOrigin(oC)
-  local ss, xx, yy = 3, oC:getParts()
-  pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
+local function drawComplexOrigin(oC, nS, oO, clDrw)
+  local ss = common.getClamp(tonumber(nS) or 0, 0, 50)
+  local xx, yy = oC:getParts()
+  local ox, oy = nil, nil
+  if(oO) then ox, oy = oO:getParts()
+    pncl(clBlk); line(ox, oy, xx, yy)
+  end
+  pncl(clDrw or vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
 end
 
-local function drawComplexSelect(oC)
-  local ss, xx, yy = 10, oC:getParts()
-  pncl(vlMgn); rect(xx-ss, yy-ss, 2*ss, 2*ss)
-end
-
-complex.setAction("xy", drawComplexOrigin)
-complex.setAction("sel", drawComplexSelect)
+complex.setAction("editor_draw_complex", drawComplexOrigin)
 
 local function drawPoly(tInfo, vID)
   local iID  = common.getPick(vID, vID, typeID())
@@ -194,8 +192,8 @@ local function drawPoly(tInfo, vID)
     local r, g, b = getItemColor(v.set, iID)
     local clr = colr(r, g, b)
     local pos, vtx = v.pos, v.vtx
-    if(isSelected(k, iID)) then pos:Action("sel") end
-    local len, ftx = #vtx, vtx[1]; pos:Action("xy")
+    if(isSelected(k, iID)) then pos:Action("editor_draw_complex", 10) end
+    local len, ftx = #vtx, vtx[1]; pos:Action("editor_draw_complex", 3)
     for i = 1, len do 
       local s = (vtx[i]   or ftx):getRotDeg(ang):Add(pos)
       local e = (vtx[i+1] or ftx):getRotDeg(ang):Add(pos)
@@ -218,9 +216,9 @@ local function drawBall(tInfo, vID)
     local pos, vel = v.pos, v.vel
     local r, g, b = getItemColor(v.set, iID)
     local clr = colr(r, g, b)
-    if(isSelected(k, iID)) then pos:Action("sel") end
     local px, py = pos:getParts()
     local sz = getValueSet("Size", v.set, iID)
+    if(isSelected(k, iID)) then pos:Action("editor_draw_complex",sz + 4) end
     pncl(clBlk); oval(px, py, sz, sz, clr)
     if(vel) then
       local vx, vy = vel:getParts()
@@ -247,7 +245,7 @@ local function modPoly(tInfo, bUndo)
         cmp = false,
         vel = complex.getNew(0,0),
         pos = complex.getNew(rx, ry),
-        set = export.copyItem(typeData(typeID()))
+        set = common.copyItem(typeData(typeID()))
       }
       tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modPoly"
       typeSelect(typeID(), tInfo.__top)
@@ -342,7 +340,7 @@ local function modBall(tInfo, bUndo)
         cmp = false,
         vel = complex.getNew(0, 0),
         pos = complex.getNew(rx, ry), 
-        set = export.copyItem(typeData(typeID())),
+        set = common.copyItem(typeData(typeID())),
         __vel = complex.getNew(0, 0)
       }
       tTop = tDat[tInfo.__top]; tTop.set["FUNC"] = "modBall"

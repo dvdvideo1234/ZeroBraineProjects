@@ -3,7 +3,6 @@ local complex      = require("complex")
 local turtle       = require("turtle")
 local colormap     = require("colormap")
 local common       = require("common")
-local export       = require("export")
 local toBool       = common.toBool
 local logStatus    = common.logStatus
 

@@ -1,5 +1,4 @@
 local complex       = require("complex")
-local export        = require("export")
 local colormap      = require("colormap")
 local blocks        = require("blockBraker/blocks")
 local common        = require("common")
@@ -31,6 +30,8 @@ metaActors.trace    = {
   HitFlt = {}
 }
 
+metaActors.typereflect = {"surf","edge","ball"}
+
 metaActors.scrsize  = {W = 800, H = 400}
 function level.getScreenSize()
   return metaActors.scrsize.W, metaActors.scrsize.H
@@ -38,13 +39,13 @@ end
 
 metaActors.priorkey = {"board","brick","world","ball"}
 function level.getPriorityKeys()
-  return export.copyItem(metaActors.priorkey)
+  return common.copyItem(metaActors.priorkey)
 end
 
 metaActors.keyprior = {} for I = 1, #metaActors.priorkey do
   metaActors.keyprior[metaActors.priorkey[I]] = I end
 function level.getKeysPriority()
-  return export.copyItem(metaActors.keyprior)
+  return common.copyItem(metaActors.keyprior)
 end
 
 function level.getKey()
@@ -102,7 +103,7 @@ function level.traceReflect(sTyp, vSta)
   local sTy = tostring(sTyp or "")
   local tRf = metaActors.trace.HitRef
   if(not common.isNil(tRf[sTy])) then
-    if(vSta) then tRf[sTy] = bSt end
+    if(not common.isNil(vSta)) then tRf[sTy] = bSt end
     return tRf[sTy]
   end return nil
 end
@@ -164,10 +165,10 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
               hitNorm = xE:getSub(cS):Unit()
             else
               hitPos  = nil
+              hitNorm = nil
               hitEdge = false
               hitSurf = false
             end
-            
             if(hitPos and (hitSurf or hitEdge)) then -- Chech only non-parallel surfaces
               vA:Set(hitPos):Sub(oPos)
                 -- Make sure that the point belongs to a surface
@@ -223,7 +224,7 @@ end
 function level.getActors() return metaActors.stack end
 
 metaActors.store = {
-  [1 ] = {"setTable"    , export.stringTable},
+  [1 ] = {"setTable"    , common.stringToTable},
   [2 ] = {"setPos"      , complex.convNew},
   [3 ] = {"setVel"      , complex.convNew},
   [4 ] = {"setVert"     , complex.convNew},
