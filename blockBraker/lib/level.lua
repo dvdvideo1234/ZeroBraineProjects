@@ -206,6 +206,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
                     tTr.HitPos:Set(hitPos)
                     level.traceReflect("surf", hitSurf)
                     level.traceReflect("edge", hitEdge)
+                    level.traceReflect("ball", false)
                     tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
                     tTr.HitAim:Set(vA); tTr.HitDst = nA
                     tTr.HitNrm:Set(hitNorm)
@@ -216,6 +217,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
                   tTr.HitPos:Set(hitPos)
                   level.traceReflect("surf", hitSurf)
                   level.traceReflect("edge", hitEdge)
+                  level.traceReflect("ball", false)
                   tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
                   tTr.HitAim:Set(vA); tTr.HitDst = nA
                   tTr.HitNrm:Set(hitNorm);
@@ -226,7 +228,35 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
             end
           end
         else -- Ball
-         -- xF, xC = cmp.getIntersectRayCircle(oPos, oVel, cRay2[1], nOfs)
+          local vP, tB = val:getTable(), val:getPos()
+          local xN = complex.getIntersectRayCircle(oPos, oVel, vP, tB.Size + nOfs)
+          if(xN) then
+            local vA = vP:getNew():Sub(oPos)
+            local nA = vA:getNorm()
+            local vN = xN:getNew():Sub(vP):Unit()
+            if(tTr.Hit) then
+              if(nA < tTr.HitDst) then
+                tTr.HitPos:Set(xN)
+                level.traceReflect("surf", false)
+                level.traceReflect("edge", false)
+                level.traceReflect("ball", true)
+                tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
+                tTr.HitAim:Set(vA); tTr.HitDst = nA
+                tTr.HitNrm:Set(vN)
+                tTr.VtxStr:Set(vP); tTr.VtxEnd:Set(vP)
+              end
+            else
+              tTr.Hit = true
+              tTr.HitPos:Set(xN)
+              level.traceReflect("surf", false)
+              level.traceReflect("edge", false)
+              level.traceReflect("ball", true)
+              tTr.HitAct, tTr.HitKey, tTr.HitTyp = val, key, nam
+              tTr.HitAim:Set(vA); tTr.HitDst = nA
+              tTr.HitNrm:Set(vN)
+              tTr.VtxStr:Set(vP); tTr.VtxEnd:Set(vP)
+            end
+          end
         end
       end
     end

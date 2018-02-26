@@ -8,10 +8,10 @@ local level    = require("blockBraker/lib/level")
 io.stdout:setvbuf("no")
 
 local gnOut    = 5
-local gnTick   = 0.01
+local gnTick   = 0.1
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 local mainLoop = true
-local gbSuc    = level.readStage(2)
+local gbSuc    = level.readStage("edge")
 
 function stopExecution(oBall, tTr, sMsg)
   mainLoop = false
@@ -48,8 +48,9 @@ if(gbSuc) then
   local clGrn = colr(colormap.getColorGreenRGB())
   local clGry180 = colr(colormap.getColorPadRGB(180))
   local clRed = colr(colormap.getColorRedRGB())
-  local vlMgn = colr(colormap.getColorMagenRGB())
-  
+  local clMgn = colr(colormap.getColorMagenRGB())
+  local clWht = colr(colormap.getColorWhiteRGB())
+    
   local world = blocks.New():setPos(0,0):setWrap(false):setTable({Type="world"})
         world:setVert(0,0):setVert(W-1,0):setVert(W-1,H-1):setVert(0,H-1)
         world:setStat(true):setLife(1):setHard(true):setDrawColor(colormap.getColorGreenRGB())
@@ -66,7 +67,7 @@ if(gbSuc) then
     if(tX) then
       pncl(clBlk); text(tostring(tX),0,xx,yy)
     end
-    pncl(clDrw or vlMgn); rect(xx-ss, yy-ss, 2*ss+1, 2*ss+1)
+    pncl(clDrw or clMgn); rect(xx-ss, yy-ss, 2*ss+1, 2*ss+1)
     if(bUp) then updt() end
   end
 
@@ -74,19 +75,19 @@ if(gbSuc) then
     local ss = (tonumber(nS) or 2)
     local sx, sy = S:getParts()
     local ex, ey = E:getParts()
-    pncl(vlMgn); line(sx, sy, ex, ey)
-    pncl(vlMgn); rect(sx-ss, sy-ss, 2*ss+1, 2*ss+1)
-    pncl(vlMgn); rect(ex-ss, ey-ss, 2*ss+1, 2*ss+1)
+    pncl(clMgn); line(sx, sy, ex, ey)
+    pncl(clMgn); rect(sx-ss, sy-ss, 2*ss+1, 2*ss+1)
+    pncl(clMgn); rect(ex-ss, ey-ss, 2*ss+1, 2*ss+1)
     if(bUp) then updt() end
   end
   
-  local function drawComplexCircle(S,nR,clDrw,sTx,bUp)
+  local function drawComplexCircle(cC,nR,clDrw,sTx,bUp)
     local ss = (tonumber(nS) or 2)
-    local sx, sy = S:getParts()
+    local cx, cy = cC:getParts()
     if(tX) then
       pncl(clBlk); text(tostring(tX),0,sx+nR,sy-nR)
     end
-    pncl(clBlk); oval(sx, sy, nR, nR, clDrw)
+    pncl(clDrw or clMgn); oval(cx, cy, nR, nR, clDrw or clWht)
     if(bUp) then updt() end
   end
   
@@ -138,6 +139,15 @@ if(gbSuc) then
     -- Draw collision check
   end
 
+  local function drawHitSurface(tTr)   
+    if(tTr.VtxStr == tTr.VtxEnd) then -- The center of an edge is stored
+      tTr.VtxStr:Action("drawComplexCircle", tTr.VtxStr:getSub(tTr.HitPos):getNorm())
+    else
+      tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)        
+    end
+    tTr.HitPos:Action("drawComplexOrigin", nil, 2)
+  end
+
   local function actBall(oBall)
     local baPos = oBall:getPos()
     local baVel = oBall:getVel()
@@ -146,9 +156,9 @@ if(gbSuc) then
     local tfAll = {[tData.Type] = tfSlf}
     local tTr   = level.traceRay(baPos, baVel, tData.Size, tfAll)
     local bHit  = level.gonnaHit(baPos, baVel)
-    tTr.HitPos:Action("drawComplexOrigin", nil, 2)
-    tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)
     
+    drawHitSurface(tTr)
+
     level.logStatus("hit_beg", bHit)
     
     level.logStatus("actBall(state)", baPos, baVel)
@@ -167,10 +177,11 @@ if(gbSuc) then
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
       
       while(bHit and (tTr.HitDst < nvPrt)) do
-      level.logStatus(niCnt, "hit_loop", bHit)
-        tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)        
+        level.logStatus(niCnt, "hit_loop", bHit)
         
-      level.logStatus(niCnt,"dif1", tTr.HitDst, nvPrt)
+        drawHitSurface(tTr)        
+        
+        level.logStatus(niCnt,"dif1", tTr.HitDst, nvPrt)
         
         nvPrt = (nvPrt - tTr.HitDst)
         
