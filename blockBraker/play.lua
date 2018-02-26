@@ -1,35 +1,37 @@
 local colormap = require("colormap")
 local complex  = require("complex")
-local keys     = require("blockBraker/keys")
-local blocks   = require("blockBraker/blocks")
-local level    = require("blockBraker/level")
 local common   = require("common")
+local keys     = require("blockBraker/lib/keys")
+local blocks   = require("blockBraker/lib/blocks")
+local level    = require("blockBraker/lib/level")
 
 io.stdout:setvbuf("no")
 
+local gnOut    = 5
 local gnTick   = 0.01
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 local mainLoop = true
-local gbSuc    = level.readStage("test")
+local gbSuc    = level.readStage(2)
 
-function stopExecution(tTr, sMsg)
+function stopExecution(oBall, tTr, sMsg)
   mainLoop = false
-  print("surf: ", level.traceReflect("surf"))
-  print("edge: ", level.traceReflect("edge"))
-  print("ball: ", level.traceReflect("ball"))
+  level.logStatus("")
+  level.logStatus("stopExecution: Opps! That should not happen !")
+  level.logStatus("   surf: ", level.traceReflect("surf"))
+  level.logStatus("   edge: ", level.traceReflect("edge"))
+  level.logStatus("   ball: ", level.traceReflect("ball"))
   for k, v in pairs(tTr) do
     local typ = common.getType(v)
-    if(typ == "blocks.block") then
-      v:Dump()
-    elseif(typ == "table") then
-      common.logTable(v, k)
+    if(typ == "table") then
+      common.logTable(v, "   key: "..k)
     else
-      print("key: ", k, tostring(v))
+      level.logStatus("   key: ", k, tostring(v))
     end
   end
-  print(sMsg.."\n")
+  oBall:Dump()
+  tTr.HitAct:Dump()
+  level.logStatus(sMsg.."\n")
 end
-
 
 if(gbSuc) then
   local W, H = level.getScreenSize()
@@ -147,70 +149,78 @@ if(gbSuc) then
     tTr.HitPos:Action("drawComplexOrigin", nil, 2)
     tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)
     
-  -- print("hit_beg", bHit)
+    level.logStatus("hit_beg", bHit)
     
-    print("pos", baPos, baVel)
+    level.logStatus("actBall(state)", baPos, baVel)
    
     local bx, by = baPos:getParts()
-    if(not common.isAmong(bx,-50,W+50)) then
-      stopExecution(tTr, "Ball ["..oBall:getKey().."] action cannot continue because X posision "..baPos.." is out of bounds") end
-    if(not common.isAmong(by,-50,H+50)) then
-      stopExecution(tTr, "Ball ["..oBall:getKey().."] action cannot continue because Y posision "..baPos.." is out of bounds") end
+    if(not common.isAmong(bx,-gnOut,W+gnOut)) then
+      stopExecution(oBall, tTr, "Ball ["..oBall:getKey().."] action cannot continue "..
+        "because X posision "..baPos.." is out of bounds {"..W..","..H.."}") end
+    if(not common.isAmong(by,-gnOut,H+gnOut)) then
+      stopExecution(oBall, tTr, "Ball ["..oBall:getKey().."] action cannot continue "..
+        "because Y posision "..baPos.." is out of bounds {"..W..","..H.."}") end
    
     if(bHit) then -- Is there a hit to tavke cate in the frame
-      local nvPrt, niCnt = baVel:getNorm(), 0
+      local nvPrt, niCnt = baVel:getNorm(), 1
       local cfPos, cfVel = baPos:getNew(), baVel:getNew()
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
       
       while(bHit and (tTr.HitDst < nvPrt)) do
-   --     print(niCnt, "hit_loop", bHit)
+      level.logStatus(niCnt, "hit_loop", bHit)
         tTr.VtxStr:Action("drawComplexLine", tTr.VtxEnd)        
         
-   --     print(niCnt,"dif1", tTr.HitDst, nvPrt)
+      level.logStatus(niCnt,"dif1", tTr.HitDst, nvPrt)
         
         nvPrt = (nvPrt - tTr.HitDst)
         
         tTr.HitAct:Damage(tData.Damage)
         if(tTr.HitAct:isDead()) then level.delActor(tTr.HitAct) end
         
-    --    print(niCnt,"dif2", tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
+        level.logStatus(niCnt,"dif2", tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
+        
         local cN, cR
-        if(level.traceReflect("surf")) then
+        local bSurf = level.traceReflect("surf")
+        local bEdge = level.traceReflect("edge")
+        local bBall = level.traceReflect("ball")
+        
+        level.logStatus("flg", bSurf, bEdge, bBall)
+        
+        if(bSurf) then
           cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
-        elseif(level.traceReflect("edge")) then
+        elseif(bEdge) then
           cN, cR = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
-        elseif(level.traceReflect("ball")) then
-          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
-        else
-          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+        elseif(bBall) then
+          local nRad = tTr.HitAct:getTable().Size + tData.Size
+          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, nRad, tTr.HitPos)
         end
         
+        level.logStatus(niCnt,"ref", cN, cR, nvPrt)
         
-        print(niCnt,"ref", cN, cR, nvPrt)
-        
-        if(common.isNaN(cN:getReal()) or common.isNaN(cN:getImag())) then
-          stopExecution(tTr, "Cannot reflect velocity at iteration #"..niCnt)
+        if(common.isNan(cN:getReal()) or common.isNan(cN:getImag())) then
+          stopExecution(oBall, tTr, "Cannot reflect velocity at iteration #"..niCnt)
         end
         
         cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
         
-   --     print(niCnt,"trs", tTr.HitPos, cpInt, cvRef)
+        level.logStatus(niCnt,"trs", tTr.HitPos, cpInt, cvRef)
         
         -- Adjust the next frame position according to the trace
         cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
         
-     --   print(niCnt,"nve", cfPos, cfVel)
+        level.logStatus(niCnt,"nve", cfPos, cfVel)
+        
         -- Draw the ball trajectory if enabled
         oBall:addTrace(cpInt):addTrace(cfPos)
         
-   --     print(niCnt,"loop_end")
-        
-        tfAll = {[tData.Type] = tfSlf, [tTr.HitTyp] = {[tTr.HitKey] = true}}
+        level.logStatus(niCnt,"loop_end")
         
         tTr  = level.traceRay(cpInt, cvRef, tData.Size, tfAll)
         bHit = level.gonnaHit(cpInt, cvRef)
-   --     print(niCnt,"new_trace", bHit, tTr.HitPos, cpInt, cvRef)
-    --    print(niCnt,"loop_end\n\n")
+        
+        level.logStatus(niCnt,"new_trace", bHit, tTr.HitPos, cpInt, cvRef)
+        level.logStatus(niCnt,"loop_end\n\n")
+        
         niCnt = niCnt + 1
       end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
       
@@ -228,7 +238,7 @@ if(gbSuc) then
   local tPrior = level.getPriorityKeys()
   local nPrior = #tPrior
   
-  -- Apply actions and drawings
+  -- Apply action and drawing behaviors
   local gtBehave = {
     ["board"] = {__act = actBoard, __drw = nil     , __cnt = 0, __all = 0},
     ["brick"] = {__act = nil     , __drw = nil     , __cnt = 0, __all = 0},
@@ -269,11 +279,13 @@ if(gbSuc) then
   common.logStatus("  Balls : "..gtBehave["ball" ].__cnt)
   common.logStatus("  Bricks: "..gtBehave["brick"].__cnt)
    
-  while mainLoop do wipe()
+  while (mainLoop and level.hasBalls()) do wipe()
     for ID = 1, nPrior do level.procStackType(ID) end    
     updt(); wait(gnTick)
   end
-
+  
+  common.logStatus("The level has finished there are no spare balls left !")
+  
 else
   common.logStatus("Play: Failed reading the first level !")
 end

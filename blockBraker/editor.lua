@@ -2,9 +2,9 @@ local wx        = require("wx")
 local turtle    = require("turtle")
 local colormap  = require("colormap")
 local complex   = require("complex")
-local keys      = require("blockBraker/keys")
+local keys      = require("blockBraker/lib/keys")
 local common    = require("common")
-local level     = require("blockBraker/level")
+local level     = require("blockBraker/lib/level")
 
 local logStatus = common.logStatus
 
