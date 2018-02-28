@@ -69,8 +69,18 @@ function blocks.New()
     end; if(not self:isWrap()) then bO = (not bO) end
     return bO
   end
-  function self:Draw(bVel) -- tect(x,y,w,h)
-    if(self:isDead()) then return self end
+  function self:drawLife()
+    if(not self:isHard()) then
+      local px, py = mcPos:getSub(mcSiz):Floor():getParts()
+      pncl(mclDr); text(("%4.1f"):format(self:getLife()),0, px, py)
+    end; return self
+  end
+  function self:drawVel()
+    local px, py = mcPos:getParts()
+    local vx, vy = mcVel:getParts()
+    pncl(mclDr); line(px, py, px+vx, py+vy); return self
+  end
+  function self:drawTrace()
     if(self:isTrace()) then
       if(mtTrc and mtTrc.__top > 0) then local N, O
         if(mtTrc.__top == mtTrc.__max) then
@@ -86,24 +96,24 @@ function blocks.New()
           pncl(mclDr); rect(xp-2, yp-2, 5, 5)
         end
       end
-    end
-    if(mfDrw) then mfDrw(self); return self end
+    end; return self
+  end
+  function self:drawPoly()
     local ID, N = 1, self:getVertN()
     local CT, VI = mcPos:getNew(), self:getVert(1)
     while(ID <= N) do local xs, ys, xs, ys
       xs, ys = CT:Set(mcPos):Add(self:getVert(ID) or VI):getParts(); ID = ID + 1
       xe, ye = CT:Set(mcPos):Add(self:getVert(ID) or VI):getParts()
       pncl(mclDr); line(xs, ys, xe, ye)
-    end
-    if(bVel) then local px, py, vx, vy
-      px, py = mcPos:getParts()
-      vx, vy = mcVel:getParts()
-      line(px, py, px+vx, py+vy)
-    end
-    if(not self:isHard()) then
-      local px, py = mcPos:getSub(mcSiz):Floor():getParts()
-      pncl(mclDr); text(("%4.1f"):format(self:getLife()),0, px, py)
-    end
+    end; return self
+  end
+  function self:Draw(bVel) -- tect(x,y,w,h)
+    if(self:isDead()) then return self end
+    self:drawTrace()
+    self:drawLife()
+    if(bVel) then self:drawVel() end
+    if(mfDrw) then mfDrw(self); return self end
+    self:drawPoly()
     return self
   end
   function self:Act()

@@ -104,17 +104,17 @@ function level.addActor(oAct)
   end; return logStatus("level.addActor: Object wrong type <"..oTyp..">", false)
 end
 
-function level.procStackType(vID)
+function level.procStack(vID, sMth)
   local iID  = common.getClamp(tonumber(vID) or 0, 1, #metaActors.priorkey)
   local sTyp = metaActors.priorkey[iID]; if(not sTyp) then
-    return logStatus("level.procTypeStack: ID missing <"..tostring(iID)..">", false) end
+    return logStatus("level.procStack: ID missing <"..tostring(iID)..">", false) end
   local tAct = metaActors.stack[sTyp]; if(not tAct) then
-    return logStatus("level.procTypeStack: Stack missing <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
-  for key, val in pairs(tAct) do
-    val:Act()
-    val:Move()
-    val:Draw()
-  end
+    return logStatus("level.procStack: Stack missing <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
+  if(not common.isString(sMth)) then 
+    return logStatus("level.procStack: Mthod <"..tostring(sMth).."> not hash <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
+  if(common.isDryString(sMth)) then 
+    return logStatus("level.procStack: Mthod empty <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
+  for key, val in pairs(tAct) do val[sMth](val) end
 end
 
 function level.traceReflect(sTyp, vSta)
@@ -127,11 +127,47 @@ function level.traceReflect(sTyp, vSta)
   end return nil
 end
 
-function level.hasBalls() -- I knw how that sounds xD
-  local tAct, nCnt = metaActors.stack["ball"], 0
-  if(common.isTable(tAct)) then
-  for k, v in pairs(tAct) do nCnt = nCnt + 1 end; return (nCnt > 0) end
-  return false
+function level.getActors() return metaActors.stack end
+
+function level.hasActors(sAct)
+  if(not common.isString(sAct)) then 
+    return logStatus("level.hasActors: Name invalid <"..tostring(sMth)..">", false) end
+  if(common.isDryString(sAct)) then 
+    return logStatus("level.hasActors: Name empty", false) end
+  if(common.isNil(metaActors.keyprior[sAct])) then
+    return logStatus("level.hasActors: Type missing <"..sAct..">", false) end
+  if(common.isDryTable(metaActors.stack[sAct])) then
+    return logStatus("level.hasActors: Actor missing <"..sAct..">", false) end
+  return true
+end
+
+function level.hookAction(tBeh)
+  local tStk = metaActors.stack
+  local tPri = metaActors.priorkey
+  for ID = 1, #tPri do
+    local sTyp = tPri[ID]
+    local tAct = tStk[sTyp]
+    if(type(tAct) == "table") then
+      for k, v in pairs(tStk[sTyp]) do
+        local tDat = v:getTable()
+        if(tDat and tDat.Type) then
+          local setUp = tBeh[tDat.Type]
+          if(setUp) then
+            setUp.__all = setUp.__all + 1
+            if(tDat.Type == "board" and setUp.__cnt >= 1) then
+              common.logStatus("Play: Only one player is allowed. You have <"..setUp.__all..">")
+            elseif(tDat.Type == "world" and setUp.__cnt >= 1) then
+              common.logStatus("Play: Only one world is allowed. You have <"..setUp.__all..">")
+            else
+              v:setAction(setUp.__act)
+              v:setDraw  (setUp.__drw)
+              setUp.__cnt = setUp.__cnt + 1
+            end
+          end
+        end
+      end
+    end
+  end
 end
 
 --[[
@@ -180,20 +216,11 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
               hitSurf = common.getPick(bP, true , false)
               hitNorm = common.getPick(bP, vN, xE:getSub(cS):Unit())
             elseif(xS and not xE) then
-              hitPos  = xS
-              hitEdge = false
-              hitSurf = true
-              hitNorm = vN
+              hitPos, hitNorm, hitEdge, hitSurf = xS, vN, false, true
             elseif(not xS and xE) then
-              hitPos  = xE
-              hitEdge = true
-              hitSurf = false
-              hitNorm = xE:getSub(cS):Unit()
+              hitPos, hitNorm, hitEdge, hitSurf = xE, xE:getSub(cS):Unit(), true, false 
             else
-              hitPos  = nil
-              hitNorm = nil
-              hitEdge = false
-              hitSurf = false
+              hitPos, hitNorm, hitEdge, hitSurf = nil, nil, false, false
             end
             if(hitPos and (hitSurf or hitEdge)) then -- Chech only non-parallel surfaces
               vA:Set(hitPos):Sub(oPos)
@@ -228,10 +255,13 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
             end
           end
         else -- Ball
-          local vP, tB = val:getTable(), val:getPos()
-          local xN = complex.getIntersectRayCircle(oPos, oVel, vP, tB.Size + nOfs)
+          local vP = val:getPos()
+          local tB = val:getTable()
+          local nR = (tB.Size + nOfs)
+          local xN = complex.getIntersectRayCircle(oPos, oVel, vP, nR)
           if(xN) then
-            local vA = vP:getNew():Sub(oPos)
+            vP:Action("drawComplexCircle", nR, nil, nil, true)
+            local vA = xN:getNew():Sub(oPos)
             local nA = vA:getNorm()
             local vN = xN:getNew():Sub(vP):Unit()
             if(tTr.Hit) then
@@ -277,8 +307,6 @@ function level.clearAll()
   collectgarbage(); return true
 end
 
-function level.getActors() return metaActors.stack end
-
 metaActors.store = {
   [1 ] = {"setTable"    , common.stringToTable},
   [2 ] = {"setPos"      , complex.convNew},
@@ -292,8 +320,8 @@ metaActors.store = {
   [10] = {"setTrace"    , tonumber}
 }
 function level.readStage(sF, bLog)
-  local pF, actSt = io.open("blockBraker/levels/"..sF..".txt"), metaActors.store
-  if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", ""), true end
+  local pF, actSt = io.open("levels/"..sF..".txt"), metaActors.store
+  if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", false) end
   local sLn, isEOF = "", false
   while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then 
@@ -303,9 +331,10 @@ function level.readStage(sF, bLog)
         if(tPar[1] == "setTable") then bNew = blocks.New() end
         if(bLog) then logStatus("  levels.readStage: Start ["..I.."] <"..tostring(tCmp[I])..">") end
         local tItm = common.stringExplode(common.stringTrim(tCmp[I]),";")
-        for J = 1, #tItm do if(bLog) then logStatus("  levels.readStage:   "..tPar[1].." ("..J..") : "..tItm[J]) end
+        for J = 1, #tItm do tItm[J] = common.stringTrim(tItm[J])
+          if(bLog) then logStatus("  levels.readStage:   "..tPar[1].." ("..J..") : "..tItm[J]) end
           if(not tPar[2]) then return logStatus("levels.readStage: Data convertor ["..J.."] missing <"..tPar[1]..">", false) end
-          bNew[tPar[1]](bNew,tPar[2](tItm[J]))
+          if(not common.isDryString(tItm[J])) then bNew[tPar[1]](bNew,tPar[2](tItm[J])) end
         end
       end; level.addActor(bNew); if(bLog) then bNew:Dump() end
     end
