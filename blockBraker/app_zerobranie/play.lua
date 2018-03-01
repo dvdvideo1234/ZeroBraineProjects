@@ -11,8 +11,8 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "cross"
-local gnTick   = 0.1
+local gnCurLev = "trace"
+local gnTick   = 0.01
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
@@ -241,7 +241,7 @@ while(gbSuc) do
         level.logStatus(niCnt,"nve", cfPos, cfVel)
         
         -- Draw the ball trajectory if enabled
-        oBall:addTrace(cpInt):addTrace(cfPos)
+        oBall:addTrace(cpInt)
         
         level.logStatus(niCnt,"loop_end")
         
@@ -254,7 +254,7 @@ while(gbSuc) do
         niCnt = niCnt + 1
       end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
       
-      oBall:setFrame(true):setPos(cfPos):setVel(cfVel)
+      oBall:setFrame(true):addTrace(cfPos):setPos(cfPos):setVel(cfVel)
     else
       -- Update the OOP accordingly and move in 2D space if nothing is hit
       oBall:setVel(baVel)
