@@ -48,6 +48,15 @@ function blocks.New()
     local iID = math.floor(tonumber(vID) or 0)
     local cV = mtVtx[iID]; return (cV and cV:getNew() or nil)
   end
+  function self:getVertV(vV)
+    local nV, cV = self:getVertN(), (vV or mcVel)
+    if(nV > 0 and cV:getNorm2() > 0) then
+      local nM, iD, dV = 0, 0, cV:getUnit()
+      for ID = 1, nV do local nD = mtVtx[ID]:getDot(dV)
+        if(nD > nM) then iD, nM = ID, nD end
+      end; return mtVtx[iD]:getNew(), iD, nM
+    end
+  end
   function self:getDrawColor() return mclDr end
   function self:setDrawColor(r,g,b)
     mclDr = colr(colormap.getClamp(r),

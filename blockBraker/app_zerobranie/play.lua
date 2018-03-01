@@ -1,4 +1,4 @@
-require("lib/paths").regDirectory("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms","*.lua")
+require("lib/paths").regDir("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms","*.lua")
 
 local colormap = require("colormap")
 local complex  = require("complex")
@@ -11,8 +11,8 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "equal"
-local gnTick   = 0.001
+local gnCurLev = "cross"
+local gnTick   = 0.1
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
@@ -120,13 +120,7 @@ while(gbSuc) do
     if(keys.getPress(key, "right"))    then sgn, vtx =  1, 2
     elseif(keys.getPress(key, "left")) then sgn, vtx = -1, 1
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
-    local vtb, max, uvel = 0, 0, brVel:getUnit()
-    for ID = 1, oBoard:getVertN() do
-      local vtt = oBoard:getVert(ID)
-      local dot = vtt:getDot(uvel)
-      if(dot > max) then vtb, max = ID, dot end
-    end
-    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVert(vtb)
+    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVertV(brVel)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
     local xX = complex.getIntersectRayRay(brPos, brVel, wW, dD)
     if(xX) then local rN = rR:Sub(xX):getNorm()
