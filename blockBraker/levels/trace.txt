@@ -2,7 +2,7 @@
 # table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB/trail
 
 # Board player controlled
-{Type="board",Velocity=10.000000}/382,372/0,0/-16,-44;95,-41;106,-3;68,26;-119,21;-125,-52/0.000000/false/true/1.000000/255,0,0/0
+{Type="board",Velocity=10.000000}/382,372/0,0/-16,-44;95,-58;106,-3;68,26;-119,21;-125,-40/0.000000/false/true/1.000000/255,0,0/0
 
 # Balls which break blocks
 {Type="ball",Size=5.000000,Damage=1.000000}/457,162/-20,53//0.000000/false/true/1.000000/0,255,0/40

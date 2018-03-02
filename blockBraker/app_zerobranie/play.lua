@@ -11,8 +11,8 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "trace"
-local gnTick   = 0.01
+local gnCurLev = "balls"
+local gnTick   = 0.001
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
@@ -291,8 +291,8 @@ while(gbSuc) do
    
   while(mainLoop) do wipe()
     for ID = 1, nPri do level.procStack(ID, "Act" ) end
-    for ID = 1, nPri do level.procStack(ID, "Move") end
     for ID = 1, nPri do level.procStack(ID, "Draw") end
+    for ID = 1, nPri do level.procStack(ID, "Move") end
     updt(); wait(gnTick)
     if(not bSbox) then 
       if(not level.hasActors("ball")) then
