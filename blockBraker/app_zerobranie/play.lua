@@ -11,8 +11,8 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "balls"
-local gnTick   = 0.001
+local gnCurLev = "test"
+local gnTick   = 0.05
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
@@ -91,10 +91,7 @@ complex.setAction("drawComplexLine", drawComplexLine)
 if(not gbSuc) then
   return common.logStatus("Play: Failed reading the first level !") end
 
-open("Complex block braker")
-size(W, H)
-zero(0, 0)
-updt(false) 
+level.openWindow("Complex block breaker")
 
 while(gbSuc) do
   
@@ -217,12 +214,12 @@ while(gbSuc) do
         level.logStatus("flg", bSurf, bEdge, bBall)
         
         if(bSurf) then
-          cN, cR = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+          cR, cN = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
         elseif(bEdge) then
-          cN, cR = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
+          cR, cN = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
         elseif(bBall) then
           local nRad = tTr.HitAct:getTable().Size + tData.Size
-          cN, cR = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, nRad, tTr.HitPos)
+          cR, cN = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, nRad, tTr.HitPos)
         end
         
         level.logStatus(niCnt,"ref", cN, cR, nvPrt)

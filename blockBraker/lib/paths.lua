@@ -6,7 +6,7 @@ function paths.regDir(sB, sE)
   if(ext == "") then io.write("paths.regDir: Missing extension") return end
   local pad = (bas.."*."..ext):match("(.-)[^\\/]+$").."?."..ext
   package.path = package.path..";"..pad
-  io.write("paths.regDir: Added <"..pad..">")
+  io.write("paths.regDir: Added <"..pad..">\n")
 end
 
 return paths

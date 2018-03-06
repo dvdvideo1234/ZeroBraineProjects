@@ -56,6 +56,12 @@ function level.getScreenSize()
   return metaActors.scrsize.W, metaActors.scrsize.H
 end
 
+function level.openWindow(sT)
+  local W, H = level.getScreenSize()
+  open(tostring(sT or "Default"))
+  size(W, H); zero(0, 0); updt(false) 
+end
+
 metaActors.priorkey = {"board","brick","world","ball"}
 function level.getPriorityKeys()
   return common.copyItem(metaActors.priorkey)
@@ -204,7 +210,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
           --  vS:Action("drawComplexLine", vE, 1, true)
           --  cS:Action("drawComplexCircle", tTr.HitOfs, nil, nCnt, true)
             local xR = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
-            local xS = common.getPick(xR:isAmongLine(vS, vE) and (vN:getDot(oVel) < 0), xR, nil)
+            local xS = common.getPick(xR and xR:isAmongLine(vS, vE) and (vN:getDot(oVel) < 0), xR, nil)
             local xE = complex.getIntersectRayCircle(oPos, oVel, cS, tTr.HitOfs)
             local hitSurf, hitEdge, hitPos, hitNorm = false, false
             if(xS and xE) then
@@ -259,7 +265,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
           local tB = val:getTable()
           local nR = (tB.Size + nOfs)
           local xN = complex.getIntersectRayCircle(oPos, oVel, vP, nR)
-          if(xN) then
+          if(xN and xN:isAmongRay(oPos, oVel, true)) then
             vP:Action("drawComplexCircle", nR, nil, nil, true)
             local vA = xN:getNew():Sub(oPos)
             local nA = vA:getNorm()

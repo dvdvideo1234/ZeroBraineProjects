@@ -266,7 +266,10 @@ local function modPoly(tInfo, bUndo)
       if(nVtx == 0) then
         tDat[tInfo.__top] = nil
         tInfo.__top = (tInfo.__top - 1)
+        while(tInfo.__top > 0 and not tDat[tInfo.__top]) do
+          tInfo.__top = tInfo.__top - 1 end
         tTop = tDat[tInfo.__top]
+        typeSelect(typeID(), tInfo.__top)
       else
         if(tTop and tTop.vtx) then
           tTop.vtx[#tTop.vtx] = nil end
@@ -290,11 +293,26 @@ end
 
 local function setSettings(key, tInfo)
   local iTyp = typeID()
+  local iTop = tInfo.__top
   local tDat = tInfo.__data
-  local tTop = tDat[tInfo.__top]
+  local tTop = tDat[iTop]
   local iSel = typeSelect(iTyp)
   local tSel = tDat[iSel]
   if(tSel) then
+    if(keys.getPress(key, "num5") and tSel.cmp) then
+      iTop = iTop + 1; tInfo.__top = iTop
+      -- Adjust Top pointer
+      tDat[iTop] = common.copyItem(tSel, {["Complex"]=complex.getNew}); tTop = tDat[iTop]
+      print("\nadr", tDat[iTop], tSel)
+      common.logTable(tSel, "CMP")
+      common.logTable(tDat[iTop], "CMP")
+      
+      
+      
+      -- Select the new item
+      iSel = typeSelect(iTyp, iTop); tSel = tDat[iSel]
+      print("\nsel",iTyp,iSel, iTop, tInfo.__top)
+    end
     iSel = iSel + ((keys.getPress(key, "pgup") and 1 or 0) - 
                    (keys.getPress(key, "pgdn") and 1 or 0))
     iSel = common.getClamp(iSel, 1, tInfo.__top)
@@ -339,10 +357,14 @@ local function modBall(tInfo, bUndo)
   if(not bUndo) then
     local rx, ry = keys.getMouseRD()      
     if(rx and ry) then
-      if(tTop and ((tTop.vel and tTop.vel:getNorm() == 0) or not tTop.vel)) then
-        tDat[tInfo.__top] = nil; tInfo.__top = (tInfo.__top - 1)
-        common.logStatus("Add ["..typeName(typeID()).."]: Deleted invalid velocity <"..tostring(tTop.vel)..">")
-      end; if(tTop) then tTop.cmp = true end
+      if(tTop) then tTop.cmp = true
+        if(tTop.vel) then nV = tTop.vel:getNorm2()
+          if(nV == 0 or common.isNan(nV)) then
+            common.logStatus("Add ["..typeName(typeID()).."]: Deleted invalid velocity <"..tostring(tTop.vel)..">")
+            tDat[tInfo.__top] = nil; tInfo.__top = (tInfo.__top - 1)
+          end
+        end
+      end
       tInfo.__top = tInfo.__top + 1
       tDat[tInfo.__top] = {
         vtx = {},
@@ -361,14 +383,15 @@ local function modBall(tInfo, bUndo)
     end
     if(tSel and tSel.vel and tSel.__vel) then
       tSel.vel:Set(tSel.__vel):RotDeg(getValueSet("Angle", tSel.set, typeID()))
+      tSel.cmp = true
     end
   else
     if(tTop) then
       tDat[tInfo.__top] = nil
       tInfo.__top = tInfo.__top - 1
       while(tInfo.__top > 0 and not tDat[tInfo.__top]) do
-        tInfo.__top = tInfo.__top - 1
-      end
+        tInfo.__top = tInfo.__top - 1 end
+      typeSelect(typeID(), tInfo.__top)
     end
   end
 end
@@ -412,8 +435,8 @@ local function mainStart()
     elseif(sType == "ball") then
       modBall(tInfo, keys.getPress(key, "Z"))
     end
-    drawStuff()
     setSettings(key, tInfo)
+    drawStuff()
     key = keys.getKey(); updt()
   end
   return true
