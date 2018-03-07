@@ -9,7 +9,7 @@ local colormap  = require("colormap")
 -- Local project libraries
 local keys      = require("lib/keys" )
 local level     = require("lib/level")
-
+local scType    = complex.getType()
 local logStatus = common.logStatus
 
 local W, H  = level.getScreenSize()
@@ -130,14 +130,15 @@ local function getStringSet(tSet, iD)
 end
 
 local function saveFile()
-  local fNam, tStu, key = "", getItems(), char()
-  while(not (keys.getPress(key, "enter") or keys.getPress(key, "nument"))) do wipe()
+  local fNam, tStu, key = "", getItems(), keys.getKey()
+  while(not (keys.getCheck(key, "enter") or
+             keys.getCheck(key, "nument"))) do wipe()
     if(key) then
       fNam = fNam..tostring(keys.getChar(key) or ""):sub(1,1)
-      if(keys.getPress(key, "backsp")) then fNam = fNam:sub(1,-2) end
+      if(keys.getCheck(key, "backsp")) then fNam = fNam:sub(1,-2) end
     end
     text("Save: "..tostring(fNam):lower(),0,0,0)
-    key = char(); updt()
+    key = keys.getKey(); updt()
   end; fNam = "levels/"..fNam:lower()..".txt"
   local iO = io.open(fNam, "wb")
   if(not iO) then
@@ -193,21 +194,21 @@ local function drawPoly(tInfo, vID)
   local tDat = tInfo.__data
   for k, v  in pairs(tDat) do
     local ang = getValueSet("Angle", v.set, iID)
-    local r, g, b = getItemColor(v.set, iID)
-    local clr = colr(r, g, b)
+    local clr = colr(getItemColor(v.set, iID))
     local pos, vtx = v.pos, v.vtx
+    if(vtx[1]) then
+      local vts = vtx[1]:getRotDeg(ang):Add(pos)
+      vts:Action("editor_draw_complex", nil, pos)
+    end
     if(isSelected(k, iID)) then pos:Action("editor_draw_complex", 10) end
     local len, ftx = #vtx, vtx[1]; pos:Action("editor_draw_complex", 3)
-    for i = 1, len do 
-      local s = (vtx[i]   or ftx):getRotDeg(ang):Add(pos)
-      local e = (vtx[i+1] or ftx):getRotDeg(ang):Add(pos)
+    for i = 1, len do local n = (i+1)
+      local s = (vtx[i] or ftx):getRotDeg(ang):Add(pos)
+      local e = (vtx[n] or ftx):getRotDeg(ang):Add(pos)
       local sx, sy = s:getParts()
       local ex, ey = e:getParts()
-      if(not vtx[i+1]) then
-        pncl(vlMgn)
-      else
-        pncl(clr)
-      end
+      if(not vtx[n]) then pncl(vlMgn)
+      else pncl(clr) end
       line(sx, sy, ex, ey)
     end
   end
@@ -218,8 +219,7 @@ local function drawBall(tInfo, vID)
   local tDat = tInfo.__data
   for k, v  in pairs(tDat) do
     local pos, vel = v.pos, v.vel
-    local r, g, b = getItemColor(v.set, iID)
-    local clr = colr(r, g, b)
+    local clr = colr(getItemColor(v.set, iID))
     local px, py = pos:getParts()
     local sz = getValueSet("Size", v.set, iID)
     if(isSelected(k, iID)) then pos:Action("editor_draw_complex",sz + 4) end
@@ -255,24 +255,23 @@ local function modPoly(tInfo, bUndo)
       typeSelect(typeID(), tInfo.__top)
     end
     local lx, ly = keys.getMouseLD()
-    if(lx and ly) then
-      if(tSel) then
-        local v = (complex.getNew(lx, ly) - tSel.pos)
-        tSel.vtx[#tSel.vtx + 1] = v 
+    if(tSel) then
+      if(lx and ly) then
+        local ang = getValueSet("Angle", tSel.set, typeID())
+        local ver = complex.getNew(lx, ly):Sub(tSel.pos):RotDeg(-ang)
+        tSel.vtx[#tSel.vtx + 1] = ver
       end
+      if(not tSel.cmp and (#tSel.vtx >= 3)) then tSel.cmp = true end
     end
   else
     if(tTop) then local nVtx = common.getPick(tTop.vtx, #tTop.vtx, 0)
-      if(nVtx == 0) then
-        tDat[tInfo.__top] = nil
-        tInfo.__top = (tInfo.__top - 1)
-        while(tInfo.__top > 0 and not tDat[tInfo.__top]) do
-          tInfo.__top = tInfo.__top - 1 end
-        tTop = tDat[tInfo.__top]
+      if(nVtx == 0) then local iTop = tInfo.__top
+        tDat[iTop] = nil; iTop = (iTop - 1)
+        while(iTop > 0 and not tDat[iTop]) do iTop = iTop - 1 end
+        tTop, tInfo.__top = tDat[iTop], iTop
         typeSelect(typeID(), tInfo.__top)
       else
-        if(tTop and tTop.vtx) then
-          tTop.vtx[#tTop.vtx] = nil end
+        if(tTop and tTop.vtx) then tTop.vtx[#tTop.vtx] = nil end
       end
     end
   end
@@ -280,8 +279,8 @@ end
 
 local function adjustParam(key, aP, aW, tL)
   local typ = type(aP)
-  local cng = ((keys.getPress(key, "up") and 1 or 0) - 
-               (keys.getPress(key, "down" ) and 1 or 0))
+  local cng = ((keys.getCheck(key, "up") and 1 or 0) - 
+               (keys.getCheck(key, "down" ) and 1 or 0))
   if(typ == "boolean") then return common.getPick(cng == 0, aP, not aP) end
   if(typ == "number") then local new = (aP + aW * cng)
     if(tL and tL[1] and new < tL[1]) then return tL[1] end
@@ -299,51 +298,44 @@ local function setSettings(key, tInfo)
   local iSel = typeSelect(iTyp)
   local tSel = tDat[iSel]
   if(tSel) then
-    if(keys.getPress(key, "num5") and tSel.cmp) then
+    if(keys.getCheck(key, "num5") and tSel.cmp) then
       iTop = iTop + 1; tInfo.__top = iTop
       -- Adjust Top pointer
-      tDat[iTop] = common.copyItem(tSel, {["Complex"]=complex.getNew}); tTop = tDat[iTop]
-      print("\nadr", tDat[iTop], tSel)
-      common.logTable(tSel, "CMP")
-      common.logTable(tDat[iTop], "CMP")
-      
-      
-      
-      -- Select the new item
+      tDat[iTop] = common.copyItem(tSel, {[scType]=complex.getNew})
+      tTop = tDat[iTop] -- Select the new item
       iSel = typeSelect(iTyp, iTop); tSel = tDat[iSel]
-      print("\nsel",iTyp,iSel, iTop, tInfo.__top)
     end
-    iSel = iSel + ((keys.getPress(key, "pgup") and 1 or 0) - 
-                   (keys.getPress(key, "pgdn") and 1 or 0))
+    iSel = iSel + ((keys.getCheck(key, "pgup") and 1 or 0) - 
+                   (keys.getCheck(key, "pgdn") and 1 or 0))
     iSel = common.getClamp(iSel, 1, tInfo.__top)
     typeSelect(iTyp, iSel)
     -- Adjust the settings union for every item
     if(tSel.set) then local tSet = tSel.set
-      tSet.ID = tSet.ID + ((keys.getPress(key, "right") and 1 or 0) - 
-                           (keys.getPress(key, "left" ) and 1 or 0))
+      tSet.ID = tSet.ID + ((keys.getCheck(key, "right") and 1 or 0) - 
+                           (keys.getCheck(key, "left" ) and 1 or 0))
       tSet.ID = common.getClamp(tSet.ID, 1, #tSet); tCnt = tSet[tSet.ID]
       tCnt[2] = adjustParam(key, tCnt[2], tCnt[3], tCnt[4])
       text("Configure: "..tostring(tSet[tSet.ID][1]).." > "..tostring(tSet[tSet.ID][2]),0,100,0)
     end
     if(tSel.__vel) then
-      local dif = (keys.getPress(key, "num+") and  1 or 0) +
-                  (keys.getPress(key, "num-") and -1 or 0)
+      local dif = (keys.getCheck(key, "num+") and  1 or 0) +
+                  (keys.getCheck(key, "num-") and -1 or 0)
       tSel.__vel:Add(tSel.__vel:getUnit():Mul(dif))
     end
     if(tSel.pos) then
       local px, py = tSel.pos:getParts()
-            px  = px + ((keys.getPress(key, "num3") and 1 or 0) +
-                        (keys.getPress(key, "num6") and 1 or 0) +
-                        (keys.getPress(key, "num9") and 1 or 0) - 
-                        (keys.getPress(key, "num1") and 1 or 0) -
-                        (keys.getPress(key, "num4") and 1 or 0) -
-                        (keys.getPress(key, "num7") and 1 or 0))
-            py  = py + ((keys.getPress(key, "num1") and 1 or 0) +
-                        (keys.getPress(key, "num2") and 1 or 0) +
-                        (keys.getPress(key, "num3") and 1 or 0) - 
-                        (keys.getPress(key, "num7") and 1 or 0) -
-                        (keys.getPress(key, "num8") and 1 or 0) - 
-                        (keys.getPress(key, "num9") and 1 or 0))
+            px  = px + ((keys.getCheck(key, "num3") and 1 or 0) +
+                        (keys.getCheck(key, "num6") and 1 or 0) +
+                        (keys.getCheck(key, "num9") and 1 or 0) - 
+                        (keys.getCheck(key, "num1") and 1 or 0) -
+                        (keys.getCheck(key, "num4") and 1 or 0) -
+                        (keys.getCheck(key, "num7") and 1 or 0))
+            py  = py + ((keys.getCheck(key, "num1") and 1 or 0) +
+                        (keys.getCheck(key, "num2") and 1 or 0) +
+                        (keys.getCheck(key, "num3") and 1 or 0) - 
+                        (keys.getCheck(key, "num7") and 1 or 0) -
+                        (keys.getCheck(key, "num8") and 1 or 0) - 
+                        (keys.getCheck(key, "num9") and 1 or 0))
       tSel.pos:Set(px, py)
       text("Position ["..typeSelect(iTyp).."]: "..tostring(tSel.pos),0,280,0)
     end
@@ -421,19 +413,19 @@ local function mainStart()
     for I = 1, #tSet do __setup[ID][tSet[I][1]] = I end
   end
   local key  = keys.getKey()
-  while(not keys.getPress(key, "escape")) do wipe()
+  while(not keys.getCheck(key, "escape")) do wipe()
     local tInfo = getItem(typeID())
-    if    (keys.getPress(key, "f1")) then tInfo = getItem(typeID(1))
-    elseif(keys.getPress(key, "f2")) then tInfo = getItem(typeID(2))
-    elseif(keys.getPress(key, "f3")) then tInfo = getItem(typeID(3))
-    elseif(keys.getPress(key, "S")) then saveFile() end
+    if    (keys.getCheck(key, "f1")) then tInfo = getItem(typeID(1))
+    elseif(keys.getCheck(key, "f2")) then tInfo = getItem(typeID(2))
+    elseif(keys.getCheck(key, "f3")) then tInfo = getItem(typeID(3))
+    elseif(keys.getCheck(key, "S")) then saveFile() end
     if(not tInfo) then tInfo = addItem(typeID()) end
     local sType = typeName(typeID())
     text("Adding: "..sType,0,0,0)
     if(sType == "brick" or sType == "board") then
-      modPoly(tInfo, keys.getPress(key, "Z"))
+      modPoly(tInfo, keys.getCheck(key, "Z"))
     elseif(sType == "ball") then
-      modBall(tInfo, keys.getPress(key, "Z"))
+      modBall(tInfo, keys.getCheck(key, "Z"))
     end
     setSettings(key, tInfo)
     drawStuff()

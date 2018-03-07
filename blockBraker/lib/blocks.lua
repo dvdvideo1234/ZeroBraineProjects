@@ -125,9 +125,9 @@ function blocks.New()
     self:drawPoly()
     return self
   end
-  function self:Act()
+  function self:Act(...)
     if(self:isStat()) then return self end
-    if(mfAct) then mfAct(self) end
+    if(mfAct) then mfAct(self, ...) end
     return self
   end
   function self:Move()

@@ -4,6 +4,7 @@ local tu = require("turtle")
 local keys = {}
 local __keymap = {}
 local __revmap = {}
+local __impuls = {}
 
 __keymap["backsp"] = 8
 __keymap["enter" ] = 13
@@ -91,14 +92,17 @@ __keymap["num7"  ] = 331
 __keymap["num8"  ] = 332
 __keymap["num9"  ] = 333
 
-
-
-
 for but, asc in pairs(__keymap) do
   __revmap[asc] = but
+  __impuls[but] = {false, false}
 end
 
-function keys.getKey()     return char()     end
+function keys.getKey(sS)
+  local key = char()
+  if(tostring(sS) == "PLAY") then print(sS, key) end
+  return key
+end
+
 function keys.getMouseLD() return clck('ld') end
 function keys.getMouseRD() return clck('rd') end
 
@@ -109,12 +113,20 @@ function keys.getChar(nVal)
   return __revmap[iVal]
 end
 
-function keys.getPress(nVal, sKey)
+function keys.getCheck(nVal, sKey)
   return (__keymap[tostring(sKey)] == (tonumber(nVal) or 0))
 end
 
+function keys.getImpulse(nVal, sKey)
+  tim = __impuls[sKey]
+  tim[2], tim[1] = tim[1], keys.getCheck(nVal, sKey)
+  if(not tim[1] and tim[2]) then return  1 end
+  if(not tim[2] and tim[1]) then return -1 end; return 0
+end
+
 function keys.waitPress(nVal, sKey)
-  while(not keys.getPress(nVal, sKey)) do end; return true
+  while(not keys.getPress(nVal, sKey)) do end;
+  return true
 end
 
 return keys

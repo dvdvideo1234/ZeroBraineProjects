@@ -1,6 +1,6 @@
 local complex       = require("complex")
 local colormap      = require("colormap")
-local blocks        = require("blockBraker/lib/blocks")
+local blocks        = require("lib/blocks")
 local common        = require("common")
 local logStatus     = common.logStatus
 local type          = type
@@ -110,7 +110,7 @@ function level.addActor(oAct)
   end; return logStatus("level.addActor: Object wrong type <"..oTyp..">", false)
 end
 
-function level.procStack(vID, sMth)
+function level.procStack(vID, sMth, ...)
   local iID  = common.getClamp(tonumber(vID) or 0, 1, #metaActors.priorkey)
   local sTyp = metaActors.priorkey[iID]; if(not sTyp) then
     return logStatus("level.procStack: ID missing <"..tostring(iID)..">", false) end
@@ -120,7 +120,7 @@ function level.procStack(vID, sMth)
     return logStatus("level.procStack: Mthod <"..tostring(sMth).."> not hash <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
   if(common.isDryString(sMth)) then 
     return logStatus("level.procStack: Mthod empty <"..tostring(iID).."/"..tostring(sTyp)..">", false) end
-  for key, val in pairs(tAct) do val[sMth](val) end
+  for key, val in pairs(tAct) do val[sMth](val, ...) end
 end
 
 function level.traceReflect(sTyp, vSta)
@@ -326,7 +326,9 @@ metaActors.store = {
   [10] = {"setTrace"    , tonumber}
 }
 function level.readStage(sF, bLog)
-  local pF, actSt = io.open("levels/"..sF..".txt"), metaActors.store
+  local cF = tostring(sF or ""); if(common.isDryString(cF)) then
+    return logStatus("levels.readStage: Missing file name", false) end
+  local pF, actSt = io.open("levels/"..cF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", false) end
   local sLn, isEOF = "", false
   while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)

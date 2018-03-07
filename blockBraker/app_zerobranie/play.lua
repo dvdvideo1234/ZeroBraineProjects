@@ -1,8 +1,10 @@
 require("lib/paths").regDir("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms","*.lua")
 
-local colormap = require("colormap")
-local complex  = require("complex")
+local turtle   = require("turtle")
 local common   = require("common")
+local complex  = require("complex")
+local colormap = require("colormap")
+
 local keys     = require("lib/keys")
 local blocks   = require("lib/blocks")
 local level    = require("lib/level")
@@ -11,12 +13,13 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "test"
-local gnTick   = 0.05
+local gnCurLev = "horn"
+local gnTick   = 0.01
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
 local mainLoop = true
+local mainPaus = false
 local W, H     = level.getScreenSize()
 local axOx     = complex.getNew(1,0)
 local axOy     = complex.getNew(0,1)
@@ -101,10 +104,10 @@ while(gbSuc) do
         world:setKey(level.getKey())
   level.addActor(world) -- Make sure the key is unique enough
 
-  local function actBoard(oBoard)
+  local function actBoard(oBoard, key)
     local tData = oBoard:getTable()
     local brPos, brVel = oBoard:getPos(), oBoard:getVel()
-    local key, vel, sgn, vtx = keys.getKey(), tData.Velocity, 0, 0
+    local vel, sgn, vtx = tData.Velocity, 0, 0    
     if(gtDebug and gtDebug.en) then
       local lx, ly = clck('ld')
       if(lx and ly) then gtDebug.data.lxy = "<"..tostring(lx)..", "..tostring(ly)..">" end
@@ -114,8 +117,8 @@ while(gbSuc) do
       local tX = gtDebug.data.lxy.." # "..gtDebug.data.rxy.." # "..gtDebug.data.key
       text(tX, 0, 0, 0)
     end
-    if(keys.getPress(key, "right"))    then sgn, vtx =  1, 2
-    elseif(keys.getPress(key, "left")) then sgn, vtx = -1, 1
+    if(keys.getCheck(key, "right"))    then sgn, vtx =  1, 2
+    elseif(keys.getCheck(key, "left")) then sgn, vtx = -1, 1
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
     local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVertV(brVel)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
@@ -209,8 +212,6 @@ while(gbSuc) do
         local bEdge = level.traceReflect("edge")
         local bBall = level.traceReflect("ball")
         
-        -- print("flg", bSurf, bEdge, bBall)
-        
         level.logStatus("flg", bSurf, bEdge, bBall)
         
         if(bSurf) then
@@ -286,33 +287,40 @@ while(gbSuc) do
   -- Actor working priorities
   local nPri = #(level.getPriorityKeys())
    
-  while(mainLoop) do wipe()
-    for ID = 1, nPri do level.procStack(ID, "Act" ) end
-    for ID = 1, nPri do level.procStack(ID, "Draw") end
-    for ID = 1, nPri do level.procStack(ID, "Move") end
-    updt(); wait(gnTick)
-    if(not bSbox) then 
-      if(not level.hasActors("ball")) then
-        gnCurLev, mainLoop = 1, false
-        common.logStatus("Play: GAME OVER !")
-      elseif(not level.hasActors("brick")) then
-        common.logStatus("Play: Congratulations passing level "..gnCurLev.." !")
-        gnCurLev, mainLoop = (gnCurLev + 1), false
+  while(mainLoop) do
+    local key = keys.getKey()
+    local imp = keys.getImpulse(key, "P")
+    if(imp > 0) then mainPaus = (not mainPaus) end
+    if(not mainPaus) then wipe()
+      for ID = 1, nPri do level.procStack(ID, "Act", key) end
+      for ID = 1, nPri do level.procStack(ID, "Draw") end
+      for ID = 1, nPri do level.procStack(ID, "Move") end; updt()
+      if(not bSbox) then 
+        if(not level.hasActors("ball")) then
+          gnCurLev, mainLoop = 1, false
+          common.logStatus("Play: GAME OVER !")
+        elseif(not level.hasActors("brick")) then
+          common.logStatus("Play: Congratulations passing level "..gnCurLev.." !")
+          gnCurLev, mainLoop = (gnCurLev + 1), false
+        end
       end
-    end
+      if(keys.getCheck(key, "escape")) then
+        gnCurLev, mainLoop = nil, false end
+    end; wait(gnTick)
   end; mainLoop = true
   
   if(not bSbox) then
     level.clearAll()
-    common.logStatus("Loading level "..gnCurLev)
+    common.logStatus("Loading level... "..gnCurLev)
     gbSuc = level.readStage(gnCurLev)
     if(not gbSuc) then
       common.logStatus("Play: Failed loading level #"..tostring(gnCurLev)) end
   else
+    gbSuc = level.readStage(gnCurLev)
     common.logStatus("Play: The game is in sandbox mode !")
   end
   
 end
 
-common.logStatus("Play: Congratulations for beating all levels of the game !")
+common.logStatus("Play: Congratulations for beating the game !")
 
