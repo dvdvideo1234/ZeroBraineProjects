@@ -13,7 +13,7 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "horn"
+local gnCurLev = 1
 local gnTick   = 0.01
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
@@ -32,6 +32,9 @@ local clMgn    = colr(colormap.getColorMagenRGB())
 local clWht    = colr(colormap.getColorWhiteRGB())
 local bSbox    = (not common.isNumber(gnCurLev))
 local gbSuc    = level.readStage(gnCurLev)
+
+common.logSkipAdd("complex.getIntersectRayCircle: Irrational roots")
+
 
 local function stopExecution(oBall, tTr, sMsg)
   mainLoop = false
@@ -120,7 +123,7 @@ while(gbSuc) do
     if(keys.getCheck(key, "right"))    then sgn, vtx =  1, 2
     elseif(keys.getCheck(key, "left")) then sgn, vtx = -1, 1
     else brVel:Set(0,0); oBoard:setVel(brVel) return end; brVel:Set(vel*sgn,0)
-    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVertV(brVel)
+    local wW, dD, bB = world:getVert(vtx), brVel:getNew(0,1), oBoard:getVertVec(brVel)
     local rR = (bB:getDot(brVel:getUnit())* brVel:getUnit()):Add(brPos)
     local xX = complex.getIntersectRayRay(brPos, brVel, wW, dD)
     if(xX) then local rN = rR:Sub(xX):getNorm()

@@ -9,16 +9,16 @@ local colormap  = require("colormap")
 -- Local project libraries
 local keys      = require("lib/keys" )
 local level     = require("lib/level")
-local scType    = complex.getType()
 local logStatus = common.logStatus
 
-local W, H  = level.getScreenSize()
-
-local clBlu = colr(colormap.getColorBlueRGB())
-local clBlk = colr(colormap.getColorBlackRGB())
-local clGrn = colr(colormap.getColorGreenRGB())
-local clRed = colr(colormap.getColorRedRGB())
-local vlMgn = colr(colormap.getColorMagenRGB())
+local W, H   = level.getScreenSize()
+local cZero  = complex.getNew()
+local scType = cZero:getType()
+local clBlu  = colr(colormap.getColorBlueRGB())
+local clBlk  = colr(colormap.getColorBlackRGB())
+local clGrn  = colr(colormap.getColorGreenRGB())
+local clRed  = colr(colormap.getColorRedRGB())
+local vlMgn  = colr(colormap.getColorMagenRGB())
 local clGry180 = colr(colormap.getColorPadRGB(180))
 
 local __items = {__size = 0} -- Items stack

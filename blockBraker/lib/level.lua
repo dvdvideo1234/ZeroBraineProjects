@@ -331,7 +331,7 @@ function level.readStage(sF, bLog)
   local pF, actSt = io.open("levels/"..cF..".txt"), metaActors.store
   if(not pF) then return logStatus("levels.readStage: No file <"..tostring(sF)..">", false) end
   local sLn, isEOF = "", false
-  while(not isEOF) do sLn, isEOF = common.fileGetLine(pF)
+  while(not isEOF) do sLn, isEOF = common.fileRead(pF, "*line", true)
     if(sLn ~= "" and sLn:sub(1,1) ~= "#") then 
       if(bLog) then logStatus("\nlevels.readStage: <"..sLn..">") end
       local tCmp, bNew = common.stringExplode(sLn,"/")

@@ -48,7 +48,7 @@ function blocks.New()
     local iID = math.floor(tonumber(vID) or 0)
     local cV = mtVtx[iID]; return (cV and cV:getNew() or nil)
   end
-  function self:getVertV(vV)
+  function self:getVertVec(vV)
     local nV, cV = self:getVertN(), (vV or mcVel)
     if(nV > 0 and cV:getNorm2() > 0) then
       local nM, iD, dV = 0, 0, cV:getUnit()
