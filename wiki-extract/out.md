@@ -1,6 +1,3 @@
-|...............Instance.creator...............|.Out.|.Description.|
-|----------------------------------------------|-----|-------------|
-
 |..............Prop.core.function..............|.Out.|.Description.|
 |----------------------------------------------|-----|-------------|
 |![image][ref-e]:deparent()||Unparents an entity, so it moves freely again.|
@@ -49,47 +46,24 @@
 |![image][ref-e]:setPos(![image][ref-v])||Sets the position of an entity.|
 |![image][ref-e]:use()||Simulates a player pressing their use key on the entity.|
 
-|Icon|Description|
-|---|---|
-|![image][ref-a]|Angle|
-|![image][ref-b]|Bone|
-|![image][ref-c]|Complex|
-|![image][ref-e]|Entity|
-|![image][ref-xm2]|Matrix 2x2|
-|![image][ref-m]|Matrix|
-|![image][ref-xm4]|Matrix 4x4|
-|![image][ref-n]|Number|
-|![image][ref-q]|Quaternion|
-|![image][ref-r]|Array|
-|![image][ref-s]|String|
-|![image][ref-t]|Hash table/array|
-|![image][ref-xv2]|Vactor 2D|
-|![image][ref-v]|Vector 3D|
-|![image][ref-xv4]|Vactor 4D|
-|![image][ref-xrd]|Ranger data|
-|![image][ref-xwl]|Wire link|
-|![image][ref-xfs]|Flash sensor class|
-|![image][ref-xsc]|State controller class|
-|![image][ref-xxx]|Void value |
-
-[ref-a]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-a.png
-[ref-b]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-b.png
-[ref-c]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-c.png
-[ref-e]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-e.png
-[ref-xm2]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xm2.png
-[ref-m]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-m.png
-[ref-xm4]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xm4.png
-[ref-n]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-n.png
-[ref-q]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-q.png
-[ref-r]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-r.png
-[ref-s]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-s.png
-[ref-t]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-t.png
-[ref-xv2]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xv2.png
-[ref-v]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-v.png
-[ref-xv4]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xv4.png
-[ref-xrd]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xrd.png
-[ref-xwl]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xwl.png
-[ref-xfs]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xfs.png
-[ref-xsc]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xsc.png
-[ref-xxx]: file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/type-xxx.png
+[ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-a.png
+[ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-b.png
+[ref-c]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-c.png
+[ref-e]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-e.png
+[ref-xm2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xm2.png
+[ref-m]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-m.png
+[ref-xm4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xm4.png
+[ref-n]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-n.png
+[ref-q]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-q.png
+[ref-r]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-r.png
+[ref-s]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-s.png
+[ref-t]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-t.png
+[ref-xv2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xv2.png
+[ref-v]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-v.png
+[ref-xv4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xv4.png
+[ref-xrd]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xrd.png
+[ref-xwl]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xwl.png
+[ref-xfs]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xfs.png
+[ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xsc.png
+[ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/type-xxx.png
 

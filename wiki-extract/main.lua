@@ -30,7 +30,7 @@ local API = {
     OBJ = "", -- Here stays the internal type of the class for the generated API documentation
     -- API type images format
     -- LNK = "https://raw.githubusercontent.com/wiki/wiremod/wire/%s"
-    LNK = "file:///E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/types/%s" 
+    LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/%s" 
   },
   REPLACE = {
     __key = "_###_", -- The key tells what patternis to be raplaced
@@ -137,12 +137,11 @@ local f, s = io.open(sProg.."out.md", "wb")
 if(f) then io.output(f)
   wikilib.setInternalType(API)
   wikilib.updateAPI(API, DSC)
-  local ret = wikilib.makeReturnValues(API)
-  wikilib.printDescriptionTable(API, DSC, 1)
+  wikilib.makeReturnValues(API)
+  -- wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
-  wikilib.printTypeTable(API)
+  -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
-  -- common.logTable(ret, "ret")
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
 end
