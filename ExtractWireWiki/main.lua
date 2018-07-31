@@ -1,85 +1,13 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/wiki-extract/lib/?.lua"
+local sProg = "ExtractWireWiki/"
+local wikilib = require(sProg.."lib/wikilib")
+local API     = require(sProg.."api/prop")
 
-local wikilib = require('wikilib')
-
-local sProg = "wiki-extract/"
-local sBase = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
-
-wikilib.setFormat("tfm", "type-%s.png") -- Type definition
-
-local API = {
-  NAME = "StControl", -- Class creator factory name
-  SETS = {
-    icon = false, -- (TRUE) Use icons for arguments
-    erro = true,  -- (TRUE) Generate an error on dupe or no docs
-    extr = false, -- (TRUE) Use the external wiremod types
-    remv = true,  -- (TRUE) Replace void type with empty string
-    quot = true   -- (TRUE) Place backticks on words containing control symbols links []
-  },
-  POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={46,5,13}},
-    {name="APPLY",cols={"Prop.core.function", "Out", "Description"},size={46,5,13}},
-  },
-  FILE = {
-    exts = "prop",                             -- Extension source file
-    base = "E:/Documents/Lua-Projs/SVN/Wire/", -- Repository base folder
-    path = "data/wiki",                        -- Direct function return refinition
-    slua = "lua/entities/gmod_wire_expression2/core/custom/" -- Repository source file subfolder
-  },
-  TYPE = {
-    OBJ = "", -- Here stays the internal type of the class for the generated API documentation
-    -- API type images format
-    -- LNK = "https://raw.githubusercontent.com/wiki/wiremod/wire/%s"
-    LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/wiki-extract/types/%s" 
-  },
-  REPLACE = {
-    __key = "_###_", -- The key tells what patternis to be raplaced
-    __ref = "_@@@_",
-    ["MASK"] = "[_@@@_](https://wiki.garrysmod.com/page/Enums/_###_)",
-    ["COLLISION_GROUP"] = "[_@@@_](https://wiki.garrysmod.com/page/Enums/_###_)",
-    ["Material_surface_properties"] = "[_@@@_](https://developer.valvesoftware.com/wiki/_###_)"
-  }
-}
-
---[==[
-local API = {
-  NAME = "StControl",
-  SETS = {
-    icon = false, -- Use icons for arguments
-    erro = true,  -- Generate an error on dupe of no docs
-    extr = true,  -- Use the external wire types
-    remv = false  -- Replace void type with empty string
-  },
-  POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={50,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={50,5,13}},
-  },
-  FILE = {
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2/",
-    path = "data/wiki",
-    slua = "lua/entities/gmod_wire_expression2/core/custom"
-  },
-  TYPE = {
-    E2 = "stcontrol",
-    OBJ = "xsc",
-    LNK = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/types/%s"
-  },
-
-  REPLACE = {
-    __key = "###", -- The key tells what patternis to be raplaced
-    ["MASK"] = "[###](https://wiki.garrysmod.com/page/Enums/###)",
-    ["COLLISION_GROUP"] = "[COLLISION_GROUP](https://wiki.garrysmod.com/page/Enums/###)"
-  }
-}
-
-]==]
+wikilib.setFormat("tfm", "Type-%s.png") -- Type definition
 
 local E2Helper = {}
 E2Helper.Descriptions = {}
 
 ------------------------------------------------------PUT E2 DESCRIPTION HERE------------------------------------------------------
-
-
 
 E2Helper.Descriptions["propManipulate(e:vannn)"] = "Allows to do any single prop core function in one term (position, rotation, freeze, gravity, notsolid)"
 E2Helper.Descriptions["propSpawn(sn)"] = "Use the model string or a template entity to spawn a prop. You can set the position and/or the rotation as well. The last number indicates frozen/unfrozen."
@@ -138,7 +66,7 @@ if(f) then io.output(f)
   wikilib.setInternalType(API)
   wikilib.updateAPI(API, DSC)
   wikilib.makeReturnValues(API)
-  -- wikilib.printDescriptionTable(API, DSC, 1)
+  wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
   -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
