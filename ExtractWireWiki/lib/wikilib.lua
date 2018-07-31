@@ -66,7 +66,16 @@ local wikiRefer = { ["is"] = "n",
 }
 
 local wikiQuote = {["%d"] = true, ["_"]=true}
+local wikiQuFoo = {common.stringIsUpper}
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true}
+
+local function isQuote(sS)
+  local bR = false
+  for ID = 1, #wikiQuFoo do
+    if(wikiQuFoo[ID](sS)) then
+      bR = true; break end
+  end; return bR
+end
 
 local function toType(...)
   return wikiFormat.__tfm:format(...)
@@ -121,7 +130,7 @@ end
 function wikilib.updateAPI(API, DSC)
   local t = API.POOL[1]
   for api, dsc in pairs(DSC) do
-    if(apiGetValue(API,"SETS","quot")) then
+    if(apiGetValue(API,"FLAG","quot")) then
       local tD = common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
         for k, v in pairs(wikiQuote) do
@@ -134,20 +143,25 @@ function wikilib.updateAPI(API, DSC)
             else
               tD[ID] = "`"..sW.."`"
             end
+          elseif(isQuote(sW)) then
+            tD[ID] = "`"..sW.."`"
           end
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
     if(api:find(API.NAME)) then t = API.POOL[1] else t = API.POOL[2] end
     if(API.REPLACE) then local tR = API.REPLACE
-      for k, v in pairs(tR) do local nF, nB = dsc:find(k)
-        if(nF and nB) then
-          if(dsc:sub(nF-1,nF-1)..dsc:sub(nB+1,nB+1) == "``") then
-            local sR = v:gsub(tR.__ref, "`"..k.."`")
-                  sR = sR:gsub(tR.__key, k)
-            DSC[api] = dsc:gsub("`"..k.."`", sR)
-          else
-            DSC[api] = dsc:gsub(k, v:gsub(tR.__key, k))
+      for k, v in pairs(tR) do
+        if(k:sub(1,1) ~= "_") then
+          local nF, nB = dsc:find(k, 1, true)
+          if(nF and nB) then
+            if(dsc:sub(nF-1,nF-1)..dsc:sub(nB+1,nB+1) == "``") then
+              local sR = v:gsub(tR.__ref, "`"..k.."`")
+                    sR = sR:gsub(tR.__key, k)
+              DSC[api] = dsc:gsub("`"..k.."`", sR)
+            else
+              DSC[api] = dsc:gsub(k, v:gsub(tR.__key, k):gsub(tR.__ref, k))
+            end
           end
         end
       end
@@ -158,7 +172,7 @@ end
 
 function wikilib.printTypeReference(API, bExt)
   local tT, sL = wikiType.list, apiGetValue(API,"TYPE","LNK")
-  local bE = apiGetValue(API,"SETS","extr") -- Use external wire types
+  local bE = apiGetValue(API,"FLAG","extr") -- Use external wire types
   for ID = 1, #tT do local iDx = (bE and 2 or 1)
     io.write(toLinkRef(toRefer(tT[ID][1]), sL:format(toType(tT[ID][iDx]))).."\n")
   end; io.write("\n")
@@ -177,9 +191,9 @@ function wikilib.concatType(API, sT, bP, bD)
   if(bD) then return "" end; local sV = tostring(sT)
   if(sV:sub(1,1) == "/") then sV = sV:sub(2,-1) end
   local sVo = wikilib.convTypeE2Description(API, "void")[1]
-  local bVo = apiGetValue(API,"SETS","remv")
+  local bVo = apiGetValue(API,"FLAG","remv")
   if(bVo and sV == sVo) then return "" end
-  local bIco = apiGetValue(API, "SETS", "icon")
+  local bIco = apiGetValue(API, "FLAG", "icon")
   local bU = common.getPick(bP ~= nil, bP, bIco)
   if(bU) then
     local sL = apiGetValue(API,"TYPE","LNK")
@@ -317,8 +331,8 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     tC[ID] = common.stringCenter(tPool.cols[ID],tPool.size[ID],".")
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
-  local bIco = apiGetValue(API, "SETS", "icon")
-  local bErr = apiGetValue(API, "SETS", "erro")
+  local bIco = apiGetValue(API, "FLAG", "icon")
+  local bErr = apiGetValue(API, "FLAG", "erro")
   local sObj = apiGetValue(API, "TYPE", "OBJ")
   local sV = wikilib.convTypeE2Description(API,"void")[1]
   for i, n in ipairs(tPool) do
