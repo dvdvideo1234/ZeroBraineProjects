@@ -1,5 +1,5 @@
 local API = {
-  NAME = "FSensor",
+  NAME = "MakePiece",
   FLAG = {
     icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
@@ -9,8 +9,8 @@ local API = {
     qref = true   -- (TRUE) Quote the string in the link reference
   },
   POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={50,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={50,5,13}},
+    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={80,5,13}},
+    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={80,5,13}},
   },
   FILE = {
     exts = "trackasmlib_wire",

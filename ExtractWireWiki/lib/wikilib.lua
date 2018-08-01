@@ -60,6 +60,7 @@ local wikiFormat = {
   __lnk = "[%s](%s)",
   __ins = "!%s",
   __img = "[image][%s]",
+  __ytb = "[![](http://img.youtube.com/vi/%s/0.jpg)](http://www.youtube.com/watch?v=%s \"\")",
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -130,6 +131,10 @@ end
 
 function wikilib.setFormat(sK, sS)
   wikiFormat["__"..sK] = sS
+end
+
+function wikilib.getVideo(sK)
+  return wikiFormat.__ytb:format(sK, sK)
 end
 
 function wikilib.setInternalType(API)
@@ -318,7 +323,6 @@ function wikilib.makeReturnValues(API)
         local tE = common.stringExplode(sA, sE)
         local sP, sO = common.stringTrim(tE[1]), nil
         if(tE[2]) then sO = common.stringTrim(tE[2]) end
-        io.write(0, sP, tostring(sO))
         local tL = common.stringExplode(sP, " ")
         local typ, foo = tL[2], tL[3]
         local mth = (foo:find(sM) or  0)
@@ -332,21 +336,18 @@ function wikilib.makeReturnValues(API)
         if(sO) then tP.__equ = wikilib.convApiE2Description(API, sO) end
         if(not tK.__top) then tK.__top = 0 end
         tK.__top = tK.__top + 1; tK[tK.__top] = tInfo.com
-        -- Register API and and write to memory
+        -- Register API and and write to the memory
         sA, bA = "", false
       end
     end; sL = fR:read("*line")
-  end;
-  
-  common.logTable(tF, "makeReturnValues")
-  
-  return tF
+  end; return tF
 end
 
-function wikilib.printMatchedAPI(API)
-  local tK = wikiMList
+function wikilib.printMatchedAPI(API, sNam)
+  local tK = wikiMList; table.sort(tK)
+  local sN = tostring(sNam or "DSC")
   for ID = 1, tK.__top do
-    common.logStatus("DSC["..tK[ID].."] = \"\"")
+    common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"")
   end
 end
 
@@ -402,14 +403,12 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     end
     local iM = 0
     for rmk, rmv in pairs(wikiMatch) do
-      print(n, rmk.."(", rmv.__top)
       if(n:find(rmk.."%(") and rmv.__top > 0) then iM = iM + 1
         if(not wikilib.isValidMatch(rmv)) then if(bErr) then
           error("wikilib.printDescriptionTable: Duplicated function <"..rmv.__nam.."> !") end
         end
         local ret = ""; sorttMatch(rmv)
         for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
-          print(api.com)
           if(not DSC[api.com]) then
             common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
             common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com.."> !")

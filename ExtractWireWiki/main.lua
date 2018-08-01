@@ -13,11 +13,12 @@ if(f) then io.output(f)
   wikilib.setInternalType(API)
   wikilib.updateAPI(API, DSC)
   wikilib.makeReturnValues(API)
-  wikilib.printMatchedAPI(API)
+ -- wikilib.printMatchedAPI(API)
   wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
  -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
+  print(wikilib.getVideo("qd3XQF-wNN0"))
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
 end
