@@ -1,4 +1,4 @@
-local sExp = "fsensor"
+local sExp = "prop"
 
 local sProg = "ExtractWireWiki/"
 local wikilib = require(sProg.."lib/wikilib")
@@ -15,7 +15,7 @@ if(f) then io.output(f)
   wikilib.makeReturnValues(API)
   wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
-  -- wikilib.printTypeTable(API)
+  wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
 else
   error("main.lua: File descriptopr fail: "..tostring(s))

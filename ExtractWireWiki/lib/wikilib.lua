@@ -7,26 +7,26 @@ local wikilib = {}
 local wikiMatch = {}
 local wikiType = {
   list = {
-    {"a"  , "Angle"     , "Angle"},
-    {"b"  , "Bone"      , "Bone"},
-    {"c"  , "Complex"   , "Complex"},
-    {"e"  , "Entity"    , "Entity"},
-    {"xm2", "Matrix2"   , "Matrix 2x2"},
-    {"m"  , "Matrix"    , "Matrix"},
-    {"xm4", "Matrix4"   , "Matrix 4x4"},
-    {"n"  , "Number"    , "Number"},
-    {"q"  , "Quaternion", "Quaternion"},
-    {"r"  , "Array"     , "Array"},
-    {"s"  , "String"    , "String"},
-    {"t"  , "Table"     , "Hash table/array"},
-    {"xv2", "Vector2"   , "Vactor 2D"},
-    {"v"  , "Vector"    , "Vector 3D"},
-    {"xv4", "Vector4"   , "Vactor 4D"},
-    {"xrd", "Ranger"    , "Ranger data"},
-    {"xwl", "WireLink"  , "Wire link"},
-    {"xfs", ""          , "Flash sensor class"},
-    {"xsc", ""          , "State controller class"},
-    {"xxx", ""          , "Void value "}
+    {"a"  , "Angle"        , "[Angle] class"           , "https://en.wikipedia.org/wiki/Euler_angles"},
+    {"b"  , "Bone"         , "[Bone] class"            , "https://github.com/wiremod/wire/wiki/Expression-2#Bone"},
+    {"c"  , "ComplexNumber", "[Complex] number"        , "https://en.wikipedia.org/wiki/Complex_number"},
+    {"e"  , "Entity"       , "[Entity] class"          , "https://en.wikipedia.org/wiki/Entity"},
+    {"xm2", "Matrix2"      , "[Matrix] 2x2"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"m"  , "Matrix"       , "[Matrix]"                , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"xm4", "Matrix4"      , "[Matrix] 4x4"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"n"  , "Number"       , "[Number]"                , "https://en.wikipedia.org/wiki/Number"},
+    {"q"  , "Quaternion"   , "[Quaternion]"            , "https://en.wikipedia.org/wiki/Quaternion"},
+    {"r"  , "Array"        , "[Array]"                 , "https://en.wikipedia.org/wiki/Array_data_structure"},
+    {"s"  , "String"       , "[String] class"          , "https://en.wikipedia.org/wiki/String_(computer_science)"},
+    {"t"  , "Table"        , "[Table]"                 , "https://github.com/wiremod/wire/wiki/Expression-2#Table"},
+    {"xv2", "Vector2"      , "[Vactor] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
+    {"v"  , "Vector"       , "[Vector] 3D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
+    {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
+    {"xrd", "RangerData"   , "[Ranger] data class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
+    {"xwl", "WireLink"     , "[Wire link] class"       , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
+    {"xfs", ""             , "[Flash sensor] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FSensor"},
+    {"xsc", ""             , "[State controller] class", "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
+    {"xxx", ""             , "[Void] value"            , "https://en.wikipedia.org/wiki/Void_type"}
   },
   idx = {
     ["angle"]      = 1,
@@ -323,8 +323,17 @@ function wikilib.printTypeTable(API)
   local tT = wikiType.list
   wikilib.printRow({"Icon", "Description"})
   wikilib.printRow({"---", "---"})
-  for ID = 1, #tT do
-    wikilib.printRow({toInsert(toImage(toRefer(tT[ID][1]))), tT[ID][3]})
+  for ID = 1, #tT do local sL = tT[ID][4]
+    local sI = common.stringTrim(tT[ID][1])
+    local sD = common.stringTrim(tT[ID][3])
+    if(sL and not common.isDryString(sL)) then
+      sL = common.stringTrim(sL)
+      local sR = sD:match("%[.+%]"); if(sR) then
+        sR = sR:gsub("%[", "%%%["):gsub("%]", "%%%]")
+        sD = sD:gsub(sR, sR.."%("..sL.."%)")
+      end
+    end
+    wikilib.printRow({toInsert(toImage(toRefer(sI))), sD})
   end; io.write("\n")
 end
 

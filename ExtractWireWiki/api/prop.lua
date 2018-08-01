@@ -1,7 +1,7 @@
 local API = {
   NAME = "propSpawn", -- Class creator factory name ( if available )
   FLAG = {
-    icon = false, -- (TRUE) Use icons for arguments
+    icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
     extr = true,  -- (TRUE) Use the external wiremod types
     remv = true,  -- (TRUE) Replace void type with empty string

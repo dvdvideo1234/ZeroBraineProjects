@@ -1,101 +1,95 @@
-|.................Instance.creator.................|.Out.|.Description.|
-|--------------------------------------------------|-----|-------------|
-|![image][ref-xfs]:copyFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor copy instance of the current object|
-|newFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor relative to the world by zero origin position, zero direction vector, zero length distance|
-|newFSensor(![image][ref-v])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, zero direction vector, zero length distance|
-|newFSensor(![image][ref-v],![image][ref-v])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, direction vector, zero length distance|
-|newFSensor(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, direction vector, length distance|
-|noFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns invalid flash sensor object|
-|![image][ref-e]:setFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor local to the entity by zero origin position, zero direction vector, zero length distance|
-|![image][ref-e]:setFSensor(![image][ref-v])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, zero direction vector, zero length distance|
-|![image][ref-e]:setFSensor(![image][ref-v],![image][ref-v])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, direction vector, zero length distance|
-|![image][ref-e]:setFSensor(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, direction vector, length distance|
+|.........Instance.creator.........|.Out.|.Description.|
+|----------------------------------|-----|-------------|
+|propSpawn(![image][ref-e],![image][ref-a],![image][ref-n])|![image][ref-e]|Rotation, Frozen Spawns a prop with the model of the template entity and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-e],![image][ref-n])|![image][ref-e]|Entity template, Frozen Spawns a prop with the model of the template entity. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-e],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Position, Rotation, Frozen Spawns a prop with the model of the template entity, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-e],![image][ref-v],![image][ref-n])|![image][ref-e]|Entity template, Position, Frozen Spawns a prop with the model of the template entity at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-s],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Rotation, Frozen Spawns a prop with the model denoted by the string filepath and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-s],![image][ref-n])|![image][ref-e]|Use the model string or a template entity to spawn a prop. You can set the position and/or the rotation as well. The last number indicates frozen/unfrozen.|
+|propSpawn(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Position, Rotation, Frozen Spawns a prop with the model denoted by the string file path, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawn(![image][ref-s],![image][ref-v],![image][ref-n])|![image][ref-e]|Model path, Position, Frozen Spawns a prop with the model denoted by the string filepath at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
+|propSpawnEffect(![image][ref-n])||Set to `1` to enable prop spawn effect, `0` to disable.|
+|propSpawnUndo(![image][ref-n])||Set to `0` to force prop removal on `E2` shutdown, and suppress Undo entries for props.|
 
-|...................Class.methods..................|.Out.|.Description.|
-|--------------------------------------------------|-----|-------------|
-|![image][ref-xfs]:addEntityHitOnly(![image][ref-e])|![image][ref-xfs]|Adds the entity to the flash sensor internal only hit list|
-|![image][ref-xfs]:addEntityHitSkip(![image][ref-e])|![image][ref-xfs]|Adds the entity to the flash sensor internal ignore hit list|
-|![image][ref-xfs]:addHitOnly(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Adds the option to the flash sensor internal hit only list|
-|![image][ref-xfs]:addHitOnly(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Adds the option to the flash sensor internal hit only list|
-|![image][ref-xfs]:addHitSkip(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Adds the option to the flash sensor internal ignore hit list|
-|![image][ref-xfs]:addHitSkip(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Adds the option to the flash sensor internal ignore hit list|
-|![image][ref-xfs]:getAttachEntity(![image][ref-xxx])|![image][ref-e]|Returns the attachment entity of the flash sensor|
-|![image][ref-xfs]:getCollisionGroup(![image][ref-xxx])|![image][ref-n]|Returns flash sensor trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
-|![image][ref-xfs]:getDirection(![image][ref-xxx])|![image][ref-v]|Returns flash sensor direction vector|
-|![image][ref-xfs]:getDirectionLocal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor world direction vector converted to attachment entity local axis|
-|![image][ref-xfs]:getDirectionLocal(![image][ref-a])|![image][ref-v]|Returns flash sensor world direction vector converted to angle local axis|
-|![image][ref-xfs]:getDirectionLocal(![image][ref-e])|![image][ref-v]|Returns flash sensor world direction vector converted to entity local axis|
-|![image][ref-xfs]:getDirectionWorld(![image][ref-xxx])|![image][ref-v]|Returns flash sensor local direction vector converted to attachment entity world axis|
-|![image][ref-xfs]:getDirectionWorld(![image][ref-a])|![image][ref-v]|Returns flash sensor local direction vector converted to angle world axis|
-|![image][ref-xfs]:getDirectionWorld(![image][ref-e])|![image][ref-v]|Returns flash sensor local direction vector converted to entity world axis|
-|![image][ref-xfs]:getEntity(![image][ref-xxx])|![image][ref-e]|Returns the flash sensor sampled trace `Entity` entity|
-|![image][ref-xfs]:getFraction(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Fraction` in the interval `[0-1]` number|
-|![image][ref-xfs]:getFractionLeftSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `FractionLeftSolid` in the interval `[0-1]` number|
-|![image][ref-xfs]:getFractionLeftSolidLength(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `FractionLeftSolid` multiplied by its length distance number|
-|![image][ref-xfs]:getFractionLength(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Fraction` multiplied by its length distance number|
-|![image][ref-xfs]:getHitBox(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitBox` number|
-|![image][ref-xfs]:getHitGroup(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitGroup` group `ID` number|
-|![image][ref-xfs]:getHitNormal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor the sampled trace surface `HitNormal` vector|
-|![image][ref-xfs]:getHitPos(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `HitPos` location vector|
-|![image][ref-xfs]:getHitTexture(![image][ref-xxx])|![image][ref-s]|Returns the flash sensor sampled trace `HitTexture` string|
-|![image][ref-xfs]:getLength(![image][ref-xxx])|![image][ref-n]|Returns flash sensor length distance|
-|![image][ref-xfs]:getMask(![image][ref-xxx])|![image][ref-n]|Returns flash sensor trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
-|![image][ref-xfs]:getMatType(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `MatType` material type number|
-|![image][ref-xfs]:getNormal(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `Normal` aim vector|
-|![image][ref-xfs]:getOrigin(![image][ref-xxx])|![image][ref-v]|Returns flash sensor origin position|
-|![image][ref-xfs]:getOriginLocal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor world origin position converted to attachment entity local axis|
-|![image][ref-xfs]:getOriginLocal(![image][ref-e])|![image][ref-v]|Returns flash sensor world origin position converted to entity local axis|
-|![image][ref-xfs]:getOriginLocal(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash sensor world origin position converted to position/angle local axis|
-|![image][ref-xfs]:getOriginWorld(![image][ref-xxx])|![image][ref-v]|Returns flash sensor local origin position converted to attachment entity world axis|
-|![image][ref-xfs]:getOriginWorld(![image][ref-e])|![image][ref-v]|Returns flash sensor local origin position converted to entity world axis|
-|![image][ref-xfs]:getOriginWorld(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash sensor local origin position converted to position/angle world axis|
-|![image][ref-xfs]:getPhysicsBone(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `PhysicsBone` `ID` number|
-|![image][ref-xfs]:getStartPos(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `StartPos` vector|
-|![image][ref-xfs]:getSurfaceProps(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `SurfaceProps` `ID` type number|
-|![image][ref-xfs]:getSurfacePropsName(![image][ref-xxx])|![image][ref-s]|Returns the flash sensor sampled trace `SurfaceProps` `ID` type name string|
-|![image][ref-xfs]:isAllSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `AllSolid` flag|
-|![image][ref-xfs]:isHit(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Hit` flag|
-|![image][ref-xfs]:isHitNoDraw(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitNoDraw` flag|
-|![image][ref-xfs]:isHitNonWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitNonWorld` flag|
-|![image][ref-xfs]:isHitSky(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitSky` flag|
-|![image][ref-xfs]:isHitWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitWorld` flag|
-|![image][ref-xfs]:isIgnoreWorld(![image][ref-xxx])|![image][ref-n]|Returns the ignore world flag of the flash sensor|
-|![image][ref-xfs]:isStartSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `StartSolid` flag|
-|![image][ref-xfs]:remEntityHitOnly(![image][ref-e])|![image][ref-xfs]|Removes the entity from the flash sensor internal only hit list|
-|![image][ref-xfs]:remEntityHitSkip(![image][ref-e])|![image][ref-xfs]|Removes the entity from the flash sensor internal ignore hit list|
-|![image][ref-xfs]:remHit(![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal hit preferences|
-|![image][ref-xfs]:remHitOnly(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Removes the option from the flash sensor internal only hit list|
-|![image][ref-xfs]:remHitOnly(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal only hit list|
-|![image][ref-xfs]:remHitSkip(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Removes the option from the flash sensor internal ignore hit list|
-|![image][ref-xfs]:remHitSkip(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal ignore hit list|
-|![image][ref-xfs]:setAttachEntity(![image][ref-e])|![image][ref-xfs]|Updates the attachment entity of the flash sensor|
-|![image][ref-xfs]:setCollisionGroup(![image][ref-n])|![image][ref-xfs]|Updates flash sensor trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
-|![image][ref-xfs]:setDirection(![image][ref-v])|![image][ref-xfs]|Updates the flash sensor direction vector|
-|![image][ref-xfs]:setIsIgnoreWorld(![image][ref-n])|![image][ref-xfs]|Updates the ignore world flag of the flash sensor|
-|![image][ref-xfs]:setLength(![image][ref-n])|![image][ref-xfs]|Updates flash sensor length distance|
-|![image][ref-xfs]:setMask(![image][ref-n])|![image][ref-xfs]|Updates flash sensor trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
-|![image][ref-xfs]:setOrigin(![image][ref-v])|![image][ref-xfs]|Updates the flash sensor origin position|
-|![image][ref-xfs]:smpLocal(![image][ref-xxx])|![image][ref-xfs]|Samples the flash sensor and updates the trace result according to attachment entity local axis|
-|![image][ref-xfs]:smpWorld(![image][ref-xxx])|![image][ref-xfs]|Samples the flash sensor and updates the trace result according to the world axis|
+|..............Prop.core.function..............|.Out.|.Description.|
+|----------------------------------------------|-----|-------------|
+|![image][ref-e]:deparent()||Unparents an entity, so it moves freely again.|
+|![image][ref-e]:parentTo()||Parents one entity to another.|
+|![image][ref-e]:parentTo(![image][ref-e])||Parents one entity to another.|
+|![image][ref-e]:propBreak()||Breaks/Explodes breakable/explodable props (Useful for Mines).|
+|propCanCreate()|![image][ref-n]|Returns `1` when propSpawn() will successfully spawn a prop until the limit is reached.|
+|![image][ref-e]:propDelete()||Deletes the specified prop.|
+|![image][ref-r]:propDelete()|![image][ref-n]|Deletes all the props in the given array, returns the amount of props deleted.|
+|![image][ref-t]:propDelete()|![image][ref-n]|Deletes all the props in the given table, returns the amount of props deleted.|
+|propDeleteAll()||Removes all entities spawned by this `E2`|
+|![image][ref-e]:propDrag(![image][ref-n])||Passing `0` makes the entity not be affected by drag|
+|![image][ref-e]:propDraw(![image][ref-n])||Passing `0` disables rendering for the entity (makes it really invisible)|
+|![image][ref-e]:propFreeze(![image][ref-n])||Passing `0` unfreezes the entity, everything else freezes it.|
+|![image][ref-e]:propGetElasticity()|![image][ref-n]|Gets prop's elasticity coefficient|
+|![image][ref-e]:propGetFriction()|![image][ref-n]|Gets prop's friction coefficient|
+|![image][ref-e]:propGravity(![image][ref-n])||Passing `0` makes the entity weightless, everything else makes it weighty.|
+|![image][ref-e]:propInertia(![image][ref-v])||Sets the directional inertia|
+|![image][ref-e]:propMakePersistent(![image][ref-n])||Setting to `1` will make the prop persistent.|
+|![image][ref-e]:propManipulate(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-n],![image][ref-n])||Allows to do any single prop core function in one term (position, rotation, freeze, gravity, notsolid)|
+|![image][ref-e]:propNotSolid(![image][ref-n])||Passing `0` makes the entity solid, everything else makes it non-solid.|
+|![image][ref-e]:propPhysicalMaterial()|![image][ref-s]|Returns the surface material of a prop.|
+|![image][ref-e]:propPhysicalMaterial(![image][ref-s])||Changes the surface material of a prop (eg. wood, metal, `...` See [`Material_surface_properties`](https://developer.valvesoftware.com/wiki/Material_surface_properties) `).`|
+|![image][ref-e]:propSetBuoyancy(![image][ref-n])||Sets the prop's buoyancy ratio from `0` to `1`|
+|![image][ref-e]:propSetElasticity(![image][ref-n])||Sets prop's elasticity coefficient (default is `1`)|
+|![image][ref-e]:propSetFriction(![image][ref-n])||Sets prop's friction coefficient (default is `1`)|
+|![image][ref-e]:propSetVelocity(![image][ref-v])||Sets the velocity of the prop for the next iteration|
+|![image][ref-e]:propSetVelocityInstant(![image][ref-v])||Sets the initial velocity of the prop|
+|![image][ref-e]:propShadow(![image][ref-n])||Passing `0` disables rendering for the entity's shadow|
+|![image][ref-e]:propStatic(![image][ref-n])||Sets to `1` to make the entity static (disables movement, physgun, unfreeze, drive...) or `0` to cancel.|
+|![image][ref-e]:reposition(![image][ref-v])||Deprecated. Kept for backwards-compatibility.|
+|![image][ref-e]:rerotate(![image][ref-a])||Deprecated. Kept for backwards-compatibility.|
+|seatSpawn(![image][ref-s],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
+|seatSpawn(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
+|![image][ref-e]:setAng(![image][ref-a])||Set the rotation of an entity.|
+|![image][ref-e]:setPos(![image][ref-v])||Sets the position of an entity.|
+|![image][ref-e]:use()||Simulates a player pressing their use key on the entity.|
 
-[ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
-[ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
-[ref-c]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-c.png
-[ref-e]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-e.png
-[ref-xm2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xm2.png
-[ref-m]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-m.png
-[ref-xm4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xm4.png
-[ref-n]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-n.png
-[ref-q]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-q.png
-[ref-r]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-r.png
-[ref-s]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-s.png
-[ref-t]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-t.png
-[ref-xv2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xv2.png
-[ref-v]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-v.png
-[ref-xv4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xv4.png
-[ref-xrd]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xrd.png
-[ref-xwl]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xwl.png
-[ref-xfs]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xfs.png
-[ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xsc.png
-[ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xxx.png
+|Icon|Description|
+|---|---|
+|![image][ref-a]|[Angle](https://en.wikipedia.org/wiki/Euler_angles) class|
+|![image][ref-b]|[Bone](https://github.com/wiremod/wire/wiki/Expression-2#Bone) class|
+|![image][ref-c]|[Complex](https://en.wikipedia.org/wiki/Complex_number) number|
+|![image][ref-e]|[Entity](https://en.wikipedia.org/wiki/Entity) class|
+|![image][ref-xm2]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 2x2|
+|![image][ref-m]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics))|
+|![image][ref-xm4]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 4x4|
+|![image][ref-n]|[Number](https://en.wikipedia.org/wiki/Number)|
+|![image][ref-q]|[Quaternion](https://en.wikipedia.org/wiki/Quaternion)|
+|![image][ref-r]|[Array](https://en.wikipedia.org/wiki/Array_data_structure)|
+|![image][ref-s]|[String](https://en.wikipedia.org/wiki/String_(computer_science)) class|
+|![image][ref-t]|[Table](https://github.com/wiremod/wire/wiki/Expression-2#Table)|
+|![image][ref-xv2]|[Vactor](https://en.wikipedia.org/wiki/Euclidean_vector) 2D class|
+|![image][ref-v]|[Vector](https://en.wikipedia.org/wiki/Euclidean_vector) 3D class|
+|![image][ref-xv4]|[Vactor](https://en.wikipedia.org/wiki/4D_vector) 4D class|
+|![image][ref-xrd]|[Ranger](https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger) data class|
+|![image][ref-xwl]|[Wire link](https://github.com/wiremod/wire/wiki/Expression-2#Wirelink) class|
+|![image][ref-xfs]|[Flash sensor](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FSensor) class|
+|![image][ref-xsc]|[State controller](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class|
+|![image][ref-xxx]|[Void](https://en.wikipedia.org/wiki/Void_type) value|
+
+[ref-a]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Angle.png
+[ref-b]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Bone.png
+[ref-c]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-ComplexNumber.png
+[ref-e]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Entity.png
+[ref-xm2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix2.png
+[ref-m]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix.png
+[ref-xm4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix4.png
+[ref-n]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Number.png
+[ref-q]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Quaternion.png
+[ref-r]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Array.png
+[ref-s]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-String.png
+[ref-t]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Table.png
+[ref-xv2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector2.png
+[ref-v]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector.png
+[ref-xv4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector4.png
+[ref-xrd]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-RangerData.png
+[ref-xwl]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-WireLink.png
+[ref-xfs]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
+[ref-xsc]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
+[ref-xxx]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
 
