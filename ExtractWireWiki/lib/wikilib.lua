@@ -58,11 +58,15 @@ local wikiFormat = {
   __rbr = "[%s]: %s",
   __lnk = "[%s](%s)",
   __ins = "!%s",
-  __img = "[image][%s]"
+  __img = "[image][%s]",
+  __tsp = "/",
+  __asp = ",",
+  __msp = ":",
+  __esp = "="
 }
 
 local wikiRefer = { ["is"] = "n",
-  __this = {"dump","res","set","upd","smp","add","rem","no","new"}
+  __this = {"dump", "res", "set", "upd", "smp", "add", "rem", "no", "new"}
 }
 
 local wikiQuote = {["%d"] = true, ["_"]=true}
@@ -123,14 +127,14 @@ end
 function wikilib.setInternalType(API)
   local aT = wikiRefer.__this
   for ID = 1, #aT do local key = aT[ID]
-    wikiRefer[key] = tostring(apiGetValue(API,"TYPE","OBJ") or "xxx")
+    wikiRefer[key] = tostring(apiGetValue(API,"TYPE", "OBJ") or "xxx")
   end
 end
 
 function wikilib.updateAPI(API, DSC)
   local t = API.POOL[1]
   for api, dsc in pairs(DSC) do
-    if(apiGetValue(API,"FLAG","quot")) then
+    if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
         for k, v in pairs(wikiQuote) do
@@ -171,8 +175,8 @@ function wikilib.updateAPI(API, DSC)
 end
 
 function wikilib.printTypeReference(API, bExt)
-  local tT, sL = wikiType.list, apiGetValue(API,"TYPE","LNK")
-  local bE = apiGetValue(API,"FLAG","extr") -- Use external wire types
+  local tT, sL = wikiType.list, apiGetValue(API,"TYPE", "LNK")
+  local bE = apiGetValue(API,"FLAG", "extr") -- Use external wire types
   for ID = 1, #tT do local iDx = (bE and 2 or 1)
     io.write(toLinkRef(toRefer(tT[ID][1]), sL:format(toType(tT[ID][iDx]))).."\n")
   end; io.write("\n")
@@ -187,38 +191,38 @@ end
   bP > Enable pictures
   bD > Dicable and return empry string
 ]]--
-function wikilib.concatType(API, sT, bP, bD)
-  if(bD) then return "" end; local sV = tostring(sT)
-  if(sV:sub(1,1) == "/") then sV = sV:sub(2,-1) end
+function wikilib.concatType(API, sT)
+  local sV = tostring(sT)
+  local sS, sA = wikiFormat.__tsp, wikiFormat.__asp
+  if(sV:sub(1,1) == sS) then sV = sV:sub(2,-1) end
   local sVo = wikilib.convTypeE2Description(API, "void")[1]
-  local bVo = apiGetValue(API,"FLAG","remv")
+  local bVo = apiGetValue(API,"FLAG", "remv")
   if(bVo and sV == sVo) then return "" end
-  local bIco = apiGetValue(API, "FLAG", "icon")
-  local bU = common.getPick(bP ~= nil, bP, bIco)
-  if(bU) then
-    local sL = apiGetValue(API,"TYPE","LNK")
-    local exp = common.stringExplode(sV, "/")
+  local bI = apiGetValue(API, "FLAG", "icon")
+  if(bI) then
+    local sL = apiGetValue(API,"TYPE", "LNK")
+    local exp = common.stringExplode(sV, sS)
     for iN = 1, #exp do
       if(bVo and exp[iN] == sVo) then exp[iN] = ""
       else
         exp[iN] = toInsert(toImage(toRefer(exp[iN])))
       end
     end
-    return table.concat(exp, ",")
+    return table.concat(exp, sA)
   else
-    return sV
+    return sV:gsub(sS, sA)
   end
 end
 
 function wikilib.readReturnValues(API)
-  local sBas = apiGetValue(API,"FILE","base")
-  local sPth = apiGetValue(API,"FILE","path")
-  local sE2  = apiGetValue(API,"FILE","exts")
+  local sBas = apiGetValue(API,"FILE", "base")
+  local sPth = apiGetValue(API,"FILE", "path")
+  local sE2  = apiGetValue(API,"FILE", "exts")
   local sN = tostring(sBas)..tostring(sPth)
-  if(sN:sub(-1,-1) ~= "/") then sN = sN.."/" end
-  sN = sN..sE2:lower().."_rt.txt"
-  local fR = io.open(sN, "r")
-  if(not fR) then return end
+  if(sN:sub(-1,-1) ~= "/") then
+    sN = sN.."/" end; sN = sN..sE2:lower().."_rt.txt"
+  local fR = io.open(sN, "r"); if(not fR) then
+    return common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
   local sL = fR:read("*line")
   while(sL ~= nil) do
     local sT = common.stringTrim(sL)
@@ -240,13 +244,14 @@ end
 -- e2function stcontrol stcontrol:setPower(number nP, number nI, number nD)
 function wikilib.convApiE2Description(API, sE2)
   local sE = common.stringTrim(sE2)
+  local sM, sA = wikiFormat.__msp, wikiFormat.__asp
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
     sE = common.stringTrim(sE:sub(11, -1))
     iS = sE:find("%s", 1)
     tInfo.ret = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS)))[1]
     sE = common.stringTrim(sE:sub(iS, -1))
-    iS = sE:find(":", 1, true)
+    iS = sE:find(sM, 1, true)
     if(iS) then
       tInfo.obj = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS-1)))[1]
       sE   = common.stringTrim(sE:sub(iS+1, -1))     
@@ -254,7 +259,7 @@ function wikilib.convApiE2Description(API, sE2)
     iS = sE:find("(", 1, true)
     tInfo.foo = common.stringTrim(sE:sub(1, iS-1))
     sE = common.stringTrim(sE:match("%(.-%)")):sub(2,-2)
-    tInfo.par = common.stringExplode(sE, ",")
+    tInfo.par = common.stringExplode(sE, sA)
     for ID = 1, #tInfo.par do
       tInfo.par[ID] = common.stringTrim(tInfo.par[ID])
       iS = tInfo.par[ID]:find(" ", 1, true)
@@ -262,7 +267,7 @@ function wikilib.convApiE2Description(API, sE2)
       tInfo.par[ID] = wikilib.convTypeE2Description(API,tInfo.par[ID]:sub(1, iS-1))[1]
     end; tInfo.com = tInfo.foo.."("
     if(tInfo.obj) then
-      tInfo.com = tInfo.com..tInfo.obj..":" end
+      tInfo.com = tInfo.com..tInfo.obj..sM end
     for ID = 1, #tInfo.par do
       tInfo.com = tInfo.com..tInfo.par[ID]
     end; tInfo.com = tInfo.com..")"; return tInfo
@@ -283,23 +288,24 @@ function wikilib.isValidMatch(tM)
 end
 
 function wikilib.makeReturnValues(API)
-  local sE2  = apiGetValue(API,"FILE","exts")
-  local sBas = apiGetValue(API,"FILE","base")
-  local sLua = apiGetValue(API,"FILE","slua")
+  local sE2  = apiGetValue(API,"FILE", "exts")
+  local sBas = apiGetValue(API,"FILE", "base")
+  local sLua = apiGetValue(API,"FILE", "slua")
   local sN = tostring(sBas)..tostring(sLua)
+  local sM, sE = wikiFormat.__msp, wikiFormat.__esp
   if(sN:sub(-1,-1) ~= "/") then
     sN = sN.."/" end; sN = sN..sE2:lower()..".lua"
-  local fR = io.open(sN, "r")
-  if(not fR) then return common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
+  local fR = io.open(sN, "r"); if(not fR) then
+    return common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
   local sL, tF = fR:read("*line"), wikiMatch
   while(sL ~= nil) do
     local sT = common.stringTrim(sL)
-    local tE = common.stringExplode(sT, "=")
+    local tE = common.stringExplode(sT, sE)
     for ID = 1, 1 do local fL = common.stringTrim(tE[ID])
       if(fL:find("e2function")) then
         local tL = common.stringExplode(fL, " ")
         local typ, foo = tL[2], tL[3]
-        local mth = (foo:find(":") or  0)
+        local mth = (foo:find(sM) or  0)
         local brk = (foo:find("%(") or -1)
         foo = foo:sub(mth+1, brk-1)
         local tP = tF[foo]; if(not tP) then
@@ -331,31 +337,32 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     tC[ID] = common.stringCenter(tPool.cols[ID],tPool.size[ID],".")
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
+  local sM = wikiFormat.__msp
   local bIco = apiGetValue(API, "FLAG", "icon")
   local bErr = apiGetValue(API, "FLAG", "erro")
   local sObj = apiGetValue(API, "TYPE", "OBJ")
+  local sS, sA = wikiFormat.__tsp, wikiFormat.__asp
   local sV = wikilib.convTypeE2Description(API,"void")[1]
   for i, n in ipairs(tPool) do
     local arg, vars, obj = n:match("%(.-%)"), "", ""
     if(arg) then arg = arg:sub(2,-2)
-      local tsk = common.stringExplode(arg,":")
-      if(not arg:find(":")) then
+      local tsk = common.stringExplode(arg, sM)
+      if(not arg:find(sM)) then
         tsk[2], tsk[1] = tsk[1], sV end
       if(tsk[2] == "") then tsk[2] = sV end
       tsk[1], tsk[2] = common.stringTrim(tsk[1]), common.stringTrim(tsk[2])
-      local k, len = 1, tsk[2]:len(); obj = "/"..tsk[1]
+      local k, len = 1, tsk[2]:len(); obj = sS..tsk[1]
       while(k <= len) do local sbc = tsk[2]:sub(k,k)
         if(sbc == "x") then
           sbc = tsk[2]:sub(k, k+2); k = (k + 2) -- The end of the current type
         end; k = (k + 1)
-        vars = vars.."/"..sbc
+        vars = vars..sS..sbc
       end
     end
       
     for rmk, rmv in pairs(wikiMatch) do
       if(n:find(rmk.."%(") and rmv.__top > 0) then
-        if(not wikilib.isValidMatch(rmv)) then
-          if(bErr) then
+        if(not wikilib.isValidMatch(rmv)) then if(bErr) then
             error("wikilib.printDescriptionTable: Duplicated function !") end
         end
         local ret = ""; sorttMatch(rmv)
@@ -370,18 +377,18 @@ function wikilib.printDescriptionTable(API, DSC, iN)
           if(n == api.com) then
             if(ret == "") then local cap = rmk:find("%L", 1)
               if(n:find(API.NAME)) then
-                ret = "/"..sObj
+                ret = sS..sObj
               elseif(cap and wikiRefer[n:sub(1,cap-1)]) then
-                ret = "/"..wikiRefer[n:sub(1,cap-1)]
-              else ret = "/"..sV end
+                ret = sS..wikiRefer[n:sub(1,cap-1)]
+              else ret = sS..sV end
             end
             
             if(obj:find(sV)) then
-              wikilib.printRow({n:gsub("%(.-%)", "("..wikilib.concatType(API, vars, true)
-                    ..")"), wikilib.concatType(API, ret, true), DSC[n]})      
+              wikilib.printRow({n:gsub("%(.-%)", "("..wikilib.concatType(API, vars)
+                    ..")"), wikilib.concatType(API, ret), DSC[n]})      
             else
-              wikilib.printRow({wikilib.concatType(API, obj , true)..":"..n:gsub("%(.-%)", "("
-                      ..wikilib.concatType(API, vars, true)..")"), wikilib.concatType(API, ret, true), DSC[n]})
+              wikilib.printRow({wikilib.concatType(API, obj)..sM..n:gsub("%(.-%)", "("
+                      ..wikilib.concatType(API, vars)..")"), wikilib.concatType(API, ret), DSC[n]})
             end
           end
         end

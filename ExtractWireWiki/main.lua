@@ -1,4 +1,4 @@
-local sExp = "stcontrol"
+local sExp = "fsensor"
 
 local sProg = "ExtractWireWiki/"
 local wikilib = require(sProg.."lib/wikilib")
