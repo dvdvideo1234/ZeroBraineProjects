@@ -1,3 +1,3 @@
-local a = "aaaa[]bbbb"
+local a = " trHit)=   e2function array entity:aaa(vector"
 
-print(a:match("%[.+%]"))
+print(a:match("%)%s-=%s-e2function"))

@@ -13,13 +13,13 @@ local API = {
     {name="APPLY",cols={"Class.methods", "Out", "Description"},size={50,5,13}},
   },
   FILE = {
-    exts = "fsensor",
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2/",
+    exts = "trackasmlib_wire",
+    base = "E:/Documents/Lua-Projs/SVN/TrackAssemblyTool_GIT_master/",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom"
   },
   TYPE = {
-    OBJ = "xfs",
+    OBJ = "e",
     FRM = "type-%s.png",
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },

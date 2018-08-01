@@ -1,95 +1,466 @@
-|.........Instance.creator.........|.Out.|.Description.|
-|----------------------------------|-----|-------------|
-|propSpawn(![image][ref-e],![image][ref-a],![image][ref-n])|![image][ref-e]|Rotation, Frozen Spawns a prop with the model of the template entity and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-e],![image][ref-n])|![image][ref-e]|Entity template, Frozen Spawns a prop with the model of the template entity. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-e],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Position, Rotation, Frozen Spawns a prop with the model of the template entity, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-e],![image][ref-v],![image][ref-n])|![image][ref-e]|Entity template, Position, Frozen Spawns a prop with the model of the template entity at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-s],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Rotation, Frozen Spawns a prop with the model denoted by the string filepath and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-s],![image][ref-n])|![image][ref-e]|Use the model string or a template entity to spawn a prop. You can set the position and/or the rotation as well. The last number indicates frozen/unfrozen.|
-|propSpawn(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Position, Rotation, Frozen Spawns a prop with the model denoted by the string file path, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawn(![image][ref-s],![image][ref-v],![image][ref-n])|![image][ref-e]|Model path, Position, Frozen Spawns a prop with the model denoted by the string filepath at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
-|propSpawnEffect(![image][ref-n])||Set to `1` to enable prop spawn effect, `0` to disable.|
-|propSpawnUndo(![image][ref-n])||Set to `0` to force prop removal on `E2` shutdown, and suppress Undo entries for props.|
+0e2function string entity:trackasmlibGenActivePointINS(entity ucsEnt, string sType, string sName, number nPoint, string sP)nil0e2function string entity:trackasmlibGenActivePointDSV(entity ucsEnt, string sType, string sName, number nPoint, string sP, string sDelim)nil0e2function array entity:trackasmlibSnapEntity(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)nil0e2function array trackasmlibSnapNormal(vector ucsPos   , angle ucsAng    , string hdModel, number hdPointID, vector ucsOffPos, vector ucsOffAng)nil0e2function number trackasmlibIsPiece(string sModel)nil0e2function number entity:trackasmlibIsPiece()nil0e2function array trackasmlibGetOffset(string sModel, number nOffset, string sPOA)nil0e2function array entity:trackasmlibGetOffset(number nOffset, string sPOA)nil0e2function string trackasmlibGetType(string sModel)nil0e2function string entity:trackasmlibGetType()nil0e2function string trackasmlibGetName(string sModel)nil0e2function string entity:trackasmlibGetName()nil0e2function number trackasmlibGetPointsCount(string sModel)nil0e2function number entity:trackasmlibGetPointsCount()nil0e2function number trackasmlibHasAdditions(string sModel)nil0e2function number entity:trackasmlibHasAdditions()nil0e2function number trackasmlibGetAdditionsCount(string sModel)nil0e2function number entity:trackasmlibGetAdditionsCount()nil0e2function array trackasmlibGetAdditionsLine(string sModel, number nLine)nil0e2function array entity:trackasmlibGetAdditionsLine(number nLine)nil0e2function array trackasmlibGetProperty(string sType)nil0e2function array trackasmlibGetProperty()nil0e2function entity trackasmlibMakePiece(string sModel, vector vPos, angle aAng, number nMass, string sBgpID, number nR, number nG, number nB, number nA)nil0e2function entity entity:trackasmlibMakePiece(vector vPos, angle aAng)nil0e2function entity entity:trackasmlibApplyPhysicalAnchor(entity eBase, number nWe, number nNc)nil0e2function entity entity:trackasmlibApplyPhysicalSettings(number nPi, number nFr, number nGr, string sPh)nil0e2function number entity:trackasmlibAttachAdditions()nil0e2function number entity:trackasmlibAttachBodyGroups(string sBgpID)nil0e2function array entity:aaa(vector trHit)e2function array entity:bbb(vector trHit)0e2function array entity:ccc(vector trHit)e2function array entity:aaa(vector trHit)0e2function array entity:trackasmlibSnapEntityTEST(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)e2function array entity:trackasmlibSnapEntity(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)makeReturnValues = {}
+makeReturnValues["trackasmlibAttachBodyGroups"] = {}
+makeReturnValues["trackasmlibAttachBodyGroups"][1] = {}
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["foo"] = "trackasmlibAttachBodyGroups"
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["com"] = "trackasmlibAttachBodyGroups(e:s)"
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["ret"] = "n"
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["obj"] = "e"
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["par"] = {}
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibAttachBodyGroups"][1]["row"] = "e2function number entity:trackasmlibAttachBodyGroups(string sBgpID)"
+makeReturnValues["trackasmlibAttachBodyGroups"]["__key"] = {}
+makeReturnValues["trackasmlibAttachBodyGroups"]["__key"]["trackasmlibAttachBodyGroups(e:s)"] = 1
+makeReturnValues["trackasmlibAttachBodyGroups"]["__top"] = 1
+makeReturnValues["trackasmlibAttachBodyGroups"]["__nam"] = "trackasmlibAttachBodyGroups"
+makeReturnValues["trackasmlibGenActivePointINS"] = {}
+makeReturnValues["trackasmlibGenActivePointINS"][1] = {}
+makeReturnValues["trackasmlibGenActivePointINS"][1]["foo"] = "trackasmlibGenActivePointINS"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["com"] = "trackasmlibGenActivePointINS(e:essns)"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["ret"] = "s"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["obj"] = "e"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"] = {}
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"][1] = "e"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"][2] = "s"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"][3] = "s"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["par"][5] = "s"
+makeReturnValues["trackasmlibGenActivePointINS"][1]["row"] = "e2function string entity:trackasmlibGenActivePointINS(entity ucsEnt, string sType, string sName, number nPoint, string sP)"
+makeReturnValues["trackasmlibGenActivePointINS"]["__key"] = {}
+makeReturnValues["trackasmlibGenActivePointINS"]["__key"]["trackasmlibGenActivePointINS(e:essns)"] = 1
+makeReturnValues["trackasmlibGenActivePointINS"]["__top"] = 1
+makeReturnValues["trackasmlibGenActivePointINS"]["__nam"] = "trackasmlibGenActivePointINS"
+makeReturnValues["trackasmlibIsPiece"] = {}
+makeReturnValues["trackasmlibIsPiece"][1] = {}
+makeReturnValues["trackasmlibIsPiece"][1]["foo"] = "trackasmlibIsPiece"
+makeReturnValues["trackasmlibIsPiece"][1]["ret"] = "n"
+makeReturnValues["trackasmlibIsPiece"][1]["par"] = {}
+makeReturnValues["trackasmlibIsPiece"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibIsPiece"][1]["com"] = "trackasmlibIsPiece(s)"
+makeReturnValues["trackasmlibIsPiece"][1]["row"] = "e2function number trackasmlibIsPiece(string sModel)"
+makeReturnValues["trackasmlibIsPiece"][2] = {}
+makeReturnValues["trackasmlibIsPiece"][2]["foo"] = "trackasmlibIsPiece"
+makeReturnValues["trackasmlibIsPiece"][2]["com"] = "trackasmlibIsPiece(e:)"
+makeReturnValues["trackasmlibIsPiece"][2]["ret"] = "n"
+makeReturnValues["trackasmlibIsPiece"][2]["obj"] = "e"
+makeReturnValues["trackasmlibIsPiece"][2]["par"] = {}
+makeReturnValues["trackasmlibIsPiece"][2]["par"][1] = ""
+makeReturnValues["trackasmlibIsPiece"][2]["row"] = "e2function number entity:trackasmlibIsPiece()"
+makeReturnValues["trackasmlibIsPiece"]["__key"] = {}
+makeReturnValues["trackasmlibIsPiece"]["__key"]["trackasmlibIsPiece(e:)"] = 2
+makeReturnValues["trackasmlibIsPiece"]["__key"]["trackasmlibIsPiece(s)"] = 1
+makeReturnValues["trackasmlibIsPiece"]["__top"] = 2
+makeReturnValues["trackasmlibIsPiece"]["__nam"] = "trackasmlibIsPiece"
+makeReturnValues["trackasmlibGetPointsCount"] = {}
+makeReturnValues["trackasmlibGetPointsCount"][1] = {}
+makeReturnValues["trackasmlibGetPointsCount"][1]["foo"] = "trackasmlibGetPointsCount"
+makeReturnValues["trackasmlibGetPointsCount"][1]["ret"] = "n"
+makeReturnValues["trackasmlibGetPointsCount"][1]["par"] = {}
+makeReturnValues["trackasmlibGetPointsCount"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetPointsCount"][1]["com"] = "trackasmlibGetPointsCount(s)"
+makeReturnValues["trackasmlibGetPointsCount"][1]["row"] = "e2function number trackasmlibGetPointsCount(string sModel)"
+makeReturnValues["trackasmlibGetPointsCount"][2] = {}
+makeReturnValues["trackasmlibGetPointsCount"][2]["foo"] = "trackasmlibGetPointsCount"
+makeReturnValues["trackasmlibGetPointsCount"][2]["com"] = "trackasmlibGetPointsCount(e:)"
+makeReturnValues["trackasmlibGetPointsCount"][2]["ret"] = "n"
+makeReturnValues["trackasmlibGetPointsCount"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetPointsCount"][2]["par"] = {}
+makeReturnValues["trackasmlibGetPointsCount"][2]["par"][1] = ""
+makeReturnValues["trackasmlibGetPointsCount"][2]["row"] = "e2function number entity:trackasmlibGetPointsCount()"
+makeReturnValues["trackasmlibGetPointsCount"]["__key"] = {}
+makeReturnValues["trackasmlibGetPointsCount"]["__key"]["trackasmlibGetPointsCount(s)"] = 1
+makeReturnValues["trackasmlibGetPointsCount"]["__key"]["trackasmlibGetPointsCount(e:)"] = 2
+makeReturnValues["trackasmlibGetPointsCount"]["__top"] = 2
+makeReturnValues["trackasmlibGetPointsCount"]["__nam"] = "trackasmlibGetPointsCount"
+makeReturnValues["trackasmlibGetType"] = {}
+makeReturnValues["trackasmlibGetType"][1] = {}
+makeReturnValues["trackasmlibGetType"][1]["foo"] = "trackasmlibGetType"
+makeReturnValues["trackasmlibGetType"][1]["ret"] = "s"
+makeReturnValues["trackasmlibGetType"][1]["par"] = {}
+makeReturnValues["trackasmlibGetType"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetType"][1]["com"] = "trackasmlibGetType(s)"
+makeReturnValues["trackasmlibGetType"][1]["row"] = "e2function string trackasmlibGetType(string sModel)"
+makeReturnValues["trackasmlibGetType"][2] = {}
+makeReturnValues["trackasmlibGetType"][2]["foo"] = "trackasmlibGetType"
+makeReturnValues["trackasmlibGetType"][2]["com"] = "trackasmlibGetType(e:)"
+makeReturnValues["trackasmlibGetType"][2]["ret"] = "s"
+makeReturnValues["trackasmlibGetType"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetType"][2]["par"] = {}
+makeReturnValues["trackasmlibGetType"][2]["par"][1] = ""
+makeReturnValues["trackasmlibGetType"][2]["row"] = "e2function string entity:trackasmlibGetType()"
+makeReturnValues["trackasmlibGetType"]["__key"] = {}
+makeReturnValues["trackasmlibGetType"]["__key"]["trackasmlibGetType(e:)"] = 2
+makeReturnValues["trackasmlibGetType"]["__key"]["trackasmlibGetType(s)"] = 1
+makeReturnValues["trackasmlibGetType"]["__top"] = 2
+makeReturnValues["trackasmlibGetType"]["__nam"] = "trackasmlibGetType"
+makeReturnValues["trackasmlibSnapEntity"] = {}
+makeReturnValues["trackasmlibSnapEntity"][1] = {}
+makeReturnValues["trackasmlibSnapEntity"][1]["foo"] = "trackasmlibSnapEntity"
+makeReturnValues["trackasmlibSnapEntity"][1]["com"] = "trackasmlibSnapEntity(e:vsnnnnvv)"
+makeReturnValues["trackasmlibSnapEntity"][1]["ret"] = "r"
+makeReturnValues["trackasmlibSnapEntity"][1]["obj"] = "e"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"] = {}
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][1] = "v"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][2] = "s"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][3] = "n"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][5] = "n"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][6] = "n"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][7] = "v"
+makeReturnValues["trackasmlibSnapEntity"][1]["par"][8] = "v"
+makeReturnValues["trackasmlibSnapEntity"][1]["row"] = "e2function array entity:trackasmlibSnapEntity(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)"
+makeReturnValues["trackasmlibSnapEntity"]["__key"] = {}
+makeReturnValues["trackasmlibSnapEntity"]["__key"]["trackasmlibSnapEntity(e:vsnnnnvv)"] = 1
+makeReturnValues["trackasmlibSnapEntity"]["__top"] = 1
+makeReturnValues["trackasmlibSnapEntity"]["__nam"] = "trackasmlibSnapEntity"
+makeReturnValues["trackasmlibGenActivePointDSV"] = {}
+makeReturnValues["trackasmlibGenActivePointDSV"][1] = {}
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["foo"] = "trackasmlibGenActivePointDSV"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["com"] = "trackasmlibGenActivePointDSV(e:essnss)"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["ret"] = "s"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["obj"] = "e"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"] = {}
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][1] = "e"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][2] = "s"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][3] = "s"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][5] = "s"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["par"][6] = "s"
+makeReturnValues["trackasmlibGenActivePointDSV"][1]["row"] = "e2function string entity:trackasmlibGenActivePointDSV(entity ucsEnt, string sType, string sName, number nPoint, string sP, string sDelim)"
+makeReturnValues["trackasmlibGenActivePointDSV"]["__key"] = {}
+makeReturnValues["trackasmlibGenActivePointDSV"]["__key"]["trackasmlibGenActivePointDSV(e:essnss)"] = 1
+makeReturnValues["trackasmlibGenActivePointDSV"]["__top"] = 1
+makeReturnValues["trackasmlibGenActivePointDSV"]["__nam"] = "trackasmlibGenActivePointDSV"
+makeReturnValues["trackasmlibGetAdditionsLine"] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"][1] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["foo"] = "trackasmlibGetAdditionsLine"
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["ret"] = "r"
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["par"] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["par"][2] = "n"
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["com"] = "trackasmlibGetAdditionsLine(sn)"
+makeReturnValues["trackasmlibGetAdditionsLine"][1]["row"] = "e2function array trackasmlibGetAdditionsLine(string sModel, number nLine)"
+makeReturnValues["trackasmlibGetAdditionsLine"][2] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["foo"] = "trackasmlibGetAdditionsLine"
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["com"] = "trackasmlibGetAdditionsLine(e:n)"
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["ret"] = "r"
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["par"] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["par"][1] = "n"
+makeReturnValues["trackasmlibGetAdditionsLine"][2]["row"] = "e2function array entity:trackasmlibGetAdditionsLine(number nLine)"
+makeReturnValues["trackasmlibGetAdditionsLine"]["__key"] = {}
+makeReturnValues["trackasmlibGetAdditionsLine"]["__key"]["trackasmlibGetAdditionsLine(e:n)"] = 2
+makeReturnValues["trackasmlibGetAdditionsLine"]["__key"]["trackasmlibGetAdditionsLine(sn)"] = 1
+makeReturnValues["trackasmlibGetAdditionsLine"]["__top"] = 2
+makeReturnValues["trackasmlibGetAdditionsLine"]["__nam"] = "trackasmlibGetAdditionsLine"
+makeReturnValues["trackasmlibGetName"] = {}
+makeReturnValues["trackasmlibGetName"][1] = {}
+makeReturnValues["trackasmlibGetName"][1]["foo"] = "trackasmlibGetName"
+makeReturnValues["trackasmlibGetName"][1]["ret"] = "s"
+makeReturnValues["trackasmlibGetName"][1]["par"] = {}
+makeReturnValues["trackasmlibGetName"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetName"][1]["com"] = "trackasmlibGetName(s)"
+makeReturnValues["trackasmlibGetName"][1]["row"] = "e2function string trackasmlibGetName(string sModel)"
+makeReturnValues["trackasmlibGetName"][2] = {}
+makeReturnValues["trackasmlibGetName"][2]["foo"] = "trackasmlibGetName"
+makeReturnValues["trackasmlibGetName"][2]["com"] = "trackasmlibGetName(e:)"
+makeReturnValues["trackasmlibGetName"][2]["ret"] = "s"
+makeReturnValues["trackasmlibGetName"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetName"][2]["par"] = {}
+makeReturnValues["trackasmlibGetName"][2]["par"][1] = ""
+makeReturnValues["trackasmlibGetName"][2]["row"] = "e2function string entity:trackasmlibGetName()"
+makeReturnValues["trackasmlibGetName"]["__key"] = {}
+makeReturnValues["trackasmlibGetName"]["__key"]["trackasmlibGetName(e:)"] = 2
+makeReturnValues["trackasmlibGetName"]["__key"]["trackasmlibGetName(s)"] = 1
+makeReturnValues["trackasmlibGetName"]["__top"] = 2
+makeReturnValues["trackasmlibGetName"]["__nam"] = "trackasmlibGetName"
+makeReturnValues["trackasmlibGetAdditionsCount"] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"][1] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["foo"] = "trackasmlibGetAdditionsCount"
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["ret"] = "n"
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["par"] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["com"] = "trackasmlibGetAdditionsCount(s)"
+makeReturnValues["trackasmlibGetAdditionsCount"][1]["row"] = "e2function number trackasmlibGetAdditionsCount(string sModel)"
+makeReturnValues["trackasmlibGetAdditionsCount"][2] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["foo"] = "trackasmlibGetAdditionsCount"
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["com"] = "trackasmlibGetAdditionsCount(e:)"
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["ret"] = "n"
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["par"] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["par"][1] = ""
+makeReturnValues["trackasmlibGetAdditionsCount"][2]["row"] = "e2function number entity:trackasmlibGetAdditionsCount()"
+makeReturnValues["trackasmlibGetAdditionsCount"]["__key"] = {}
+makeReturnValues["trackasmlibGetAdditionsCount"]["__key"]["trackasmlibGetAdditionsCount(s)"] = 1
+makeReturnValues["trackasmlibGetAdditionsCount"]["__key"]["trackasmlibGetAdditionsCount(e:)"] = 2
+makeReturnValues["trackasmlibGetAdditionsCount"]["__top"] = 2
+makeReturnValues["trackasmlibGetAdditionsCount"]["__nam"] = "trackasmlibGetAdditionsCount"
+makeReturnValues["trackasmlibSnapEntityTEST"] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"][1] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["foo"] = "trackasmlibSnapEntityTEST"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["com"] = "trackasmlibSnapEntityTEST(e:vsnnnnvv)"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["ret"] = "r"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["obj"] = "e"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][1] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][2] = "s"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][3] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][5] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][6] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][7] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["par"][8] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"][1]["row"] = "e2function array entity:trackasmlibSnapEntityTEST(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["foo"] = "trackasmlibSnapEntity"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["com"] = "trackasmlibSnapEntity(e:vsnnnnvv)"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["ret"] = "r"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["obj"] = "e"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][1] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][2] = "s"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][3] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][4] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][5] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][6] = "n"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][7] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["par"][8] = "v"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__equ"]["row"] = "e2function array entity:trackasmlibSnapEntity(vector trHitPos  , string hdModel  , number hdPointID, number nActRadius, number enFlatten, number enIgnTyp , vector ucsOffPos , vector ucsOffAng)"
+makeReturnValues["trackasmlibSnapEntityTEST"]["__key"] = {}
+makeReturnValues["trackasmlibSnapEntityTEST"]["__key"]["trackasmlibSnapEntityTEST(e:vsnnnnvv)"] = 1
+makeReturnValues["trackasmlibSnapEntityTEST"]["__top"] = 1
+makeReturnValues["trackasmlibSnapEntityTEST"]["__nam"] = "trackasmlibSnapEntityTEST"
+makeReturnValues["trackasmlibGetOffset"] = {}
+makeReturnValues["trackasmlibGetOffset"][1] = {}
+makeReturnValues["trackasmlibGetOffset"][1]["foo"] = "trackasmlibGetOffset"
+makeReturnValues["trackasmlibGetOffset"][1]["ret"] = "r"
+makeReturnValues["trackasmlibGetOffset"][1]["par"] = {}
+makeReturnValues["trackasmlibGetOffset"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetOffset"][1]["par"][2] = "n"
+makeReturnValues["trackasmlibGetOffset"][1]["par"][3] = "s"
+makeReturnValues["trackasmlibGetOffset"][1]["com"] = "trackasmlibGetOffset(sns)"
+makeReturnValues["trackasmlibGetOffset"][1]["row"] = "e2function array trackasmlibGetOffset(string sModel, number nOffset, string sPOA)"
+makeReturnValues["trackasmlibGetOffset"][2] = {}
+makeReturnValues["trackasmlibGetOffset"][2]["foo"] = "trackasmlibGetOffset"
+makeReturnValues["trackasmlibGetOffset"][2]["com"] = "trackasmlibGetOffset(e:ns)"
+makeReturnValues["trackasmlibGetOffset"][2]["ret"] = "r"
+makeReturnValues["trackasmlibGetOffset"][2]["obj"] = "e"
+makeReturnValues["trackasmlibGetOffset"][2]["par"] = {}
+makeReturnValues["trackasmlibGetOffset"][2]["par"][1] = "n"
+makeReturnValues["trackasmlibGetOffset"][2]["par"][2] = "s"
+makeReturnValues["trackasmlibGetOffset"][2]["row"] = "e2function array entity:trackasmlibGetOffset(number nOffset, string sPOA)"
+makeReturnValues["trackasmlibGetOffset"]["__key"] = {}
+makeReturnValues["trackasmlibGetOffset"]["__key"]["trackasmlibGetOffset(e:ns)"] = 2
+makeReturnValues["trackasmlibGetOffset"]["__key"]["trackasmlibGetOffset(sns)"] = 1
+makeReturnValues["trackasmlibGetOffset"]["__top"] = 2
+makeReturnValues["trackasmlibGetOffset"]["__nam"] = "trackasmlibGetOffset"
+makeReturnValues["trackasmlibApplyPhysicalSettings"] = {}
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1] = {}
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["foo"] = "trackasmlibApplyPhysicalSettings"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["com"] = "trackasmlibApplyPhysicalSettings(e:nnns)"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["ret"] = "e"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["obj"] = "e"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["par"] = {}
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["par"][1] = "n"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["par"][2] = "n"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["par"][3] = "n"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["par"][4] = "s"
+makeReturnValues["trackasmlibApplyPhysicalSettings"][1]["row"] = "e2function entity entity:trackasmlibApplyPhysicalSettings(number nPi, number nFr, number nGr, string sPh)"
+makeReturnValues["trackasmlibApplyPhysicalSettings"]["__key"] = {}
+makeReturnValues["trackasmlibApplyPhysicalSettings"]["__key"]["trackasmlibApplyPhysicalSettings(e:nnns)"] = 1
+makeReturnValues["trackasmlibApplyPhysicalSettings"]["__top"] = 1
+makeReturnValues["trackasmlibApplyPhysicalSettings"]["__nam"] = "trackasmlibApplyPhysicalSettings"
+makeReturnValues["trackasmlibMakePiece"] = {}
+makeReturnValues["trackasmlibMakePiece"][1] = {}
+makeReturnValues["trackasmlibMakePiece"][1]["foo"] = "trackasmlibMakePiece"
+makeReturnValues["trackasmlibMakePiece"][1]["ret"] = "e"
+makeReturnValues["trackasmlibMakePiece"][1]["par"] = {}
+makeReturnValues["trackasmlibMakePiece"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][2] = "v"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][3] = "a"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][5] = "s"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][6] = "n"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][7] = "n"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][8] = "n"
+makeReturnValues["trackasmlibMakePiece"][1]["par"][9] = "n"
+makeReturnValues["trackasmlibMakePiece"][1]["com"] = "trackasmlibMakePiece(svansnnnn)"
+makeReturnValues["trackasmlibMakePiece"][1]["row"] = "e2function entity trackasmlibMakePiece(string sModel, vector vPos, angle aAng, number nMass, string sBgpID, number nR, number nG, number nB, number nA)"
+makeReturnValues["trackasmlibMakePiece"][2] = {}
+makeReturnValues["trackasmlibMakePiece"][2]["foo"] = "trackasmlibMakePiece"
+makeReturnValues["trackasmlibMakePiece"][2]["com"] = "trackasmlibMakePiece(e:va)"
+makeReturnValues["trackasmlibMakePiece"][2]["ret"] = "e"
+makeReturnValues["trackasmlibMakePiece"][2]["obj"] = "e"
+makeReturnValues["trackasmlibMakePiece"][2]["par"] = {}
+makeReturnValues["trackasmlibMakePiece"][2]["par"][1] = "v"
+makeReturnValues["trackasmlibMakePiece"][2]["par"][2] = "a"
+makeReturnValues["trackasmlibMakePiece"][2]["row"] = "e2function entity entity:trackasmlibMakePiece(vector vPos, angle aAng)"
+makeReturnValues["trackasmlibMakePiece"]["__key"] = {}
+makeReturnValues["trackasmlibMakePiece"]["__key"]["trackasmlibMakePiece(e:va)"] = 2
+makeReturnValues["trackasmlibMakePiece"]["__key"]["trackasmlibMakePiece(svansnnnn)"] = 1
+makeReturnValues["trackasmlibMakePiece"]["__top"] = 2
+makeReturnValues["trackasmlibMakePiece"]["__nam"] = "trackasmlibMakePiece"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"] = {}
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1] = {}
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["foo"] = "trackasmlibApplyPhysicalAnchor"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["com"] = "trackasmlibApplyPhysicalAnchor(e:enn)"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["ret"] = "e"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["obj"] = "e"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["par"] = {}
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["par"][1] = "e"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["par"][2] = "n"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["par"][3] = "n"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"][1]["row"] = "e2function entity entity:trackasmlibApplyPhysicalAnchor(entity eBase, number nWe, number nNc)"
+makeReturnValues["trackasmlibApplyPhysicalAnchor"]["__key"] = {}
+makeReturnValues["trackasmlibApplyPhysicalAnchor"]["__key"]["trackasmlibApplyPhysicalAnchor(e:enn)"] = 1
+makeReturnValues["trackasmlibApplyPhysicalAnchor"]["__top"] = 1
+makeReturnValues["trackasmlibApplyPhysicalAnchor"]["__nam"] = "trackasmlibApplyPhysicalAnchor"
+makeReturnValues["ccc"] = {}
+makeReturnValues["ccc"][1] = {}
+makeReturnValues["ccc"][1]["foo"] = "ccc"
+makeReturnValues["ccc"][1]["com"] = "ccc(e:v)"
+makeReturnValues["ccc"][1]["ret"] = "r"
+makeReturnValues["ccc"][1]["obj"] = "e"
+makeReturnValues["ccc"][1]["par"] = {}
+makeReturnValues["ccc"][1]["par"][1] = "v"
+makeReturnValues["ccc"][1]["row"] = "e2function array entity:ccc(vector trHit)"
+makeReturnValues["ccc"]["__equ"] = {}
+makeReturnValues["ccc"]["__equ"]["foo"] = "aaa"
+makeReturnValues["ccc"]["__equ"]["com"] = "aaa(e:v)"
+makeReturnValues["ccc"]["__equ"]["ret"] = "r"
+makeReturnValues["ccc"]["__equ"]["obj"] = "e"
+makeReturnValues["ccc"]["__equ"]["par"] = {}
+makeReturnValues["ccc"]["__equ"]["par"][1] = "v"
+makeReturnValues["ccc"]["__equ"]["row"] = "e2function array entity:aaa(vector trHit)"
+makeReturnValues["ccc"]["__key"] = {}
+makeReturnValues["ccc"]["__key"]["ccc(e:v)"] = 1
+makeReturnValues["ccc"]["__top"] = 1
+makeReturnValues["ccc"]["__nam"] = "ccc"
+makeReturnValues["aaa"] = {}
+makeReturnValues["aaa"][1] = {}
+makeReturnValues["aaa"][1]["foo"] = "aaa"
+makeReturnValues["aaa"][1]["com"] = "aaa(e:v)"
+makeReturnValues["aaa"][1]["ret"] = "r"
+makeReturnValues["aaa"][1]["obj"] = "e"
+makeReturnValues["aaa"][1]["par"] = {}
+makeReturnValues["aaa"][1]["par"][1] = "v"
+makeReturnValues["aaa"][1]["row"] = "e2function array entity:aaa(vector trHit)"
+makeReturnValues["aaa"]["__equ"] = {}
+makeReturnValues["aaa"]["__equ"]["foo"] = "bbb"
+makeReturnValues["aaa"]["__equ"]["com"] = "bbb(e:v)"
+makeReturnValues["aaa"]["__equ"]["ret"] = "r"
+makeReturnValues["aaa"]["__equ"]["obj"] = "e"
+makeReturnValues["aaa"]["__equ"]["par"] = {}
+makeReturnValues["aaa"]["__equ"]["par"][1] = "v"
+makeReturnValues["aaa"]["__equ"]["row"] = "e2function array entity:bbb(vector trHit)"
+makeReturnValues["aaa"]["__key"] = {}
+makeReturnValues["aaa"]["__key"]["aaa(e:v)"] = 1
+makeReturnValues["aaa"]["__top"] = 1
+makeReturnValues["aaa"]["__nam"] = "aaa"
+makeReturnValues["trackasmlibAttachAdditions"] = {}
+makeReturnValues["trackasmlibAttachAdditions"][1] = {}
+makeReturnValues["trackasmlibAttachAdditions"][1]["foo"] = "trackasmlibAttachAdditions"
+makeReturnValues["trackasmlibAttachAdditions"][1]["com"] = "trackasmlibAttachAdditions(e:)"
+makeReturnValues["trackasmlibAttachAdditions"][1]["ret"] = "n"
+makeReturnValues["trackasmlibAttachAdditions"][1]["obj"] = "e"
+makeReturnValues["trackasmlibAttachAdditions"][1]["par"] = {}
+makeReturnValues["trackasmlibAttachAdditions"][1]["par"][1] = ""
+makeReturnValues["trackasmlibAttachAdditions"][1]["row"] = "e2function number entity:trackasmlibAttachAdditions()"
+makeReturnValues["trackasmlibAttachAdditions"]["__key"] = {}
+makeReturnValues["trackasmlibAttachAdditions"]["__key"]["trackasmlibAttachAdditions(e:)"] = 1
+makeReturnValues["trackasmlibAttachAdditions"]["__top"] = 1
+makeReturnValues["trackasmlibAttachAdditions"]["__nam"] = "trackasmlibAttachAdditions"
+makeReturnValues["trackasmlibHasAdditions"] = {}
+makeReturnValues["trackasmlibHasAdditions"][1] = {}
+makeReturnValues["trackasmlibHasAdditions"][1]["foo"] = "trackasmlibHasAdditions"
+makeReturnValues["trackasmlibHasAdditions"][1]["ret"] = "n"
+makeReturnValues["trackasmlibHasAdditions"][1]["par"] = {}
+makeReturnValues["trackasmlibHasAdditions"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibHasAdditions"][1]["com"] = "trackasmlibHasAdditions(s)"
+makeReturnValues["trackasmlibHasAdditions"][1]["row"] = "e2function number trackasmlibHasAdditions(string sModel)"
+makeReturnValues["trackasmlibHasAdditions"][2] = {}
+makeReturnValues["trackasmlibHasAdditions"][2]["foo"] = "trackasmlibHasAdditions"
+makeReturnValues["trackasmlibHasAdditions"][2]["com"] = "trackasmlibHasAdditions(e:)"
+makeReturnValues["trackasmlibHasAdditions"][2]["ret"] = "n"
+makeReturnValues["trackasmlibHasAdditions"][2]["obj"] = "e"
+makeReturnValues["trackasmlibHasAdditions"][2]["par"] = {}
+makeReturnValues["trackasmlibHasAdditions"][2]["par"][1] = ""
+makeReturnValues["trackasmlibHasAdditions"][2]["row"] = "e2function number entity:trackasmlibHasAdditions()"
+makeReturnValues["trackasmlibHasAdditions"]["__key"] = {}
+makeReturnValues["trackasmlibHasAdditions"]["__key"]["trackasmlibHasAdditions(e:)"] = 2
+makeReturnValues["trackasmlibHasAdditions"]["__key"]["trackasmlibHasAdditions(s)"] = 1
+makeReturnValues["trackasmlibHasAdditions"]["__top"] = 2
+makeReturnValues["trackasmlibHasAdditions"]["__nam"] = "trackasmlibHasAdditions"
+makeReturnValues["trackasmlibSnapNormal"] = {}
+makeReturnValues["trackasmlibSnapNormal"][1] = {}
+makeReturnValues["trackasmlibSnapNormal"][1]["foo"] = "trackasmlibSnapNormal"
+makeReturnValues["trackasmlibSnapNormal"][1]["ret"] = "r"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"] = {}
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][1] = "v"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][2] = "a"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][3] = "s"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][4] = "n"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][5] = "v"
+makeReturnValues["trackasmlibSnapNormal"][1]["par"][6] = "v"
+makeReturnValues["trackasmlibSnapNormal"][1]["com"] = "trackasmlibSnapNormal(vasnvv)"
+makeReturnValues["trackasmlibSnapNormal"][1]["row"] = "e2function array trackasmlibSnapNormal(vector ucsPos   , angle ucsAng    , string hdModel, number hdPointID, vector ucsOffPos, vector ucsOffAng)"
+makeReturnValues["trackasmlibSnapNormal"]["__key"] = {}
+makeReturnValues["trackasmlibSnapNormal"]["__key"]["trackasmlibSnapNormal(vasnvv)"] = 1
+makeReturnValues["trackasmlibSnapNormal"]["__top"] = 1
+makeReturnValues["trackasmlibSnapNormal"]["__nam"] = "trackasmlibSnapNormal"
+makeReturnValues["trackasmlibGetProperty"] = {}
+makeReturnValues["trackasmlibGetProperty"][1] = {}
+makeReturnValues["trackasmlibGetProperty"][1]["foo"] = "trackasmlibGetProperty"
+makeReturnValues["trackasmlibGetProperty"][1]["ret"] = "r"
+makeReturnValues["trackasmlibGetProperty"][1]["par"] = {}
+makeReturnValues["trackasmlibGetProperty"][1]["par"][1] = "s"
+makeReturnValues["trackasmlibGetProperty"][1]["com"] = "trackasmlibGetProperty(s)"
+makeReturnValues["trackasmlibGetProperty"][1]["row"] = "e2function array trackasmlibGetProperty(string sType)"
+makeReturnValues["trackasmlibGetProperty"][2] = {}
+makeReturnValues["trackasmlibGetProperty"][2]["foo"] = "trackasmlibGetProperty"
+makeReturnValues["trackasmlibGetProperty"][2]["ret"] = "r"
+makeReturnValues["trackasmlibGetProperty"][2]["par"] = {}
+makeReturnValues["trackasmlibGetProperty"][2]["par"][1] = ""
+makeReturnValues["trackasmlibGetProperty"][2]["com"] = "trackasmlibGetProperty()"
+makeReturnValues["trackasmlibGetProperty"][2]["row"] = "e2function array trackasmlibGetProperty()"
+makeReturnValues["trackasmlibGetProperty"]["__key"] = {}
+makeReturnValues["trackasmlibGetProperty"]["__key"]["trackasmlibGetProperty(s)"] = 1
+makeReturnValues["trackasmlibGetProperty"]["__key"]["trackasmlibGetProperty()"] = 2
+makeReturnValues["trackasmlibGetProperty"]["__top"] = 2
+makeReturnValues["trackasmlibGetProperty"]["__nam"] = "trackasmlibGetProperty"
+DSC[trackasmlibGenActivePointINS(e:essns)] = ""
+DSC[trackasmlibGenActivePointDSV(e:essnss)] = ""
+DSC[trackasmlibSnapEntity(e:vsnnnnvv)] = ""
+DSC[trackasmlibSnapNormal(vasnvv)] = ""
+DSC[trackasmlibIsPiece(s)] = ""
+DSC[trackasmlibIsPiece(e:)] = ""
+DSC[trackasmlibGetOffset(sns)] = ""
+DSC[trackasmlibGetOffset(e:ns)] = ""
+DSC[trackasmlibGetType(s)] = ""
+DSC[trackasmlibGetType(e:)] = ""
+DSC[trackasmlibGetName(s)] = ""
+DSC[trackasmlibGetName(e:)] = ""
+DSC[trackasmlibGetPointsCount(s)] = ""
+DSC[trackasmlibGetPointsCount(e:)] = ""
+DSC[trackasmlibHasAdditions(s)] = ""
+DSC[trackasmlibHasAdditions(e:)] = ""
+DSC[trackasmlibGetAdditionsCount(s)] = ""
+DSC[trackasmlibGetAdditionsCount(e:)] = ""
+DSC[trackasmlibGetAdditionsLine(sn)] = ""
+DSC[trackasmlibGetAdditionsLine(e:n)] = ""
+DSC[trackasmlibGetProperty(s)] = ""
+DSC[trackasmlibGetProperty()] = ""
+DSC[trackasmlibMakePiece(svansnnnn)] = ""
+DSC[trackasmlibMakePiece(e:va)] = ""
+DSC[trackasmlibApplyPhysicalAnchor(e:enn)] = ""
+DSC[trackasmlibApplyPhysicalSettings(e:nnns)] = ""
+DSC[trackasmlibAttachAdditions(e:)] = ""
+DSC[trackasmlibAttachBodyGroups(e:s)] = ""
+DSC[aaa(e:v)] = ""
+DSC[ccc(e:v)] = ""
+DSC[trackasmlibSnapEntityTEST(e:vsnnnnvv)] = ""
+|.................Instance.creator.................|.Out.|.Description.|
+|--------------------------------------------------|-----|-------------|
 
-|..............Prop.core.function..............|.Out.|.Description.|
-|----------------------------------------------|-----|-------------|
-|![image][ref-e]:deparent()||Unparents an entity, so it moves freely again.|
-|![image][ref-e]:parentTo()||Parents one entity to another.|
-|![image][ref-e]:parentTo(![image][ref-e])||Parents one entity to another.|
-|![image][ref-e]:propBreak()||Breaks/Explodes breakable/explodable props (Useful for Mines).|
-|propCanCreate()|![image][ref-n]|Returns `1` when propSpawn() will successfully spawn a prop until the limit is reached.|
-|![image][ref-e]:propDelete()||Deletes the specified prop.|
-|![image][ref-r]:propDelete()|![image][ref-n]|Deletes all the props in the given array, returns the amount of props deleted.|
-|![image][ref-t]:propDelete()|![image][ref-n]|Deletes all the props in the given table, returns the amount of props deleted.|
-|propDeleteAll()||Removes all entities spawned by this `E2`|
-|![image][ref-e]:propDrag(![image][ref-n])||Passing `0` makes the entity not be affected by drag|
-|![image][ref-e]:propDraw(![image][ref-n])||Passing `0` disables rendering for the entity (makes it really invisible)|
-|![image][ref-e]:propFreeze(![image][ref-n])||Passing `0` unfreezes the entity, everything else freezes it.|
-|![image][ref-e]:propGetElasticity()|![image][ref-n]|Gets prop's elasticity coefficient|
-|![image][ref-e]:propGetFriction()|![image][ref-n]|Gets prop's friction coefficient|
-|![image][ref-e]:propGravity(![image][ref-n])||Passing `0` makes the entity weightless, everything else makes it weighty.|
-|![image][ref-e]:propInertia(![image][ref-v])||Sets the directional inertia|
-|![image][ref-e]:propMakePersistent(![image][ref-n])||Setting to `1` will make the prop persistent.|
-|![image][ref-e]:propManipulate(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-n],![image][ref-n])||Allows to do any single prop core function in one term (position, rotation, freeze, gravity, notsolid)|
-|![image][ref-e]:propNotSolid(![image][ref-n])||Passing `0` makes the entity solid, everything else makes it non-solid.|
-|![image][ref-e]:propPhysicalMaterial()|![image][ref-s]|Returns the surface material of a prop.|
-|![image][ref-e]:propPhysicalMaterial(![image][ref-s])||Changes the surface material of a prop (eg. wood, metal, `...` See [`Material_surface_properties`](https://developer.valvesoftware.com/wiki/Material_surface_properties) `).`|
-|![image][ref-e]:propSetBuoyancy(![image][ref-n])||Sets the prop's buoyancy ratio from `0` to `1`|
-|![image][ref-e]:propSetElasticity(![image][ref-n])||Sets prop's elasticity coefficient (default is `1`)|
-|![image][ref-e]:propSetFriction(![image][ref-n])||Sets prop's friction coefficient (default is `1`)|
-|![image][ref-e]:propSetVelocity(![image][ref-v])||Sets the velocity of the prop for the next iteration|
-|![image][ref-e]:propSetVelocityInstant(![image][ref-v])||Sets the initial velocity of the prop|
-|![image][ref-e]:propShadow(![image][ref-n])||Passing `0` disables rendering for the entity's shadow|
-|![image][ref-e]:propStatic(![image][ref-n])||Sets to `1` to make the entity static (disables movement, physgun, unfreeze, drive...) or `0` to cancel.|
-|![image][ref-e]:reposition(![image][ref-v])||Deprecated. Kept for backwards-compatibility.|
-|![image][ref-e]:rerotate(![image][ref-a])||Deprecated. Kept for backwards-compatibility.|
-|seatSpawn(![image][ref-s],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
-|seatSpawn(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
-|![image][ref-e]:setAng(![image][ref-a])||Set the rotation of an entity.|
-|![image][ref-e]:setPos(![image][ref-v])||Sets the position of an entity.|
-|![image][ref-e]:use()||Simulates a player pressing their use key on the entity.|
-
-|Icon|Description|
-|---|---|
-|![image][ref-a]|[Angle](https://en.wikipedia.org/wiki/Euler_angles) class|
-|![image][ref-b]|[Bone](https://github.com/wiremod/wire/wiki/Expression-2#Bone) class|
-|![image][ref-c]|[Complex](https://en.wikipedia.org/wiki/Complex_number) number|
-|![image][ref-e]|[Entity](https://en.wikipedia.org/wiki/Entity) class|
-|![image][ref-xm2]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 2x2|
-|![image][ref-m]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics))|
-|![image][ref-xm4]|[Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 4x4|
-|![image][ref-n]|[Number](https://en.wikipedia.org/wiki/Number)|
-|![image][ref-q]|[Quaternion](https://en.wikipedia.org/wiki/Quaternion)|
-|![image][ref-r]|[Array](https://en.wikipedia.org/wiki/Array_data_structure)|
-|![image][ref-s]|[String](https://en.wikipedia.org/wiki/String_(computer_science)) class|
-|![image][ref-t]|[Table](https://github.com/wiremod/wire/wiki/Expression-2#Table)|
-|![image][ref-xv2]|[Vactor](https://en.wikipedia.org/wiki/Euclidean_vector) 2D class|
-|![image][ref-v]|[Vector](https://en.wikipedia.org/wiki/Euclidean_vector) 3D class|
-|![image][ref-xv4]|[Vactor](https://en.wikipedia.org/wiki/4D_vector) 4D class|
-|![image][ref-xrd]|[Ranger](https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger) data class|
-|![image][ref-xwl]|[Wire link](https://github.com/wiremod/wire/wiki/Expression-2#Wirelink) class|
-|![image][ref-xfs]|[Flash sensor](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FSensor) class|
-|![image][ref-xsc]|[State controller](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class|
-|![image][ref-xxx]|[Void](https://en.wikipedia.org/wiki/Void_type) value|
-
-[ref-a]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Angle.png
-[ref-b]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Bone.png
-[ref-c]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-ComplexNumber.png
-[ref-e]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Entity.png
-[ref-xm2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix2.png
-[ref-m]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix.png
-[ref-xm4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix4.png
-[ref-n]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Number.png
-[ref-q]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Quaternion.png
-[ref-r]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Array.png
-[ref-s]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-String.png
-[ref-t]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Table.png
-[ref-xv2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector2.png
-[ref-v]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector.png
-[ref-xv4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector4.png
-[ref-xrd]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-RangerData.png
-[ref-xwl]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-WireLink.png
-[ref-xfs]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
-[ref-xsc]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
-[ref-xxx]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-.png
-
+|...................Class.methods..................|.Out.|.Description.|
+|--------------------------------------------------|-----|-------------|
+wikilib.printDescriptionTable: Description mismatch <copyStControl(xsc:)> !

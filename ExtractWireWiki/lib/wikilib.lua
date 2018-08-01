@@ -2,9 +2,9 @@ package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprogra
 
 local common = require('common')
 
-local wikilib = {}
-
-local wikiMatch = {}
+local wikilib   = {} -- Reference to the library
+local wikiMList = {} -- Stores the ordered list of the APIs
+local wikiMatch = {} -- Stores the APIs hashed list information
 local wikiType = {
   list = {
     {"a"  , "Angle"        , "[Angle] class"           , "https://en.wikipedia.org/wiki/Euler_angles"},
@@ -52,6 +52,7 @@ local wikiType = {
   }
 }
 
+-- Stores a bynch of format strings for various stuff ( wikilib.setFormat )
 local wikiFormat = {
   __tfm = "type-%s.jpg",
   __rty = "ref-%s",
@@ -59,18 +60,25 @@ local wikiFormat = {
   __lnk = "[%s](%s)",
   __ins = "!%s",
   __img = "[image][%s]",
-  __tsp = "/",
-  __asp = ",",
-  __msp = ":",
-  __esp = "="
+  tsp = "/",
+  asp = ",",
+  msp = ":",
+  esp = "=",
+  hsh = "#",
+  fnd = "e2function",
+  npt = "%)%s-=%s-e2function"
 }
 
+-- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
 local wikiRefer = { ["is"] = "n",
   __this = {"dump", "res", "set", "upd", "smp", "add", "rem", "no", "new"}
 }
 
+-- A bunch of patterns when matched transform a word into MD quote
 local wikiQuote = {["%d"] = true, ["_"]=true}
+-- A bunch of functions when matched transform a word into MD quote
 local wikiQuFoo = {common.stringIsUpper}
+-- Characters to exclude from the word quoting
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true}
 
 local function isQuote(sS)
@@ -133,6 +141,7 @@ end
 
 function wikilib.updateAPI(API, DSC)
   local t = API.POOL[1]
+  local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
   for api, dsc in pairs(DSC) do
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
@@ -158,9 +167,9 @@ function wikilib.updateAPI(API, DSC)
       for k, v in pairs(tR) do
         if(k:sub(1,1) ~= "_") then
           local nF, nB = dsc:find(k, 1, true)
-          if(nF and nB) then
-            if(dsc:sub(nF-1,nF-1)..dsc:sub(nB+1,nB+1) == "``") then
-              local sR = v:gsub(tR.__ref, "`"..k.."`")
+          if(nF and nB) then nF, nB = (nF - 1), (nB + 1)
+            if(dsc:sub(nF,nF)..dsc:sub(nB,nB) == "``") then
+              local sR = v:gsub(tR.__ref, qR..k..qR)
                     sR = sR:gsub(tR.__key, k)
               DSC[api] = dsc:gsub("`"..k.."`", sR)
             else
@@ -193,7 +202,7 @@ end
 ]]--
 function wikilib.concatType(API, sT)
   local sV = tostring(sT)
-  local sS, sA = wikiFormat.__tsp, wikiFormat.__asp
+  local sS, sA = wikiFormat.tsp, wikiFormat.asp
   if(sV:sub(1,1) == sS) then sV = sV:sub(2,-1) end
   local sVo = wikilib.convTypeE2Description(API, "void")[1]
   local bVo = apiGetValue(API,"FLAG", "remv")
@@ -244,7 +253,7 @@ end
 -- e2function stcontrol stcontrol:setPower(number nP, number nI, number nD)
 function wikilib.convApiE2Description(API, sE2)
   local sE = common.stringTrim(sE2)
-  local sM, sA = wikiFormat.__msp, wikiFormat.__asp
+  local sM, sA = wikiFormat.msp, wikiFormat.asp
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
     sE = common.stringTrim(sE:sub(11, -1))
@@ -292,37 +301,60 @@ function wikilib.makeReturnValues(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
   local sN = tostring(sBas)..tostring(sLua)
-  local sM, sE = wikiFormat.__msp, wikiFormat.__esp
+  local sM, sE = wikiFormat.msp, wikiFormat.esp
   if(sN:sub(-1,-1) ~= "/") then
     sN = sN.."/" end; sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
     return common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
-  local sL, tF = fR:read("*line"), wikiMatch
+  local sL, tF, tK, sA, bA, bE = fR:read("*line"), wikiMatch, wikiMList, "", false, false
+  local mP, mH, mF = wikiFormat.npt, wikiFormat.hsh, wikiFormat.fnd
   while(sL ~= nil) do
-    local sT = common.stringTrim(sL)
-    local tE = common.stringExplode(sT, sE)
-    for ID = 1, 1 do local fL = common.stringTrim(tE[ID])
-      if(fL:find("e2function")) then
-        local tL = common.stringExplode(fL, " ")
+    local fL = common.stringTrim(sL)
+    local eL = fL:find(mP)
+    local mL = fL:gsub(mP, mH)
+    if(fL:find(mF) and not bA) then sA, bA = "", true end
+    if(bA) then sA = sA.." "..fL
+      if(mL:find(")")) then sA = common.stringTrim(sA)
+        local tE = common.stringExplode(sA, sE)
+        local sP, sO = common.stringTrim(tE[1]), nil
+        if(tE[2]) then sO = common.stringTrim(tE[2]) end
+        io.write(0, sP, tostring(sO))
+        local tL = common.stringExplode(sP, " ")
         local typ, foo = tL[2], tL[3]
         local mth = (foo:find(sM) or  0)
         local brk = (foo:find("%(") or -1)
-        foo = foo:sub(mth+1, brk-1)
+              foo = foo:sub(mth+1, brk-1)
         local tP = tF[foo]; if(not tP) then
           tF[foo] = {__top = 0, __key = {}, __nam = foo}; tP = tF[foo] end
         tP.__top = tP.__top + 1
-        local tInfo = wikilib.convApiE2Description(API, fL)
+        local tInfo = wikilib.convApiE2Description(API, sP)
         tP.__key[tInfo.com] = tP.__top; tP[tP.__top] = tInfo
+        if(sO) then tP.__equ = wikilib.convApiE2Description(API, sO) end
+        if(not tK.__top) then tK.__top = 0 end
+        tK.__top = tK.__top + 1; tK[tK.__top] = tInfo.com
+        -- Register API and and write to memory
+        sA, bA = "", false
       end
-    end
-    sL = fR:read("*line")
-  end; return tF
+    end; sL = fR:read("*line")
+  end;
+  
+  common.logTable(tF, "makeReturnValues")
+  
+  return tF
+end
+
+function wikilib.printMatchedAPI(API)
+  local tK = wikiMList
+  for ID = 1, tK.__top do
+    common.logStatus("DSC["..tK[ID].."] = \"\"")
+  end
 end
 
 function wikilib.printTypeTable(API)
   local tT = wikiType.list
   wikilib.printRow({"Icon", "Description"})
   wikilib.printRow({"---", "---"})
+  local sQ = apiGetValue(API, "FLAG", "qref") and "`" or ""
   for ID = 1, #tT do local sL = tT[ID][4]
     local sI = common.stringTrim(tT[ID][1])
     local sD = common.stringTrim(tT[ID][3])
@@ -330,7 +362,7 @@ function wikilib.printTypeTable(API)
       sL = common.stringTrim(sL)
       local sR = sD:match("%[.+%]"); if(sR) then
         sR = sR:gsub("%[", "%%%["):gsub("%]", "%%%]")
-        sD = sD:gsub(sR, sR.."%("..sL.."%)")
+        sD = sD:gsub(sR, sR:gsub("%[", "%["..sQ):gsub("%]", sQ.."%]").."%("..sL.."%)")
       end
     end
     wikilib.printRow({toInsert(toImage(toRefer(sI))), sD})
@@ -346,11 +378,11 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     tC[ID] = common.stringCenter(tPool.cols[ID],tPool.size[ID],".")
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
-  local sM = wikiFormat.__msp
+  local sM = wikiFormat.msp
   local bIco = apiGetValue(API, "FLAG", "icon")
   local bErr = apiGetValue(API, "FLAG", "erro")
   local sObj = apiGetValue(API, "TYPE", "OBJ")
-  local sS, sA = wikiFormat.__tsp, wikiFormat.__asp
+  local sS, sA = wikiFormat.tsp, wikiFormat.asp
   local sV = wikilib.convTypeE2Description(API,"void")[1]
   for i, n in ipairs(tPool) do
     local arg, vars, obj = n:match("%(.-%)"), "", ""
@@ -368,20 +400,21 @@ function wikilib.printDescriptionTable(API, DSC, iN)
         vars = vars..sS..sbc
       end
     end
-      
+    local iM = 0
     for rmk, rmv in pairs(wikiMatch) do
-      if(n:find(rmk.."%(") and rmv.__top > 0) then
+      print(n, rmk.."(", rmv.__top)
+      if(n:find(rmk.."%(") and rmv.__top > 0) then iM = iM + 1
         if(not wikilib.isValidMatch(rmv)) then if(bErr) then
-            error("wikilib.printDescriptionTable: Duplicated function !") end
+          error("wikilib.printDescriptionTable: Duplicated function <"..rmv.__nam.."> !") end
         end
         local ret = ""; sorttMatch(rmv)
-        for ID = 1, rmv.__top do
-          local api = rmv[ID]; ret = api.ret
+        for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
+          print(api.com)
           if(not DSC[api.com]) then
-            common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row..">")
-            common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com..">")
+            common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
+            common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com.."> !")
             if(bErr) then
-              error("wikilib.printDescriptionTable: Description missing !") end
+              error("wikilib.printDescriptionTable: Description missing <"..api.com.."> !") end
           end
           if(n == api.com) then
             if(ret == "") then local cap = rmk:find("%L", 1)
@@ -402,7 +435,10 @@ function wikilib.printDescriptionTable(API, DSC, iN)
           end
         end
       end
-    end
+    end; if(iM == 0) then
+      common.logStatus("wikilib.printDescriptionTable: Description mismatch <"..n.."> !")
+      if(bErr) then error("wikilib.printDescriptionTable: Description mismatch <"..n.."> !") end
+    end  
   end
   io.write("\n")
 end
