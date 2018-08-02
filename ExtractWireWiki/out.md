@@ -1,14 +1,21 @@
 |................................Instance.creator................................|.Out.|.Description.|
 |--------------------------------------------------------------------------------|-----|-------------|
 |![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a])|![image][ref-e]|Duplicates the given track using the new position and angle|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece wuth position angle, mass, bodygroup code and color by model|
+|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by entity|
+|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by entity|
+|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color by entity|
+|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as numbers by entity|
+|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by model|
+|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by model|
+|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color by model|
+|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as numbers by model|
 
 |..................................Class.methods.................................|.Out.|.Description.|
 |--------------------------------------------------------------------------------|-----|-------------|
 |![image][ref-e]:trackasmlibApplyPhysicalAnchor(![image][ref-e],![image][ref-n],![image][ref-n])|![image][ref-e]|Anchors the track entity to a base entity with with additional weld `0/1` and no-collide `0/1` flag options available.|
-|![image][ref-e]:trackasmlibApplyPhysicalSettings(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-e]|Modifies track entity physical settings with physgun enabled, freeze, gravity toggle and surface material behavior|
-|![image][ref-e]:trackasmlibAttachAdditions(![image][ref-xxx])|![image][ref-n]|Attaches the track entity additoions when available|
-|![image][ref-e]:trackasmlibAttachBodyGroups(![image][ref-s])|![image][ref-n]|Attaches track piece bodygroups by providing selection code|
+|![image][ref-e]:trackasmlibApplyPhysicalSettings(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-e]|Modifies track entity physical settings with phys-gun enabled, freeze, gravity toggle and surface material behavior|
+|![image][ref-e]:trackasmlibAttachAdditions(![image][ref-xxx])|![image][ref-n]|Attaches the track entity additions when available|
+|![image][ref-e]:trackasmlibAttachBodyGroups(![image][ref-s])|![image][ref-n]|Attaches track piece body-groups by providing selection code|
 |![image][ref-e]:trackasmlibGenActivePointDSV(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s],![image][ref-s])|![image][ref-s]|Exports the track entity as external database record|
 |![image][ref-e]:trackasmlibGenActivePointINS(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-s]|Exports the track entity as internal database record|
 |![image][ref-e]:trackasmlibGetAdditionsCount(![image][ref-xxx])|![image][ref-n]|Returns record additions count by entity|
@@ -29,8 +36,8 @@
 |trackasmlibHasAdditions(![image][ref-s])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by model|
 |![image][ref-e]:trackasmlibIsPiece(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by entity|
 |trackasmlibIsPiece(![image][ref-s])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by model|
-|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Snaps a track with position, holder model, point `ID,` active radius, flatten, ignore type, position offset and angle offset|
-|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Snaps a track on the trace surface with poisition, angle, model, point `ID,` position offset and angle offset|
+|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Returns track entity snap position and angle array by holder model, point `ID,` active radius, flatten, ignore type, position offset and angle offset|
+|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Returns track surface snap position and angle array by position, angle, model, point `ID,` position offset and angle offset|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

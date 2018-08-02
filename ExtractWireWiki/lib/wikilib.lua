@@ -119,7 +119,7 @@ local function apiSortFinctionParam(a, b)
   return false
 end
 
-local function sorttMatch(tM)
+local function sortMatch(tM)
   table.sort(tM, apiSortFinctionParam)
 end
 
@@ -343,11 +343,12 @@ function wikilib.makeReturnValues(API)
   end; return tF
 end
 
-function wikilib.printMatchedAPI(API, sNam)
+function wikilib.printMatchedAPI(API, DSC, sNam)
   local tK = wikiMList; table.sort(tK)
   local sN = tostring(sNam or "DSC")
   for ID = 1, tK.__top do
-    common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"")
+    if(not DSC[tK[ID]]) then
+      common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
   end
 end
 
@@ -407,7 +408,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
         if(not wikilib.isValidMatch(rmv)) then if(bErr) then
           error("wikilib.printDescriptionTable: Duplicated function <"..rmv.__nam.."> !") end
         end
-        local ret = ""; sorttMatch(rmv)
+        local ret = ""; sortMatch(rmv)
         for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
           if(not DSC[api.com]) then
             common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")

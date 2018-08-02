@@ -9,9 +9,9 @@ local E2Helper = {}; E2Helper.Descriptions = {}
 local DSC = E2Helper.Descriptions
 
 DSC["trackasmlibApplyPhysicalAnchor(e:enn)"] = "Anchors the track entity to a base entity with with additional weld 0/1 and no-collide 0/1 flag options available."
-DSC["trackasmlibApplyPhysicalSettings(e:nnns)"] = "Modifies track entity physical settings with physgun enabled, freeze, gravity toggle and surface material behavior"
-DSC["trackasmlibAttachAdditions(e:)"] = "Attaches the track entity additoions when available"
-DSC["trackasmlibAttachBodyGroups(e:s)"] = "Attaches track piece bodygroups by providing selection code"
+DSC["trackasmlibApplyPhysicalSettings(e:nnns)"] = "Modifies track entity physical settings with phys-gun enabled, freeze, gravity toggle and surface material behavior"
+DSC["trackasmlibAttachAdditions(e:)"] = "Attaches the track entity additions when available"
+DSC["trackasmlibAttachBodyGroups(e:s)"] = "Attaches track piece body-groups by providing selection code"
 DSC["trackasmlibGenActivePointDSV(e:essnss)"] = "Exports the track entity as external database record"
 DSC["trackasmlibGenActivePointINS(e:essns)"] = "Exports the track entity as internal database record"
 DSC["trackasmlibGetAdditionsCount(e:)"] = "Returns record additions count by entity"
@@ -33,8 +33,14 @@ DSC["trackasmlibHasAdditions(s)"] = "Returns 1 when the record has additions and
 DSC["trackasmlibIsPiece(e:)"] = "Returns 1 when the record is actual track and 0 otherwise by entity"
 DSC["trackasmlibIsPiece(s)"] = "Returns 1 when the record is actual track and 0 otherwise by model"
 DSC["trackasmlibMakePiece(e:va)"] = "Duplicates the given track using the new position and angle"
-DSC["trackasmlibMakePiece(svansnnnn)"] = "Creates new track piece wuth position angle, mass, bodygroup code and color by model"
-DSC["trackasmlibSnapEntity(e:vsnnnnvv)"] = "Snaps a track with position, holder model, point ID, active radius, flatten, ignore type, position offset and angle offset"
-DSC["trackasmlibSnapNormal(vasnvv)"] = "Snaps a track on the trace surface with poisition, angle, model, point ID, position offset and angle offset"
-
+DSC["trackasmlibMakePiece(svansnnnn)"] = "Creates new track piece with position angle, mass, skin code and color by model"
+DSC["trackasmlibSnapEntity(e:vsnnnnvv)"] = "Returns track entity snap position and angle array by holder model, point ID, active radius, flatten, ignore type, position offset and angle offset"
+DSC["trackasmlibSnapNormal(vasnvv)"] = "Returns track surface snap position and angle array by position, angle, model, point ID, position offset and angle offset"
+DSC["trackasmlibMakePiece(e:van)"] = "Creates new track piece with position angle, mass by entity"
+DSC["trackasmlibMakePiece(e:vans)"] = "Creates new track piece with position angle, mass and skin code by entity"
+DSC["trackasmlibMakePiece(e:vansnnnn)"] = "Creates new track piece with position angle, mass, skin code and color by entity"
+DSC["trackasmlibMakePiece(e:vansv)"] = "Creates new track piece with position angle, mass, skin code and color as numbers by entity"
+DSC["trackasmlibMakePiece(svan)"] = "Creates new track piece with position angle, mass by model"
+DSC["trackasmlibMakePiece(svans)"] = "Creates new track piece with position angle, mass and skin code by model"
+DSC["trackasmlibMakePiece(svansv)"] = "Creates new track piece with position angle, mass, skin code and color as numbers by model"
 return DSC
