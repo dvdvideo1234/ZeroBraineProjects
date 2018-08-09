@@ -1,6 +1,9 @@
-require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/gmodlib")
-require("ZeroBraineProjects/dvdlualib/asmlib")
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+
+local common = require("common")
+require("../dvdlualib/gmodlib")
+require("../dvdlualib/asmlib")
+require("../dvdlualib/common")
 
 asmlib.InitBase("track", "assembly")
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
@@ -28,6 +31,42 @@ local data = asmlib.GetCache("TRACKASSEMBLY_PIECES")
 
 asmlib.ImportDSV("PIECES", true, "ex_")
 
-logTable(data, "CACHE")
+-- common.logTable(data, "CACHE")
 
+
+
+
+
+--[[
+common.logTable(asmlib.newSort1(data, {"Type", "Slot"}), "CACHE")
+common.logTable(asmlib.newSort2(data, {"Type", "Slot"}), "CACHE")
+
+local function quick(tA)
+  if(not asmlib.newSort1(unpack(tA))) then return 0 end
+  return 1
+end
+
+local function table1(tA)
+  if(not asmlib.newSort2(unpack(tA))) then return 0 end
+  return 1
+end
+
+local function table2(tA)
+  if(not asmlib.newSort3(unpack(tA))) then return 0 end
+  return 1
+end
+
+local stEstim = {
+  addEstim(quick , "quick"),
+  addEstim(table1, "table"),
+  addEstim(table2, "local")
+}
+
+local stCard = {
+  {{data, {"AAA", "Slot"}}  , 1 , "Speed", 10, 10, .2}
+}
+
+testPerformance(stCard,stEstim,nil,0.01)
+
+]]
 

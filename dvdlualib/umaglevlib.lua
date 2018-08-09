@@ -6,7 +6,7 @@
  * Location : lua/maglev/umaglevlib.lua
  * Defines  : A list of functions for initializing a maglev
 ]]--
-
+   
 if(SERVER) then
   AddCSLuaFile("maglev/umaglevlib.lua")
 end
