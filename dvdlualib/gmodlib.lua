@@ -1,4 +1,7 @@
+local common = require("common")
+
 local language = {__data = {}}
+local logStatus = common.logStatus
 
 local Msg      = print
 local __type   = type

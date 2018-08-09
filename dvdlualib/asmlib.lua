@@ -115,6 +115,7 @@ local tableEmpty              = table and table.Empty
 local tableMaxn               = table and table.maxn
 local tableGetKeys            = table and table.GetKeys
 local tableInsert             = table and table.insert
+local tableSort               = table and table.sort
 local debugGetinfo            = debug and debug.getinfo
 local stringUpper             = string and string.Explode
 local stringExplode           = string and string.Explode
@@ -251,12 +252,19 @@ function PrintArrLine(aTable,sName)
   print(Line.."}")
 end
 
-function DefaultString(sBase, sDefault)
+function DisableString(sBase, vDsb, vDef)
+  if(IsString(sBase)) then 
+    local sF, sD = sBase:sub(1,1), GetOpVar("OPSYM_DISABLE")
+    if(sF ~= sD and not IsEmptyString(sBase)) then
+      return sBase -- Not disabled or empty
+    elseif(sF == sD) then return vDsb end
+  end; return vDef
+end
+
+function DefaultString(sBase, sDef)
   if(IsString(sBase)) then
-    if(not IsEmptyString(sBase)) then return sBase end
-  end
-  if(IsString(sDefault)) then return sDefault end
-  return ""
+    if(not IsEmptyString(sBase)) then return sBase end end
+  if(IsString(sDef)) then return sDef end; return ""
 end
 
 function PrintPush(aTable,sName)
@@ -912,7 +920,7 @@ function InitBase(sName,sPurpose)
   SetOpVar("TOOLNAME_NU",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):upper())
   SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
   SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
-  SetOpVar("DIRPATH_BAS",("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Assembly")..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_BAS",("Assembly")..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_INS","exp"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("MISS_NOID","N")    -- No ID selected
@@ -1458,144 +1466,6 @@ function CreateTable(sTable,defTable,bDelete,bReload)
   else return StatusLog(false,"CreateTable: Wrong database mode <"..sModeDB..">") end
 end
 
-function InsertRecord(sTable,tData)
-  if(not IsExistent(sTable)) then
-    return StatusLog(false,"InsertRecord: Missing: Table name/values")
-  end
-  if(type(sTable) == "table") then
-    tData  = sTable
-    sTable = DefaultTable()
-    if(not (IsExistent(sTable) and sTable ~= "")) then
-      return StatusLog(false,"InsertRecord: Missing: Table default name for "..sTable)
-    end
-  end
-  if(not IsString(sTable)) then
-    return StatusLog(false,"InsertRecord: Missing: Table definition name "..tostring(sTable).." ("..type(sTable)..")")
-  end
-  local defTable = GetOpVar("DEFTABLE_"..sTable)
-  if(not defTable) then
-    return StatusLog(false,"InsertRecord: Missing: Table definition for "..sTable)
-  end
-  if(not defTable[1])  then
-    return StatusLog(false,"InsertRecord: Missing: Table definition is empty for "..sTable)
-  end
-  if(not tData)      then
-    return StatusLog(false,"InsertRecord: Missing: Data table for "..sTable)
-  end
-  if(not tData[1])   then
-    return StatusLog(false,"InsertRecord: Missing: Data table is empty for "..sTable)
-  end
-  local namTable = defTable.Name
-
-  if(sTable == "PIECES") then
-    tData[2] = StringDisable(tData[2],DefaultType(),"TYPE")
-    tData[3] = StringDisable(tData[3],ModelToName(tData[1]),"MODEL")
-  elseif(sTable == "PHYSPROPERTIES") then
-    tData[1] = StringDisable(tData[1],DefaultType(),"TYPE")
-  end
-
-  local sModeDB = GetOpVar("MODE_DATABASE")
-  if(sModeDB == "SQL") then
-    local Q = SQLBuildInsert(defTable,nil,tData)
-    if(not IsExistent(Q)) then return StatusLog(false,"InsertRecord: Build error: "..SQLBuildError()) end
-    local qRez = sql.Query(Q)
-    if(not qRez and IsBool(qRez)) then
-       return StatusLog(false,"InsertRecord: Failed to insert a record because of "
-              ..tostring(sql.LastError()).." Query ran <"..Q..">")
-    end
-    return true
-  elseif(sModeDB == "LUA") then
-    local snPrimayKey = MatchType(defTable,tData[1],1)
-    if(not IsExistent(snPrimayKey)) then -- If primary key becomes a number
-      return StatusLog(nil,"InsertRecord: Cannot match "
-                          ..sTable.." <"..tostring(tData[1]).."> to "
-                          ..defTable[1][1].." for "..tostring(snPrimayKey))
-    end
-    local Cache = libCache[namTable]
-    if(not IsExistent(Cache)) then return StatusLog(false,"InsertRecord: Cache not allocated for "..namTable) end
-    if(sTable == "PIECES") then
-      local tLine = Cache[snPrimayKey]
-      if(not tLine) then
-        Cache[snPrimayKey] = {}
-        tLine = Cache[snPrimayKey]
-      end
-      if(not IsExistent(tLine.Type)) then tLine.Type = tData[2] end
-      if(not IsExistent(tLine.Name)) then tLine.Name = tData[3] end
-      if(not IsExistent(tLine.Kept)) then tLine.Kept = 0        end
-      local nOffsID = MatchType(defTable,tData[4],4) -- LineID has to be set properly
-      if(not IsExistent(nOffsID)) then
-        return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[4]).."> to "
-                            ..defTable[4][1].." for "..tostring(snPrimayKey))
-      end
-      local stRezul = RegisterPOA(tLine,nOffsID,tData[5],tData[6],tData[7])
-      if(not IsExistent(stRezul)) then
-        return StatusLog(nil,"InsertRecord: Cannot process offset #"..tostring(nOffsID).." for "..tostring(snPrimayKey))
-      end
-      if(nOffsID > tLine.Kept) then tLine.Kept = nOffsID else
-        return StatusLog(nil,"InsertRecord: Offset #"..tostring(nOffsID).." sequentiality mismatch")
-      end
-    elseif(sTable == "ADDITIONS") then
-      local tLine = Cache[snPrimayKey]
-      if(not tLine) then
-        Cache[snPrimayKey] = {}
-        tLine = Cache[snPrimayKey]
-      end
-      if(not IsExistent(tLine.Kept)) then tLine.Kept = 0 end
-      local nCnt, sFld, nAddID = 2, "", MatchType(defTable,tData[4],4)
-      if(not IsExistent(nAddID)) then -- LineID has to be set properly
-        return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[4]).."> to "
-                            ..defTable[4][1].." for "..tostring(snPrimayKey))
-      end
-      tLine[nAddID] = {}
-      while(nCnt <= defTable.Size) do
-        sFld = defTable[nCnt][1]
-        tLine[nAddID][sFld] = MatchType(defTable,tData[nCnt],nCnt)
-        if(not IsExistent(tLine[nAddID][sFld])) then  -- ADDITIONS is full of numbers
-          return StatusLog(nil,"InsertRecord: Cannot match "
-                    ..sTable.." <"..tostring(tData[nCnt]).."> to "
-                    ..defTable[nCnt][1].." for "..tostring(snPrimayKey))
-        end
-        nCnt = nCnt + 1
-      end
-      tLine.Kept = nAddID
-    elseif(sTable == "PHYSPROPERTIES") then
-      local sKeyName = GetOpVar("HASH_PROPERTY_NAMES")
-      local sKeyType = GetOpVar("HASH_PROPERTY_TYPES")
-      local tTypes   = Cache[sKeyType]
-      local tNames   = Cache[sKeyName]
-      -- Handle the Type
-      if(not tTypes) then
-        Cache[sKeyType] = {}
-        tTypes = Cache[sKeyType]
-        tTypes.Kept = 0
-      end
-      if(not tNames) then
-        Cache[sKeyName] = {}
-        tNames = Cache[sKeyName]
-      end
-      local iNameID = MatchType(defTable,tData[2],2)
-      if(not IsExistent(iNameID)) then -- LineID has to be set properly
-        return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[2]).."> to "
-                            ..defTable[2][1].." for "..tostring(snPrimayKey))
-      end
-      if(not IsExistent(tNames[snPrimayKey])) then
-        -- If a new type is inserted
-        tTypes.Kept = tTypes.Kept + 1
-        tTypes[tTypes.Kept] = snPrimayKey
-        tNames[snPrimayKey] = {}
-        tNames[snPrimayKey].Kept = 0
-      end -- MatchType crashes only on numbers
-      tNames[snPrimayKey][iNameID] = MatchType(defTable,tData[3],3)
-      tNames[snPrimayKey].Kept = iNameID
-    else
-      return StatusLog(false,"InsertRecord: No settings for table "..sTable)
-    end
-  end
-end
-
 local function ReloadPOA(nXP,nYY,nZR,nSX,nSY,nSZ,nSD)
   local arPOA = GetOpVar("ARRAY_DECODEPOA")
         arPOA[1] = tonumber(nXP) or 0
@@ -1705,57 +1575,6 @@ local function RegisterPOA(stPiece, ivID, sP, sO, sA)
   return tOffs
 end
 
-local function Qsort(Data,Lo,Hi)
-  if(Lo and Hi and Lo > 0 and Lo < Hi) then
-    local Mid = mathRandom(Hi-(Lo-1))+Lo-1
-    Data[Lo], Data[Mid] = Data[Mid], Data[Lo]
-    local Vmid = Data[Lo].Val
-          Mid  = Lo
-    local Cnt  = Lo + 1
-    while(Cnt <= Hi)do
-      if(Data[Cnt].Val < Vmid) then
-        Mid = Mid + 1
-        Data[Mid], Data[Cnt] = Data[Cnt], Data[Mid]
-      end
-      Cnt = Cnt + 1
-    end
-    Data[Lo], Data[Mid] = Data[Mid], Data[Lo]
-    Qsort(Data,Lo,Mid-1)
-    Qsort(Data,Mid+1,Hi)
-  end
-end
-
-local function Ssort(Data,Lo,Hi)
-  if(Lo and Hi and Lo > 0 and Lo < Hi) then
-    local Ind = 1
-    local Sel
-    while(Data[Ind]) do
-      Sel = Ind + 1
-      while(Data[Sel]) do
-        if(Data[Sel].Val <= Data[Ind].Val) then
-          Data[Ind], Data[Sel] = Data[Sel], Data[Ind]
-        end
-        Sel = Sel + 1
-      end
-      Ind = Ind + 1
-    end
-  end
-end
-
-local function Bsort(Data,Lo,Hi)
-  local Ind
-  local End = false
-  while(not End) do
-    End = true
-    for Ind = Lo, (Hi-1), 1 do
-      if(Data[Ind].Val > Data[Ind+1].Val) then
-        End = false
-        Data[Ind], Data[Ind+1] = Data[Ind+1], Data[Ind]
-      end
-    end
-  end
-end
-
 function oldSort(tTable,tKeys,tFields,sMethod)
   local Match = {}
   local tKeys = tKeys or {}
@@ -1856,137 +1675,150 @@ function Sort(tTable,tKeys,tFields)
   return Match
 end
 
-function InsertRecord(sTable,tData)
+function InsertRecord(sTable,arLine)
   if(not IsExistent(sTable)) then
-    return StatusLog(false,"InsertRecord: Missing: Table name/values")
-  end
+    return StatusLog(false,"InsertRecord: Missing table name/values") end
   if(type(sTable) == "table") then
-    tData  = sTable
-    sTable = DefaultTable()
+    arLine, sTable = sTable, DefaultTable()
     if(not (IsExistent(sTable) and sTable ~= "")) then
-      return StatusLog(false,"InsertRecord: Missing: Table default name for "..sTable)
-    end
+      return StatusLog(false,"InsertRecord: Missing table default name") end
   end
   if(not IsString(sTable)) then
-    return StatusLog(false,"InsertRecord: Missing: Table definition name "..tostring(sTable).." ("..type(sTable)..")")
+    return StatusLog(false,"InsertRecord: Table name {"..type(sTable).."}<"..tostring(sTable).."> not string") end
+  local defTable = GetOpVar("DEFTABLE_"..sTable); if(not defTable) then
+    return StatusLog(false,"InsertRecord: Missing table definition for "..sTable) end
+  if(not defTable[1]) then
+    return StatusLog(false,"InsertRecord: Missing table definition is empty for "..sTable) end
+  if(not arLine) then
+    return StatusLog(false,"InsertRecord: Missing data table for "..sTable) end
+  if(not arLine[1])   then
+    for key, val in pairs(arLine) do
+      LogInstance("PK data ["..tostring(key).."] = <"..tostring(val)..">") end
+    return StatusLog(false,"InsertRecord: Missing PK for "..sTable)
   end
-  local defTable = GetOpVar("DEFTABLE_"..sTable)
-  if(not defTable) then
-    return StatusLog(false,"InsertRecord: Missing: Table definition for "..sTable)
-  end
-  if(not defTable[1])  then
-    return StatusLog(false,"InsertRecord: Missing: Table definition is empty for "..sTable)
-  end
-  if(not tData)      then
-    return StatusLog(false,"InsertRecord: Missing: Data table for "..sTable)
-  end
-  if(not tData[1])   then
-    return StatusLog(false,"InsertRecord: Missing: Data table is empty for "..sTable)
-  end
-  local namTable = defTable.Name
 
   if(sTable == "PIECES") then
-    tData[2] = StringDisable(tData[2],DefaultType(),"TYPE")
-    tData[3] = StringDisable(tData[3],ModelToName(tData[1]),"MODEL")
+    local trClass = GetOpVar("TRACE_CLASS")
+    arLine[2] = DisableString(arLine[2],DefaultType(),"TYPE")
+    arLine[3] = DisableString(arLine[3],ModelToName(arLine[1]),"MODEL")
+    arLine[8] = DisableString(arLine[8],"NULL","NULL")
+    print("CLASS: ", arLine[8])
+    if(not((arLine[8] == "NULL") or trClass[arLine[8]] or IsEmptyString(arLine[8]))) then
+      trClass[arLine[8]] = true -- Register the class provided
+      LogInstance("InsertRecord: Register trace <"..tostring(arLine[8]).."@"..arLine[1]..">")
+    end -- Add the special class to the trace list
   elseif(sTable == "PHYSPROPERTIES") then
-    tData[1] = StringDisable(tData[1],DefaultType(),"TYPE")
+    arLine[1] = DisableString(arLine[1],DefaultType(),"TYPE")
   end
 
   local sModeDB = GetOpVar("MODE_DATABASE")
-  if(sModeDB == "SQL") then
-    local Q = SQLBuildInsert(defTable,nil,tData)
-    if(not IsExistent(Q)) then return StatusLog(false,"InsertRecord: Build error: "..SQLBuildError()) end
-    local qRez = sql.Query(Q)
+  if(sModeDB == "SQL") then local Q
+    for iID = 1, defTable.Size, 1 do
+      arLine[iID] = MatchType(defTable,arLine[iID],iID,true) end
+    if(sTable == "PIECES") then
+      Q = SQLCacheStmt("stmtInsertPieces", nil, unpack(arLine))
+      if(not Q) then
+        local sStmt = SQLBuildInsert(defTable,nil,{"%s","%s","%s","%d","%s","%s","%s","%s"})
+        if(not IsExistent(sStmt)) then
+          return StatusLog(nil,"InsertRecord: Build statement <"..sTable.."> failed") end
+        Q = SQLCacheStmt("stmtInsertPieces", sStmt, unpack(arLine)) end
+    elseif(sTable == "ADDITIONS") then
+      Q = SQLCacheStmt("stmtInsertAdditions", nil, unpack(arLine))
+      if(not Q) then
+        local sStmt = SQLBuildInsert(defTable,nil,{"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"})
+        if(not IsExistent(sStmt)) then
+          return StatusLog(nil,"InsertRecord: Build statement <"..sTable.."> failed") end
+        Q = SQLCacheStmt("stmtInsertAdditions", sStmt, unpack(arLine)) end
+    elseif(sTable == "PHYSPROPERTIES") then
+      Q = SQLCacheStmt("stmtInsertPhysproperties", nil, unpack(arLine))
+      if(not Q) then
+        local sStmt = SQLBuildInsert(defTable,nil,{"%s","%d","%s"})
+        if(not IsExistent(sStmt)) then
+          return StatusLog(nil,"InsertRecord: Build statement <"..sTable.."> failed") end
+        Q = SQLCacheStmt("stmtInsertPhysproperties", sStmt, unpack(arLine)) end
+    else return StatusLog(false, "InsertRecord: Missed query pattern for <"..sTable..">") end
+    if(not IsExistent(Q)) then
+      return StatusLog(false, "InsertRecord: Internal cache error <"..sTable..">")end
+    local qRez = sqlQuery(Q)
     if(not qRez and IsBool(qRez)) then
-       return StatusLog(false,"InsertRecord: Failed to insert a record because of "
-              ..tostring(sql.LastError()).." Query ran <"..Q..">")
-    end
+       return StatusLog(false,"InsertRecord: Failed to insert a record because of <"
+              ..sqlLastError().."> Query ran <"..Q..">") end
     return true
   elseif(sModeDB == "LUA") then
-    local snPrimayKey = MatchType(defTable,tData[1],1)
-    if(not IsExistent(snPrimayKey)) then -- If primary key becomes a number
-      return StatusLog(nil,"InsertRecord: Cannot match "
-                          ..sTable.." <"..tostring(tData[1]).."> to "
-                          ..defTable[1][1].." for "..tostring(snPrimayKey))
-    end
-    local Cache = libCache[namTable]
-    if(not IsExistent(Cache)) then return StatusLog(false,"InsertRecord: Cache not allocated for "..namTable) end
+    local snPrimaryKey = MatchType(defTable,arLine[1],1)
+    if(not IsExistent(snPrimaryKey)) then -- If primary key becomes a number
+      return StatusLog(nil,"InsertRecord: Cannot match primary key "
+                          ..sTable.." <"..tostring(arLine[1]).."> to "
+                          ..defTable[1][1].." for "..tostring(snPrimaryKey)) end
+    local tCache = libCache[defTable.Name]
+    if(not IsExistent(tCache)) then
+      return StatusLog(false,"InsertRecord: Cache not allocated for "..defTable.Name) end
     if(sTable == "PIECES") then
-      local tLine = Cache[snPrimayKey]
-      if(not tLine) then
-        Cache[snPrimayKey] = {}
-        tLine = Cache[snPrimayKey]
-      end
-      if(not IsExistent(tLine.Type)) then tLine.Type = tData[2] end
-      if(not IsExistent(tLine.Name)) then tLine.Name = tData[3] end
-      if(not IsExistent(tLine.Kept)) then tLine.Kept = 0        end
-      local nOffsID = MatchType(defTable,tData[4],4) -- LineID has to be set properly
+      local stData = tCache[snPrimaryKey]
+      if(not stData) then
+        tCache[snPrimaryKey] = {}; stData = tCache[snPrimaryKey] end
+      if(not IsExistent(stData.Type)) then stData.Type = arLine[2] end
+      if(not IsExistent(stData.Name)) then stData.Name = arLine[3] end
+      if(not IsExistent(stData.Unit)) then stData.Unit = arLine[8] end
+      if(not IsExistent(stData.Kept)) then stData.Kept = 0        end
+      if(not IsExistent(stData.Slot)) then stData.Slot = snPrimaryKey end
+      local nOffsID = MatchType(defTable,arLine[4],4) -- LineID has to be set properly
       if(not IsExistent(nOffsID)) then
         return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[4]).."> to "
-                            ..defTable[4][1].." for "..tostring(snPrimayKey))
+                            ..sTable.." <"..tostring(arLine[4]).."> to "
+                            ..defTable[4][1].." for "..tostring(snPrimaryKey))
       end
-      local stRezul = RegisterPOA(tLine,nOffsID,tData[5],tData[6],tData[7])
+      local stRezul = RegisterPOA(stData,nOffsID,arLine[5],arLine[6],arLine[7])
       if(not IsExistent(stRezul)) then
-        return StatusLog(nil,"InsertRecord: Cannot process offset #"..tostring(nOffsID).." for "..tostring(snPrimayKey)) end
-      if(nOffsID > tLine.Kept) then tLine.Kept = nOffsID else
-        return StatusLog(nil,"InsertRecord: Offset #"..tostring(nOffsID).." sequentiality mismatch")
-      end
+        return StatusLog(nil,"InsertRecord: Cannot process offset #"..tostring(nOffsID).." for "..tostring(snPrimaryKey)) end
+      if(nOffsID > stData.Kept) then stData.Kept = nOffsID else
+        return StatusLog(nil,"InsertRecord: Offset #"..tostring(nOffsID).." sequential mismatch") end
     elseif(sTable == "ADDITIONS") then
-      local tLine = Cache[snPrimayKey]
-      if(not tLine) then
-        Cache[snPrimayKey] = {}
-        tLine = Cache[snPrimayKey]
-      end
-      if(not IsExistent(tLine.Kept)) then tLine.Kept = 0 end
-      local nCnt, sFld, nAddID = 2, "", MatchType(defTable,tData[4],4)
+      local stData = tCache[snPrimaryKey]
+      if(not stData) then
+        tCache[snPrimaryKey] = {}; stData = tCache[snPrimaryKey] end
+      if(not IsExistent(stData.Kept)) then stData.Kept = 0 end
+      if(not IsExistent(stData.Slot)) then stData.Slot = snPrimaryKey end
+      local nCnt, sFld, nAddID = 2, "", MatchType(defTable,arLine[4],4)
       if(not IsExistent(nAddID)) then -- LineID has to be set properly
         return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[4]).."> to "
-                            ..defTable[4][1].." for "..tostring(snPrimayKey))
-      end
-      tLine[nAddID] = {}
+                            ..sTable.." <"..tostring(arLine[4]).."> to "
+                            ..defTable[4][1].." for "..tostring(snPrimaryKey)) end
+      stData[nAddID] = {}
       while(nCnt <= defTable.Size) do
         sFld = defTable[nCnt][1]
-        tLine[nAddID][sFld] = MatchType(defTable,tData[nCnt],nCnt)
-        if(not IsExistent(tLine[nAddID][sFld])) then  -- ADDITIONS is full of numbers
+        stData[nAddID][sFld] = MatchType(defTable,arLine[nCnt],nCnt)
+        if(not IsExistent(stData[nAddID][sFld])) then  -- ADDITIONS is full of numbers
           return StatusLog(nil,"InsertRecord: Cannot match "
-                    ..sTable.." <"..tostring(tData[nCnt]).."> to "
-                    ..defTable[nCnt][1].." for "..tostring(snPrimayKey))
-        end
+                    ..sTable.." <"..tostring(arLine[nCnt]).."> to "
+                    ..defTable[nCnt][1].." for "..tostring(snPrimaryKey)) end
         nCnt = nCnt + 1
-      end
-      tLine.Kept = nAddID
+      end; stData.Kept = nAddID
     elseif(sTable == "PHYSPROPERTIES") then
       local sKeyName = GetOpVar("HASH_PROPERTY_NAMES")
       local sKeyType = GetOpVar("HASH_PROPERTY_TYPES")
-      local tTypes   = Cache[sKeyType]
-      local tNames   = Cache[sKeyName]
+      local tTypes   = tCache[sKeyType]
+      local tNames   = tCache[sKeyName]
       -- Handle the Type
       if(not tTypes) then
-        Cache[sKeyType] = {}
-        tTypes = Cache[sKeyType]
-        tTypes.Kept = 0
-      end
+        tCache[sKeyType] = {}; tTypes = tCache[sKeyType]; tTypes.Kept = 0 end
       if(not tNames) then
-        Cache[sKeyName] = {}
-        tNames = Cache[sKeyName]
-      end
-      local iNameID = MatchType(defTable,tData[2],2)
+        tCache[sKeyName] = {}; tNames = tCache[sKeyName] end
+      local iNameID = MatchType(defTable,arLine[2],2)
       if(not IsExistent(iNameID)) then -- LineID has to be set properly
         return StatusLog(nil,"InsertRecord: Cannot match "
-                            ..sTable.." <"..tostring(tData[2]).."> to "
-                            ..defTable[2][1].." for "..tostring(snPrimayKey))
-      end
-      if(not IsExistent(tNames[snPrimayKey])) then
+                            ..sTable.." <"..tostring(arLine[2]).."> to "
+                            ..defTable[2][1].." for "..tostring(snPrimaryKey)) end
+      if(not IsExistent(tNames[snPrimaryKey])) then
         -- If a new type is inserted
         tTypes.Kept = tTypes.Kept + 1
-        tTypes[tTypes.Kept] = snPrimayKey
-        tNames[snPrimayKey] = {}
-        tNames[snPrimayKey].Kept = 0
+        tTypes[tTypes.Kept] = snPrimaryKey
+        tNames[snPrimaryKey] = {}
+        tNames[snPrimaryKey].Kept = 0
+        tNames[snPrimaryKey].Slot = snPrimaryKey
       end -- MatchType crashes only on numbers
-      tNames[snPrimayKey][iNameID] = MatchType(defTable,tData[3],3)
-      tNames[snPrimayKey].Kept = iNameID
+      tNames[snPrimaryKey].Kept = iNameID
+      tNames[snPrimaryKey][iNameID] = MatchType(defTable,arLine[3],3)
     else
       return StatusLog(false,"InsertRecord: No settings for table "..sTable)
     end
@@ -2714,6 +2546,13 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
   return StatusLog(true,"RegisterDSV("..sPref.."): Register")
 end
 
+--[[
+ * Import table data from DSV database created earlier
+ * sTable > Definition KEY to import
+ * bComm  > Calls @InsertRecord(sTable,arLine) when set to true
+ * sPref  > Prefix used on importing ( if any )
+ * sDelim > Delimiter separating the values
+]]--
 function ImportDSV(sTable, bComm, sPref, sDelim)
   local fPref = tostring(sPref or GetInstPref())
   if(not IsString(sTable)) then
@@ -2728,12 +2567,14 @@ function ImportDSV(sTable, bComm, sPref, sDelim)
   local symOff, sDelim = GetOpVar("OPSYM_DISABLE"), tostring(sDelim or "\t"):sub(1,1)
   local sLine, isEOF, nLen = "", false, defTable.Name:len()
   while(not isEOF) do sLine, isEOF = GetStringFile(F)
-    if((sLine:sub(1,1) ~= symOff) and (sLine:sub(1,nLen) == defTable.Name)) then
-      local tData = sDelim:Explode(sLine:sub(nLen+2,-1))
-      for iCnt = 1, defTable.Size do
-        tData[iCnt] = StripValue(tData[iCnt]) end
-      if(bComm) then InsertRecord(sTable, tData) end
-    end; sLine = ""
+    if((not IsEmptyString(sLine)) and (sLine:sub(1,1) ~= symOff)) then
+      if(sLine:sub(1,nLen) == defTable.Name) then
+        local tData = sDelim:Explode(sLine:sub(nLen+2,-1))
+        for iCnt = 1, defTable.Size do
+          tData[iCnt] = StripValue(tData[iCnt]) end
+        if(bComm) then InsertRecord(sTable, tData) end
+      end
+    end
   end; F:Close(); return StatusLog(true, "ImportDSV("..fPref.."@"..sTable.."): Success")
 end
 
@@ -2903,3 +2744,27 @@ function SettingsLogs(sHash)
     end; S:Close(); return StatusLog(true,"SettingsLogs("..sKey.."): Success <"..fName..">")
   else return StatusLog(true,"SettingsLogs("..sKey.."): Missing <"..fName..">") end
 end
+
+--------------- TEST ------------------
+
+function DisableString1(sBase, anyDisable, anyDefault)
+  if(IsString(sBase)) then
+    local sFirst = sBase:sub(1,1)
+    if(sFirst ~= GetOpVar("OPSYM_DISABLE") and not IsEmptyString(sBase)) then
+      return sBase
+    elseif(sFirst == GetOpVar("OPSYM_DISABLE")) then
+      return anyDisable
+    end
+  end; return anyDefault
+end
+
+function DisableString2(sBase, vDsb, vDef)
+  if(IsString(sBase)) then 
+    local sF, sD = sBase:sub(1,1), GetOpVar("OPSYM_DISABLE")
+    if(sF ~= sD and not IsEmptyString(sBase)) then
+      return sBase -- Not disabled or empty
+    elseif(sF == sD) then return vDsb end
+  end; return vDef
+end
+
+
