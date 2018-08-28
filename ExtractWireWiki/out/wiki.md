@@ -36,8 +36,8 @@
 |trackasmlibHasAdditions(![image][ref-s])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by model|
 |![image][ref-e]:trackasmlibIsPiece(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by entity|
 |trackasmlibIsPiece(![image][ref-s])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by model|
-|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Returns track entity snap position and angle array by holder model, point `ID,` active radius, flatten, ignore type, position offset and angle offset|
-|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-v])|![image][ref-r]|Returns track surface snap position and angle array by position, angle, model, point `ID,` position offset and angle offset|
+|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track entity snap position and angle array by holder model, point `ID,` active radius, flatten, ignore type, position offset and angle offset|
+|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track surface snap position and angle array by position, angle, model, point `ID,` position offset and angle offset|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

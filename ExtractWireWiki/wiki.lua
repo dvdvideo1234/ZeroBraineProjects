@@ -8,7 +8,7 @@ local DSC = require(sProg.."api/cl_"..sExp)
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
-local f, s = io.open(sProg.."out.md", "wb")
+local f, s = io.open(sProg.."out/wiki.md", "wb")
 if(f) then io.output(f)
   wikilib.setInternalType(API)
   wikilib.updateAPI(API, DSC)
