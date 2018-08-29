@@ -443,6 +443,91 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   io.write("\n")
 end
 
+local wikiFolder = {}
+      wikiFolder.__base = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/ExtractWireWiki/"
+      wikiFolder.__temp = "temp/"
+      wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
+      wikiFolder.__read = "*line"
+      wikiFolder.__drof = "Directory of "
+      wikiFolder.__fdat = "%d%d%-%d%d%-%d%d%d%d%s+%d%d:%d%d"
+      wikiFolder.__idir = "<DIR>"
+      wikiFolder.__pdir = {["."] = true, [".."] = true}
+      wikiFolder.__fcmd = "cd %s && dir > %s"
+      wikiFolder.__ranm = 60 -- Random string file name
+      wikiFolder.__syms = {{"└", "├", "─", "│"}}
+      wikiFolder.__drem = "(.*)/"
+      wikiFolder.__dept = 2
+      wikiFolder.__flag = {
+        prnt = false, -- Show the parent directory in the tree
+        hide = false, -- Show hidden directories
+        size = false, -- Show file size
+        hash = false  -- So directory hash address
+      }
+      
+      
+function wikilib.readFolderStructure(sP, iV)
+  local iT = (tonumber(iV) or 0) + 1
+  local sR = common.randomGetString(wikiFolder.__ranm)
+  local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
+  local nT = wikiFolder.__base..wikiFolder.__temp..vT..".txt"
+  os.execute(wikiFolder.__fcmd:format(sP, nT))
+  local fD = io.open(nT, "rb"); if(not fD) then
+    common.logStatus("wikilib.readFolder: Open error <"..nT..">", nil)
+    error("wikilib.readFolder: Open error <"..nT..">")
+  end
+  local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
+    while(sL) do sL = common.stringTrim(sL)
+    if(sL:sub(1, 13) == wikiFolder.__drof) then
+      tT.base = sL:sub(14, -1):gsub("\\","/")
+    elseif(sL:sub(1, 17):match(wikiFolder.__fdat)) then
+      local sS = common.stringTrim(sL:sub(18, 36))
+      local sN = common.stringTrim(sL:sub(37, -1))
+      if(sS == wikiFolder.__idir and wikiFolder.__pdir[sN]) then
+        if(tF.prnt) then
+          if(not tT.cont) then tT.cont = {} end; iD = iD + 1
+          tT.cont[iD] = {size = sS, name = sN}
+        end
+      elseif(sN:sub(1,1) == ".") then
+        if(tF.hide) then
+          if(not tT.cont) then tT.cont = {} end; iD = iD + 1
+          tT.cont[iD] = {size = sS, name = sN}
+        end
+      else
+        if(not tT.cont) then tT.cont = {} end; iD = iD + 1
+        tT.cont[iD] = {size = sS, name = sN}
+        local tP = tT.cont[iD]
+        if(not tP.root and tP.size == wikiFolder.__idir) then
+          tP.root = wikilib.readFolderStructure(sP.."/"..tP.name, iT)
+        end
+      end
+    end
+    sL = fD:read(wikiFolder.__read)
+  end; fD:close(); os.remove(nT) return tT
+end
+
+function wikilib.drawFolderTreeASCII(tP, iR, sR)
+  local sR, tF = tostring(sR or ""), wikiFolder.__flag
+  local iR = common.getClamp(tonumber(iR) or 0, 0)
+  local nS, nE = tP.base:find(wikiFolder.__drem)
+  if(iR == 0) then io.write(sR..tP.base:sub(nE, -1)); io.write("\n") end
+  local iI = wikiFolder.__dept
+  local tC, tS = tP.cont, wikiFolder.__syms[1]
+  for iD = 1, #tC do local vC = tC[iD]
+    if(vC.root) then
+      local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
+      local sD = (tC[iD+1] and tS[4] or " ")..(" "):rep(iI)
+      local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
+      io.write(sR..sX..vC.name..sS); io.write("\n")
+      wikilib.drawFolderTreeASCII(vC.root, iR+1, sR..sD)
+    else
+      local sS = (tF.size and (" ["..vC.size.." kB]") or "")
+      local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
+      io.write(sR..sX..vC.name..sS); io.write("\n")
+    end
+  end
+end
+
+
 wikilib.common = common
 
 return wikilib
