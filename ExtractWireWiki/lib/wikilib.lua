@@ -470,15 +470,15 @@ local wikiFolder = {}
       }
       
       
-function wikilib.readFolderStructure(sP, iV)
+function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
   local sR = common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__base..wikiFolder.__temp..vT..".txt"
   os.execute(wikiFolder.__fcmd:format(sP, nT))
   local fD = io.open(nT, "rb"); if(not fD) then
-    common.logStatus("wikilib.readFolder: Open error <"..nT..">", nil)
-    error("wikilib.readFolder: Open error <"..nT..">")
+    common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
+    error("wikilib.folderReadStructure: Open error <"..nT..">")
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
     while(sL) do sL = common.stringTrim(sL)
@@ -502,7 +502,7 @@ function wikilib.readFolderStructure(sP, iV)
         tT.cont[iD] = {size = sS, name = sN}
         local tP = tT.cont[iD]
         if(not tP.root and tP.size == wikiFolder.__idir) then
-          tP.root = wikilib.readFolderStructure(sP.."/"..tP.name, iT)
+          tP.root = wikilib.folderReadStructure(sP.."/"..tP.name, iT)
         end
       end
     end
@@ -510,23 +510,22 @@ function wikilib.readFolderStructure(sP, iV)
   end; fD:close(); os.remove(nT) return tT
 end
 
-function wikilib.drawFolderTreeASCII(tP, vA, vR, sR)
+function wikilib.folderDrawTree(tP, vA, vR, sR)
   local tS = wikiFolder.__syms
   local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local iR = common.getClamp(tonumber(vR) or 0, 0)
-  local nS, nE = tP.base:find(wikiFolder.__drem)
-  local iI, tC = wikiFolder.__dept, tP.cont; tS = tS[iA]
+  local nS, nE = tP.base:find(wikiFolder.__drem); tS = tS[iA]
+  local iI, tC = wikiFolder.__dept, common.sortTable(tP.cont, {"name"}, true)
   if(iR == 0) then local sB = tostring(tS[5] or "/")
-    io.write(sB..sR..tP.base:sub(nE+1, -1)); io.write("\n")
-  end
-  for iD = 1, #tC do local vC = tC[iD]
+    io.write(sB..sR..tP.base:sub(nE+1, -1)); io.write("\n") end
+  for iD = 1, tC.__top do local vC = tP.cont[tC[iD].__key]
     if(vC.root) then
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or " ")..(" "):rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       io.write(sR..sX..vC.name..sS); io.write("\n")
-      wikilib.drawFolderTreeASCII(vC.root, iA, iR+1, sR..sD)
+      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD)
     else
       local sS = (tF.size and (" ["..vC.size.." kB]") or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)

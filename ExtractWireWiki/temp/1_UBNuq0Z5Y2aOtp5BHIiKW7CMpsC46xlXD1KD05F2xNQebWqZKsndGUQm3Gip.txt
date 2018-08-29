@@ -1,0 +1,16 @@
+ Volume in drive E is Data
+ Volume Serial Number is DE34-ED00
+
+ Directory of E:\Documents\Lua-Projs\SVN\ControlSystemsE2
+
+28-08-2018  17:37    <DIR>          .
+28-08-2018  17:37    <DIR>          ..
+16-07-2018  09:24               324 .gitignore
+28-08-2018  17:38               636 aaaaaaa.txt
+31-07-2018  14:34    <DIR>          data
+16-07-2018  09:24            35 147 license
+16-07-2018  09:24    <DIR>          lua
+16-07-2018  09:24               282 readme.md
+16-07-2018  11:37             1 375 workshop_publish.bat
+               5 File(s)         37 764 bytes
+               4 Dir(s)  181 727 248 384 bytes free

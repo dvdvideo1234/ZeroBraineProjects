@@ -1,7 +1,7 @@
-local common = require("common")
+require("dvdlualib/common")
 
 local language = {__data = {}}
-local logStatus = common.logStatus
+local logStatus = print
 
 local Msg      = print
 local __type   = type

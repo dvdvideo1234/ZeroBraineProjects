@@ -62,7 +62,7 @@ local include                 = include
 local IsValid                 = IsValid
 local Material                = Material
 local require                 = require
-local Time                    = SysTime
+local Time                    = os.clock
 local tonumber                = tonumber
 local tostring                = tostring
 local GetConVar               = GetConVar
@@ -899,20 +899,30 @@ function InitBase(sName,sPurpose)
     return StatusPrint(false,"InitBase: Name invalid <"..sName..">") end
   if(IsEmptyString(sPurpose) or tonumber(sPurpose:sub(1,1))) then
     return StatusPrint(false,"InitBase: Purpose invalid <"..sPurpose..">") end
+  SetOpVar("TIME_INIT",Time())
   SetOpVar("LOG_MAXLOGS",0)
   SetOpVar("LOG_CURLOGS",0)
-  SetOpVar("DELAY_FREEZE",0.01)
-  SetOpVar("LOG_LOGFILE","")
-  SetOpVar("LOG_LOGLAST","")
   SetOpVar("LOG_SKIP",{})
   SetOpVar("LOG_ONLY",{})
+  SetOpVar("LOG_LOGFILE","")
+  SetOpVar("LOG_LOGLAST","")
   SetOpVar("MAX_ROTATION",360)
+  SetOpVar("DELAY_FREEZE",0.01)
+  SetOpVar("ANG_ZERO",Angle())
+  SetOpVar("VEC_ZERO",Vector())
+  SetOpVar("VEC_FW",Vector(1,0,0))
+  SetOpVar("VEC_RG",Vector(0,-1,1))
+  SetOpVar("VEC_UP",Vector(0,0,1))
   SetOpVar("OPSYM_DISABLE","#")
   SetOpVar("OPSYM_REVSIGN","@")
   SetOpVar("OPSYM_DIVIDER","_")
   SetOpVar("OPSYM_DIRECTORY","/")
   SetOpVar("OPSYM_SEPARATOR",",")
+  SetOpVar("EPSILON_ZERO", 1e-5)
+  SetOpVar("COLOR_CLAMP", {0, 255})
   SetOpVar("GOLDEN_RATIO",1.61803398875)
+  SetOpVar("DATE_FORMAT","%d-%m-%y")
+  SetOpVar("TIME_FORMAT","%H:%M:%S")
   SetOpVar("NAME_INIT",sName:lower())
   SetOpVar("NAME_PERP",sPurpose:lower())
   SetOpVar("NAME_LIBRARY", GetOpVar("NAME_INIT").."asmlib")
@@ -920,21 +930,19 @@ function InitBase(sName,sPurpose)
   SetOpVar("TOOLNAME_NU",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):upper())
   SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
   SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
-  SetOpVar("DIRPATH_BAS",("Assembly")..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_INS","exp"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("MISS_NOID","N")    -- No ID selected
   SetOpVar("MISS_NOAV","N/A")  -- Not Available
   SetOpVar("MISS_NOMD","X")    -- No model
   SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
-  SetOpVar("LOCALIFY_TABLE",{})
-  SetOpVar("LOCALIFY_AUTO","en")
-  SetOpVar("MODELNAM_FILE","%.mdl")
-  SetOpVar("MODELNAM_FUNC",function(x) return " "..x:sub(2,2):upper() end)
-  SetOpVar("QUERY_STORE", {})
-  SetOpVar("TABLE_BORDERS",{})
-    SetOpVar("STRUCT_SPAWN_KEYS",{
-      {"--- Origin ---", nil },
+  if(CLIENT) then
+    SetOpVar("LOCALIFY_AUTO","en")
+    SetOpVar("LOCALIFY_TABLE",{})
+    SetOpVar("TABLE_CATEGORIES",{})
+    SetOpVar("STRUCT_SPAWN",{
+      {"--- Origin ---"},
       {"F"     ,"VEC", "Forward direction"},
       {"R"     ,"VEC", "Right direction"},
       {"U"     ,"VEC", "Up direction"},
@@ -943,54 +951,41 @@ function InitBase(sName,sPurpose)
       {"SPos"  ,"VEC", "Spawn position"},
       {"SAng"  ,"ANG", "Spawn angles"},
       {"RLen"  ,"FLT", "Active radius"},
-      {"--- Holder ---", nil },
+      {"--- Holder ---"},
       {"HID"   ,"INT", "Point ID"},
       {"HPnt"  ,"VEC", "Search location"},
-      {"HPos"  ,"VEC", "Custom offset"},
+      {"HOrg"  ,"VEC", "Custom offset"},
       {"HAng"  ,"ANG", "Custom angles"},
-      {"--- Traced ---", nil },
+      {"--- Traced ---"},
       {"TID"   ,"INT", "Point ID"},
       {"TPnt"  ,"VEC", "Search location"},
-      {"TPos"  ,"VEC", "Custom offset"},
+      {"TOrg"  ,"VEC", "Custom offset"},
       {"TAng"  ,"ANG", "Custom angles"},
-      {"--- Offset ---", nil },
+      {"--- Offset ---"},
       {"PNxt"  ,"VEC", "Custom user position"},
       {"ANxt"  ,"VEC", "Custom user angles"}})
-  SetOpVar("STRUCT_SPAWN",{
-    F    = Vector(),
-    R    = Vector(),
-    U    = Vector(),
-    OPos = Vector(),
-    OAng = Angle (),
-    SPos = Vector(),
-    SAng = Angle (),
-    RLen = 0,
-    --- Holder ---
-    HRec = 0,
-    HID  = 0,
-    HPnt = Vector(), -- P
-    HPos = Vector(), -- O
-    HAng = Angle (), -- A
-    --- Traced ---
-    TRec = 0,
-    TID  = 0,
-    TPnt = Vector(), -- P
-    TPos = Vector(), -- O
-    TAng = Angle (), -- A
-    --- Offsets ---
-    ANxt = Angle (),
-    PNxt = Vector()
-  })
-  SetOpVar("TABLE_CATEGORIES",{})
-  SetOpVar("TABLE_PLAYER_KEYS",{})
+  end
+  SetOpVar("MODELNAM_FILE","%.mdl")
+  SetOpVar("MODELNAM_FUNC",function(x) return " "..x:sub(2,2):upper() end)
+  SetOpVar("QUERY_STORE", {})
+  SetOpVar("TABLE_BORDERS",{})
   SetOpVar("TABLE_FREQUENT_MODELS",{})
   SetOpVar("OOP_DEFAULTKEY","(!@<#_$|%^|&>*)DEFKEY(*>&|^%|$_#<@!)")
   SetOpVar("CVAR_LIMITNAME","asm"..GetOpVar("NAME_INIT").."s")
   SetOpVar("MODE_DATABASE",GetOpVar("MISS_NOAV"))
+  SetOpVar("MODE_WORKING", {"SNAP", "CROSS"})
   SetOpVar("HASH_USER_PANEL",GetOpVar("TOOLNAME_PU").."USER_PANEL")
   SetOpVar("HASH_PROPERTY_NAMES","PROPERTY_NAMES")
   SetOpVar("HASH_PROPERTY_TYPES","PROPERTY_TYPES")
   SetOpVar("TRACE_CLASS", {["prop_physics"]=true})
+  SetOpVar("TRACE_DATA",{ -- Used for general trace result storage
+    start  = Vector(),    -- Start position of the trace
+    endpos = Vector(),    -- End position of the trace
+    mask   = MASK_SOLID,  -- Mask telling it what to hit
+    filter = function(oEnt) -- Only valid props which are not the main entity or world or TRACE_FILTER ( if set )
+      if(oEnt and oEnt:IsValid() and oEnt ~= GetOpVar("TRACE_FILTER") and
+        GetOpVar("TRACE_CLASS")[oEnt:GetClass()]) then return true end end })
+  SetOpVar("RAY_INTERSECT",{}) -- General structure for handling rail crosses and curves
   SetOpVar("NAV_PIECE",{})
   SetOpVar("NAV_PANEL",{})
   SetOpVar("NAV_ADDITION",{})
@@ -2767,4 +2762,4 @@ function DisableString2(sBase, vDsb, vDef)
   end; return vDef
 end
 
-
+SetOpVar("MODE_DATABASE", "LUA")
