@@ -9,20 +9,4 @@ local tD = wikilib.readFolderStructure(sP)
 
 -- common.logTable(tD, "tDIR")
 
-wikilib.drawFolderTreeASCII(tD)
-
-
---[[
-
-addons
-├───gmod-fakeoverlay
-│   ├───lua
-│   │   └───autorun
-│   │       ├───client
-│   │       └───server
-│   ├───materials
-│   │   └───fakeover
-│   ├───file3
-│   └───file4
-└───file1
-]]
+wikilib.drawFolderTreeASCII(tD, 2)

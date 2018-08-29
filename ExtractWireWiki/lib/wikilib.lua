@@ -454,7 +454,12 @@ local wikiFolder = {}
       wikiFolder.__pdir = {["."] = true, [".."] = true}
       wikiFolder.__fcmd = "cd %s && dir > %s"
       wikiFolder.__ranm = 60 -- Random string file name
-      wikiFolder.__syms = {{"└", "├", "─", "│"}}
+      wikiFolder.__syms = { -- https://en.wikipedia.org/wiki/Code_page_437
+        {"└", "├", "─", "│", "┌"},
+        {"╚", "╠", "═", "║", "╔"},
+        {"╙", "╟", "─", "║", "╓"},
+        {"╘", "╞", "═", "│", "╒"}
+      }
       wikiFolder.__drem = "(.*)/"
       wikiFolder.__dept = 2
       wikiFolder.__flag = {
@@ -505,20 +510,23 @@ function wikilib.readFolderStructure(sP, iV)
   end; fD:close(); os.remove(nT) return tT
 end
 
-function wikilib.drawFolderTreeASCII(tP, iR, sR)
+function wikilib.drawFolderTreeASCII(tP, vA, vR, sR)
+  local tS = wikiFolder.__syms
+  local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
-  local iR = common.getClamp(tonumber(iR) or 0, 0)
+  local iR = common.getClamp(tonumber(vR) or 0, 0)
   local nS, nE = tP.base:find(wikiFolder.__drem)
-  if(iR == 0) then io.write(sR..tP.base:sub(nE, -1)); io.write("\n") end
-  local iI = wikiFolder.__dept
-  local tC, tS = tP.cont, wikiFolder.__syms[1]
+  local iI, tC = wikiFolder.__dept, tP.cont; tS = tS[iA]
+  if(iR == 0) then local sB = tostring(tS[5] or "/")
+    io.write(sB..sR..tP.base:sub(nE+1, -1)); io.write("\n")
+  end
   for iD = 1, #tC do local vC = tC[iD]
     if(vC.root) then
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or " ")..(" "):rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       io.write(sR..sX..vC.name..sS); io.write("\n")
-      wikilib.drawFolderTreeASCII(vC.root, iR+1, sR..sD)
+      wikilib.drawFolderTreeASCII(vC.root, iA, iR+1, sR..sD)
     else
       local sS = (tF.size and (" ["..vC.size.." kB]") or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
