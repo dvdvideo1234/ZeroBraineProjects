@@ -12,6 +12,7 @@ asmlib.SetOpVar("TIME_FORMAT","%H:%M:%S")
 asmlib.SetIndexes("V",1,2,3)
 asmlib.SetIndexes("A",1,2,3)
 asmlib.SetIndexes("S",4,5,6,7)
+asmlib.SetOpVar("DIRPATH_BAS", "Assembly/")
 
 asmlib.CreateTable("PIECES",{
   Timer = asmlib.TimerSetting("CQT@10@1@1"),
@@ -31,42 +32,59 @@ local data = asmlib.GetCache("TRACKASSEMBLY_PIECES")
 
 asmlib.ImportDSV("PIECES", true, "ex_")
 
--- common.logTable(data, "CACHE")
+local sArg = "#1,@2,@-3"
+local nT = 400
 
-
-
-
-
---[[
-common.logTable(asmlib.newSort1(data, {"Type", "Slot"}), "CACHE")
-common.logTable(asmlib.newSort2(data, {"Type", "Slot"}), "CACHE")
-
-local function quick(tA)
-  if(not asmlib.newSort1(unpack(tA))) then return 0 end
-  return 1
+local function f1(sA)
+  local t = asmlib.DecodePOA(sA)
+  if(t) then t[7] = tostring(t[7]) end
+  return (t and table.concat(t, ",") or "nil")
 end
 
-local function table1(tA)
-  if(not asmlib.newSort2(unpack(tA))) then return 0 end
-  return 1
+local function f2(sA)
+  local t = asmlib.NewDecodePOA(sA)
+  if(t) then t[7] = tostring(t[7]) end
+  return (t and table.concat(t, ",") or "nil")
 end
 
-local function table2(tA)
-  if(not asmlib.newSort3(unpack(tA))) then return 0 end
-  return 1
+local function f3(sA)
+  local t = asmlib.ComDecodePOA(sA)
+  if(t) then t[7] = tostring(t[7]) end
+  return (t and table.concat(t, ",") or "nil")
 end
-
-local stEstim = {
-  addEstim(quick , "quick"),
-  addEstim(table1, "table"),
-  addEstim(table2, "local")
-}
 
 local stCard = {
-  {{data, {"AAA", "Slot"}}  , 1 , "Speed", 10, 10, .2}
+  {nil     , "nil" , "NIL", nT, nT, .2},
+  {""      , "0,0,0,1,1,1,false" , "0", nT, nT, .2},
+  {"1"     , "1,0,0,1,1,1,false" , "1", nT, nT, .2},
+  {"1,2"   , "1,2,0,1,1,1,false" , "2", nT, nT, .2},
+  {"1,2,3" , "1,2,3,1,1,1,false" , "3", nT, nT, .2},
+  {"@1,2,3", "1,2,3,-1,1,1,false" , "4", nT, nT, .2},
+  {"1,@2,3", "1,2,3,1,-1,1,false" , "5", nT, nT, .2},
+  {"1,2,@3", "1,2,3,1,1,-1,false" , "6", nT, nT, .2},
+  {"#"      , "0,0,0,1,1,1,true" , "7", nT, nT, .2},
+  {"#1"     , "1,0,0,1,1,1,true" , "8", nT, nT, .2},
+  {"#1,2"   , "1,2,0,1,1,1,true" , "9", nT, nT, .2},
+  {"#1,2,3" , "1,2,3,1,1,1,true" , "10", nT, nT, .2},
+  {"#@1,2,3", "1,2,3,-1,1,1,true" , "11", nT, nT, .2},
+  {"#1,@2,3", "1,2,3,1,-1,1,true" , "12", nT, nT, .2},
+  {"#1,2,@3", "1,2,3,1,1,-1,true" , "13", nT, nT, .2}
 }
 
-testPerformance(stCard,stEstim,nil,0.01)
+local stEstim = {
+  addEstim(f1, "DecodePOA"),
+  addEstim(f2, "NewDecodePOA"),
+  addEstim(f3, "ComDecodePOA")
+}
 
-]]
+testPerformance(stCard, stEstim, nil, 0.1)
+
+
+
+
+
+
+
+
+
 

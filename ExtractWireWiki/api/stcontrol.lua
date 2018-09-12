@@ -24,11 +24,9 @@ local API = {
   },
 
   REPLACE = {
-    __key = "aaaaaaaaaa", -- The key tells what patternis to be raplaced
-    __ref = "bbbbbbbbbb",
-    ["MASK"] = "[bbbbbbbbbb](https://wiki.garrysmod.com/page/Enums/aaaaaaaaaa)",
-    ["COLLISION_GROUP"] = "[bbbbbbbbbb](https://wiki.garrysmod.com/page/Enums/aaaaaaaaaa)",
-    ["Material_surface_properties"] = "[bbbbbbbbbb](https://developer.valvesoftware.com/wiki/aaaaaaaaaa)"
+    ["MASK"] = "https://wiki.garrysmod.com/page/Enums/%s",
+    ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/%s",
+    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/%s"
   }
 }
 

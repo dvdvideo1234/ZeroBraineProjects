@@ -579,45 +579,7 @@ function TransferPOA(stOffset,sMode)
   return arPOA
 end
 
-function DecodePOA(sStr)
-  if(not IsString(sStr)) then return StatusLog(nil,"DecodePOA(): Argument must be string") end
-  local DatInd = 1
-  local ComCnt = 0
-  local Len = string.len(sStr)
-  local SymOff = GetOpVar("OPSYM_DISABLE")
-  local SymRev = GetOpVar("OPSYM_REVSIGN")
-  local arPOA  = GetOpVar("ARRAY_DECODEPOA")
-  local Ch = ""
-  local S = 1
-  local E = 1
-  local Cnt = 1
-  ReloadPOA()
-  if(string.sub(sStr,Cnt,Cnt) == SymOff) then
-    arPOA[7] = true
-    Cnt = Cnt + 1
-    S   = S   + 1
-  end
-  while(Cnt <= Len) do
-    Ch = string.sub(sStr,Cnt,Cnt)
-    if(Ch == SymRev) then
-      arPOA[3+DatInd] = -arPOA[3+DatInd]
-      S   = S + 1
-    elseif(Ch == ",") then
-      ComCnt = ComCnt + 1
-      E = Cnt - 1
-      if(ComCnt > 2) then break end
-      arPOA[DatInd] = tonumber(string.sub(sStr,S,E)) or 0
-      DatInd = DatInd + 1
-      S = Cnt + 1
-      E = S
-    else
-      E = E + 1
-    end
-    Cnt = Cnt + 1
-  end
-  arPOA[DatInd] = tonumber(string.sub(sStr,S,E)) or 0
-  return arPOA
-end
+
 
 function PushSortValues(tTable,snCnt,nsValue,tData)
   local Cnt = math.floor(tonumber(snCnt) or 0)
@@ -1495,27 +1457,57 @@ local function TransferPOA(stOffset,sMode)
   return arPOA
 end
 
-local function DecodePOA(sStr)
-  if(not IsString(sStr)) then
-    return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
-  local strLen = sStr:len(); ReloadPOA()
+function DecodePOA(sStr)
+  if(not IsString(sStr)) then return nil end
+   -- return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
+  local strLen = sStr:len(); if(strLen == 0) then return ReloadPOA() end; ReloadPOA()
   local symOff, symRev = GetOpVar("OPSYM_DISABLE"), GetOpVar("OPSYM_REVSIGN")
   local symSep, arPOA = GetOpVar("OPSYM_SEPARATOR"), GetOpVar("ARRAY_DECODEPOA")
   local S, E, iCnt, dInd, iSep, sCh = 1, 1, 1, 1, 0, ""
   if(sStr:sub(iCnt,iCnt) == symOff) then
     arPOA[7] = true; iCnt = iCnt + 1; S = S + 1 end
-  while(iCnt <= strLen) do
-    sCh = sStr:sub(iCnt,iCnt)
-    if(sCh == symRev) then
-      arPOA[3+dInd] = -arPOA[3+dInd]; S = S + 1
-    elseif(sCh == symSep) then
-      iSep = iSep + 1; E = iCnt - 1
+  while(iCnt <= strLen) do sCh = sStr:sub(iCnt,iCnt)
+    if(sCh == symRev) then arPOA[3+dInd] = -arPOA[3+dInd]; S = S + 1
+    elseif(sCh == symSep) then iSep = iSep + 1; E = iCnt - 1
       if(iSep > 2) then break end
-      arPOA[dInd] = tonumber(sStr:sub(S,E)) or 0
+      arPOA[dInd] = (tonumber(sStr:sub(S,E)) or 0)
       dInd = dInd + 1; S = iCnt + 1; E = S
-    else E = E + 1 end
-    iCnt = iCnt + 1
+    else E = E + 1 end; iCnt = iCnt + 1
   end; arPOA[dInd] = (tonumber(sStr:sub(S,E)) or 0); return arPOA
+end
+
+function NewDecodePOA(sStr)
+  if(not IsString(sStr)) then return nil end
+  --  return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
+  local strLen, symRev = sStr:len(), GetOpVar("OPSYM_REVSIGN"); ReloadPOA()
+  local symOff, arPOA = GetOpVar("OPSYM_DISABLE"), GetOpVar("ARRAY_DECODEPOA")
+  local tP = GetOpVar("OPSYM_SEPARATOR"):Explode(sStr)
+  if(tP[1]:sub(1, 1) == GetOpVar("OPSYM_DISABLE")) then
+    arPOA[7], tP[1] = true, tP[1]:sub(2, -1) end
+  for iP = 1, #tP do local vP = tP[iP]
+    if(vP:sub(1,1) == symRev) then
+      arPOA[iP+3], tP[iP] = -arPOA[iP+3], vP:sub(2, -1); vP = tP[iP]
+    end; arPOA[iP] = (tonumber(vP) or 0)
+  end; return arPOA
+end
+
+function ComDecodePOA(sStr)
+  if(not IsString(sStr)) then return nil end
+   -- return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
+  local iL = sStr:len(); if(iL == 0) then return ReloadPOA() end; ReloadPOA()
+  local symOff, symRev = GetOpVar("OPSYM_DISABLE"), GetOpVar("OPSYM_REVSIGN")
+  local symSep, arPOA = GetOpVar("OPSYM_SEPARATOR"), GetOpVar("ARRAY_DECODEPOA")
+  local S, E, iC, iD, iS, sCh = 1, 1, 1, 1, 0, ""
+  if(sStr:sub(iC,iC) == symOff) then
+    arPOA[7] = true; iC = iC + 1; S = S + 1 end
+  while(iC <= iL) do sCh = sStr:sub(iC,iC)
+    if(sCh == symRev) then arPOA[3+iD] = -arPOA[3+iD]; S = S + 1
+    elseif(sCh == symSep) then iS, E = (iS+1), (iC-1)
+      if(iS > 2) then break end
+      arPOA[iD] = (tonumber(sStr:sub(S,E)) or 0)
+      iD, S = (iD+1), (iC+1); E = S
+    else E = (E+1) end; iC = (iC+1)
+  end; arPOA[iD] = (tonumber(sStr:sub(S,E)) or 0); return arPOA
 end
 
 local function RegisterPOA(stPiece, ivID, sP, sO, sA)
@@ -1697,7 +1689,6 @@ function InsertRecord(sTable,arLine)
     arLine[2] = DisableString(arLine[2],DefaultType(),"TYPE")
     arLine[3] = DisableString(arLine[3],ModelToName(arLine[1]),"MODEL")
     arLine[8] = DisableString(arLine[8],"NULL","NULL")
-    print("CLASS: ", arLine[8])
     if(not((arLine[8] == "NULL") or trClass[arLine[8]] or IsEmptyString(arLine[8]))) then
       trClass[arLine[8]] = true -- Register the class provided
       LogInstance("InsertRecord: Register trace <"..tostring(arLine[8]).."@"..arLine[1]..">")

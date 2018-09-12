@@ -1,10 +1,10 @@
-local sExp = "trackasmlib"
+local sExp = "wire_e2_piston_timing"
 
 local sProg = "ExtractWireWiki/"
 local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
-local DSC = require(sProg.."api/cl_"..sExp)
+local DSC = wikilib.readDescriptions(API)
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
@@ -16,9 +16,9 @@ if(f) then io.output(f)
   wikilib.printMatchedAPI(API, DSC)
   wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
- -- wikilib.printTypeTable(API)
+  wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
-  print(wikilib.getVideo("JLrB3mNzrP0"))
+  print(wikilib.getVideo("lRTNCEyE-Bk"))
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
 end

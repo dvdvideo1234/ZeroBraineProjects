@@ -354,7 +354,7 @@ end
 
 local function sortQuick(Data,Lo,Hi)
   if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
-    return StatusLog(nil,"Qsort: Data dimensions mismatch") end
+    return logStatus("Qsort: Data dimensions mismatch", nil) end
   local Mid = mathRandom(Hi-(Lo-1))+Lo-1
   Data[Lo], Data[Mid] = Data[Mid], Data[Lo]
   local Vmid = Data[Lo].Val
@@ -374,7 +374,7 @@ end
 
 local function sortSelection(Data,Lo,Hi)
   if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
-    return StatusLog(nil,"Ssort: Data dimensions mismatch") end
+    return logStatus("Qsort: Data dimensions mismatch", nil) end
   local Ind = 1
   local Sel
   while(Data[Ind]) do
@@ -391,7 +391,7 @@ end
 
 local function sortBubble(Data,Lo,Hi)
   if(not (Lo and Hi and (Lo > 0) and (Lo < Hi))) then
-    return StatusLog(nil,"Bsort: Data dimensions mismatch") end
+    return logStatus("Qsort: Data dimensions mismatch", nil) end
   local Ind, End = 1, false
   while(not End) do
     End = true
@@ -526,7 +526,7 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
     logStatus("Output set to: "..sFile, nil)
     io.output(sFile)
   end
-  local tstCas, tstEst = #stCard, #stEstim
+  local tstCas, tstEst, rnkFoo = #stCard, #stEstim, {}
   logStatus("Started "..tostring(tstCas).." tast cases for "..tostring(tstEst).." functions", nil)
   local TestID, Cases, tstFail = 1, {}, {Cnt = 0, Hash = {}} -- No tests have hailed
   while(stCard[TestID]) do -- All tests
@@ -588,6 +588,7 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
       local Tip =  (Min ~= 0) and (100 * (Tim / Min)) or 0
       local Nam = "Estimation for ["..Foo.Name.."]: "
       local Dat = string.format("%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d",Pas,Tip,Tim,(fooCnt*fooCyc/Tim),Fal)
+      if(not rnkFoo[Foo.Name]) then rnkFoo[Foo.Name] = 0 end; rnkFoo[Foo.Name] = rnkFoo[Foo.Name] + Tim
       tstFail.Hash[tstNam][2] = Fal
       logStatus(Nam..Dat, nil)
     end; Cases[tstNam] = TestID;
@@ -603,6 +604,9 @@ function testPerformance(stCard,stEstim,sFile,nMrkP)
       if(v[1]) then logStatus("Test case <"..k.."> with fail rate: "..tostring(v[2]).."%", nil) end
     end
   end
+  logStatus("Overall testing rank list summary:")
+  for Key, Val in pairs(rnkFoo) do 
+    logStatus("["..("%15.3f"):format(Val).."]: "..tostring(Key)) end
 end
 
 ------------------- STRINGS --------------------------

@@ -12,7 +12,7 @@ local wikiType = {
     {"c"  , "ComplexNumber", "[Complex] number"        , "https://en.wikipedia.org/wiki/Complex_number"},
     {"e"  , "Entity"       , "[Entity] class"          , "https://en.wikipedia.org/wiki/Entity"},
     {"xm2", "Matrix2"      , "[Matrix] 2x2"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"m"  , "Matrix"       , "[Matrix]"                , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"m"  , "Matrix"       , "[Matrix] 3x3"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
     {"xm4", "Matrix4"      , "[Matrix] 4x4"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
     {"n"  , "Number"       , "[Number]"                , "https://en.wikipedia.org/wiki/Number"},
     {"q"  , "Quaternion"   , "[Quaternion]"            , "https://en.wikipedia.org/wiki/Quaternion"},
@@ -22,11 +22,11 @@ local wikiType = {
     {"xv2", "Vector2"      , "[Vactor] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
     {"v"  , "Vector"       , "[Vector] 3D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
     {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
-    {"xrd", "RangerData"   , "[Ranger] data class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
+    {"xrd", "RangerData"   , "[Ranger data] class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
     {"xwl", "WireLink"     , "[Wire link] class"       , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
     {"xfs", ""             , "[Flash sensor] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FSensor"},
     {"xsc", ""             , "[State controller] class", "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
-    {"xxx", ""             , "[Void] value"            , "https://en.wikipedia.org/wiki/Void_type"}
+    {"xxx", ""             , "[Void] data type"        , "https://en.wikipedia.org/wiki/Void_type"}
   },
   idx = {
     ["angle"]      = 1,
@@ -50,6 +50,22 @@ local wikiType = {
     ["stcontrol"]  = 19,
     ["void"]       = 20
   }
+}
+
+wikiDChunk = {
+top = [===[
+return function()
+local E2Helper = {}; E2Helper.Descriptions = {}
+
+--[[ ******************************************************************************
+ This header is automatically injected into the chunk
+****************************************************************************** ]]--
+
+]===],
+bot = [===[
+return DSC  -- The return value is automatically injected into the chunk
+end
+]===]
 }
 
 -- Stores a bynch of format strings for various stuff ( wikilib.setFormat )
@@ -144,9 +160,14 @@ function wikilib.setInternalType(API)
   end
 end
 
+function wikilib.normalDir(sD) local sS = tostring(sD)
+  return ((sS:sub(-1,-1) == "/") and sS or (sS.."/"))
+end
+
 function wikilib.updateAPI(API, DSC)
   local t = API.POOL[1]
   local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
+  local bR = apiGetValue(API,"FLAG", "prep")
   for api, dsc in pairs(DSC) do
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
@@ -169,22 +190,41 @@ function wikilib.updateAPI(API, DSC)
     end
     if(api:find(API.NAME)) then t = API.POOL[1] else t = API.POOL[2] end
     if(API.REPLACE) then local tR = API.REPLACE
-      for k, v in pairs(tR) do
+      for k, v in pairs(tR) do local sD = DSC[api]
         if(k:sub(1,1) ~= "_") then
-          local nF, nB = dsc:find(k, 1, true)
-          if(nF and nB) then nF, nB = (nF - 1), (nB + 1)
-            if(dsc:sub(nF,nF)..dsc:sub(nB,nB) == "``") then
-              local sR = v:gsub(tR.__ref, qR..k..qR)
-                    sR = sR:gsub(tR.__key, k)
-              DSC[api] = dsc:gsub("`"..k.."`", sR)
+          local nF, nB = sD:find(k, 1, true)
+          if(nF and nB) then nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
+            if(sD:sub(nF,nF)..sD:sub(nB,nB) == "``") then
+              DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR)..sX..sD:sub(nB+1,-1)
             else
-              DSC[api] = dsc:gsub(k, v:gsub(tR.__key, k):gsub(tR.__ref, k))
+              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR)..sX..sD:sub(nB,-1)
             end
           end
         end
       end
     end
     table.insert(t, api)
+  end
+end
+
+function wikilib.readDescriptions(API)
+  local sE2  = apiGetValue(API,"FILE", "exts")
+  local sBas = apiGetValue(API,"FILE", "base")
+  local sLua = apiGetValue(API,"FILE", "slua")
+  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sLua)
+        sN = sN.."cl_"..sE2:lower()..".lua"
+  local cT, cB = wikiDChunk.top, wikiDChunk.bot
+  local fR = io.open(sN, "rb"); if(not fR) then
+    return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
+  local sC = cT..fR:read("*all")..cB
+--  print(sC)
+  local fC, oE = load(sC)
+  if(fC) then local bS, fC = pcall(fC)
+    if(bS) then return fC() else
+      common.logStatus("PCALL: Fail: "..DSC) end
+  else
+    common.logStatus("wikilib.readDescriptions: Compilation chunk:\n"..sC)
+    error("wikilib.readDescriptions: Compilation error: "..oE)
   end
 end
 
@@ -232,9 +272,8 @@ function wikilib.readReturnValues(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sPth = apiGetValue(API,"FILE", "path")
   local sE2  = apiGetValue(API,"FILE", "exts")
-  local sN = tostring(sBas)..tostring(sPth)
-  if(sN:sub(-1,-1) ~= "/") then
-    sN = sN.."/" end; sN = sN..sE2:lower().."_rt.txt"
+  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sPth)
+        sN = sN..sE2:lower().."_rt.txt"
   local fR = io.open(sN, "r"); if(not fR) then
     return common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
   local sL = fR:read("*line")
@@ -305,10 +344,9 @@ function wikilib.makeReturnValues(API)
   local sE2  = apiGetValue(API,"FILE", "exts")
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
-  local sN = tostring(sBas)..tostring(sLua)
+  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sLua)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
-  if(sN:sub(-1,-1) ~= "/") then
-    sN = sN.."/" end; sN = sN..sE2:lower()..".lua"
+        sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
     return common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
   local sL, tF, tK, sA, bA, bE = fR:read("*line"), wikiMatch, wikiMList, "", false, false
