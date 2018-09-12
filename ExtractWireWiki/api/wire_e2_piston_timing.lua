@@ -11,7 +11,7 @@ local API = {
   },
   POOL = {
     {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={80,5,13}},
-    {name="APPLY",cols={"Entity.wiremod.extensions", "Out", "Description"},size={41,5,13}}
+    {name="APPLY",cols={"Entity.wiremod.extensions", "Out", "Description"},size={35,5,13}}
   },
   FILE = {
     exts = "wire_e2_piston_timing",

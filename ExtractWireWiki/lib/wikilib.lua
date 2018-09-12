@@ -19,7 +19,7 @@ local wikiType = {
     {"r"  , "Array"        , "[Array]"                 , "https://en.wikipedia.org/wiki/Array_data_structure"},
     {"s"  , "String"       , "[String] class"          , "https://en.wikipedia.org/wiki/String_(computer_science)"},
     {"t"  , "Table"        , "[Table]"                 , "https://github.com/wiremod/wire/wiki/Expression-2#Table"},
-    {"xv2", "Vector2"      , "[Vactor] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
+    {"xv2", "Vector2"      , "[Vector] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
     {"v"  , "Vector"       , "[Vector] 3D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
     {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
     {"xrd", "RangerData"   , "[Ranger data] class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
@@ -76,7 +76,7 @@ local wikiFormat = {
   __lnk = "[%s](%s)",
   __ins = "!%s",
   __img = "[image][%s]",
-  __ytb = "[![](http://img.youtube.com/vi/%s/0.jpg)](http://www.youtube.com/watch?v=%s \"\")",
+  __ytb = "[![](http://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -149,8 +149,9 @@ function wikilib.setFormat(sK, sS)
   wikiFormat["__"..sK] = sS
 end
 
-function wikilib.getVideo(sK)
-  return wikiFormat.__ytb:format(sK, sK)
+function wikilib.getYoutubeVideo(sK, iD)
+  local nD = tonumber(iD)
+  return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0)) or 0), sK)
 end
 
 function wikilib.setInternalType(API)
@@ -195,9 +196,9 @@ function wikilib.updateAPI(API, DSC)
           local nF, nB = sD:find(k, 1, true)
           if(nF and nB) then nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
             if(sD:sub(nF,nF)..sD:sub(nB,nB) == "``") then
-              DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR)..sX..sD:sub(nB+1,-1)
+              DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB+1,-1)
             else
-              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR)..sX..sD:sub(nB,-1)
+              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
             end
           end
         end

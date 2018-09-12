@@ -18,7 +18,7 @@ if(f) then io.output(f)
   wikilib.printDescriptionTable(API, DSC, 2)
   wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
-  print(wikilib.getVideo("lRTNCEyE-Bk"))
+  print(wikilib.getYoutubeVideo("lRTNCEyE-Bk", 1))
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
 end
