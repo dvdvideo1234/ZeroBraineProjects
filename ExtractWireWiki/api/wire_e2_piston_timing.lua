@@ -30,7 +30,9 @@ local API = {
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/%s",
     ["sign"] = "https://en.wikipedia.org/wiki/Sign_function",
     ["wave"] = "https://en.wikipedia.org/wiki/Sine",
-    ["cross-product"] = "https://en.wikipedia.org/wiki/Cross_product"
+    ["triangular"] = "https://en.wikipedia.org/wiki/Triangle_wave",
+    ["cross-product"] = "https://en.wikipedia.org/wiki/Cross_product",
+    ["ramp"] = "https://en.wikipedia.org/wiki/Ramp_function"
   }
 }
 

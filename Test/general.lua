@@ -1,22 +1,36 @@
 package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
 local common  = require('common')
 
-local sC = "E:/Documents/Lua-Projs/SVN/E2PistonTiming/lua/entities/gmod_wire_expression2/core/custom/cl_wire_e2_piston_timing.lua"
-
-local t = io.open(sC, "rb")
-local s = t:read("*all")
-      s = "return function()\nlocal E2Helper = {}; E2Helper.Descriptions = {}\n"..s.."\nreturn DSC\nend"
-local FOO, OK = load(s)
-if(FOO) then OK, DSC = pcall(FOO)
-  if(OK) then
-    common.logStatus(s)
-    common.logTable(DSC(1))
-  else
-    common.logStatus("PCALL: Fail: "..DSC)
-  end
-else
-  common.logStatus("LOAD: Fail: "..s)
-  common.logStatus(FOO)
+local function getSign(nN)
+  return (((nN > 0) and 1) or ((nN < 0) and -1) or 0)
 end
+
+local function getAngNorm(nA)
+  return ((nA + 180) % 360 - 180)
+end
+
+
+local H = -45
+local tT, nS = {}, 0
+
+for iD =  0, 180, 15 do nS = nS + 1; tT[nS] = iD end
+for iD = -180, 0, 15 do nS = nS + 1; tT[nS] = iD end
+
+common.logTable(tT, "SRC")
+
+for iD = 1, #tT do
+  local R = tT[iD]
+  local nD = getAngNorm(R - H)
+  local nP = (((math.abs(nD) > 90) and -getAngNorm(nD+180) or nD) / 90)
+  print(iD, R, nD, nP)
+end
+
+-- common.logTable(tT, "OUT")
+
+
+
+
+
+
 
 

@@ -192,9 +192,10 @@ function wikilib.updateAPI(API, DSC)
     if(api:find(API.NAME)) then t = API.POOL[1] else t = API.POOL[2] end
     if(API.REPLACE) then local tR = API.REPLACE
       for k, v in pairs(tR) do local sD = DSC[api]
-        if(k:sub(1,1) ~= "_") then
+        if(k:sub(1,1) ~= "#") then
           local nF, nB = sD:find(k, 1, true)
-          if(nF and nB) then nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
+          if(nF and nB) then 
+            nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
             if(sD:sub(nF,nF)..sD:sub(nB,nB) == "``") then
               DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB+1,-1)
             else
@@ -483,8 +484,8 @@ function wikilib.printDescriptionTable(API, DSC, iN)
 end
 
 local wikiFolder = {}
-      wikiFolder.__base = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/ExtractWireWiki/"
-      wikiFolder.__temp = "temp/"
+      wikiFolder.__base = ""
+      wikiFolder.__temp = "out/"
       wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
       wikiFolder.__read = "*line"
       wikiFolder.__drof = "Directory of "
@@ -503,23 +504,41 @@ local wikiFolder = {}
       }
       wikiFolder.__drem = "(.*)/"
       wikiFolder.__dept = 2
+      wikiFolder.__ubom = {
+        ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
+        ["UTF16"] = {0xFE, 0xFF},            -- UTF16
+        ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF23
+      }
       wikiFolder.__flag = {
         prnt = false, -- Show the parent directory in the tree
         hide = false, -- Show hidden directories
         size = false, -- Show file size
         hash = false  -- So directory hash address
       }
-      
-      
+
+function wikilib.folderSet(sB, sT)
+  wikiFolder.__base = wikilib.normalDir(sB)
+  wikiFolder.__temp = wikilib.normalDir(sT)
+end
+
+function wikilib.writeBOM(sF, vE)
+  local sC, lE = tostring(sF or ""), common.toBool(lE)
+  local tU = wikiFolder.__ubom[sC]; if(not tU) then
+    return error("wikilib.writeBOM: Missed ("..tostring(lE)..") <"..sC..">") end
+  if(not lE) then for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
+  else for iD = #tU, 1, -1 do io.write(string.char(tU[iD])) end end
+  return true
+end
+
 function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
   local sR = common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__base..wikiFolder.__temp..vT..".txt"
   os.execute(wikiFolder.__fcmd:format(sP, nT))
-  local fD = io.open(nT, "rb"); if(not fD) then
+  local fD, oE = io.open(nT, "rb"); if(not fD) then
     common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
-    error("wikilib.folderReadStructure: Open error <"..nT..">")
+    error("wikilib.folderReadStructure: Open error: "..oE)
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
     while(sL) do sL = common.stringTrim(sL)

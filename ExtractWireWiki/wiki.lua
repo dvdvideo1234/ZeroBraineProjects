@@ -5,6 +5,7 @@ local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
 local DSC = wikilib.readDescriptions(API)
+local YTK = "lRTNCEyE-Bk"
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
@@ -18,7 +19,7 @@ if(f) then io.output(f)
   wikilib.printDescriptionTable(API, DSC, 2)
   wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
-  print(wikilib.getYoutubeVideo("lRTNCEyE-Bk", 1))
+  for iD = 1, 3 do print(wikilib.getYoutubeVideo(YTK, iD)) end
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
 end
