@@ -1,0 +1,12 @@
+# Blocks general parameters
+# table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB/trail
+
+# Board player controlled
+{Type="board",Velocity=10.000000}/365,354/0,0/-109,8;-117,-57;29,-51;141,14;142,43;-238,42;-237,19;-218,23;-202,28;-196,32;-148,32;7,35;35,22;40,2;35,-7;20,-29;-28,-30;-55,-26;-75,-22;-89,-7;-74,16;-89,19;-110,19/0.000000/false/true/1.000000/255,0,0/0
+
+# Balls which break blocks
+{Type="ball",Size=5.000000,Damage=1.000000}/334,336/8,9//0.000000/false/true/1.000000/0,255,0/100
+
+# Ordinary breakable blocks
+{Type="brick"}/39,55/0,0/-37,-35;744,-44;750,184;8,204;11,170;719,164;719,-27;7,-18;9,9;696,1;698,132;22,142;20,114;676,108;678,23;14,29;20,52;653,56;651,82;29,89/0.000000/true/false/99999/0,0,255/0
+
