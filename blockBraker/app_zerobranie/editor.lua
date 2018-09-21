@@ -129,23 +129,38 @@ local function getStringSet(tSet, iD)
   end; return typeExport(iD):format(unpack(tOut))
 end
 
-local function saveFile()
+local function openFile()
   local fNam, tStu, key = "", getItems(), keys.getKey()
-  while(not (keys.getCheck(key, "enter") or
-             keys.getCheck(key, "nument"))) do wipe()
-    if(key) then
-      fNam = fNam..tostring(keys.getChar(key) or ""):sub(1,1)
+  while(not (keys.getCheck(key, "enter") or keys.getCheck(key, "nument"))) do wipe()
+    if(key) then fNam = fNam..tostring(keys.getChar(key) or ""):sub(1,1)
       if(keys.getCheck(key, "backsp")) then fNam = fNam:sub(1,-2) end
-    end
-    text("Save: "..tostring(fNam):lower(),0,0,0)
+    end; text("Open: "..tostring(fNam):lower(),0,0,0)
     key = keys.getKey(); updt()
   end; fNam = "levels/"..fNam:lower()..".txt"
-  local iO = io.open(fNam, "wb")
-  if(not iO) then
+  local iO = io.open(fNam, "rb"); if(not iO) then
+    return common.logStatus("saveLevel: File invalid <"..fNam..">", false) end
+  local sLine, bEOF = common.fileRead(iO, "*line", true)
+  while(not bEOF) do
+    if(sLine:sub(1,1) ~= "#") then
+      local tPar = common.stringExplode(sLine, "/")
+    end
+    sLine, bEOF = common.fileRead(iO, "*line", true)
+  end
+end
+
+local function saveFile()
+  local fNam, tStu, key = "", getItems(), keys.getKey()
+  while(not (keys.getCheck(key, "enter") or keys.getCheck(key, "nument"))) do wipe()
+    if(key) then fNam = fNam..tostring(keys.getChar(key) or ""):sub(1,1)
+      if(keys.getCheck(key, "backsp")) then fNam = fNam:sub(1,-2) end
+    end; text("Save: "..tostring(fNam):lower(),0,0,0)
+    key = keys.getKey(); updt()
+  end; fNam = "levels/"..fNam:lower()..".txt"
+  local iO = io.open(fNam, "wb"); if(not iO) then
     return common.logStatus("saveLevel: File invalid <"..fNam..">", false) end
   iO:write("# Blocks general parameters\n")
   iO:write("# table/position/velocity/vertexes(clockwise)/angle/static/hard/life/colorRGB/trail\n\n")
-  local tItems = getItems()
+  local tItems = getItems(); common.logTable(tItems, "tItems")
   for ID = 1, getItemsN() do
     local tInfo, sType = getItem(ID), typeName(ID)
     if(tInfo) then local tDat = tInfo.__data
@@ -418,7 +433,8 @@ local function mainStart()
     if    (keys.getCheck(key, "f1")) then tInfo = getItem(typeID(1))
     elseif(keys.getCheck(key, "f2")) then tInfo = getItem(typeID(2))
     elseif(keys.getCheck(key, "f3")) then tInfo = getItem(typeID(3))
-    elseif(keys.getCheck(key, "S")) then saveFile() end
+    elseif(keys.getCheck(key, "S")) then saveFile()
+    elseif(keys.getCheck(key, "O")) then openFile() end
     if(not tInfo) then tInfo = addItem(typeID()) end
     local sType = typeName(typeID())
     text("Adding: "..sType,0,0,0)

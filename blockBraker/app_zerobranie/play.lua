@@ -13,13 +13,14 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = 1
-local gnTick   = 0.01
+local gnCurLev = "cross"
+local gnTick   = 0
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
 -- Managed automatically !
 local mainLoop = true
 local mainPaus = false
+local mainExit = false
 local W, H     = level.getScreenSize()
 local axOx     = complex.getNew(1,0)
 local axOy     = complex.getNew(0,1)
@@ -35,25 +36,15 @@ local gbSuc    = level.readStage(gnCurLev)
 
 common.logSkipAdd("complex.getIntersectRayCircle: Irrational roots")
 
-
 local function stopExecution(oBall, tTr, sMsg)
-  mainLoop = false
-  level.logStatus("")
+  mainLoop, mainPaus, mainExit = false, true, true
+  level.setLog(true, true)
   level.logStatus("stopExecution: Opps! That should not happen !")
-  level.logStatus("   surf: ", level.traceReflect("surf"))
-  level.logStatus("   edge: ", level.traceReflect("edge"))
-  level.logStatus("   ball: ", level.traceReflect("ball"))
-  for k, v in pairs(tTr) do
-    local typ = common.getType(v)
-    if(typ == "table") then
-      common.logTable(v, "   key: "..k)
-    else
-      level.logStatus("   key: ", k, tostring(v))
-    end
-  end
+  level.logStatus("trace", tTr)
   oBall:Dump()
   tTr.HitAct:Dump()
-  level.logStatus(sMsg.."\n")
+  level.logStatus(sMsg)
+  level.setLog(false, false)
 end
 
 local function drawComplexOrigin(oC, clDrw, nS, oO, tX, bUp)
@@ -99,8 +90,9 @@ if(not gbSuc) then
 
 level.openWindow("Complex block breaker")
 
-while(gbSuc) do
-  
+while(gbSuc and not mainExit) do
+  level.setLog(false, false)
+    
   local world = blocks.New():setPos(0,0):setWrap(false):setTable({Type="world"})
         world:setVert(0,0):setVert(W-1,0):setVert(W-1,H-1):setVert(0,H-1)
         world:setStat(true):setLife(1):setHard(true):setDrawColor(colormap.getColorGreenRGB())
@@ -194,11 +186,11 @@ while(gbSuc) do
       local cpInt, cvRef = baPos:getNew(), baVel:getNew()
       
       while(bHit and (tTr.HitDst < nvPrt)) do
-        level.logStatus(niCnt, "hit_loop", bHit)
+        level.logStatus("hit_loop", niCnt, bHit)
         
         drawHitSurface(tTr, oBall)        
         
-        level.logStatus(niCnt,"dif1", tTr.HitDst, nvPrt)
+        level.logStatus("dif1", niCnt,tTr.HitDst, nvPrt)
         
         nvPrt = (nvPrt - tTr.HitDst)
         
@@ -208,7 +200,7 @@ while(gbSuc) do
         oBall:Damage(tData.Damage)
         if(oBall:isDead()) then level.delActor(oBall) end
         
-        level.logStatus(niCnt,"dif2", tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
+        level.logStatus("dif2", niCnt,tTr.HitDst, tTr.HitAim:getNorm(), nvPrt)
         
         local cN, cR
         local bSurf = level.traceReflect("surf")
@@ -226,31 +218,31 @@ while(gbSuc) do
           cR, cN = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, nRad, tTr.HitPos)
         end
         
-        level.logStatus(niCnt,"ref", cN, cR, nvPrt)
+        level.logStatus("ref", niCnt,cN, cR, nvPrt)
         
-        if(common.isNan(cN:getReal()) or common.isNan(cN:getImag())) then
+        if(cN:isNanReal() or cN:isNanImag()) then
           stopExecution(oBall, tTr, "Cannot reflect velocity at iteration #"..niCnt)
         end
         
         cpInt:Set(tTr.HitPos); cvRef:Set(cR):Mul(nvPrt) -- The rest of the vector to trace
         
-        level.logStatus(niCnt,"trs", tTr.HitPos, cpInt, cvRef)
+        level.logStatus("trs",niCnt, tTr.HitPos, cpInt, cvRef)
         
         -- Adjust the next frame position according to the trace
         cfPos:Set(cpInt):Add(cvRef); cfVel:Set(cvRef):Unit():Mul(baVel:getNorm())
         
-        level.logStatus(niCnt,"nve", cfPos, cfVel)
+        level.logStatus("nve",niCnt, cfPos, cfVel)
         
         -- Draw the ball trajectory if enabled
         oBall:addTrace(cpInt)
         
-        level.logStatus(niCnt,"loop_end")
+        level.logStatus("loop_end",niCnt)
         
         tTr  = level.traceRay(cpInt, cvRef, tData.Size, tfAll)
         bHit = level.gonnaHit(cpInt, cvRef)
         
-        level.logStatus(niCnt,"new_trace", bHit, tTr.HitPos, cpInt, cvRef)
-        level.logStatus(niCnt,"loop_end\n\n")
+        level.logStatus("new_trace",niCnt, bHit, tTr.HitPos, cpInt, cvRef)
+        level.logStatus("loop_end",niCnt)
         
         niCnt = niCnt + 1
       end -- Hold the current frame while calculating the position ( The ball is still in the crrent frame )
@@ -290,7 +282,7 @@ while(gbSuc) do
   -- Actor working priorities
   local nPri = #(level.getPriorityKeys())
    
-  while(mainLoop) do
+  while(mainLoop and not mainExit) do
     local key = keys.getKey()
     local imp = keys.getImpulse(key, "P")
     if(imp > 0) then mainPaus = (not mainPaus) end
@@ -312,18 +304,19 @@ while(gbSuc) do
     end; wait(gnTick)
   end; mainLoop = true
   
-  if(not bSbox) then
-    level.clearAll()
-    common.logStatus("Loading level... "..gnCurLev)
-    gbSuc = level.readStage(gnCurLev)
-    if(not gbSuc) then
-      common.logStatus("Play: Failed loading level #"..tostring(gnCurLev)) end
-  else
-    gbSuc = level.readStage(gnCurLev)
-    common.logStatus("Play: The game is in sandbox mode !")
+  if(not mainExit) then
+    if(not bSbox) then
+      level.clearAll()
+      common.logStatus("Loading level... "..gnCurLev)
+      gbSuc = level.readStage(gnCurLev)
+      if(not gbSuc) then
+        common.logStatus("Play: Failed loading level #"..tostring(gnCurLev)) end
+    else
+      gbSuc = level.readStage(gnCurLev)
+      common.logStatus("Play: The game is in sandbox mode !")
+    end
   end
-  
 end
 
-common.logStatus("Play: Congratulations for beating the game !")
+if(not mainExit) then common.logStatus("Play: Congratulations for beating the game !") end
 

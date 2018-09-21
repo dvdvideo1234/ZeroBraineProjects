@@ -32,28 +32,43 @@ metaActors.trace    = {
   HitFlt = {}
 }
 
+metaActors.typereflect = {"surf","edge","ball"}
+
+metaActors.scrsize  = {W = 800, H = 400}
+
+function level.getScreenSize()
+  return metaActors.scrsize.W, metaActors.scrsize.H
+end
+
 function level.logStatus(...)
-  local bW = metaActors.logwork
-  local bF = metaActors.logfile
-  if(bW) then
-    local sL, tA = "", {...}
-    for ID = 1, #tA do sL = sL.."\t"..tostring(tA[ID]) end
-    sL = common.stringTrim(sL)
-    if(bF) then
-      local fF = io.open("level_log.txt","a")
-      if(fF) then fF:write(sL.."\n") end
-      common.logStatus("logStatus: Log write failed")
-    else
-      common.logStatus(sL)
+  if(metaActors.logwork) then local tArg = {...}
+    common.logTable(tArg, "level.logStatus: ", nil, {["blocks.block"]=tostring, ["complex.complex"]=tostring})
+  end
+end
+
+function level.setLog(bW, bF, sN)
+  metaActors.logwork = common.toBool(bW)
+  metaActors.logfile = common.toBool(bF)
+  if(metaActors.logwork) then
+    if(metaActors.logfile) then
+      metaActors.logfile, sErr = io.open(tostring(sN or "level_log.txt"),"wb")
+      if(metaActors.logfile) then
+        io.output(metaActors.logfile)
+      else
+        metaActors.logfile = common.logStatus("level.setLog: Open: "..tostring(sErr))
+      end
+    end
+  else
+    if(metaActors.logfile) then
+      metaActors.logfile:flush()
+      metaActors.logfile:close()
+      metaActors.logfile = nil
     end
   end
 end
 
-metaActors.typereflect = {"surf","edge","ball"}
-
-metaActors.scrsize  = {W = 800, H = 400}
-function level.getScreenSize()
-  return metaActors.scrsize.W, metaActors.scrsize.H
+function level.getLog()
+  return metaActors.logwork, metaActors.logfile
 end
 
 function level.openWindow(sT)
@@ -182,7 +197,6 @@ end
   tKey > Table containing the actor keys to be skipped
 ]]
 function level.traceRay(oPos, oVel, nOfs, tKey)
-  local nCnt = 0
   local clBlu = colr(colormap.getColorBlueRGB())
   local tTr, fTr = metaActors.trace, (tKey or {})
   local keyPri, actStk = metaActors.priorkey, metaActors.stack
@@ -197,10 +211,10 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
     for key, val in pairs(stk) do
       if(val and not (ftr and ftr[key])) then
         local nVtx = val:getVertN()
-        if(nVtx > 0) then -- Polygon
+        if(nVtx > 0) then local ID = 1-- Polygon
           local cS, cE, vA = oPos:getNew(), oPos:getNew(), oPos:getNew()
           local vS, vE, vN = oPos:getNew(), oPos:getNew(), oPos:getNew()
-          local ID, vI, vP = 1, val:getVert(1), val:getPos(), oPos:getNew()
+          local vI, vP = val:getVert(ID), val:getPos()
           while(ID <= nVtx) do
             cS:Set(vP):Add(val:getVert(ID) or vI); ID = ID + 1
             cE:Set(vP):Add(val:getVert(ID) or vI)
@@ -208,7 +222,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
             vS:Set(vN):Mul(tTr.HitOfs):Add(cS)
             vE:Set(vN):Mul(tTr.HitOfs):Add(cE)
           --  vS:Action("drawComplexLine", vE, 1, true)
-          --  cS:Action("drawComplexCircle", tTr.HitOfs, nil, nCnt, true)
+          --  cS:Action("drawComplexCircle", tTr.HitOfs, nil, 0, true)
             local xR = complex.getIntersectRayRay(oPos, oVel, vS, vE-vS)
             local xS = common.getPick(xR and xR:isAmongLine(vS, vE) and (vN:getDot(oVel) < 0), xR, nil)
             local xE = complex.getIntersectRayCircle(oPos, oVel, cS, tTr.HitOfs)
@@ -233,7 +247,7 @@ function level.traceRay(oPos, oVel, nOfs, tKey)
                 -- Make sure that the point belongs to a surface
               if(vA:getDot(oVel) > 0) then
                 -- Chech only these in front of us and these that we are probably gonna hit
-                local nA = vA:getNorm() -- Lngth to the trace position to check if a hit is present
+                local nA = vA:getNorm() -- Length to the trace position to check if a hit is present
                 if(tTr.Hit) then -- If we have registered a hit with the new trace call
                   if(nA < tTr.HitDst) then
                     tTr.HitPos:Set(hitPos)
