@@ -34,12 +34,13 @@ local clWht    = colr(colormap.getColorWhiteRGB())
 local bSbox    = (not common.isNumber(gnCurLev))
 local gbSuc    = level.readStage(gnCurLev)
 
-common.logSkipAdd("complex.getIntersectRayCircle: Irrational roots")
+common.logSkipAdd("complex.getIntersectRayCircle: Imaginary roots")
 
 local function stopExecution(oBall, tTr, sMsg)
   mainLoop, mainPaus, mainExit = false, true, true
   level.setLog(true, true)
   level.logStatus("stopExecution: Opps! That should not happen !")
+  level.logStatus("stopExecution: "..os.date())
   level.logStatus("trace", tTr)
   oBall:Dump()
   tTr.HitAct:Dump()
@@ -83,7 +84,7 @@ end
 
 complex.setAction("drawComplexOrigin", drawComplexOrigin)
 complex.setAction("drawComplexCircle", drawComplexCircle)
-complex.setAction("drawComplexLine", drawComplexLine)
+complex.setAction("drawComplexLine"  , drawComplexLine)
 
 if(not gbSuc) then
   return common.logStatus("Play: Failed reading the first level !") end
@@ -210,12 +211,12 @@ while(gbSuc and not mainExit) do
         level.logStatus("flg", bSurf, bEdge, bBall)
         
         if(bSurf) then
-          cR, cN = complex.getReflectRayLine(cpInt, cvRef, tTr.VtxStr, tTr.VtxEnd)
+          cR, cN = complex.getReflectRayLine(cpInt:getSub(cvRef), cvRef, tTr.VtxStr, tTr.VtxEnd)
         elseif(bEdge) then
-          cR, cN = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
+          cR, cN = complex.getReflectRayCircle(cpInt:getSub(cvRef), cvRef, tTr.VtxStr, tData.Size, tTr.HitPos)
         elseif(bBall) then
           local nRad = tTr.HitAct:getTable().Size + tData.Size
-          cR, cN = complex.getReflectRayCircle(cpInt, cvRef, tTr.VtxStr, nRad, tTr.HitPos)
+          cR, cN = complex.getReflectRayCircle(cpInt:getSub(cvRef), cvRef, tTr.VtxStr, nRad, tTr.HitPos)
         end
         
         level.logStatus("ref", niCnt,cN, cR, nvPrt)

@@ -1,45 +1,47 @@
 level.logStatus:  = {}
 level.logStatus: [1] = "stopExecution: Opps! That should not happen !"
 level.logStatus:  = {}
+level.logStatus: [1] = "stopExecution: 09/28/18 16:10:10"
+level.logStatus:  = {}
 level.logStatus: [1] = "trace"
 level.logStatus: [2] = {}
 level.logStatus: [2]["Hit"] = true
 level.logStatus: [2]["HitFlt"] = {}
-level.logStatus: [2]["HitAct"] = table: 0x02bd93d8
+level.logStatus: [2]["HitAct"] = table: 0x02c6fed0
 level.logStatus: [2]["HitRef"] = {}
-level.logStatus: [2]["HitRef"]["surf"] = true
+level.logStatus: [2]["HitRef"]["surf"] = false
 level.logStatus: [2]["HitRef"]["ball"] = false
-level.logStatus: [2]["HitRef"]["edge"] = false
-level.logStatus: [2]["HitKey"] = "ecygECUaksLsAutuWktYXj7rPxmqliM7O4eJxsGOYvQsiePwbJ"
-level.logStatus: [2]["VtxEnd"] = {122.62639436051,69.807619738204}
-level.logStatus: [2]["VtxStr"] = {150.62639436051,77.807619738204}
-level.logStatus: [2]["HitPos"] = {148.79859884379,77.285392447713}
+level.logStatus: [2]["HitRef"]["edge"] = true
+level.logStatus: [2]["HitKey"] = "Mu6mov8qK1uy7xVb5OZINW8t5ZWQ2VqKSjH0ZoKU9D7jCXMi3o"
+level.logStatus: [2]["VtxEnd"] = {243,276}
+level.logStatus: [2]["VtxStr"] = {243,276}
+level.logStatus: [2]["HitPos"] = {246.46678225161,279.60297388554}
 level.logStatus: [2]["HitTyp"] = "brick"
-level.logStatus: [2]["HitNrm"] = {-0.27472112789738,0.96152394764082}
-level.logStatus: [2]["HitDst"] = 13.961633841825
-level.logStatus: [2]["HitAim"] = {-9.6636974515829,-10.076714300677}
+level.logStatus: [2]["HitNrm"] = {0.69335645032264,0.72059477710845}
+level.logStatus: [2]["HitDst"] = 2.8421709430404e-014
+level.logStatus: [2]["HitAim"] = {2.8421709430404e-014,0}
 level.logStatus: [2]["HitOfs"] = 5
 
-[blocks.block][tARpvd15mqGhFJgYFkZrwt4e80xHvRhslolbbdcPUAmcnCxrH1]
-  Position: {158.46229629538,87.36210674839}
-  Velocity: {-12.089617284104,-12.606315541935}
+[blocks.block][QSnMJylv4X3nUdmn7fRZiWTAtTsM7hIE4fwyrnuWhog3yWn8rI]
+  Position: {246.03074083581,284.58759599029}
+  Velocity: {1.5221085574098,-17.400035148194}
   Hard    : true
   Static  : false
   Life    : 1
-  Color   : userdata: 02bda018 [wxColour(005ce980, 141)]
+  Color   : userdata: 02c8ed28 [wxColour(029be980, 141)]
   Table   : 
     [Type]: ball
     [Damage]: 1.1
     [Size]: 5
   Vertexes: 
 
-[blocks.block][ecygECUaksLsAutuWktYXj7rPxmqliM7O4eJxsGOYvQsiePwbJ]
+[blocks.block][Mu6mov8qK1uy7xVb5OZINW8t5ZWQ2VqKSjH0ZoKU9D7jCXMi3o]
   Position: {406,100}
   Velocity: {0,0}
   Hard    : false
   Static  : true
-  Life    : 98.9
-  Color   : userdata: 02b578b0 [wxColour(005ce9a0, 141)]
+  Life    : 92.3
+  Color   : userdata: 02c7bcb0 [wxColour(029be9a0, 141)]
   Table   : 
     [Type]: brick
   Vertexes: 
@@ -94,4 +96,4 @@ level.logStatus: [2]["HitOfs"] = 5
     [49]: {-174,144}
     [50]: {-163,176}
 level.logStatus:  = {}
-level.logStatus: [1] = "Cannot reflect velocity at iteration #1"
+level.logStatus: [1] = "Cannot reflect velocity at iteration #2"
