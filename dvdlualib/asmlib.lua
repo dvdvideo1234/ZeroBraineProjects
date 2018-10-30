@@ -898,7 +898,7 @@ function InitBase(sName,sPurpose)
   SetOpVar("MISS_NOID","N")    -- No ID selected
   SetOpVar("MISS_NOAV","N/A")  -- Not Available
   SetOpVar("MISS_NOMD","X")    -- No model
-  SetOpVar("ARRAY_DECODEPOA",{0,0,0,1,1,1,false})
+  SetOpVar("ARRAY_DECODEPOA",{0,0,0})
   if(CLIENT) then
     SetOpVar("LOCALIFY_AUTO","en")
     SetOpVar("LOCALIFY_TABLE",{})
@@ -1428,10 +1428,6 @@ local function ReloadPOA(nXP,nYY,nZR,nSX,nSY,nSZ,nSD)
         arPOA[1] = tonumber(nXP) or 0
         arPOA[2] = tonumber(nYY) or 0
         arPOA[3] = tonumber(nZR) or 0
-        arPOA[4] = tonumber(nSX) or 1
-        arPOA[5] = tonumber(nSY) or 1
-        arPOA[6] = tonumber(nSZ) or 1
-        arPOA[7] = (tonumber(nSD) and (nSD ~= 0)) and true or false
   return arPOA
 end
 
@@ -2751,6 +2747,16 @@ function DisableString2(sBase, vDsb, vDef)
       return sBase -- Not disabled or empty
     elseif(sF == sD) then return vDsb end
   end; return vDef
+end
+
+function SSSDecodePOA(sStr)
+  if(not IsString(sStr)) then
+    return StatusLog(nil,"DecodePOA: Argument {"..type(sStr).."}<"..tostring(sStr).."> not string") end
+  local strLen = sStr:len(); if(strLen == 0) then return ReloadPOA() end; ReloadPOA()
+  local symSep, arPOA = GetOpVar("OPSYM_SEPARATOR"), GetOpVar("ARRAY_DECODEPOA")
+  local atPOA, iN = symSep:Explode(sStr), #arPOA
+  for iD = 1, iN do arPOA[iD] = tonumber(atPOA[iD]) or arPOA[iD] end
+  return arPOA
 end
 
 SetOpVar("MODE_DATABASE", "LUA")

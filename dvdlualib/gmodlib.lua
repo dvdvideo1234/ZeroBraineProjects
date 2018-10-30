@@ -136,9 +136,9 @@ end
 function SysTime() return os.clock() end
 
 function fileOpen(n, m)
-  local f = io.open(n, m)
+  local f, e = io.open(n, m)
   if(not f) then
-    return logStatus("fileOpen: Nofile: "..tostring(n), nil)
+    return logStatus("fileOpen: "..tostring(e), nil)
   end
   local mt = getmetatable(f)
   mt.Read  = mt.read

@@ -507,7 +507,7 @@ local wikiFolder = {}
       wikiFolder.__ubom = {
         ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
         ["UTF16"] = {0xFE, 0xFF},            -- UTF16
-        ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF23
+        ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF32
       }
       wikiFolder.__flag = {
         prnt = false, -- Show the parent directory in the tree

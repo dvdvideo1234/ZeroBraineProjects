@@ -5,7 +5,7 @@ local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
 local DSC = wikilib.readDescriptions(API)
-local YTK = "lRTNCEyE-Bk"
+local YTK = "BKuWm-hahgk"
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
