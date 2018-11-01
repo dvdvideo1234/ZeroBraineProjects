@@ -22,7 +22,7 @@ if(f) then io.output(f)
   wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
   print(wikilib.insLocal(Lfi))
-  print(wikilib.insCountry("bg"))
+  print(wikilib.insRefCountry("bg"))
   print(wikilib.insType("s"))
   print(wikilib.insImage("http://www.famfamfam.com/lab/icons/flags/flags_preview_large.png", 8))
   for iD = 0, 3 do print(wikilib.insYoutubeVideo(YTK, iD)) end

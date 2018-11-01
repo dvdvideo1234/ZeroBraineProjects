@@ -188,6 +188,11 @@ function wikilib.insCountry(sC)
   return toInsert(toLinkURL("", toCountryURL(wikiFormat.__prj, toCountry(sC))))
 end
 
+function wikilib.insRefCountry(sC)
+  local sR = toRefer("cou-"..sC); return toInsert(toImage(sR)),
+    toLinkRef(sR, toCountryURL(wikiFormat.__prj, toCountry(sC)))
+end
+
 function wikilib.insType(sC)
   return toInsert(toLinkURL("", toTypeURL(wikiFormat.__prj, toType(sC))))
 end
