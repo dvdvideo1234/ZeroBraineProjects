@@ -70,7 +70,9 @@ end
 
 -- Stores a bynch of format strings for various stuff ( wikilib.setFormat )
 local wikiFormat = {
-  __tfm = "type-%s.jpg",
+  __prj = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki",
+  __tfm = "type-%s.png",
+  __tfc = "%s.png",
   __rty = "ref-%s",
   __rbr = "[%s]: %s",
   __lnk = "[%s](%s)",
@@ -78,7 +80,9 @@ local wikiFormat = {
   __ref = "[%s]",
   __img = "[image][%s]",
   __ytb = "[![](http://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
-  __loc = "file:///%s"
+  __loc = "file:///%s",
+  __cou = "%s/countries/%s",
+  __typ = "%s/types/%s",
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -109,15 +113,23 @@ local function isQuote(sS)
 end
 
 local function toType(...)
-  return wikiFormat.__tfm:format(...)
+  return (wikiFormat.__tfm:format(...))
+end
+
+local function toCountry(...)
+  return (wikiFormat.__tfc:format(...))
+end
+
+local function toLocal(...)
+  return (wikiFormat.__loc:format(...))
 end
 
 local function toLinkURL(...)
-  return wikiFormat.__lnk:format(...)
+  return (wikiFormat.__lnk:format(...))
 end
 
 local function toLinkRef(...)
-  return wikiFormat.__rbr:format(...)
+  return (wikiFormat.__rbr:format(...))
 end
 
 local function toRefer(...)
@@ -130,6 +142,14 @@ end
 
 local function toInsert(...)
   return (wikiFormat.__ins:format(...))
+end
+
+local function toCountryURL(...)
+  return (wikiFormat.__cou:format(...))
+end
+
+local function toTypeURL(...)
+  return (wikiFormat.__typ:format(...))
 end
 
 local function apiSortFinctionParam(a, b)
@@ -151,17 +171,25 @@ function wikilib.setFormat(sK, sS)
   wikiFormat["__"..sK] = sS
 end
 
-function wikilib.getYoutubeVideo(sK, iD)
+function wikilib.insYoutubeVideo(sK, iD)
   local nD = tonumber(iD)
   return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0 ,3)) or 0), sK)
 end
 
-function wikilib.getImage(sURL)
-  return wikiFormat.__ins:format(wikiFormat.__lnk:format("", sURL))
+function wikilib.insImage(sURL)
+  return toInsert(toLinkURL("", sURL))
 end
 
-function wikilib.getLocal(sPath)
-  wikiFormat.__loc:format(sPath:gsub("\\","/"))
+function wikilib.insLocal(sP)
+  return toInsert(toLinkURL("", toLocal(sP:gsub("\\","/"))))
+end
+
+function wikilib.insCountry(sC)
+  return toInsert(toLinkURL("", toCountryURL(wikiFormat.__prj, toCountry(sC))))
+end
+
+function wikilib.insType(sC)
+  return toInsert(toLinkURL("", toTypeURL(wikiFormat.__prj, toType(sC))))
 end
 
 function wikilib.setInternalType(API)
