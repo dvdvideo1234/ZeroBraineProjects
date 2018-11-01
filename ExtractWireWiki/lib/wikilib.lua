@@ -75,8 +75,10 @@ local wikiFormat = {
   __rbr = "[%s]: %s",
   __lnk = "[%s](%s)",
   __ins = "!%s",
+  __ref = "[%s]",
   __img = "[image][%s]",
   __ytb = "[![](http://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
+  __loc = "file:///%s"
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -151,7 +153,15 @@ end
 
 function wikilib.getYoutubeVideo(sK, iD)
   local nD = tonumber(iD)
-  return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0)) or 0), sK)
+  return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0 ,3)) or 0), sK)
+end
+
+function wikilib.getImage(sURL)
+  return wikiFormat.__ins:format(wikiFormat.__lnk:format("", sURL))
+end
+
+function wikilib.getLocal(sPath)
+  wikiFormat.__loc:format(sPath:gsub("\\","/"))
 end
 
 function wikilib.setInternalType(API)

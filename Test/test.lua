@@ -3,5 +3,6 @@ local function add(a, b)
   return a * b
 end
 
+print(a)
 print(add(1,1))
 print(a)
