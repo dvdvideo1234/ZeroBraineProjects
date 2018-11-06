@@ -220,3 +220,5 @@ end
 function languageGetPhrase(key)
   local a = language.__data[key]; print(key); return a
 end
+
+function CurTime() return os.clock() end

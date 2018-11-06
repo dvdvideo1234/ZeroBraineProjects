@@ -1,8 +1,4 @@
-local function add(a, b)
-  if(a > 0) then a = 5 end
-  return a * b
-end
+local s = 20
+local e = 20
 
-print(a)
-print(add(1,1))
-print(a)
+for i = s, e do print(i) end
