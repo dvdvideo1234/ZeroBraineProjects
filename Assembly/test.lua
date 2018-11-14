@@ -4,6 +4,7 @@ local common = require("common")
 require("../dvdlualib/gmodlib")
 require("../dvdlualib/asmlib")
 require("../dvdlualib/common")
+local asmlib = trackasmlib
 
 asmlib.InitBase("track", "assembly")
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
@@ -31,53 +32,6 @@ asmlib.CreateTable("PIECES",{
 local data = asmlib.GetCache("TRACKASSEMBLY_PIECES")
 
 asmlib.ImportDSV("PIECES", true, "ex_")
-
-local sArg = "#1,@2,@-3"
-local nT = 400
-
-local function f1(sA)
-  local t = asmlib.DecodePOA(sA)
-  if(t) then t[7] = tostring(t[7]) end
-  return (t and table.concat(t, ",") or "nil")
-end
-
-local function f2(sA)
-  local t = asmlib.NewDecodePOA(sA)
-  if(t) then t[7] = tostring(t[7]) end
-  return (t and table.concat(t, ",") or "nil")
-end
-
-local function f3(sA)
-  local t = asmlib.ComDecodePOA(sA)
-  if(t) then t[7] = tostring(t[7]) end
-  return (t and table.concat(t, ",") or "nil")
-end
-
-local stCard = {
-  {nil     , "nil" , "NIL", nT, nT, .2},
-  {""      , "0,0,0,1,1,1,false" , "0", nT, nT, .2},
-  {"1"     , "1,0,0,1,1,1,false" , "1", nT, nT, .2},
-  {"1,2"   , "1,2,0,1,1,1,false" , "2", nT, nT, .2},
-  {"1,2,3" , "1,2,3,1,1,1,false" , "3", nT, nT, .2},
-  {"@1,2,3", "1,2,3,-1,1,1,false" , "4", nT, nT, .2},
-  {"1,@2,3", "1,2,3,1,-1,1,false" , "5", nT, nT, .2},
-  {"1,2,@3", "1,2,3,1,1,-1,false" , "6", nT, nT, .2},
-  {"#"      , "0,0,0,1,1,1,true" , "7", nT, nT, .2},
-  {"#1"     , "1,0,0,1,1,1,true" , "8", nT, nT, .2},
-  {"#1,2"   , "1,2,0,1,1,1,true" , "9", nT, nT, .2},
-  {"#1,2,3" , "1,2,3,1,1,1,true" , "10", nT, nT, .2},
-  {"#@1,2,3", "1,2,3,-1,1,1,true" , "11", nT, nT, .2},
-  {"#1,@2,3", "1,2,3,1,-1,1,true" , "12", nT, nT, .2},
-  {"#1,2,@3", "1,2,3,1,1,-1,true" , "13", nT, nT, .2}
-}
-
-local stEstim = {
-  addEstim(f1, "DecodePOA"),
-  addEstim(f2, "NewDecodePOA"),
-  addEstim(f3, "ComDecodePOA")
-}
-
-testPerformance(stCard, stEstim, nil, 0.1)
 
 
 
