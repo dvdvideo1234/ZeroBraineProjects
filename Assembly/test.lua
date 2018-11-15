@@ -14,9 +14,10 @@ asmlib.SetIndexes("V",1,2,3)
 asmlib.SetIndexes("A",1,2,3)
 asmlib.SetIndexes("S",4,5,6,7)
 asmlib.SetOpVar("DIRPATH_BAS", "Assembly/")
+asmlib.SetLogControl(1000,false)
 
 asmlib.CreateTable("PIECES",{
-  Timer = asmlib.TimerSetting("CQT@10@1@1"),
+  Timer = "CQT@10@1@1",
   Index = {{1},{4},{1,4}},
   [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
   [2] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
@@ -27,9 +28,6 @@ asmlib.CreateTable("PIECES",{
   [7] = {"ANGLE" , "TEXT"   ,  nil ,  nil },
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
-
-
-local data = asmlib.GetCache("TRACKASSEMBLY_PIECES")
 
 asmlib.ImportDSV("PIECES", true, "ex_")
 

@@ -1,0 +1,6 @@
+# TranslateDSV:(phx_test@PIECES) 15-11-18 16:31:15 [ LUA ]
+# Data settings:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 1, "NULL", "0,-47.455105,1.482965", "0,-90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/metal_plate1x2.mdl", "NULL", "#", 2, "NULL", "0, 47.455105,1.482965", "0, 90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "NULL", "#", 1, "NULL", "0,-23.73248,1.482965", "0,-90,0", "NULL"})
+asmlib.InsertRecord("PIECES", {"models/props_phx/construct/windows/window1x2.mdl", "NULL", "#", 2, "NULL", "0, 71.17773,1.482965", "0, 90,0", "NULL"})
