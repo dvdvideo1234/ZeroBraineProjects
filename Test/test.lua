@@ -1,10 +1,11 @@
-local c = require("../dvdlualib/common")
+local com = require("dvdlualib/common")
+
+function IsTable(vVal)
+  return (type(vVal) == "table")
+end
 
 local t = {}
 
-t[0] = 7
-t[2] = 7
+print(IsTable(t))
 
-c.logTable(t)
-
-print(#t)
+com.logTable(debug.getinfo(1))

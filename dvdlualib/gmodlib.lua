@@ -213,6 +213,10 @@ function table.getn( tab )
 	return m
 end
 
+function table.Empty(tT)
+  for k,v in pairs(tT) do tT[k] = nil end
+end
+
 function languageAdd(key,val)
   language.__data[key] = val
 end
@@ -222,3 +226,36 @@ function languageGetPhrase(key)
 end
 
 function CurTime() return os.clock() end
+
+function makePlater()
+  local self = {}
+  function self:IsValid() return true end
+  function self:IsPlayer() return true end
+  function self:Nick() return "YOLO" end
+  return self
+end
+
+function LocalPlayer() return makePlater() end
+
+function makeEntity()
+  local self = {}
+  function self:IsValid() return true end
+  function self:IsPlayer() return false end
+  function self:IsVehicle() return false end
+  function self:IsNPC() return false end
+  function self:IsRagdoll() return false end
+  function self:IsWeapon() return false end
+  function self:IsWidget() return false end 
+  local __bdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
+  function self:GetBodyGroups() return __bdygrp end
+  function self:GetBodygroup(id) return __bdygrp.data[id] end
+  return self
+end
+
+function utilGetPlayerTrace(pl)
+  return {}
+end
+
+function utilTraceLine(dt)
+  return {}
+end

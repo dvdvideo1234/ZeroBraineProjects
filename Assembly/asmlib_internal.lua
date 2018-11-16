@@ -8,10 +8,11 @@ asmlib.SetIndexes("V",1,2,3)
 asmlib.SetIndexes("A",1,2,3)
 asmlib.SetIndexes("WV",1,2,3)
 asmlib.SetIndexes("WA",1,2,3)
-asmlib.SetOpVar("MODE_DATABASE", "LUA")
-asmlib.SetOpVar("LOG_DEBUGEN",nil)
+asmlib.SetOpVar("MODE_DATABASE", "SQL")
+asmlib.SetOpVar("LOG_DEBUGEN",true)
 asmlib.SetLogControl(10000, false)
-
+asmlib.SetOpVar("TRACE_MARGIN", 0.5)
+asmlib.SetOpVar("LOG_SRCSHORT", true)
 
 asmlib.CreateTable("PIECES",{
   Timer = "CQT@1800@1@1",
@@ -40,21 +41,28 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-local a = asmlib.GetTable("PIECES")
+local a = asmlib.GetTable("PIECES"):Select():Where({1,"aaa"}):Order(-2)
 local d = a:GetDefinition()
-local c = a:GetCommand()
+local c = a:GetCommand(); common.logTable(c,"CMD1")
+a:Index({1,2},{3,4})
+c = a:GetCommand(); common.logTable(c,"CMD2")
+a:Index()
+c = a:GetCommand(); common.logTable(c,"CMD3")
 
 asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"   , "#", "x1", 1, "", "", "", "aaa"})
 asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"   , "#", "x1", 2, "", "", "", "aaa"})
+--[[
 local p = asmlib.CacheQueryPiece("models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl")
 
---[[
-common.logTable(asmlib.GetTable())
-common.logTable(c,"CMD")
-common.logTable(p,"RECORD")
+--common.logTable(asmlib.GetTable())
+--common.logTable(c,"CMD")
+--common.logTable(p,"RECORD")
+
+a:TimerAttach("YOLO",d.Name,"models/sprops/cuboids/height06/size_1/cube_6x6x6.md")
+
+local z = makeEntity()
+asmlib.GetPropBodyGroup(z)
+
+
 ]]
-print(("N/A"):gsub("^%W+", ""):gsub("\\","/"))
-
-print(a:GetColumnID("LINEID"))
-
 end
