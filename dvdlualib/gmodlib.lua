@@ -2,7 +2,8 @@ require("dvdlualib/common")
 
 local language = {__data = {}}
 local logStatus = print
-
+local __tools = {}
+local __convar = {}
 local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
@@ -249,6 +250,28 @@ function makeEntity()
   local __bdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
   function self:GetBodyGroups() return __bdygrp end
   function self:GetBodygroup(id) return __bdygrp.data[id] end
+  function self:SetCollisionGroup() return nil end
+  function self:SetSolid() return nil end
+  function self:SetMoveType() return nil end
+  function self:SetNotSolid() return nil end
+  function self:SetNoDraw() return nil end
+  local __model = ""
+  local __atach = {ID = {[1]={["test"]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}}, Nam = {["test"] = 1}}
+  function self:SetModel(sM) __model = sM end
+  function self:GetModel() return __model end
+  function self:LookupAttachment(sK) return __atach.Nam[sK] end
+  function self:GetAttachment(iD) return __atach.ID[iD] end
+  return self
+end
+
+function makeTool(sM)
+  local self = {}
+  self.Mode = tostring(sM or "")
+  self.ClientConVar = {}
+  function self:GetClientNumber(sK) return (tonumber(self.ClientConVar[sK]) or 0) end
+  function self:GetClientInfo(sK) return tostring(self.ClientConVar[sK] or "") end
+  function self:SetClient(sK, vV) self.ClientConVar[sK] = tostring(vV) end
+  __tools[self.Mode] = self
   return self
 end
 
@@ -258,4 +281,12 @@ end
 
 function utilTraceLine(dt)
   return {}
+end
+
+function entsCreate() return makeEntity() end
+
+function RunConsoleCommand(a, b)
+  local tB = ("_"):Explode(a)
+  if(__convar[a]) then __convar[a] = tostring(b); return end
+  __tools[tB[1]]:SetClient(tB[2], b)
 end
