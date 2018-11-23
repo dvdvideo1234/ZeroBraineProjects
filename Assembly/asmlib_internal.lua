@@ -10,28 +10,30 @@ asmlib.SetIndexes("A",1,2,3)
 asmlib.SetIndexes("WV",1,2,3)
 asmlib.SetIndexes("WA",1,2,3)
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
- asmlib.SetOpVar("LOG_DEBUGEN",true)
+asmlib.SetOpVar("LOG_DEBUGEN",true)
 asmlib.SetLogControl(10000, false)
 asmlib.SetOpVar("TRACE_MARGIN", 0.5)
 asmlib.SetOpVar("DIRPATH_BAS","E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Assembly/")
+local gtArgsLogs  = {"", false, 0}
 
 asmlib.CreateTable("PIECES",{
   Timer = gaTimerSet[1],
   Index = {{1},{4},{1,4}},
   Trigs = {
-    InsertRecord = function(stRow)
+    InsertRecord = function(arLine) gtArgsLogs[1] = "*PIECES.Trigs.InsertRecord"
       local trCls = asmlib.GetOpVar("TRACE_CLASS")
-      stRow[2] = asmlib.DisableString(stRow[2],asmlib.DefaultType(),"TYPE")
-      stRow[3] = asmlib.DisableString(stRow[3],asmlib.ModelToName(stRow[1]),"MODEL")
-      stRow[8] = asmlib.DisableString(stRow[8],"NULL","NULL")
-      if(not ((stRow[8] == "NULL") or trCls[stRow[8]] or asmlib.IsBlank(stRow[8]))) then
-        trCls[stRow[8]] = true
-        asmlib.LogInstance("Register trace <"..tostring(stRow[8]).."@"..stRow[1]..">")
-      end
+      arLine[2] = asmlib.DisableString(arLine[2],asmlib.DefaultType(),"TYPE")
+      arLine[3] = asmlib.DisableString(arLine[3],asmlib.ModelToName(arLine[1]),"MODEL")
+      arLine[8] = asmlib.DisableString(arLine[8],"NULL","NULL")
+      if(not ((arLine[8] == "NULL") or trCls[arLine[8]] or asmlib.IsBlank(arLine[8]))) then
+        trCls[arLine[8]] = true; asmlib.LogInstance("Register trace <"..
+          tostring(arLine[8]).."@"..arLine[1]..">",gtArgsLogs)
+      end; return true
     end -- Register the class provided to the trace hit list
   },
   Cache = {
     InsertRecord = function(makTab, tCache, snPK, arLine)
+      gtArgsLogs[1] = "*PIECES.Cache.InsertRecord"
       local stData = tCache[snPK]; if(not stData) then
         tCache[snPK] = {}; stData = tCache[snPK] end
       if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
@@ -41,37 +43,41 @@ asmlib.CreateTable("PIECES",{
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
       local nOffsID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(nOffsID)) then
         asmlib.LogInstance("Cannot match <"..tostring(arLine[4])..
-          "> to "..defTab[4][1].." for "..tostring(snPK)); return false end
+          "> to "..defTab[4][1].." for "..tostring(snPK),gtArgsLogs); return false end
       local stPOA = asmlib.RegisterPOA(stData,nOffsID,arLine[5],arLine[6],arLine[7])
         if(not asmlib.IsHere(stPOA)) then
-        asmlib.LogInstance("Cannot process offset #"..tostring(nOffsID).." for "
-          ..tostring(snPK)); return false end
+        asmlib.LogInstance("Cannot process offset #"..tostring(nOffsID).." for "..
+          tostring(snPK),gtArgsLogs); return false end
       if(nOffsID > stData.Size) then stData.Size = nOffsID else
-        asmlib.LogInstance("Offset #"..tostring(nOffsID).." sequential mismatch"); return false end
+        asmlib.LogInstance("Offset #"..tostring(nOffsID)..
+          " sequential mismatch",gtArgsLogs); return false end
       return true
     end,
-    ExportDSV = function(oFile, makTab, tCache, sDelim)
+    ExportDSV = function(oFile, makTab, tCache, fPref, sDelim)
+      gtArgsLogs[1] = "*PIECES.Cache.ExportDSV"
       local tData, defTab = {}, makTab:GetDefinition()
       for mod, rec in pairs(tCache) do
-        tData[mod] = {Key = (rec.Type..rec.Name..mod)} end
-      local tSort = asmlib.Sort(tData,{Key})
+        tData[mod] = {KEY = (rec.Type..rec.Name..mod)} end
+      local tSort = asmlib.Sort(tData,{"KEY"})
       if(not tSort) then oFile:Flush(); oFile:Close()
-        asmlib.LogInstance("("..fPref..") Cannot sort cache data"); return false end
+        asmlib.LogInstance("("..fPref..") Cannot sort cache data",gtArgsLogs); return false end
       for iIdx = 1, tSort.Size do local stRec = tSort[iIdx]
         local tData = tCache[stRec.Key]
-        local sData = defTab.Name
+        local sData, tOffs = defTab.Name, tData.Offs
               sData = sData..sDelim..makTab:Match(stRec.Key,1,true,"\"")..sDelim..
                 makTab:Match(tData.Type,2,true,"\"")..sDelim..
                 makTab:Match(((asmlib.ModelToName(stRec.Key) == tData.Name) and symOff or tData.Name),3,true,"\"")
-        local tOffs = tData.Offs
         -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
         for iInd = 1, #tOffs do
           local stPnt = tData.Offs[iInd]
+          local sP = (asmlib.IsEqualPOA(stPnt.P,stPnt.O) and "" or asmlib.StringPOA(stPnt.P,"V"))
+          local sO = (asmlib.IsZeroPOA(stPnt.O,"V") and "" or asmlib.StringPOA(stPnt.O,"V"))
+                sO = (stPnt.O.Slot and stPnt.O.Slot or sO)
+          local sA = (asmlib.IsZeroPOA(stPnt.A,"A") and "" or asmlib.StringPOA(stPnt.A,"A"))
+                sA = (stPnt.A.Slot and stPnt.A.Slot or sA)
+          local sC = (tData.Unit and tostring(tData.Unit or "") or "")
           oFile:Write(sData..sDelim..makTab:Match(iInd,4,true,"\"")..sDelim..
-                   "\""..(asmlib.IsEqualPOA(stPnt.P,stPnt.O) and "" or asmlib.StringPOA(stPnt.P,"V")).."\""..sDelim..
-                   "\""..  asmlib.StringPOA(stPnt.O,"V").."\""..sDelim..
-                   "\""..( asmlib.IsZeroPOA(stPnt.A,"A") and "" or asmlib.StringPOA(stPnt.A,"A")).."\""..sDelim..
-                   "\""..(tData.Unit and tostring(tData.Unit or "") or "").."\"\n")
+            "\""..sP.."\""..sDelim.."\""..sO.."\""..sDelim.."\""..sA.."\""..sDelim.."\""..sC.."\"\n")
         end
       end; return true
     end
@@ -90,59 +96,6 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.CreateTable("ADDITIONS",{
-  Timer = gaTimerSet[2],
-  Index = {{1},{4},{1,4}},
-  Query = {
-    InsertRecord = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"},
-    ExportDSV = {1,4}
-  },
-  Cache = {
-    InsertRecord = function(makTab, tCache, snPK, arLine)
-      local defTab = makTab:GetDefinition()
-      local stData = tCache[snPK]; if(not stData) then
-        tCache[snPK] = {}; stData = tCache[snPK] end
-      if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
-      if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
-      local nCnt, sFld, nAddID = 2, "", makTab:Match(arLine[4],4)
-      if(not asmlib.IsHere(nAddID)) then asmlib.LogInstance("Cannot match "..defTab.Nick.." <"..
-        tostring(arLine[4]).."> to "..defTab[4][1].." for "..tostring(snPK)); return false end
-      stData[nAddID] = {} -- LineID has to be set properly
-      while(nCnt <= defTab.Size) do
-        sFld = defTab[nCnt][1]
-        stData[nAddID][sFld] = makTab:Match(arLine[nCnt],nCnt)
-        if(not asmlib.IsHere(stData[nAddID][sFld])) then  -- ADDITIONS is full of numbers
-          asmlib.LogInstance("Cannot match "..defTab.Nick.." <"..tostring(arLine[nCnt]).."> to "..
-            defTab[nCnt][1].." for "..tostring(snPK)); return false end
-        nCnt = nCnt + 1
-      end; stData.Size = nAddID; return true
-    end,
-    ExportDSV = function(oFile, makTab, tCache, sDelim)
-     local defTab = makTab:GetDefinition()
-     for mod, rec in pairs(tCache) do
-        local sData = defTab.Name..sDelim..mod
-        for iIdx = 1, #rec do local tData = rec[iIdx]; oFile:Write(sData)
-          for iID = 2, defTab.Size do local vData = tData[defTab[iID][1]]
-            oFile:Write(sDelim..makTab:Match(tData[defTab[iID][1]],iID,true,"\""))
-          end; oFile:Write("\n") -- Data is already inserted, there will be no crash
-        end
-      end; return true
-    end
-  },
-  [1]  = {"MODELBASE", "TEXT"   , "LOW", "QMK"},
-  [2]  = {"MODELADD" , "TEXT"   , "LOW", "QMK"},
-  [3]  = {"ENTCLASS" , "TEXT"   ,  nil ,  nil },
-  [4]  = {"LINEID"   , "INTEGER", "FLR",  nil },
-  [5]  = {"POSOFF"   , "TEXT"   ,  nil ,  nil },
-  [6]  = {"ANGOFF"   , "TEXT"   ,  nil ,  nil },
-  [7]  = {"MOVETYPE" , "INTEGER", "FLR",  nil },
-  [8]  = {"PHYSINIT" , "INTEGER", "FLR",  nil },
-  [9]  = {"DRSHADOW" , "INTEGER", "FLR",  nil },
-  [10] = {"PHMOTION" , "INTEGER", "FLR",  nil },
-  [11] = {"PHYSLEEP" , "INTEGER", "FLR",  nil },
-  [12] = {"SETSOLID" , "INTEGER", "FLR",  nil },
-},true,true)
-
 asmlib.CreateTable("PHYSPROPERTIES",{
   Timer = gaTimerSet[3],
   Index = {{1},{2},{1,2}},
@@ -155,6 +108,7 @@ asmlib.CreateTable("PHYSPROPERTIES",{
   },
   Cache = {
     InsertRecord = function(makTab, tCache, snPK, arLine)
+      gtArgsLogs[1] = "*PHYSPROPERTIES.Cache.ExportDSV"
       local skName = asmlib.GetOpVar("HASH_PROPERTY_NAMES")
       local skType = asmlib.GetOpVar("HASH_PROPERTY_TYPES")
       local tTypes = tCache[skType]; if(not tTypes) then
@@ -177,6 +131,7 @@ asmlib.CreateTable("PHYSPROPERTIES",{
       tNames[snPK][iNameID] = makTab:Match(arLine[3],3)
     end,
     ExportDSV = function(oFile, makTab, tCache, sDelim)
+      gtArgsLogs[1] = "*PHYSPROPERTIES.Cache.ExportDSV" 
       local defTab = makTab:GetDefinition()
       local tTypes = tCache[asmlib.GetOpVar("HASH_PROPERTY_TYPES")]
       local tNames = tCache[asmlib.GetOpVar("HASH_PROPERTY_NAMES")]
@@ -212,27 +167,20 @@ c = a:GetCommand(); a:Index()
 c = a:GetCommand(); common.logTable(c,"CMD")
 
 
---[[
-
 asmlib.DefaultType("TEST-O")
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"   , "#", "x1", 1, "", "!test", "", "aaa"})
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"   , "#", "x1", 2, "", "1,2,4", "", "aaa"})
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"   , "#", "x1", 1, "", "!test", "", "aaa"})
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"   , "#", "x1", 2, "", "!test", "", "aaa"})
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"   , "#", "x1", 3, "", "!test", "", "aaa"})
-asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"   , "#", "x1", 4, "", "!test", "", "aaa"})
-
-
-
-asmlib.ExportDSV("PIECES","xxx_")
-
-
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 1, "", "!test", "", "aaa"})
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 2, "", "1,2,4", "", "aaa"})
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "#", 1, "", "0,0,0", "", "aaa"})
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "x1", 2, "", "#1,2,3", "", "aaa"})
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "x1", 3, "", "#aaaa", "", "aaa"})
+asmlib.InsertRecord("PIECES",{"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "#", 4, "", "", "", "aaa"})
 
 asmlib.CacheQueryPiece("models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl")
 asmlib.CacheQueryPiece("models/sprops/cuboids/height06/size_1/cube_6x6x612.mdl")
 asmlib.CacheQueryPiece("models/sprops/cuboids/height06/size_1/cube_6x6x613.mdl")
 
-]]
+asmlib.ExportDSV("PIECES","xxx_")
+
 
 --[[
 
@@ -245,7 +193,7 @@ asmlib.CacheQueryPiece("models/sprops/cuboids/height06/size_1/cube_6x6x613.mdl")
 
 asmlib.ExportDSV("ADDITIONS","xxx_")
 ]]
-
+--[[
 asmlib.DefaultTable("PHYSPROPERTIES")
 asmlib.DefaultType("Miscellaneous")
 asmlib.InsertRecord({"#", 1 , "carpet"       })
@@ -267,5 +215,7 @@ asmlib.LogTable(asmlib.CacheQueryProperty(),"RECORD")
 asmlib.LogTable(asmlib.CacheQueryProperty("Organic"),"RECORD")
 
 asmlib.ExportDSV("PHYSPROPERTIES","xxx_")
+]]
+
 
 end

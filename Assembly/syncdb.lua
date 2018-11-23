@@ -24,18 +24,66 @@ asmlib.CreateTable("PIECES",{
   Timer = gaTimerSet[1],
   Index = {{1},{4},{1,4}},
   Trigs = {
-    InsertRecord = function(stRow) 
+    InsertRecord = function(stRow)
       local trCls = asmlib.GetOpVar("TRACE_CLASS")
       stRow[2] = asmlib.DisableString(stRow[2],asmlib.DefaultType(),"TYPE")
       stRow[3] = asmlib.DisableString(stRow[3],asmlib.ModelToName(stRow[1]),"MODEL")
       stRow[8] = asmlib.DisableString(stRow[8],"NULL","NULL")
       if(not ((stRow[8] == "NULL") or trCls[stRow[8]] or asmlib.IsBlank(stRow[8]))) then
-        trCls[stRow[8]] = true; asmlib.LogInstance("Register trace <"..tostring(stRow[8]).."@"..stRow[1]..">") end
+        trCls[stRow[8]] = true
+        asmlib.LogInstance("Register trace <"..tostring(stRow[8]).."@"..stRow[1]..">")
+      end
     end -- Register the class provided to the trace hit list
+  },
+  Cache = {
+    InsertRecord = function(makTab, tCache, snPK, arLine)
+      local stData = tCache[snPK]; if(not stData) then
+        tCache[snPK] = {}; stData = tCache[snPK] end
+      if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
+      if(not asmlib.IsHere(stData.Name)) then stData.Name = arLine[3] end
+      if(not asmlib.IsHere(stData.Unit)) then stData.Unit = arLine[8] end
+      if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
+      if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
+      local nOffsID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(nOffsID)) then
+        asmlib.LogInstance("Cannot match <"..tostring(arLine[4])..
+          "> to "..defTab[4][1].." for "..tostring(snPK)); return false end
+      local stPOA = asmlib.RegisterPOA(stData,nOffsID,arLine[5],arLine[6],arLine[7])
+        if(not asmlib.IsHere(stPOA)) then
+        asmlib.LogInstance("Cannot process offset #"..tostring(nOffsID).." for "
+          ..tostring(snPK)); return false end
+      if(nOffsID > stData.Size) then stData.Size = nOffsID else
+        asmlib.LogInstance("Offset #"..tostring(nOffsID).." sequential mismatch"); return false end
+      return true
+    end,
+    ExportDSV = function(oFile, makTab, tCache, sDelim)
+      local tData, defTab = {}, makTab:GetDefinition()
+      for mod, rec in pairs(tCache) do
+        tData[mod] = {Key = (rec.Type..rec.Name..mod)} end
+      local tSort = asmlib.Sort(tData,{Key})
+      if(not tSort) then oFile:Flush(); oFile:Close()
+        asmlib.LogInstance("("..fPref..") Cannot sort cache data"); return false end
+      for iIdx = 1, tSort.Size do local stRec = tSort[iIdx]
+        local tData = tCache[stRec.Key]
+        local sData = defTab.Name
+              sData = sData..sDelim..makTab:Match(stRec.Key,1,true,"\"")..sDelim..
+                makTab:Match(tData.Type,2,true,"\"")..sDelim..
+                makTab:Match(((asmlib.ModelToName(stRec.Key) == tData.Name) and symOff or tData.Name),3,true,"\"")
+        local tOffs = tData.Offs
+        -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
+        for iInd = 1, #tOffs do
+          local stPnt = tData.Offs[iInd]
+          oFile:Write(sData..sDelim..makTab:Match(iInd,4,true,"\"")..sDelim..
+                   "\""..(asmlib.IsEqualPOA(stPnt.P,stPnt.O) and "" or asmlib.StringPOA(stPnt.P,"V")).."\""..sDelim..
+                   "\""..  asmlib.StringPOA(stPnt.O,"V").."\""..sDelim..
+                   "\""..( asmlib.IsZeroPOA(stPnt.A,"A") and "" or asmlib.StringPOA(stPnt.A,"A")).."\""..sDelim..
+                   "\""..(tData.Unit and tostring(tData.Unit or "") or "").."\"\n")
+        end
+      end; return true
+    end
   },
   Query = {
     InsertRecord = {"%s","%s","%s","%d","%s","%s","%s","%s"},
-    ExportDSV = {2,3,1,4},
+    ExportDSV = {2,3,1,4}
   },
   [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
   [2] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
@@ -47,37 +95,6 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.CreateTable("ADDITIONS",{
-  Timer = gaTimerSet[2],
-  Index = {{1},{4},{1,4}},
-  Query = {
-    InsertRecord = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"},
-    ExportDSV = {1,4},
-  },
-  [1]  = {"MODELBASE", "TEXT"   , "LOW", "QMK"},
-  [2]  = {"MODELADD" , "TEXT"   , "LOW", "QMK"},
-  [3]  = {"ENTCLASS" , "TEXT"   ,  nil ,  nil },
-  [4]  = {"LINEID"   , "INTEGER", "FLR",  nil },
-  [5]  = {"POSOFF"   , "TEXT"   ,  nil ,  nil },
-  [6]  = {"ANGOFF"   , "TEXT"   ,  nil ,  nil },
-  [7]  = {"MOVETYPE" , "INTEGER", "FLR",  nil },
-  [8]  = {"PHYSINIT" , "INTEGER", "FLR",  nil },
-  [9]  = {"DRSHADOW" , "INTEGER", "FLR",  nil },
-  [10] = {"PHMOTION" , "INTEGER", "FLR",  nil },
-  [11] = {"PHYSLEEP" , "INTEGER", "FLR",  nil },
-  [12] = {"SETSOLID" , "INTEGER", "FLR",  nil },
-},true,true)
-
-
-asmlib.DefaultTable("PIECES")
-asmlib.DefaultType("Minis")
-asmlib.InsertRecord({"models/minitrains/straight_16.mdl",   "#", "#", 1, "", "", ""})
-asmlib.InsertRecord({"models/minitrains/straight_16.mdl",   "#", "#", 2, "", "", ""})
-asmlib.DefaultType("PHX Monorail")
-asmlib.InsertRecord({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 1, "", "", ""})
-asmlib.InsertRecord({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 2, "", "-", ""})
-
-
 local myTable = {
   ["models/props_phx/construct/metal_plate1x2.mdl"] = { -- Here goes the model of your pack
     {myType ,"#", 1, "","0,-47.455105,1.482965","0,-90,0",""}, -- The first point parameter
@@ -88,7 +105,9 @@ local myTable = {
     {myType ,"#", 2, "","0, 71.17773,1.482965","0, 90,0",""}
   }
 }
-local myPrefix = "phx_test"
+
+local myPrefix = "xxx_"
+
 if(not asmlib.SynchronizeDSV("PIECES", myTable, true, myPrefix)) then
   error("Failed to synchronize track pieces")
 else -- You are saving me from all the work for manually generating these

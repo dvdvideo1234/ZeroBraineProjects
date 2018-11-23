@@ -1,8 +1,8 @@
-# ExportDSV:(xxx_@PIECES) 22-11-18 16:29:28 [ LUA ]
+# ExportDSV:(xxx_@PIECES) 23-11-18 15:25:02 [ LUA ]
 # Data settings:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
-TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"	"TEST-O"	"x1"	1	""	"6,6,6"	""	"aaa"
+TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	1	""	""	""	"aaa"
+TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	2	""	""	""	"aaa"
+TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	3	""	""	""	"aaa"
+TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	4	""	""	""	"aaa"
+TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"	"TEST-O"	"x1"	1	""	"!test"	""	"aaa"
 TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl"	"TEST-O"	"x1"	2	""	"1,2,4"	""	"aaa"
-TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"x1"	1	""	"6,6,6"	""	"aaa"
-TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"x1"	2	""	"6,6,6"	""	"aaa"
-TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"x1"	3	""	"6,6,6"	""	"aaa"
-TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"x1"	4	""	"6,6,6"	""	"aaa"

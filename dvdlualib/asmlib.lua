@@ -174,6 +174,11 @@ function IsBlank(vVal)
   return (vVal == "")
 end
 
+function IsExact(vVal)
+  if(not IsString(vVal)) then return false end
+  return (vVal:sub(1,1) == "*")
+end
+
 function IsBool(vVal)
   if    (vVal == true ) then return true
   elseif(vVal == false) then return true end
@@ -228,11 +233,6 @@ end
 
 ------------------ LOGS ------------------------
 
-function LogSet(sNam, vRet) SetOpVar("LOG_OVRFUNC")
-  if(IsHere(sNam) and IsString(sNam) and not IsBlank(sNam)) then
-    SetOpVar("LOG_OVRFUNC", tostring(sNam)) end; return vRet
-end
-
 local function GetLogID()
   local nNum, nMax = GetOpVar("LOG_CURLOGS"), GetOpVar("LOG_MAXLOGS")
   if(not (nNum and nMax)) then return "" end
@@ -283,14 +283,15 @@ function LogInstance(vMsg, vSrc, bCon, iDbg, tDbg)
   local tInfo = (iDbg and debugGetinfo(iDbg) or nil) -- Pass stack index
         tInfo = tInfo or (tDbg and tDbg or nil)      -- Override debug information
         tInfo = tInfo or debugGetinfo(2)             -- Default value
-  local sFunc, sDbg = GetOpVar("LOG_OVRFUNC"), ""
-        sFunc = tostring(sFunc or (tInfo.name and tInfo.name or "Main"))
+  local sDbg, sFunc = "", tostring(sFunc or (tInfo.name and tInfo.name or "Main")) 
   if(GetOpVar("LOG_DEBUGEN")) then
     local snID, snAV = GetOpVar("MISS_NOID"), GetOpVar("MISS_NOAV")
     sDbg = sDbg.." "..(tInfo.linedefined and "["..tInfo.linedefined.."]" or snAV)
     sDbg = sDbg..(tInfo.currentline and ("["..tInfo.currentline.."]") or snAV)
     sDbg = sDbg.."@"..(tInfo.source and (tInfo.source:gsub("^%W+", ""):gsub("\\","/")) or snID)
-  end; local sSrc = ((vSrc and not IsBlank(vSrc)) and tostring(vSrc).."." or "")
+  end; local sSrc = tostring(vSrc or "")
+  if(IsExact(sSrc)) then sSrc = sSrc:sub(2,-1); sFunc = "" else
+    if(not IsBlank(sSrc)) then sSrc = sSrc.."." end end
   local sInst   = ((SERVER and "SERVER" or nil) or (CLIENT and "CLIENT" or nil) or "NOINST")
   local sMoDB, sToolMD = tostring(GetOpVar("MODE_DATABASE")), tostring(GetOpVar("TOOLNAME_NU"))
   Log(sInst.." > "..sToolMD.." ["..sMoDB.."]"..sDbg.." "..sSrc..sFunc..": "..sMsg, bCon)
@@ -347,7 +348,7 @@ function SetLogControl(nLines,bFile)
   local sNam = tostring(GetOpVar("LOG_LOGFILE"))
   if(sBas and not fileExists(sBas,"DATA") and
      not IsBlank(GetOpVar("LOG_LOGFILE"))) then fileCreateDir(sBas)
-  end; LogInstance("("..sMax..","..sNam..")",true)
+  end; LogInstance("("..sMax..","..sNam..")")
 end
 
 function SettingsLogs(sHash)
@@ -1391,7 +1392,7 @@ function RegisterPOA(stPiece, ivID, sP, sO, sA)
   end; local sE, sD = GetOpVar("OPSYM_ENTPOSANG"), GetOpVar("OPSYM_DISABLE")
   ---------- Origin ----------
   if(sO:sub(1,1) == sD) then ReloadPOA() else
-    if(sO:sub(1,1) == sE) then -- Reversing the sign event is not supported
+    if(sO:sub(1,1) == sE) then tOffs.O.Slot = sO
       local vtPos, atAng = GetTransformPOA(stPiece.Slot, sO:sub(2,-1))
       if(IsHere(vtPos)) then ReloadPOA(vtPos[cvX], vtPos[cvY], vtPos[cvZ])
       else if((sO ~= "NULL") and not IsBlank(sO)) then DecodePOA(sO) else ReloadPOA() end end
@@ -1399,7 +1400,7 @@ function RegisterPOA(stPiece, ivID, sP, sO, sA)
   end; if(not IsHere(TransferPOA(tOffs.O, "V"))) then LogInstance("Origin mismatch"); return nil end
   ---------- Angle ----------
   if(sA:sub(1,1) == sD) then ReloadPOA() else
-    if(sA:sub(1,1) == sE) then -- Reversing the sign event is not supported
+    if(sA:sub(1,1) == sE) then tOffs.A.Slot = sA
       local vtPos, atAng = GetTransformPOA(stPiece.Slot, sA:sub(2,-1))
       if(IsHere(atAng)) then ReloadPOA(atAng[caP], atAng[caY], atAng[caR])
       else if((sA ~= "NULL") and not IsBlank(sA)) then DecodePOA(sA) else ReloadPOA() end end
@@ -2122,43 +2123,42 @@ function InsertRecord(sTable,arLine)
   if(not IsString(sTable)) then
     LogInstance("Table name {"..type(sTable).."}<"..tostring(sTable).."> not string"); return false end
   if(not arLine) then
-    LogInstance("Missing data table for "..sTable); return false end
-  if(not arLine[1]) then LogInstance("Missing PK for "..sTable)
-    for key, val in pairs(arLine) do LogInstance("PK data ["..tostring(key).."] = <"..tostring(val)..">") end
+    LogInstance("Missing data table",sTable); return false end
+  if(not arLine[1]) then LogInstance("Missing PK for",sTable)
+    for key, val in pairs(arLine) do LogInstance("PK data ["..tostring(key).."] = <"..tostring(val)..">",sTable) end
     return false
   end -- Read SQL builder object
   local makTab = libQTable[sTable]; if(not IsHere(makTab)) then
-    LogInstance("Missing builder for "..sTable); return false end
+    LogInstance("Missing builder",sTable); return false end
   local defTab, sMoDB, sFunc = makTab:GetDefinition(), GetOpVar("MODE_DATABASE"), debugGetinfo(1).name
   -- Call the trigger when provided
-  if(IsTable(defTab.Trigs)) then local bS, sE = pcall(defTab.Trigs[sFunc], arLine)
-    if(not bS) then LogInstance("Trigger mismatch for <"..defTab.Nick.."> "..tostring(sE))
-      return false end -- Make sure the error is logged when the trigger is faulty
+  if(IsTable(defTab.Trigs)) then local bS, sR = pcall(defTab.Trigs[sFunc], arLine)
+    if(not bS) then LogInstance("Trigger manager fail "..sR,defTab.Nick); return false end
+    if(not sR) then LogInstance("Trigger routine fail",defTab.Nick); return false end
   end  
   -- Populate the data after the trigger does its thing
   if(sMoDB == "SQL") then local qsKey = GetOpVar("FORM_KEYSTMT")
     for iD = 1, defTab.Size do arLine[iD] = makTab:Match(arLine[iD],iD,true) end
     local Q = CacheStmt(qsKey:format(sFunc, defTab.Nick), nil, unpack(arLine))
     if(not Q) then local sStmt = makTab:Insert():Values(unpack(defTab.Query[sFunc])):Get()
-      if(not IsHere(sStmt)) then LogInstance("Build statement <"..defTab.Nick.."> failed"); return nil end
+      if(not IsHere(sStmt)) then LogInstance("Build statement failed",defTab.Nick); return nil end
       Q = CacheStmt(qsKey:format(sFunc, defTab.Nick), sStmt, unpack(arLine))
     end -- The query is built based on table definition
     if(not IsHere(Q)) then
-      LogInstance( "Internal cache error <"..defTab.Nick..">"); return false end
+      LogInstance("Internal cache error",defTab.Nick); return false end
     local qRez = sqlQuery(Q); if(not qRez and IsBool(qRez)) then
-       LogInstance("Failed to insert a record because of <"..sqlLastError().."> Query ran <"..Q..">"); return false end
+       LogInstance("Execution error <"..sqlLastError().."> Query ran <"..Q..">",defTab.Nick); return false end
     return true -- The dynamic statement insertion was successful
-  elseif(sMoDB == "LUA") then
-    local snPrimaryKey = makTab:Match(arLine[1],1)
-    if(not IsHere(snPrimaryKey)) then -- If primary key becomes a number
-      LogInstance("Cannot match primary key "..defTab.Nick.." <"..tostring(arLine[1]).."> to "..defTab[1][1].." for "..tostring(snPrimaryKey)); return nil end
+  elseif(sMoDB == "LUA") then local snPK = makTab:Match(arLine[1],1)
+    if(not IsHere(snPK)) then -- If primary key becomes a number
+      LogInstance("Primary key mismatch <"..tostring(arLine[1]).."> to "..defTab[1][1].." for "..tostring(snPK),defTab.Nick); return nil end
     local tCache = libCache[defTab.Name]; if(not IsHere(tCache)) then
-      LogInstance("Cache missing for "..defTab.Nick); return false end
+      LogInstance("Cache missing",defTab.Nick); return false end
     if(not IsTable(defTab.Cache)) then 
-      LogInstance("Cache manager missing for "..defTab.Nick); return false end
-    local bS, sR = pcall(defTab.Cache[sFunc], makTab, tCache, snPrimaryKey, arLine)
-    if(not bS) then LogInstance("Cache manager fail for "..defTab.Nick.." "..sR); return false end
-    if(not sR) then LogInstance("Cache insert fail for "..defTab.Nick); return false end
+      LogInstance("Cache manager missing",defTab.Nick); return false end
+    local bS, sR = pcall(defTab.Cache[sFunc], makTab, tCache, snPK, arLine)
+    if(not bS) then LogInstance("Cache manager fail "..sR,defTab.Nick); return false end
+    if(not sR) then LogInstance("Cache routine fail",defTab.Nick); return false end
   else LogInstance("Wrong database mode <"..sMoDB..">",tabDef.Nick); return false end
   return true -- The dynamic cache population was successful
 end
@@ -2532,16 +2532,16 @@ function ExportDSV(sTable, sPref, sDelim)
   if(not IsString(sTable)) then
     LogInstance("Table {"..type(sTable).."}<"..tostring(sTable).."> not string"); return false end
   local makTab = libQTable[sTable]; if(not IsHere(makTab)) then
-    LogInstance("Missing table builder for <"..sTable..">"); return false end
+    LogInstance("Missing table builder",sTable); return false end
   local defTab = makTab:GetDefinition(); if(not IsHere(defTab)) then
-    LogInstance("Missing table definition for <"..sTable..">"); return nil end
+    LogInstance("Missing table definition",defTab.Nick); return nil end
   local fName, fPref = GetOpVar("DIRPATH_BAS"), tostring(sPref or GetInstPref())
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
   fName = fName..GetOpVar("DIRPATH_DSV")
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
   fName = fName..fPref..defTab.Name..".txt"
   local F = fileOpen(fName, "wb", "DATA"); if(not F) then
-    LogInstance("("..fPref..") fileOpen("..fName..") failed"); return false end
+    LogInstance("("..fPref..") fileOpen("..fName..") failed",defTab.Nick); return false end
   local sDelim, sFunc = tostring(sDelim or "\t"):sub(1,1), debugGetinfo(1).name
   local sMoDB, symOff = GetOpVar("MODE_DATABASE"), GetOpVar("OPSYM_DISABLE")
   F:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDate().." [ "..sMoDB.." ]\n")
@@ -2549,29 +2549,28 @@ function ExportDSV(sTable, sPref, sDelim)
   if(sMoDB == "SQL") then
     local Q = makTab:Select():Order(defTab.Query[sFunc]):Get()
     if(not IsHere(Q)) then F:Flush(); F:Close()
-      LogInstance("("..fPref..") Build statement failed"); return false end
+      LogInstance("("..fPref..") Build statement failed",defTab.Nick); return false end
     F:Write("# Query ran: <"..Q..">\n")
     local qData = sqlQuery(Q); if(not qData and IsBool(qData)) then F:Flush(); F:Close()
-      LogInstance("("..fPref..") SQL exec error <"..sqlLastError()..">"); return nil end
+      LogInstance("("..fPref..") SQL exec error <"..sqlLastError()..">",defTab.Nick); return nil end
     if(not (qData and qData[1])) then F:Flush(); F:Close()
-      LogInstance("("..fPref..") No data found <"..Q..">"); return false end
+      LogInstance("("..fPref..") No data found <"..Q..">",defTab.Nick); return false end
     local sData, sTab = "", defTab.Name
-    for iCnt = 1, #qData do
-      local qRec  = qData[iCnt]; sData = sTab
-      for iInd = 1, defTab.Size do
-        local sHash = defTab[iInd][1]
+    for iCnt = 1, #qData do local qRec = qData[iCnt]; sData = sTab
+      for iInd = 1, defTab.Size do local sHash = defTab[iInd][1]
         sData = sData..sDelim..makTab:Match(qRec[sHash],iInd,true,"\"",true)
       end; F:Write(sData.."\n"); sData = ""
     end -- Matching will not crash as it is matched during insertion
   elseif(sMoDB == "LUA") then
     local tCache = libCache[defTab.Name]
     if(not IsHere(tCache)) then F:Flush(); F:Close()
-      LogInstance("("..fPref..") Table <"..defTab.Name.."> cache missing"); return false end
-    local bS, sR = pcall(defTab.Cache[sFunc], F, makTab, tCache, sDelim)
-    if(not bS) then LogInstance("Cache manager fail for "..defTab.Nick.." "..sR); return false end
-    if(not sR) then LogInstance("Cache insert fail for "..defTab.Nick); return false end
-  else LogInstance("Wrong database mode <"..sMoDB..">",tabDef.Nick); return false end
-  F:Flush(); F:Close(); return true -- The dynamic cache population was successful
+      LogInstance("("..fPref..") Cache missing",defTab.Nick); return false end
+    local bS, sR = pcall(defTab.Cache[sFunc], F, makTab, tCache, fPref, sDelim)
+    if(not bS) then LogInstance("Cache manager fail for "..sR,defTab.Nick); return false end
+    if(not sR) then LogInstance("Cache routine fail",defTab.Nick); return false end
+  else LogInstance("Wrong database mode <"..sMoDB..">",defTab.Nick); return false end
+  -- The dynamic cache population was successful then send a message
+  F:Flush(); F:Close(); LogInstance("("..fPref.."@"..defTab.Nick.."): Success"); return true
 end
 
 --[[
@@ -3449,7 +3448,7 @@ end
 function MakeAsmVar(sName, vVal, vBord, vFlg, vInf)
   if(not IsString(sName)) then
     LogInstance("CVar name {"..type(sName).."}<"..tostring(sName).."> not string"); return nil end
-  local sLow = ((sName:sub(1,1) == "*") and sName:sub(2,-1):lower() or (GetOpVar("TOOLNAME_PL")..sName):lower())
+  local sLow = (IsExact(sName) and sName:sub(2,-1):lower() or (GetOpVar("TOOLNAME_PL")..sName):lower())
   local cVal, sInf = (tonumber(vVal) or tostring(vVal)), tostring(vInf or "")
   local tBrd, nFlg = mathFloor(tonumber(vFlg) or 0), GetOpVar("TABLE_BORDERS")
   if(IsHere(tBrd[sLow])) then LogInstance("Exists <"..sLow..">"); return nil end
@@ -3464,7 +3463,7 @@ function GetAsmVar(sName, sMode)
     LogInstance("CVar name {"..type(sName).."}<"..tostring(sName).."> not string"); return nil end
   if(not IsString(sMode)) then
     LogInstance("CVar mode {"..type(sMode).."}<"..tostring(sMode).."> not string"); return nil end
-  local sLow = ((sName:sub(1,1) == "*") and sName:sub(2,-1):lower() or (GetOpVar("TOOLNAME_PL")..sName):lower())
+  local sLow = (IsExact(sName) and sName:sub(2,-1):lower() or (GetOpVar("TOOLNAME_PL")..sName):lower())
   local CVar = GetConVar(sLow); if(not IsHere(CVar)) then
     LogInstance("("..sLow..", "..sMode..") Missing CVar object"); return nil end
   if    (sMode == "INT") then return (tonumber(BorderValue(CVar:GetInt()  , sLow)) or 0)
