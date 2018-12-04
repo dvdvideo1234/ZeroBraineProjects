@@ -1,11 +1,11 @@
-local sExp = "wire_e2_piston_timing"
+local sExp = "stcontrol"
 
 local sProg = "ExtractWireWiki/"
 local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
 local DSC = wikilib.readDescriptions(API)
-local YTK = "u59E4rv-28E"
+local YTK = "g1A_esGtxM0"
 local Lfi = [[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki\countries\ad.png]]
 
 
@@ -19,7 +19,7 @@ if(f) then io.output(f)
   wikilib.printMatchedAPI(API, DSC)
   wikilib.printDescriptionTable(API, DSC, 1)
   wikilib.printDescriptionTable(API, DSC, 2)
-  wikilib.printTypeTable(API)
+ -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
   print(wikilib.insLocal(Lfi))
   print(wikilib.insRefCountry("bg"))

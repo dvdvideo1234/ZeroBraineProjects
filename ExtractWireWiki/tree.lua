@@ -1,19 +1,30 @@
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+
+local com = require('common')
 local sProg = "ExtractWireWiki"
 local wikilib = require(sProg.."/lib/wikilib")
 local sP = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/"..sProg.."/"
 
-print()
+wikilib.folderSet("D:/SystemTemp")
 
--- Set temporary folder
-wikilib.folderSet(sP, "out/")
+local sSVN = "SpinnerTool"
 
-local sD = "E:/Documents/Lua-Projs/SVN/TrackAssemblyTool_GIT_master"
+local sD = "E:/Documents/Lua-Projs/SVN/"..sSVN
 local fO, oE = io.open(sProg.."/out/tree.md", "wb")
-if(fO) then io.output(fO)
+if(fO) then -- io.output(fO)
+  -- Open token
+  io.write("```sql\n")
+  -- Tell the api to use file URL
+  wikilib.folderReplaceURL(sD,"https://github.com/dvdvideo1234/SpinnerTool/blob/master/")
   -- Tell the read application we are using UTF-8 by writing a BOM
   wikilib.writeBOM("UTF8")
+  -- Read structure
+  local tS = wikilib.folderReadStructure((sD):gsub("\\","/"))
+  --com.logTable(tS)
   -- Write the tree
-  wikilib.folderDrawTree(wikilib.folderReadStructure((sD):gsub("\\","/")), 1)
+  wikilib.folderDrawTree(tS, 2)
+  --- Close token
+  io.write("```\n")
 else
   error("Output error: "..oE)
 end

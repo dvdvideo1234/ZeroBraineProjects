@@ -1,11 +1,12 @@
 local API = {
   NAME = "StControl",
   FLAG = {
-    icon = false, -- (TRUE) Use icons for arguments
+    icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
     extr = false, -- (TRUE) Use the external wiremod types
     remv = false, -- (TRUE) Replace void type with empty string
-    quot = true   -- (TRUE) Place backticks on words containing control symbols links []
+    quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
+    qref = true   -- (TRUE) Quote the string in the link reference
   },
   POOL = {
     {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={40,5,13}},

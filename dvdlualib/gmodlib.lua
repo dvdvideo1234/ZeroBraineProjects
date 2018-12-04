@@ -131,6 +131,7 @@ function CreateConVar(a, b, c, d)
   function self:SetString(s) val = tostring(s):rep(1) end
   function self:GetNumber() return tonumber(val) end
   function self:GetBool()   return tobool(val) end
+  function self:GetInt()   return math.floor(tonumber(val) or 0) end
   return self
 end
 

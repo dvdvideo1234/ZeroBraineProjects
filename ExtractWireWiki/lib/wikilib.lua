@@ -262,11 +262,9 @@ function wikilib.readDescriptions(API)
   local fR = io.open(sN, "rb"); if(not fR) then
     return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
   local sC = cT..fR:read("*all")..cB
---  print(sC)
-  local fC, oE = load(sC)
-  if(fC) then local bS, fC = pcall(fC)
+  local fC, oE = load(sC); if(fC) then local bS, fC = pcall(fC)
     if(bS) then return fC() else
-      common.logStatus("PCALL: Fail: "..DSC) end
+      common.logStatus("wikilib.readDescriptions: Execution error: "..fC) end
   else
     common.logStatus("wikilib.readDescriptions: Compilation chunk:\n"..sC)
     error("wikilib.readDescriptions: Compilation error: "..oE)
@@ -527,8 +525,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
 end
 
 local wikiFolder = {}
-      wikiFolder.__base = ""
-      wikiFolder.__temp = "out/"
+      wikiFolder.__temp = "temp/"
       wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
       wikiFolder.__read = "*line"
       wikiFolder.__drof = "Directory of "
@@ -545,6 +542,7 @@ local wikiFolder = {}
         {"`", "|", "-", "|", "/"},
         {"+", "+", "-", "|", "*"}
       }
+      wikiFolder.__furl = {"",""}
       wikiFolder.__drem = "(.*)/"
       wikiFolder.__dept = 2
       wikiFolder.__ubom = {
@@ -559,8 +557,13 @@ local wikiFolder = {}
         hash = false  -- So directory hash address
       }
 
-function wikilib.folderSet(sB, sT)
-  wikiFolder.__base = wikilib.normalDir(sB)
+function wikilib.folderReplaceURL(sF, sU)
+  local sF = wikilib.normalDir(tostring(sF or ""):gsub("\\","/"))
+  local sU = wikilib.normalDir(tostring(sU or ""):gsub("\\","/"))
+  wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
+end
+
+function wikilib.folderSet(sT)
   wikiFolder.__temp = wikilib.normalDir(sT)
 end
 
@@ -575,9 +578,10 @@ end
 
 function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
+  local sU = wikiFolder.__furl
   local sR = common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
-  local nT = wikiFolder.__base..wikiFolder.__temp..vT..".txt"
+  local nT = wikiFolder.__temp..vT..".txt"
   os.execute(wikiFolder.__fcmd:format(sP, nT))
   local fD, oE = io.open(nT, "rb"); if(not fD) then
     common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
@@ -587,6 +591,10 @@ function wikilib.folderReadStructure(sP, iV)
     while(sL) do sL = common.stringTrim(sL)
     if(sL:sub(1, 13) == wikiFolder.__drof) then
       tT.base = sL:sub(14, -1):gsub("\\","/")
+      if(sU[1] ~= "" and sU[2] ~= "") then
+        local uS, uE = sP:find(sU[1], 1, true)
+        if(uS and uE) then tT.link = sU[2]..sP:sub(uE+1, -1) end
+      end
     elseif(sL:sub(1, 17):match(wikiFolder.__fdat)) then
       local sS = common.stringTrim(sL:sub(18, 36))
       local sN = common.stringTrim(sL:sub(37, -1))
