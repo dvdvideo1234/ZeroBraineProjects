@@ -2,7 +2,7 @@
 `╠═══`[`data`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data)  
 `║...╠═══`[`pictures`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/pictures)  
 `║...║...╠═══`[`icon.jpg`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/pictures/icon.jpg) [111kB]  
-`║...║...╚═══`[`screenshot.jpg`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/pictures/screenshot.jpg) [175kB]  
+`║...║...╚═══`[`screenshot.jpg`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/pictures/screenshot.jpg) [1mB]  
 `║...╚═══`[`workshop`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/workshop)  
 `║.......╠═══`[`addon.json`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/workshop/addon.json) [308B]  
 `║.......╠═══`[`addon.txt`](https://github.com/dvdvideo1234/SpinnerTool/blob/master/data/workshop/addon.txt) [101B]  

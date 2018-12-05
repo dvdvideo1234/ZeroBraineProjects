@@ -560,7 +560,7 @@ local wikiFolder = {}
         urls = false  -- Use URLs for the files /wikiFolder.__furl/
       }
       wikiFolder.__mems = {"", "k", "m", "t"} -- File zire amout round
-      wikiFolder.__memi = 2                   -- File zire amout round ID
+      wikiFolder.__memi = 3                   -- File zire amout round ID
 
 function wikilib.folderReplaceURL(sF, sU)
   local sF = wikilib.normalDir(tostring(sF or ""):gsub("\\","/"))
@@ -612,9 +612,10 @@ function wikilib.fileSize(sS)
     for iD = sM, iM, -1 do
       if(tE[iD] ~= 0) then sO = sO..tostring(tE[iD]) end end
     return " ["..sO..tM[iM].."B]"
-  else iM = iM - 1
-    if(iM < 1) then return (" [0B]") end
-    return (" ["..tE[iM].."B]")
+  else
+    while(iM > 0 and tE[iM] == 0) do iM = iM - 1
+      if(iM < 1) then return (" [0B]") end end
+    return (" ["..tE[iM]..tM[iM].."B]")
   end
 end
 
