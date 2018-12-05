@@ -103,6 +103,7 @@ local wikiQuote = {["%d"] = true, ["_"]=true}
 local wikiQuFoo = {common.stringIsUpper}
 -- Characters to exclude from the word quoting
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true}
+local wikiNewLN = "  " -- Stores the new line in MD
 
 local function isQuote(sS)
   local bR = false
@@ -544,7 +545,8 @@ local wikiFolder = {}
       }
       wikiFolder.__furl = {"",""}
       wikiFolder.__drem = "(.*)/"
-      wikiFolder.__dept = 2
+      wikiFolder.__dept = 3       -- The folder depth offset
+      wikiFolder.__depc = "."     -- The folder depth character
       wikiFolder.__ubom = {
         ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
         ["UTF16"] = {0xFE, 0xFF},            -- UTF16
@@ -554,8 +556,11 @@ local wikiFolder = {}
         prnt = false, -- Show the parent directory in the tree
         hide = false, -- Show hidden directories
         size = false, -- Show file size
-        hash = false  -- So directory hash address
+        hash = false, -- So directory hash address
+        urls = false  -- Use URLs for the files /wikiFolder.__furl/
       }
+      wikiFolder.__mems = {"", "k", "m", "t"} -- File zire amout round
+      wikiFolder.__memi = 2                   -- File zire amout round ID
 
 function wikilib.folderReplaceURL(sF, sU)
   local sF = wikilib.normalDir(tostring(sF or ""):gsub("\\","/"))
@@ -567,6 +572,27 @@ function wikilib.folderSet(sT)
   wikiFolder.__temp = wikilib.normalDir(sT)
 end
 
+function wikilib.folderRoundSize(vS)
+  local tM, iM = wikiFolder.__mems, wikiFolder.__memi
+  if(tonumber(vS)) then
+    iM = common.getClamp(math.floor(tonumber(nS) or 1), 1, #tM)
+    return iM -- Return the parameter used
+  else local iD, sS = 1, tostring(vS); while(tM[iD]) do
+    if(tM[iD] == vS) then iM = iD; return iD end end
+    common.logStatus("wikilib.folderRoundSize: Mismatch <"..vS.."> !")
+    if(bErr) then error("wikilib.folderRoundSize: Mismatch <"..vS.."> !") end
+  end
+end
+
+function wikilib.folderFlag(sF, bF)
+  local tF = wikiFolder.__flag
+  local sF = tostring(sF)
+  if(tF[sF] ~= nil) then tF[sF] = (bF and bF or false)
+  else common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
+    if(bErr) then error("wikilib.folderFlag: Mismatch <"..sF.."> !") end
+  end
+end
+
 function wikilib.writeBOM(sF, vE)
   local sC, lE = tostring(sF or ""), common.toBool(lE)
   local tU = wikiFolder.__ubom[sC]; if(not tU) then
@@ -574,6 +600,22 @@ function wikilib.writeBOM(sF, vE)
   if(not lE) then for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
   else for iD = #tU, 1, -1 do io.write(string.char(tU[iD])) end end
   return true
+end
+
+function wikilib.fileSize(sS)
+  local tM, sO = wikiFolder.__mems, ""
+  local iM, sM = wikiFolder.__memi, #tM
+  local tE = common.stringExplode(sS, " ")
+  common.tableArrReverse(tE)
+  for iD = 1, sM do tE[iD] = (tonumber(tE[iD]) or 0) end
+  if(tE[iM] ~= 0) then
+    for iD = sM, iM, -1 do
+      if(tE[iD] ~= 0) then sO = sO..tostring(tE[iD]) end end
+    return " ["..sO..tM[iM].."B]"
+  else iM = iM - 1
+    if(iM < 1) then return (" [0B]") end
+    return (" ["..tE[iM].."B]")
+  end
 end
 
 function wikilib.folderReadStructure(sP, iV)
@@ -621,6 +663,22 @@ function wikilib.folderReadStructure(sP, iV)
   end; fD:close(); os.remove(nT) return tT
 end
 
+local function folderLinkItem(tR, vC)
+  local sO, sR = vC.name
+  if(wikiFolder.__flag.urls) then
+    local tU, sR = wikiFolder.__furl, tR.link
+    sR = (sR and wikilib.normalDir(sR) or tU[2])  
+    return toLinkURL("`"..sO.."`", sR..vC.name)     
+  end; return ("`"..sO.."`")
+end
+
+--[[
+ * This proints out the recursive tree
+ * tP > Structure to print
+ * vA > The type of graph symbols to use
+ * vR > Previous iretaration graph recursion depth ( omited )
+ * sR > Previous iretaration graph recursion destination ( omited )
+]]
 function wikilib.folderDrawTree(tP, vA, vR, sR)
   local tS = wikiFolder.__syms
   local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
@@ -629,18 +687,18 @@ function wikilib.folderDrawTree(tP, vA, vR, sR)
   local nS, nE = tP.base:find(wikiFolder.__drem); tS = tS[iA]
   local iI, tC = wikiFolder.__dept, common.sortTable(tP.cont, {"name"}, true)
   if(iR == 0) then local sB = tostring(tS[5] or "/")
-    io.write(sB..sR..tP.base:sub(nE+1, -1)); io.write("\n") end
+    io.write("`"..sB..sR.."`"..tP.base:sub(nE+1, -1)..wikiNewLN); io.write("\n") end
   for iD = 1, tC.__top do local vC = tP.cont[tC[iD].__key]
-    if(vC.root) then
+    if(vC.root) then local dC = wikiFolder.__depc
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
-      local sD = (tC[iD+1] and tS[4] or " ")..(" "):rep(iI)
+      local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
-      io.write(sR..sX..vC.name..sS); io.write("\n")
+      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
       wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD)
     else
-      local sS = (tF.size and (" ["..vC.size.." kB]") or "")
+      local sS = (tF.size and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
-      io.write(sR..sX..vC.name..sS); io.write("\n")
+      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
     end
   end
 end
