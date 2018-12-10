@@ -7,7 +7,7 @@ local sP = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/"..sProg.."/
 
 wikilib.folderSet("D:/SystemTemp")
 
-local sSVN = "SpinnerTool"
+local sSVN = "PhysPropertiesAdv"
 
 local sD = "E:/Documents/Lua-Projs/SVN/"..sSVN
 local fO, oE = io.open(sProg.."/out/tree.md", "wb")
@@ -16,12 +16,11 @@ if(fO) then io.output(fO)
   wikilib.folderFlag("size", true)
   wikilib.folderFlag("urls", true)
   -- Tell the api to use file URL
-  wikilib.folderReplaceURL(sD,"https://github.com/dvdvideo1234/SpinnerTool/blob/master/")
+  wikilib.folderReplaceURL(sD,"https://github.com/dvdvideo1234/"..sSVN.."/blob/master/")
   -- Tell the read application we are using UTF-8 by writing a BOM
   wikilib.writeBOM("UTF8")
   -- Read structure
   local tS = wikilib.folderReadStructure((sD):gsub("\\","/"))
-  -- com.logTable(tS)
   -- Write the tree
   wikilib.folderDrawTree(tS, 2)
 else

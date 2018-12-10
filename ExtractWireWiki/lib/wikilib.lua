@@ -531,7 +531,7 @@ local wikiFolder = {}
       wikiFolder.__read = "*line"
       wikiFolder.__drof = "Directory of "
       wikiFolder.__fdat = "%d%d%-%d%d%-%d%d%d%d%s+%d%d:%d%d"
-      wikiFolder.__idir = "<DIR>"
+      wikiFolder.__idir = {".", "..", "<DIR>"}
       wikiFolder.__pdir = {["."] = true, [".."] = true}
       wikiFolder.__fcmd = "cd %s && dir > %s"
       wikiFolder.__ranm = 60 -- Random string file name
@@ -543,15 +543,15 @@ local wikiFolder = {}
         {"`", "|", "-", "|", "/"},
         {"+", "+", "-", "|", "*"}
       }
-      wikiFolder.__furl = {"",""}
       wikiFolder.__drem = "(.*)/"
-      wikiFolder.__dept = 3       -- The folder depth offset
-      wikiFolder.__depc = "."     -- The folder depth character
+      wikiFolder.__dept = 3   -- The folder depth offset
+      wikiFolder.__depc = "ˑ" -- The folder depth character
       wikiFolder.__ubom = {
         ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
         ["UTF16"] = {0xFE, 0xFF},            -- UTF16
         ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF32
       }
+      wikiFolder.__furl = {"",""}
       wikiFolder.__flag = {
         prnt = false, -- Show the parent directory in the tree
         hide = false, -- Show hidden directories
@@ -564,7 +564,7 @@ local wikiFolder = {}
 
 function wikilib.folderReplaceURL(sF, sU)
   local sF = wikilib.normalDir(tostring(sF or ""):gsub("\\","/"))
-  local sU = wikilib.normalDir(tostring(sU or ""):gsub("\\","/"))
+  local sU = wikilib.normalDir(tostring(sU or ""):gsub("\\","/")):gsub("%s","%%20")
   wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
 end
 
@@ -641,7 +641,7 @@ function wikilib.folderReadStructure(sP, iV)
     elseif(sL:sub(1, 17):match(wikiFolder.__fdat)) then
       local sS = common.stringTrim(sL:sub(18, 36))
       local sN = common.stringTrim(sL:sub(37, -1))
-      if(sS == wikiFolder.__idir and wikiFolder.__pdir[sN]) then
+      if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
         if(tF.prnt) then
           if(not tT.cont) then tT.cont = {} end; iD = iD + 1
           tT.cont[iD] = {size = sS, name = sN}
@@ -655,7 +655,7 @@ function wikilib.folderReadStructure(sP, iV)
         if(not tT.cont) then tT.cont = {} end; iD = iD + 1
         tT.cont[iD] = {size = sS, name = sN}
         local tP = tT.cont[iD]
-        if(not tP.root and tP.size == wikiFolder.__idir) then
+        if(not tP.root and tP.size == wikiFolder.__idir[3]) then
           tP.root = wikilib.folderReadStructure(sP.."/"..tP.name, iT)
         end
       end
@@ -665,12 +665,16 @@ function wikilib.folderReadStructure(sP, iV)
 end
 
 local function folderLinkItem(tR, vC)
-  local sO, sR = vC.name
+  local sO = vC.name
   if(wikiFolder.__flag.urls) then
+    local cD = wikiFolder.__idir
     local tU, sR = wikiFolder.__furl, tR.link
     sR = (sR and wikilib.normalDir(sR) or tU[2])  
-    return toLinkURL("`"..sO.."`", sR..vC.name)     
-  end; return ("`"..sO.."`")
+    sO = toLinkURL("`"..sO.."`", sR..vC.name:gsub("%s","%%20"))     
+    if(vC.name == cD[1]) then sO = sO:gsub("/%"..cD[1].."%)$",")")
+  elseif(vC.name == cD[2]) then
+    sO = sO:gsub("/%.%.%)",""):match("(.*[/\\])"):sub(1,-2)..")"; end
+  end; return sO
 end
 
 --[[
@@ -697,7 +701,7 @@ function wikilib.folderDrawTree(tP, vA, vR, sR)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
       wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD)
     else
-      local sS = (tF.size and wikilib.fileSize(vC.size) or "")
+      local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
     end

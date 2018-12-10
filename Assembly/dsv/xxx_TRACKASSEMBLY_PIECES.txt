@@ -1,4 +1,4 @@
-# ExportDSV:(xxx_@PIECES) 23-11-18 15:25:02 [ LUA ]
+# ExportDSV:(xxx_@PIECES) 06-12-18 17:07:38 [ LUA ]
 # Data settings:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	1	""	""	""	"aaa"
 TRACKASSEMBLY_PIECES	"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl"	"TEST-O"	"Cube 6x6x61"	2	""	""	""	"aaa"
