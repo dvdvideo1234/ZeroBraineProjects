@@ -11,7 +11,6 @@ local function DetVector(vR1, vR2, vR3)
   return ((a*e*i)+(b*f*g)+(d*h*c)-(g*e*c)-(h*f*a)-(d*b*i))
 end
 
-
 local function GetRayCross(vO1, vD1, vO2, vD2)
   local d1 = vD1:GetNormalized()
   local d2 = vD2:GetNormalized()

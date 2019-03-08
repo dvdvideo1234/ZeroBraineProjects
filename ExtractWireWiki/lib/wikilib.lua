@@ -683,9 +683,11 @@ end
  * vA > The type of graph symbols to use
  * vR > Previous iretaration graph recursion depth ( omited )
  * sR > Previous iretaration graph recursion destination ( omited )
+ * tD
 ]]
-function wikilib.folderDrawTree(tP, vA, vR, sR)
+function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
   local tS = wikiFolder.__syms
+  local tD = common.getPick(common.isTable(tD), tD, nil)
   local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local iR = common.getClamp(tonumber(vR) or 0, 0)
@@ -698,12 +700,14 @@ function wikilib.folderDrawTree(tP, vA, vR, sR)
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
-      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD)
+      local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
+      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
+      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD)
     else
+      local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
-      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..wikiNewLN); io.write("\n")
+      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
     end
   end
 end

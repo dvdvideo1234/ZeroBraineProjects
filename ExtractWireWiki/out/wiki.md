@@ -8,7 +8,6 @@
 
 |..............Class.methods.............|.Out.|.Description.|
 |----------------------------------------|-----|-------------|
-|![image][ref-xsc]:copy(![image][ref-xxx])|![image][ref-xsc]|Returns state control object copy instance|
 |![image][ref-xsc]:dumpConsole(![image][ref-s])|![image][ref-xsc]|Dumps state control internal parameters into the console|
 |![image][ref-xsc]:getBias(![image][ref-xxx])|![image][ref-n]|Returns state control control bias|
 |![image][ref-xsc]:getControl(![image][ref-xxx])|![image][ref-n]|Returns state control automated control signal signal|
@@ -17,6 +16,7 @@
 |![image][ref-xsc]:getControlTermD(![image][ref-xxx])|![image][ref-n]|Returns state control derivative automated control term signal|
 |![image][ref-xsc]:getControlTermI(![image][ref-xxx])|![image][ref-n]|Returns state control integral automated control term signal|
 |![image][ref-xsc]:getControlTermP(![image][ref-xxx])|![image][ref-n]|Returns state control proportional automated control term signal|
+|![image][ref-xsc]:getCopy(![image][ref-xxx])|![image][ref-xsc]|Returns state control object copy instance|
 |![image][ref-xsc]:getErrorDelta(![image][ref-xxx])|![image][ref-n]|Returns state control process error delta|
 |![image][ref-xsc]:getErrorNow(![image][ref-xxx])|![image][ref-n]|Returns state control process current error|
 |![image][ref-xsc]:getErrorOld(![image][ref-xxx])|![image][ref-n]|Returns state control process passed error|
@@ -66,11 +66,11 @@
 |![image][ref-xsc]:remGainP(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain|
 |![image][ref-xsc]:remGainPD(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and derivative term gain|
 |![image][ref-xsc]:remGainPI(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and integral term gain|
+|![image][ref-xsc]:remSelf(![image][ref-xxx])|![image][ref-n]|Removes the state control from the list|
 |![image][ref-xsc]:remTimeSample(![image][ref-xxx])|![image][ref-xsc]|Removes state control static process time delta|
 |![image][ref-xsc]:remWindup(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound and windup upper bound|
 |![image][ref-xsc]:remWindupD(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound|
 |![image][ref-xsc]:remWindupU(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup upper bound|
-|![image][ref-xsc]:remove(![image][ref-xxx])|![image][ref-n]|Removes the state control from the list|
 |![image][ref-xsc]:resState(![image][ref-xxx])|![image][ref-xsc]|Resets state control automated internal parameters|
 |![image][ref-xsc]:setBias(![image][ref-n])|![image][ref-xsc]|Updates state control control bias|
 |![image][ref-xsc]:setGain(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|

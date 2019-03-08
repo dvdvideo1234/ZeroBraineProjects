@@ -1,7 +1,79 @@
-require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/gmodlib")
-require("ZeroBraineProjects/dvdlualib/umaglevlib")
+local common = require("dvdlualib/common")
+local gmodlib = require("dvdlualib/gmodlib")
+local umaglevlib = require("dvdlualib/umaglevlib")
 
+local test = {
+    ["Name"]    = {"string" , nil, "name"   , nil, 1, tostring},
+    ["Prop"]    = {"string" , nil, "model"  , ckEmptyString, 2, tostring},
+    ["FwLoc"]   = {"Vector" , nil, "fwloc"  , ckVecDirect, 3, GetVectorString},
+    ["UpLoc"]   = {"Vector" , nil, "uploc"  , ckVecDirect, 4, GetVectorString},
+    ["CnLoc"]   = {"Vector" , nil, "cnloc"  , ckVecOrigin, 5, GetVectorString},
+    ["Mass"]    = {"number" , "+", "mass"   , nil, 6 , tonumber},
+    ["MasPrt"]  = {"boolean", nil, "enmassp", nil, 7, tobool},
+    ["Tick"]    = {"number" , "+", "tick"   , nil, 8 , tonumber},
+    ["KeyOn"]   = {"number" , "+", "keyon"  , nil, 9 , tonumber},
+    ["KeyF"]    = {"number" , "+", "keyf"   , nil, 10, tonumber},
+    ["KeyR"]    = {"number" , "+", "keyr"   , nil, 11, tonumber},
+    ["Target"]  = {"string" , nil, "target" , nil, 12, tostring},
+    ["NumFor"]  = {"number" , nil, "numfor" , nil, 13, tonumber},
+    ["NumTog"]  = {"boolean", nil, "numtog" , nil, 14, tobool},
+    ["FrcDep"]  = {"number" , nil, "forcedp", nil, 15, tonumber},
+    ["FrcDpC"]  = {"boolean", nil, "encfdp" , nil, 16, tobool},
+    ["{Control}"] = { -- List of control structures
+      ["Tar"]   = {"table"   , nil, nil, ckControlTar},
+      ["Tun"]   = {"table"   , nil, nil, ckControlTun},
+      ["Ref"]   = {"table"   , nil, nil, ckControlRef},
+      ["Prs"]   = {"string"  , nil, nil, ckEmptyString},
+      ["Cmb"]   = {"boolean" , nil},
+      ["Neg"]   = {"boolean" , nil},
+      ["Dev"]   = {"function", nil},
+      ["ID"]    = {"number"  , nil}
+    },
+    ["{Sensors}"] = { -- List of sensor structures
+      ["Hit"] = {"table" , nil, nil, ckTargetTable},
+      ["Org"] = {"Vector", nil, nil, ckVecOrigin},
+      ["Dir"] = {"Vector", nil, nil, ckVecDirect},
+      ["Len"] = {"number", "~0"}, -- Length
+      ["ID"]  = {"number", nil}, -- Export ID
+      ["Val"] = {"number", nil}  -- Where the sensor sample is stored
+    },
+    ["{Forcers}"] = { -- List of forcer structures
+      ["Org"] = {"Vector", nil, nil, ckVecOrigin},
+      ["Dir"] = {"Vector", nil, nil, ckVecDirect},
+      ["ID"]  = {"number", nil}
+    }
+  }
+
+local function IsEmptyString(s) return (s == "") end
+
+function InitDataMapping(v)
+  local tMap = v
+  local tGen = {}
+  for key, rec in pairs(tMap) do
+    local var, id = tostring(rec[3] or ""), (tonumber(rec[5]) or 0)
+    local foo = ((type(rec[6]) == "function") and rec[6] or nil)
+    if(var and (type(var) == "string") and not IsEmptyString(var)) then tGen[var] = {key, id, foo}
+      if(id <= 0) then LogStatus("InitDataMapping: Invalid ID #"..id.." for <"..key.."/"..var..">") end
+    end
+  end -- All generals must be defined using the global hover unit data[item][3]
+  
+  return tGen
+end
+
+
+function table.Empty( tab )
+	for k, v in pairs( tab ) do
+		tab[ k ] = nil
+	end
+end
+
+
+common.logTable(table.Empty(nil))
+
+
+
+
+--[===[
 local umgl = umaglevlib
 
 local print                 = print
@@ -75,7 +147,7 @@ tfPro[3] = {"Dir", "Direction",  0  , "Orientation"   , "VectorColor", {Vector(0
 
 print(umgl.TranslateProperty(tfPro))
 
---[==[
+
 umgl.InitTargetsHit()
 
 logTable(libOpVars["CLASS_TARGETS"   ], "TARG")
@@ -150,4 +222,4 @@ if(false) then
  logTable(d, "D")
 end
 
-]==]--
+]===]

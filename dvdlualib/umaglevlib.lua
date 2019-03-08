@@ -1,72 +1,57 @@
 --[[
- * Label    : Module for maglev base functionality
+ * Label    : Module for hover module base functionality
  * Author   : DVD ( dvd_video )
  * E-mail   : dvd_video@abv.bg
  * Date     : 19-01-2017
- * Location : lua/maglev/umaglevlib.lua
- * Defines  : A list of functions for initializing a maglev
+ * Location : lua/hovermodule/hovermodlib.lua
+ * Defines  : A list of functions for initializing a hover module
 ]]--
-   
-if(SERVER) then
-  AddCSLuaFile("maglev/umaglevlib.lua")
-end
 
-local file = {}
-local bit                   = bit
-local type                  = function(any)
-  local t = type(any)
-  if(t == "table") then
-    local mt = getmetatable(any)
-    return mt and mt.__type or t
-  end
-  return t
-end
-local languageGetPhrase     = languageGetPhrase
-local CompileString         = CompileString
-local tobool                = tobool
-local next                  = next
-local print                 = print
-local pairs                 = pairs
-local tostring              = tostring
-local tonumber              = tonumber
-local SysTime               = SysTime
-local CreateConVar          = CreateConVar
-local Vector                = Vector
-local Angle                 = Angle
-local Color                 = Color
-local setmetatable          = setmetatable
-local getmetatable          = getmetatable
-local collectgarbage        = collectgarbage
-local LocalPlayer           = LocalPlayer
-local fileAppend            = fileAppend
-local fileExists            = fileExists
-local fileOpen              = fileOpen
-local osDate                = os and os.date
-local mathAbs               = math and math.abs
-local mathModf              = math and math.modf
-local mathClamp             = math and math.Clamp
-local stringExplode         = string and string.Explode
-local stringUpper           = string and string.upper
-local tableGetMax           = table and table.getn
-local tableConcat           = table and table.concat
-local inputIsKeyDown        = input and input.IsKeyDown
-local renderDrawLine        = render and render.DrawLine
-local renderDrawSphere      = render and render.DrawSphere
-local renderSetColorMaterial = render and render.SetColorMaterial
-local duplicatorRegisterEntityClass = duplicator and duplicator.RegisterEntityClass
+local type           = type
+local next           = next
+local pcall          = pcall
+local print          = print
+local pairs          = pairs
+local unpack         = unpack
+local tobool         = tobool
+local tostring       = tostring
+local tonumber       = tonumber
+local CreateConVar   = CreateConVar
+local PrintTable     = PrintTable
+local Vector         = Vector
+local Angle          = Angle
+local Color          = Color
+local SysTime        = SysTime
+local IsValid        = IsValid
+local CompileString  = CompileString
+local CompileFile    = CompileFile
+local setmetatable   = setmetatable
+local getmetatable   = getmetatable
+local collectgarbage = collectgarbage
+local LocalPlayer    = LocalPlayer
+local os             = os
+local ents           = ents
+local math           = math
+local file           = file
+local vgui           = vgui
+local table          = table
+local input          = input
+local numpad         = numpad
+local string         = string
+local language       = language
+local duplicator     = duplicator
 
-file.Open   = fileOpen
-file.Exists = fileExists 
-
-local CLIENT = CLIENT
-local SERVER = SERVER
-
-local KEY_LSHIFT = KEY_LSHIFT
-local KEY_E      = KEY_E
+local FILL                  = FILL
+local KEY_E                 = KEY_E
+local CLIENT                = CLIENT
+local SERVER                = SERVER
+local KEY_LSHIFT            = KEY_LSHIFT
+local COLLISION_GROUP_NONE  = COLLISION_GROUP_NONE
+local RENDERMODE_TRANSALPHA = RENDERMODE_TRANSALPHA
 
 local libOpVars = {}
 
-module("umaglevlib")
+module("hovermodlib")
 
 function GetOpVar(anyKey)
   return (anyKey and libOpVars[anyKey])
@@ -80,11 +65,11 @@ function IsString(sVal)
   return (getmetatable(sVal) == GetOpVar("TYPE_METASTRING"))
 end
 
-function IsEmptyTab(tData)
+function IsEmptyTable(tData)
   return IsNil(next(tData))
 end
 
-function IsEmptyStr(sData)
+function IsEmptyString(sData)
   return (sData == GetOpVar("STRING_ZERO"))
 end
 
@@ -92,8 +77,8 @@ function IsNumber(sVal)
   return (tonumber(sVal) and IsNil(getmetatable(sVal)))
 end
 
-function CaseSelect(bCas, vTru, vFls)
-  if(bCas) then return vTru else return vFls end
+function GetPick(bIf, vTru, vFls)
+  if(bIf) then return vTru else return vFls end
 end
 
 -- Function that calculates a sign
@@ -102,8 +87,24 @@ function GetSign(anyVal)
   return ((nVal > 0 and 1) or (nVal < 0 and -1) or 0) end
 
 function GetDate()
-  return (osDate(GetOpVar("DATE_FORMAT"))
-   .." "..osDate(GetOpVar("TIME_FORMAT")))
+  return (os.date(GetOpVar("DATE_FORMAT"))
+   .." "..os.date(GetOpVar("TIME_FORMAT")))
+end
+
+function GetXY(xyPnt,nX,nY)
+  local xyOut = {x = tonumber(xyPnt and xyPnt.x or 0), y = tonumber(xyPnt and xyPnt.y or 0)}
+  xyOut.x, xyOut.y = (xyOut.x + (tonumber(nX) or 0)), (xyOut.y + (tonumber(nY) or 0))
+  return xyOut -- Get a new point without overwriting the old one
+end
+
+-- Golden retriever. Retrieves file line as string
+-- But seriously returns the sting line and EOF flag
+local function GetStringFile(pFile)
+  if(not pFile) then return StatusLog("", "GetStringFile: No file"), true end
+  local sCh, sLine = "X", "" -- Use a value to start cycle with
+  while(sCh) do sCh = pFile:Read(1); if(not sCh) then break end
+    if(sCh == "\n") then return sLine:Trim(), false else sLine = sLine..sCh end
+  end; return sLine:Trim(), true -- EOF has been reached. Return the last data
 end
 
 -- Project a vector without making a copy
@@ -116,7 +117,7 @@ end
 -- Create vector from a component list
 function GetVectorString(sVec)
   local symComp = GetOpVar("OPSYM_COMPONENT") -- Handle also [0,0,0]
-  local arVec = stringExplode(symComp,sVec:gsub("%[",""):gsub("%]",""))
+  local arVec = symComp:Explode(sVec:gsub("%[",""):gsub("%]",""))
   return Vector(tonumber(arVec[1]) or 0,
                 tonumber(arVec[2]) or 0,
                 tonumber(arVec[3]) or 0)
@@ -126,7 +127,7 @@ end
 local function FixValue(nVal, nFrc)
   local nVal = tonumber(nVal) or 0
   local nFrc = tonumber(nFrc) or 0.01 -- Default the second digit
-  local q, f = mathModf(nVal / nFrc)
+  local q, f = math.modf(nVal / nFrc)
   return nFrc * (q + (f > 0.5 and 1 or 0))
 end
 
@@ -139,57 +140,40 @@ function GetStringVector(vVec, nFrc)
   return tostring(x)..symComp..tostring(y)..symComp..tostring(z)
 end
 
-function InitConstants()
-  libOpVars["LIBRARY_NAME"    ] = "umaglevlib"    -- Name of the library
-  libOpVars["GOLDEN_RATIO"    ] = 1.61803398875   -- Golden ration for panel resolution be more appealing
-  libOpVars["OPSYM_GENINDENT" ] = " "             -- What symbol is used for indent spacing readability
-  libOpVars["OPSYM_ITEMSPLIT" ] = "/"             -- Primary delimiter to split multiple string items by
-  libOpVars["OPSYM_COMPONENT" ] = ","             -- Secondary delimiter to split individual item components
-  libOpVars["OPSYM_INITSTRING"] = "@"             -- Trigger symbol for string source initialization ( including general settings )
-  libOpVars["OPSYM_INITFILE"  ] = "#"             -- Trigger symbol for file source initialization ( including general settings )
-  libOpVars["NAME_ENTITY"     ] = "maglevmodule"  -- The entity name used for limits and stuff
-  libOpVars["NAME_TOOL"       ] = "maglevspawner" -- The tool mode which operates the entity
-  libOpVars["TYPE_SENSOR"     ] = "sensor"        -- The internal sensor type as string
-  libOpVars["TYPE_CONTROL"    ] = "control"       -- The internal control type as string
-  libOpVars["TYPE_GENERAL"    ] = "general"       -- General storage type for maglev properties
-  libOpVars["TYPE_FORCER"     ] = "forcer"        -- The internal forcer type as string
-  libOpVars["HASH_ENTITY"     ] = "DataMGL"       -- Where in the entity the data is stored
-end
-
 function LogStatus(anyMsg, ...)
   local tSet = GetOpVar("LOG_SETTINGS")
-  if(tSet.Enab:GetBool()) then
-    local fLog = GetOpVar("PATH_TOOL")
-    local sMsg = tostring(anyMsg)
-    if(tSet.Skip and tSet.Skip[1]) then
-      for id = 1, #tSet.Skip do
-        if(sMsg:find(tostring(tSet.Skip[id]))) then return ... end end end
-    if(tSet.Last and tSet.Last == sMsg) then return ... end
-    local bFile = tSet.File:GetBool()
-    local sLogo = bFile and "" or tostring(tSet.Info)..": "
-    local sTime = "["..osDate()..":"..("%f"):format(SysTime()).."] "
+  if(tSet["ENAB"]:GetBool()) then
+    local tSkip, tOnly = tSet["SKIP"], tSet["ONLY"]
+    local fLog, sMsg = GetOpVar("DIRPATH_BASE"), tostring(anyMsg)
+    if(tSkip and tSkip[1]) then for id = 1, #tSkip do
+      if(sMsg:find(tostring(tSkip[id]))) then return ... end end end
+    if(tOnly and tOnly[1]) then for id = 1, #tOnly do
+      if(not sMsg:find(tostring(tOnly[id]))) then return ... end end end
+    if(tSet["LAST"] and tSet["LAST"] == sMsg) then return ... else tSet["LAST"] = sMsg end
+    local bFile, sLib = tSet["FILE"]:GetBool(), GetOpVar("LIBRARY_NAME")
+    local sLogo = GetPick(bFile, "", tostring(tSet.Info)..": ")
+    local sTime = "["..GetDate()..":"..("%f"):format(SysTime()).."] "
     local sInst = (CLIENT and "CLIENT") or (SERVER and "SERVER") or "NOINST"
-    local sLogs = "["..sInst.."] "..sTime..sLogo..sMsg
-    if(bFile) then fileAppend(fLog.."system_log.txt", sLogs.."\n")
+    local sLogs = sInst.." > "..sTime..sLogo..sMsg
+    if(bFile) then file.Append(fLog..sLib.."_log.txt", sLogs.."\n")
     else print(sLogs) end
   end; return ...
 end
 
 function InitDataMapping()
-  local tMap = GetOpVar("MAPPING_MAGDATA")
+  local tMap = GetOpVar("MAPPING_ENTDATA")
   local tGen = GetOpVar("MAPPING_GENERAL")
   for key, rec in pairs(tMap) do
     local var, id = tostring(rec[3] or ""), (tonumber(rec[5]) or 0)
     local foo = ((type(rec[6]) == "function") and rec[6] or nil)
-    if(var and (type(var) == "string") and (var ~= "")) then
-      tGen[var] = {key, id, foo}
+    if(var and (type(var) == "string") and not IsEmptyString(var)) then tGen[var] = {key, id, foo}
       if(id <= 0) then LogStatus("InitDataMapping: Invalid ID #"..id.." for <"..key.."/"..var..">") end
     end
-  end -- All generals must be defined using the global maglev data[item][3]
+  end -- All generals must be defined using the global hover unit data[item][3]
 end
 
 local function ckControlTar(tab)
-  local cn, mx, mt = #tab, tableGetMax(tab)
+  local cn, mx, mt = #tab, table.getn(tab)
   if(cn ~= mx) then
     return LogStatus("ckControlTar: Array vacancies "..cn.." of "..mx, false) end
   if(cn == 0) then return LogStatus("ckControlTar: Array empty", false) end
@@ -199,7 +183,7 @@ local function ckControlTar(tab)
 end
 
 local function ckControlTun(tab, dep)
-  local cn, mx, mt = #tab, tableGetMax(tab), getmetatable("string")
+  local cn, mx, mt = #tab, table.getn(tab), getmetatable("string")
   if(cn ~= mx) then
     return LogStatus("ckControlTun: Array vacancies "..cn.." of "..mx, false) end
   if(cn == 0) then return LogStatus("ckControlTun: Array empty", false) end
@@ -210,7 +194,7 @@ local function ckControlTun(tab, dep)
 end
 
 local function ckControlRef(tab, dep)
-  local cn, mx = #tab, tableGetMax(tab)
+  local cn, mx = #tab, table.getn(tab)
   if(cn ~= mx) then
     return LogStatus("ckControlRef: Array vacancies "..cn.." of "..mx, false) end
   if(cn == 0) then return LogStatus("ckControlRef: Array empty", false) end
@@ -244,25 +228,41 @@ local function ckTargetTable(tab, dep)
   end; return true
 end
 
+local function ckEmptyString(str)
+  if(IsEmptyString(str)) then
+    return LogStatus("ckEmptyString: Value empty", false) end; return true
+end
+
 function InitDependancies(vEnab, vFile)
-  libOpVars["TRANSLATE_KEYTAB"] = {[2]="nam",[4]="cat",[7]="tip"}
-  libOpVars["NUMBER_ZERO"     ] = 10e-5
   libOpVars["STRING_ZERO"     ] = ""
+  libOpVars["NUMBER_ZERO"     ] = 10e-5
+  libOpVars["VECTOR_ZERO"     ] = Vector()
+  libOpVars["ANGLE_ZERO"      ] = Angle ()
   -- More meaningful name to the one above used for labels
   libOpVars["DATE_FORMAT"     ] = "%d-%m-%y"
   libOpVars["TIME_FORMAT"     ] = "%H:%M:%S"
+  libOpVars["LOCALIFY_TABLE"  ] = GetPick(CLIENT,{},nil)
+  libOpVars["TRANSLATE_KEYTAB"] = {[2]="nam",[4]="cat",[7]="tip"}
   libOpVars["FILE_ENTITY"     ] = "sent_"..GetOpVar("NAME_ENTITY") -- How is the entity controlled class called
   -- Base directory for all the data written. Defines there the library data is stored
-  libOpVars["DIRPATH_BASE"    ] = "E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/ZeroBraineProjects/Transrapid/"..GetOpVar("NAME_TOOL").."/"
+  libOpVars["NAME_LIMIT"      ] = GetOpVar("NAME_ENTITY").."s"
+  libOpVars["DIRPATH_BASE"    ] = GetOpVar("NAME_TOOL").."/"
   libOpVars["DIRPATH_SAVE"    ] = GetOpVar("NAME_ENTITY").."/"
+  libOpVars["DIRPATH_PRESET"  ] = "presets/"
+  libOpVars["DIRPATH_AUSAVE"  ] = "autosave/"
+  libOpVars["FORM_LANGPATH"   ] = "%s"..GetOpVar("NAME_ENTITY").."/lang/%s"
   libOpVars["LOG_SETTINGS"    ] = {
-    Skip = {},
-    Last = "",
-    Info = GetOpVar("NAME_TOOL"):gsub("^%l", stringUpper),
-    Enab = vEnab, -- Enable logging in general
-    File = vFile  -- Enable logging file
+    ["SKIP"] = {}, ["ONLY"] = {}, ["LAST"] = "",
+    ["INFO"] = GetOpVar("NAME_TOOL"):gsub("^%l", string.upper),
+    ["ENAB"] = vEnab, -- Enable logging in general
+    ["FILE"] = vFile  -- Enable logging file
   } -- Make a list with the log settings
-  libOpVars["CLASS_TARGETS"   ] = {"prop_physics","prop_dynamic","prop_static","prop_ragdoll"}
+  libOpVars["CLASS_TARGETS"   ] = {
+    ["prop_physics"] = true,
+    ["prop_dynamic"] = true,
+    ["prop_static"]  = true,
+    ["prop_ragdoll"] = true
+  }
   libOpVars["WIRE_REFERENCES" ] = {
     Name = {"RefGap", "RefSide", "RefPitch", "RefYaw", "RefRoll"},
     Type = {"NORMAL", "NORMAL" , "NORMAL"  , "NORMAL", "NORMAL" },
@@ -272,12 +272,14 @@ function InitDependancies(vEnab, vFile)
             "Refer yaw turn"     ,
             "Refer roll lean" }
   }
+  libOpVars["CLASS_REGUPHYS"  ] = "prop_physics" -- Regular physics enabled prop
   libOpVars["TYPE_DEFCOLUMN"  ] = {} -- Columns that are enabled for processing
-  libOpVars["UNIT_DESCRIPTION"] = {} -- The maglev unit description
+  libOpVars["UNIT_DESCRIPTION"] = {__size = 0} -- The hover unit description
+  libOpVars["WIRE_PORTNAMES"  ] = {} -- Wire ports validation status storage
   libOpVars["TYPE_METASTRING" ] = getmetatable("") -- Store string meta-table
   --[[
    * This is used for data mapping
-   * [1] > Data type
+   * [1] > Data type and return value of `type()`
    * [2] > The value to be different from
    * [3] > Console variable mapping name
    * [4] > Validation function
@@ -288,28 +290,30 @@ function InitDependancies(vEnab, vFile)
    * list of such values
   ]]--
   -- Legend for the mapping parameters
-  -- Data["Key"] = {"type", "~= of what", "cvar", "isIalid(type)", "order", "conv_base"}
   -- If the convar name is defined, the general type is used
   libOpVars["MAPPING_GENERAL"] = {} -- Mapping Convar name to column name and ID
-  libOpVars["MAPPING_MAGDATA"] = {
-    ["Name"]    = {"string" , nil, "name"   ,  nil, 1, tostring},
-    ["Prop"]    = {"string" , "" , "model"  ,  nil, 2, tostring},
+  libOpVars["MAPPING_ENTDATA"] = {
+    ["Name"]    = {"string" , nil, "name"   , nil, 1, tostring},
+    ["Prop"]    = {"string" , nil, "model"  , ckEmptyString, 2, tostring},
     ["FwLoc"]   = {"Vector" , nil, "fwloc"  , ckVecDirect, 3, GetVectorString},
     ["UpLoc"]   = {"Vector" , nil, "uploc"  , ckVecDirect, 4, GetVectorString},
     ["CnLoc"]   = {"Vector" , nil, "cnloc"  , ckVecOrigin, 5, GetVectorString},
-    ["Mass"]    = {"number" , 0  , "mass"   , nil, 6 , tonumber},
-    ["Tick"]    = {"number" , 0  , "tick"   , nil, 7 , tonumber},
-    ["KeyOn"]   = {"number" , 0  , "keyon"  , nil, 8 , tonumber},
-    ["KeyF"]    = {"number" , 0  , "keyf"   , nil, 9 , tonumber},
-    ["KeyR"]    = {"number" , 0  , "keyr"   , nil, 10, tonumber},
-    ["Target"]  = {"string" , nil, "target" , nil, 11, tostring},
-    ["NumFor"]  = {"number" , nil, "numfor" , nil, 12, tonumber},
-    ["NumTog"]  = {"boolean", nil, "numtog" , nil, 13, tobool},
+    ["Mass"]    = {"number" , "+", "mass"   , nil, 6 , tonumber},
+    ["MasPrt"]  = {"boolean", nil, "enmassp", nil, 7, tobool},
+    ["Tick"]    = {"number" , "+", "tick"   , nil, 8 , tonumber},
+    ["KeyOn"]   = {"number" , "+", "keyon"  , nil, 9 , tonumber},
+    ["KeyF"]    = {"number" , "+", "keyf"   , nil, 10, tonumber},
+    ["KeyR"]    = {"number" , "+", "keyr"   , nil, 11, tonumber},
+    ["Target"]  = {"string" , nil, "target" , nil, 12, tostring},
+    ["NumFor"]  = {"number" , nil, "numfor" , nil, 13, tonumber},
+    ["NumTog"]  = {"boolean", nil, "numtog" , nil, 14, tobool},
+    ["FrcDep"]  = {"number" , nil, "forcedp", nil, 15, tonumber},
+    ["FrcDpC"]  = {"boolean", nil, "encfdp" , nil, 16, tobool},
     ["{Control}"] = { -- List of control structures
       ["Tar"]   = {"table"   , nil, nil, ckControlTar},
       ["Tun"]   = {"table"   , nil, nil, ckControlTun},
       ["Ref"]   = {"table"   , nil, nil, ckControlRef},
-      ["Prs"]   = {"string"  , "" },
+      ["Prs"]   = {"string"  , nil, nil, ckEmptyString},
       ["Cmb"]   = {"boolean" , nil},
       ["Neg"]   = {"boolean" , nil},
       ["Dev"]   = {"function", nil},
@@ -319,7 +323,7 @@ function InitDependancies(vEnab, vFile)
       ["Hit"] = {"table" , nil, nil, ckTargetTable},
       ["Org"] = {"Vector", nil, nil, ckVecOrigin},
       ["Dir"] = {"Vector", nil, nil, ckVecDirect},
-      ["Len"] = {"number", 0},   -- Length
+      ["Len"] = {"number", "~0"}, -- Length
       ["ID"]  = {"number", nil}, -- Export ID
       ["Val"] = {"number", nil}  -- Where the sensor sample is stored
     },
@@ -331,6 +335,10 @@ function InitDependancies(vEnab, vFile)
   }
 end
 
+--[[
+ * This defines the initialization columns.
+ * It tells the program which column name is valid
+]]--
 function InitColumnNames()
   local tCol = GetOpVar("TYPE_DEFCOLUMN") -- Columns that are enabled for processing
   tCol[GetOpVar("TYPE_GENERAL")] = {["Val"] = true}
@@ -342,50 +350,11 @@ function InitColumnNames()
                                     ["Prs"] = true, ["Tar"] = true}
 end
 
-function InitDescription()
-  local tDes = GetOpVar("UNIT_DESCRIPTION")
-  tDes[ 1] = {Name = "User defined maglev"}
-  tDes[ 2] = {Name = "Monorail bogie"           , Prop = "models/mechanics/solid_steel/sheetmetal_u_4.mdl"}
-  tDes[ 3] = {Name = "PHX wheel-set"            , Prop = "models/hunter/plates/plate075x2.mdl"            }
-  tDes[ 4] = {Name = "PHX bogie"                , Prop = "models/hunter/plates/plate2x2.mdl"              }
-  tDes[ 5] = {Name = "Coaster bogie"            , Prop = "models/hunter/blocks/cube05x05x025.mdl"         }
-  tDes[ 6] = {Name = "Narrow gauge bogie"       , Prop = "models/hunter/plates/plate1x1.mdl"              }
-  tDes[ 7] = {Name = "Suspended bogie"          , Prop = "models/hunter/blocks/cube075x075x075.mdl"       }
-  tDes[ 8] = {Name = "Monorail bogie"           , Prop = "models/props_phx/construct/metal_wire1x2x2b.mdl"}
-  tDes[ 9] = {Name = "Sligwolf mini-track bogie", Prop = "models/props_junk/PlasticCrate01a.mdl"          }
-  tDes[10] = {Name = "V-Surface bogie"          , Prop = "models/PHXtended/tri1x1x1.mdl"                  }
-  tDes[11] = {Name = "Transrapid bogie"         , Prop = "models/ron/maglev/train/slider.mdl",
-    Sensors = [[@{sensor:DFR}{Len:12}{Org: 17, 47,-4.3}{Dir:0, 0,1}
-                @{sensor:DBR}{Len:12}{Org:-17, 47,-4.3}{Dir:0, 0,1}
-                @{sensor:DFL}{Len:12}{Org: 17,-47,-4.3}{Dir:0, 0,1}
-                @{sensor:DBL}{Len:12}{Org:-17,-47,-4.3}{Dir:0, 0,1}
-                @{sensor:SFR}{Len:15}{Org: 17, 62, 4.0}{Dir:0,-1,0}
-                @{sensor:SBR}{Len:15}{Org:-17, 62, 4.0}{Dir:0,-1,0}
-                @{sensor:SFL}{Len:15}{Org: 17,-62, 4.0}{Dir:0, 1,0}
-                @{sensor:SBL}{Len:15}{Org:-17,-62, 4.0}{Dir:0, 1,0}]],
-     Forcers =[[@{forcer:UR}{Org:0, 60,0}{Dir:0,0,1}
-                @{forcer:UL}{Org:0,-60,0}{Dir:0,0,1}
-                @{forcer:LR}{Org:0,  0,0}{Dir:0,1,0}
-                @{forcer:APF}{Org: 250,0,0}{Dir:0,0, 1}
-                @{forcer:APB}{Org:-250,0,0}{Dir:0,0,-1}
-                @{forcer:AYR}{Org:0, 250,0}{Dir: 1,0,0}
-                @{forcer:AYL}{Org:0,-250,0}{Dir:-1,0,0}
-                @{forcer:ARR}{Org:0, 500,0}{Dir:0,0, 1}
-                @{forcer:ARL}{Org:0,-500,0}{Dir:0,0,-1}]],
-     Control =[[@{control:UR}{Tar:UR}{Cmb:true}{Tun:460,0.2,1740//1.2,1,1}{Ref:4.5/}{Neg:true}{Pro:((DFR < DBR) and DFR or DBR)}
-                @{control:UL}{Tar:UL}{Cmb:true}{Tun:460,0.2,1740//1.2,1,1}{Ref:4.5/}{Neg:true}{Pro:((DFL < DBL) and DFL or DBL)}
-                @{control:LR}{Tar:LR}{Cmb:true}{Tun:2500,0,2600//1.5,1,1.4}{Ref:0/}{Neg:true}{Pro:(((SFR < SBR) and SFR or SBR) - ((SFL < SBL) and SFL or SBL))}
-                @{control:AP}{Tar:APF/APB}{Cmb:true}{Tun:100,0,250//}{Ref:0/}{Neg:true}{Pro:(4 * (((DBR < DBL) and DBR or DBL) - ((DFR < DFL) and DFR or DFL)))}
-                @{control:AY}{Tar:AYR/AYL}{Cmb:true}{Tun:510,0,450//}{Ref:0/}{Neg:false}{Pro:(4 * (((SFR < SBL) and SFR or SBL) - ((SFL < SBR) and SFL or SBR)))}
-                @{control:AR}{Tar:ARR/ARL}{Cmb:true}{Tun:32,0,1200//1.2,1,1.2}{Ref:0/}{Neg:true}{Pro:(4 * (((DFL < DBL) and DFL or DBL) - ((DFR < DBR) and DFR or DBR)))}]]
-    }
-end
-
 function LogTable(tT,sS,tP)
   local vS, vT, vK, sS = type(sS), type(tT), "", tostring(sS or "Data")
   if(vT ~= "table") then
     return LogStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">") end
-  if(IsEmptyTab(tT)) then
+  if(IsEmptyTable(tT)) then
     return LogStatus(sS.." = {}") end; LogStatus(sS.." = {}")
   for k,v in pairs(tT) do
     if(type(k) == "string") then vK = sS.."[\""..k.."\"]"
@@ -406,6 +375,21 @@ function LogTable(tT,sS,tP)
   end
 end
 
+--[[
+ * This function defines a margin for when a number
+ * is in certain borders the process is considered a fail
+]]--
+local function DecodeMargin(vNum, sMar)
+  local nNum = (tonumber(vNum) or 0)
+  local sMar =  tostring(sMar or "")
+      if(sMar == "~0") then return (nNum ~= 0)
+  elseif(sMar == "=0") then return (nNum == 0)
+  elseif(sMar == "0+") then return (nNum >= 0)
+  elseif(sMar == "0-") then return (nNum <= 0)
+  elseif(sMar ==  "+") then return (nNum >  0)
+  elseif(sMar ==  "-") then return (nNum <  0)
+  else LogStatus("DecodeMargin("..tostring(vNum)..","..sMar.."): Not supported") end
+end
 
 --[[
  * ValidateTable: Validates a stricture based
@@ -415,41 +399,42 @@ end
  * tPara > Validation parameters
  * iStg  > Initial recursion stage. Managed internally
 ]]--
-
-function ValidateTable(aName, tData, tPara, iStg)
-  local suc, nam, stg = true, tostring(aName), (iStg and (iStg+1) or 0)
+function ValidateTable(aName, tData, tPara, oPly, iStg)
+  local suc, nam, stg = true, tostring(aName), ((tonumber(iStg) or 0)+1)
   for key, val in pairs(tData) do -- Output success
     local par, dep = tPara[key], nam.."["..key.."]"
-    if(suc and not par and tPara["{"..key.."}"]) then -- Process item mist of the same type
+    if(suc and not par and tPara["{"..key.."}"]) then -- Process item list of the same type
       local par = tPara["{"..key.."}"]
       if(not par) then
-        return LogStatus("ValidateTable["..stg.."]: Hash item "..dep.." <"..type(val).."> fail", false) end
+        return NotifyUser(oPly, "ValidateTable["..stg.."]: Hash item "..dep.." <"..type(val).."> fail", "ERROR", false) end
       for ki, vi in pairs(val) do
         local li = dep.."["..ki.."]"
-        if(not ValidateTable(li, vi, par, stg)) then
-          suc = LogStatus("ValidateTable["..stg.."]: Recursive item "
-            ..dep.." <"..type(val).."> fail", false) end
+        if(not ValidateTable(li, vi, par, oPly, stg)) then
+          suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Recursive item "
+            ..dep.." <"..type(val).."> fail", "ERROR", false) end
       end
     elseif(suc and (type(par) ~= "table")) then -- It is not item list and parameters are invalid
-      return LogStatus("ValidateTable["..stg.."]: Parameter "..dep.." <"..type(par).."> fail", false)
+      return NotifyUser(oPly, "ValidateTable["..stg.."]: Parameter "..dep.." <"..type(par).."> fail", "ERROR", false)
     elseif(suc and par[4] and type(par[4]) == "function") then -- Use the validation function for the value
       if(type(val) ~= par[1]) then -- Not having the experted type
-        suc = LogStatus("ValidateTable["..stg.."]: Function type "
-          ..dep.." is <"..type(val).."> expects <"..par[1]..">", false) end
-      suc = par[4](val, dep); LogStatus("Validated via function "..dep.." "..(suc and "OK" or "fail"))
+        suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Function type "
+          ..dep.." is <"..type(val).."> expects <"..par[1]..">", "ERROR", false) end
+      suc = par[4](val, dep); if(not suc) then
+        NotifyUser(oPly, "Validated via function "..dep.." fail !", "ERROR") end
+      LogStatus("Validated via function "..dep.." "..(suc and "OK" or "fail"))
     elseif(suc and type(val) == "table") then -- All the table parameters
-      if(not ValidateTable(dep, val, par, stg)) then
-        suc = LogStatus("ValidateTable["..stg.."]: Recursive type "..dep.." <"..type(val).."> fail", false) end
+      if(not ValidateTable(dep, val, par, oPly, stg)) then
+        suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Recursive type "..dep.." <"..type(val).."> fail", "ERROR", false) end
     else -- Process all the generals
       if(suc) then -- Make sure validating only successful records for faster recursion
         if(type(val) ~= par[1]) then -- Not having the experted type
-          suc = LogStatus("ValidateTable["..stg.."]: Value type "..dep.." <"..type(val).."> fail", false) end
+          suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Value type "..dep.." <"..type(val).."> fail", "ERROR", false) end
         if(type(val) == "Vector") then
-          if(par[2] and val:Length() == par[2]) then -- Vectors having zero length
-            suc = LogStatus("ValidateTable["..stg.."]: Vector length "..dep.." <"..type(val).."> fail", false) end
+          if(par[2] and not DecodeMargin(val:Length(), par[2])) then -- Vectors having zero length
+            suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Vector length "..dep.." <"..type(val).."> fail", "ERROR", false) end
         else
-          if(par[2] and val == par[2]) then -- The value is defined as invalid
-            suc = LogStatus("ValidateTable["..stg.."]: Value "..dep.." <"..type(val).."> fail", false) end
+          if(par[2] and not DecodeMargin(val, par[2])) then -- The value is defined as invalid
+            suc = NotifyUser(oPly, "ValidateTable["..stg.."]: Value "..dep.." <"..type(val).."> fail", "ERROR", false) end
         end
       end
     end
@@ -457,39 +442,39 @@ function ValidateTable(aName, tData, tPara, iStg)
 end
 
 --[[
- * MixWireOutputs: This function mixes the names types and
- * notes for the outputs given with the data provided by the
+ * WireMixSetPoint: This function mixes the names types and
+ * notes for the inputs given with the data provided by the
  * library variable /WIRE_REFERENCES/
- * tName > Wire outputs names list
- * tType > Wire outputs types list
- * tNote > Wire outputs notes list
+ * tName > Wire inputs names list
+ * tType > Wire inputs types list
+ * tNote > Wire inputs notes list
 ]]--
-function MixWireOutputs(tName, tType, tNote)
-  local seOuts = GetOpVar("WIRE_REFERENCES")
+function WireMixSetPoint(tName, tType, tNote)
+  local tPorts = GetOpVar("WIRE_REFERENCES")
   local syItem = GetOpVar("OPSYM_ITEMSPLIT")
   local syInde = GetOpVar("OPSYM_GENINDENT")
-  for id = 1, #tName do
-    local nm = tostring(tName[id] or ""):Trim()
-    local tp = tostring(tType[id] or ""):Trim()
-    local nt = tostring(tNote[id] or ""):Trim()
-    if(nm ~= "" and tp ~= "") then
-      tName[id], tType[id] = nm, tp
-      if(nt ~= "") then tNote[id] = (syInde..nt..syInde) else tNote[id] = ""
-        LogStatus("MixWireOutputs: Skip processing notes <"..tostring(nm)..">") end
-    else return LogStatus("MixWireOutputs: Failed processing output <"
-           ..tostring(nm).."/"..tostring(tp)..">", false) end
+  for ID = 1, #tName do
+    local nm = tostring(tName[ID] or ""):Trim()
+    local tp = tostring(tType[ID] or ""):Trim()
+    local nt = tostring(tNote[ID] or ""):Trim()
+    if(not IsEmptyString(nm) and not IsEmptyString(tp)) then
+      tName[ID], tType[ID] = nm, tp
+      if(not IsEmptyString(nt)) then tNote[ID] = (syInde..nt..syInde) else tNote[ID] = ""
+        LogStatus("WireMixSetPoint: Skip processing notes <"..nm..">") end
+    else return LogStatus("WireMixSetPoint: Failed processing output <"
+      ..nm.."/"..tp.."/"..nt..">", false) end
   end
-  for id = 1, #seOuts.Name do
-    local nm = tostring(seOuts.Name[id] or ""):Trim()
-    local tp = tostring(seOuts.Type[id] or ""):Trim()
-    local nt = tostring(seOuts.Note[id] or ""):Trim()
-    if(nm ~= "" and tp ~= "") then
-      tableInsert(tName, nm); tableInsert(tType, tp)
-      if(nt ~= "") then tableInsert(tNote, syInde..nt..syInde) else tableInsert(tNote, "")
-        LogStatus("MixWireOutputs: Skip adding notes <"..tostring(nm)..">") end
-    else return LogStatus("MixWireOutputs: Failed adding output <"
-           ..tostring(nm).."/"..tostring(tp)..">", false) end
-  end; return LogStatus("MixWireOutputs: Done", true)
+  for ID = 1, #tPorts.Name do
+    local nm = tostring(tPorts.Name[ID] or ""):Trim()
+    local tp = tostring(tPorts.Type[ID] or ""):Trim()
+    local nt = tostring(tPorts.Note[ID] or ""):Trim()
+    if(not IsEmptyString(nm) and not IsEmptyString(tp)) then
+      table.insert(tName, nm); table.insert(tType, tp)
+      if(not IsEmptyString(nt)) then table.insert(tNote, syInde..nt..syInde) else table.insert(tNote, "")
+        LogStatus("WireMixSetPoint: Skip adding notes <"..nm..">") end
+    else return LogStatus("WireMixSetPoint: Failed adding output <"
+           ..nm.."/"..tp..">", false) end
+  end; return LogStatus("WireMixSetPoint: Done", true)
 end
 
 --[[
@@ -506,12 +491,12 @@ end
 function NewConvarArray(sNam, nCnt, nLen, sInf, nFlg)
   local mNam, mInf = (tostring(sNam  or ""):lower()), tostring(sInf or "")
   local mCnt, mLen = (tonumber(nCnt) or  0), (tonumber(nLen) or 0)
-  if(mNam == "") then return LogStatus("NewConvarArray: Name empty. "..mInf, nil) end
+  if(IsEmptyString(mNam)) then return LogStatus("NewConvarArray: Name empty. "..mInf, nil) end
   if(mCnt <= 0) then return LogStatus("NewConvarArray: Beam count invalid <"..mNam.."> #"..mCnt, nil) end
   if(mLen <= 0) then return LogStatus("NewConvarArray: Bean length invalid <"..mNam..">"..mSiz, nil) end
   local mTab = {}
-  if(nFlg ~= 0) then -- For custom behavior
-    for id = 1, mCnt do mTab[id] = CreateConVar(mNam.."_"..id, mVal, nFlg, mInf) end
+  if(nFlg ~= 0) then -- For custom behaviour
+    for id = 1, mCnt do mTab[id] = CreateConVar(mNam.."_"..id, "", nFlg, mInf) end
   else -- This must behave like a client convar with user data enabled
     for id = 1, mCnt do mTab[id] = CreateClientConVar(mNam.."_"..id, mVal, true, true, mInf) end
   end
@@ -527,11 +512,11 @@ function NewConvarArray(sNam, nCnt, nLen, sInf, nFlg)
   function self:SetValue(sIn, vD)
     local sI, cE = tostring(sIn or ""), nil
     local sD, tE = tostring(vD  or ""), nil
-    if(sD ~= "") then tE = stringExplode(sD, sI); cE = #tE else
+    if(not IsEmptyString(sD)) then tE = sD:Explode(sI); cE = #tE else
       tE = {}
       local iS, iE = 1, mLen
       local sS, id = sIn:sub(iS, iE), 1
-      while(sS and sS ~= "") do
+      while(sS and not IsEmptyString(sS)) do
         tE[id] = sS;
         iS, iE, id = (iS + mLen), (iE + mLen), (id + 1)
         sS = sIn:sub(iS, iE)
@@ -542,7 +527,7 @@ function NewConvarArray(sNam, nCnt, nLen, sInf, nFlg)
     for id = 1, mCnt do
       local sB = tE[id]
       if(sB:len() > mLen) then
-        return LogStatus("NewConvarArray: Beam ["..id.."] <"..mNam.."> shorter {"
+        return LogStatus("NewConvarArray: Array ["..id.."] <"..mNam.."> shorter {"
           ..sB:len().." > "..mLen.."} for <"..sB..">", nil) end
       mTab[id]:SetString(sB)
     end
@@ -558,17 +543,16 @@ end
 ]]--
 local mtSensor = {}
       mtSensor.__index = mtSensor
-      mtSensor.__type  = GetOpVar("TYPE_SENSOR")
       mtSensor.__tostring = function(oSen) return "["..mtSensor.__type.."]"..
         " {E="..tostring(oSen:getEntity())..", L="..tostring(oSen:getLength())..
         ", O="..tostring(oSen:getOrigin())..", D="..tostring(oSen:getDirect()).."}" end
 function NewSensor(sNam)
   local mNam = tostring(sNam or "") -- Name used to identify the thing
-  if(mNam == "") then return LogStatus("NewSensor: Name invalid", nil) end
+  if(IsEmptyString(mNam)) then return LogStatus("NewSensor: Name invalid", nil) end
   local mOrg = Vector() -- Local position relative to mEnt
   local mDir = Vector() -- Local direction relative to mEnt
   local mLen, mEnt = 0 -- Length and base attachment entity
-  local mfTrace, mtTrC -- The tracer function to be used
+  local mtTrC, mfTrace = {}  -- The tracer function to be used
   local self, mtTrO = {}, {} -- Define the member parameters
   local mtTrI = { -- This table stores the trace input information
     start  = Vector(),   -- Start position of the trace
@@ -576,7 +560,8 @@ function NewSensor(sNam)
     mask   = MASK_SOLID, -- Mask telling it what to hit ( currently solid )
     output = mtTrO,      -- Trace result for avoiding table creation in real time
     filter = function(oEnt) -- Only valid props which are not the main entity or world or mtTrC
-      if(oEnt and oEnt:IsValid() and oEnt ~= mEnt and mtTrC[oEnt:GetClass()]) then return true end end }
+      if(oEnt and oEnt:IsValid() and oEnt ~= mEnt and -- The trace is not attachment and is valid
+        (IsEmptyTable(mtTrC) or mtTrC[oEnt:GetClass()])) then return true end end }
   setmetatable(self, mtSensor)
   function self:getEntity() return mEnt end
   function self:getLength() return mLen end
@@ -586,12 +571,11 @@ function NewSensor(sNam)
   function self:Sample() mfTrace(mtTrI); return self end
   function self:getOrigin() v = Vector(); v:Set(mOrg) return v end
   function self:getDirect() v = Vector(); v:Set(mDir) return v end
-  function self:setTrace(fTrs, tHit)
-    mfTrace, mtTrC = fTrs, tHit
-    if(type(mtTrC) == "table") then
-        for key, val in pairs(mtTrC) do
-          LogStatus("NewSensor.setTrace: ["..key.."] = "..tostring(val)) end
-    end; return self
+  function self:setTarget(sCls, bEn)
+    mtTrC[tostring(sCls or ""):Trim()] = tobool(bEn); return self end
+  function self:setTracer(fTrs)
+    mfTrace = fTrs; if(type(mfTrace) ~= "function") then
+      return LogStatus("NewSensor.setTracer: Tracer not function", nil) end; return self
   end
   function self:setEntity(oEnt) -- Load the base entity
     if(not (oEnt and oEnt:IsValid())) then
@@ -616,12 +600,12 @@ function NewSensor(sNam)
     mDir:Set(vDir); mDir:Normalize(); mDir:Mul(mLen)
     return LogStatus("NewSensor.setDirect("..tostring(mDir)..") OK", self)
   end -- Uses custom ePos, eAng according to forward and up locals given
-  function self:Update(ePos, eAng) -- Updates the trace parameters and gets ready to sample
-    local fPos = ePos and ePos or mEnt:GetPos()
-    local fAng = eAng and eAng or mEnt:GetAngles()
+  function self:Update(cPos, cAng) -- Updates the trace parameters and gets ready to sample
+    local oPos = GetPick(IsNil(cPos), mEnt:GetPos()   , cPos)    -- Custom center (pos)
+    local oAng = GetPick(IsNil(cAng), mEnt:GetAngles(), cAng) -- Custom angle  (ucs)
     local vstr, vend = mtTrI.start, mtTrI.endpos
-    vstr:Set(mOrg); vstr:Rotate(fAng); vstr:Add(fPos)
-    vend:Set(mDir); vend:Rotate(fAng); vend:Add(vstr); return self
+    vstr:Set(mOrg); vstr:Rotate(oAng); vstr:Add(oPos)
+    vend:Set(mDir); vend:Rotate(oAng); vend:Add(vstr); return self
   end -- Executed in real-time. Performs a trace sensor update
   function self:Dump() -- The same as the setup method
     LogStatus("["..mtSensor.__type.."] Properties:")
@@ -646,7 +630,7 @@ function NewSensor(sNam)
     if(type(mfTrace) ~= "function") then
       oSta = LogStatus("NewSensor.Validate: Tracer invalid <"..type(mfTrace)..">", nil) end
     if(not oSta) then self:Dump() end -- Try to validate the object return it validated
-    return LogStatus("NewSensor.Validate: Sensor <"..mNam.."> "..(oSta and "success" or "fail"), oSta)
+    return LogStatus("NewSensor.Validate: Sensor <"..mNam.."> "..(oSta and "OK" or "fail"), oSta)
   end; return LogStatus("NewSensor: Create ["..mNam.."]", self) -- The sensor object
 end
 
@@ -658,16 +642,15 @@ end
 ]]--
 local mtForcer = {}
       mtForcer.__index = mtForcer
-      mtForcer.__type  = GetOpVar("TYPE_FORCER")
       mtForcer.__tostring = function(oSen) return "["..mtForcer.__type.."]"..
         " {E="..tostring(oSen:getEntity())..", O="..tostring(oSen:getOrigin())..", D="..tostring(oSen:getDirect()).."}" end
 function NewForcer(sNam)
   local mNam = tostring(sNam or "") -- Name used to identify the thing
-  if(mNam == "") then return LogStatus("NewForcer: Name invalid", nil) end
+  if(IsEmptyString(mNam)) then return LogStatus("NewForcer: Name invalid", nil) end
   local mOrg = Vector() -- Local position of the forcer
-  local mDir = Vector() -- Local direction of the forcer
-  local fOrg = Vector() -- Force origin lever relative to ePos
-  local fDir = Vector() -- force world-space direction vector of the force applied
+  local mDir = Vector() -- Local direction of the force applied
+  local fOrg = Vector() -- Force world-space origin position relative to custom center
+  local fDir = Vector() -- Force world-space direction vector of the force applied
   local self, mEnt, mPhy = {} -- Define the member parameters and the local physics
   setmetatable(self, mtForcer)
   function self:getEntity() return mEnt end
@@ -692,15 +675,15 @@ function NewForcer(sNam)
       return LogStatus("NewForcer.setDirect: Direct "..type(vDir).." invalid <"..tostring(vDir)..">", nil) end
     mDir:Set(vDir); mDir:Normalize(); return LogStatus("NewForcer.setDirect("..tostring(mDir)..") OK", self)
   end -- Uses custom ePos, eAng according to forward and up locals given
-  function self:Update(ePos, eAng) -- Updates the trace parameters and gets ready to sample
-    local fPos = ePos and ePos or mEnt:GetPos()
-    local fAng = eAng and eAng or mEnt:GetAngles()
-    fOrg:Set(mOrg); fOrg:Rotate(fAng); fOrg:Add(fPos)
-    fDir:Set(mDir); fDir:Rotate(fAng); return self
+  function self:Update(cPos, cAng) -- Updates the trace parameters and gets ready to sample
+    local oPos = GetPick(IsNil(cPos), mEnt:GetPos()   , cPos) -- Custom center (pos)
+    local oAng = GetPick(IsNil(cAng), mEnt:GetAngles(), cAng) -- Custom angle  (ucs)
+    fOrg:Set(mOrg); fOrg:Rotate(oAng); fOrg:Add(oPos)
+    fDir:Set(mDir); fDir:Rotate(oAng); return self
   end -- Executed in real-time. Performs position and direction update
-  function self:Force(nAmt)
-    fDir:Mul(tonumber(nAmt) or 0); mPhys:ApplyForceOffset(fDir, fOrg); return self
-  end
+  function self:Force(nAmt) fDir:Mul(tonumber(nAmt) or 0)
+    mPhy:ApplyForceOffset(fDir, fOrg); return self
+  end -- This method applies the offset force after update is performed on the forcer
   function self:Dump() -- The same as the setup method
     LogStatus("["..mtForcer.__type.."] Properties:")
     LogStatus("  Name  : "..tostring(mNam))
@@ -713,23 +696,22 @@ function NewForcer(sNam)
     local oSta = self
     if(not (mEnt and mEnt:IsValid())) then
       oSta = LogStatus("NewForcer.Validate: Entity invalid <"..tostring(mEnt)..">", nil) end
-    if(not (mPhys and mPhys:IsValid())) then
+    if(not (mPhy and mPhy:IsValid())) then
       oSta = LogStatus("NewForcer.Validate: Physics invalid <"..tostring(mEnt)..">", nil) end
     if(mDir:Length() == 0) then -- Vector magnitude cannot be negative
       oSta = LogStatus("NewForcer.Validate: Direct invalid <"..tostring(mDir)..">", nil) end
     if(not oSta) then self:Dump() end -- Try to validate the object return it validated
-    return LogStatus("NewForcer.Validate: Forcer <"..mNam.."> "..(oSta and "success" or "fail"), oSta)
+    return LogStatus("NewForcer.Validate: Forcer <"..mNam.."> "..(oSta and "OK" or "fail"), oSta)
   end; return LogStatus("NewForcer: Create ["..mNam.."]", self) -- The forcer object
 end
 
 --[[
- * NewControl: Class maglev state processing manager. Implements a controller unit
+ * NewControl: Class hovering state processing manager. Implements a controller unit
  * nTo   > Controller sampling time in seconds
  * sName > Controller hash name differentiation
 ]]--
 local mtControl = {}
       mtControl.__index = mtControl
-      mtControl.__type  = GetOpVar("TYPE_CONTROL")
       mtControl.__tostring = function(oCon)
         return oCon:getType().."["..mtControl.__type.."] ["..tostring(oCon:getPeriod()).."]"..
           "{T="..oCon:getTune()..",W="..oCon:getWindup()..",P="..oCon:getPower().."}"
@@ -738,7 +720,7 @@ function NewControl(nTo, sName)
   local mTo = (tonumber(nTo) or 0); if(mTo <= 0) then -- Sampling time [s]
     return LogStatus("NewControl: Sampling time <"..tostring(nTo).."> invalid",nil) end
   local self  = {}                 -- Place to store the methods
-  local mfAbs = mathAbs            -- Function used for error absolute
+  local mfAbs = math.abs           -- Function used for error absolute
   local mfSgn = GetSign            -- Function used for error sign
   local mErrO, mErrN  = 0, 0       -- Error state values
   local mvCon, meInt  = 0, true    -- Control value and integral enabled
@@ -762,7 +744,7 @@ function NewControl(nTo, sName)
   function self:setTune(sTune)
     local symComp = GetOpVar("OPSYM_COMPONENT")
     local sTune  = tostring(sTune or ""):Trim()
-    local arTune = stringExplode(symComp,sTune)
+    local arTune = symComp:Explode(sTune)
     if(arTune[1] and (tonumber(arTune[1] or 0) > 0)) then
       mkP = (tonumber(arTune[1] or 0)) -- Proportional term
     else return LogStatus("NewControl.setTune: P-gain <"..tostring(arTune[1]).."> invalid",nil) end
@@ -781,7 +763,7 @@ function NewControl(nTo, sName)
   function self:setWindup(sWind)
     local symComp = GetOpVar("OPSYM_COMPONENT")
     local sWind = tostring(sWind or ""):Trim()
-    local arSat = stringExplode(symComp,sWind)
+    local arSat = symComp:Explode(sWind)
     if(arSat and tonumber(arSat[1]) and tonumber(arSat[2])) then
       arSat[1], arSat[2] = tonumber(arSat[1]), tonumber(arSat[2]) -- Saturation windup
       if(arSat[1] < arSat[2]) then
@@ -794,7 +776,7 @@ function NewControl(nTo, sName)
   function self:setPower(sPow)
     local symComp = GetOpVar("OPSYM_COMPONENT")
     local sPow  = tostring(sPow or ""):Trim()
-    local arPow = stringExplode(symComp,sPow) -- Power ignored when missing
+    local arPow = symComp:Explode(sPow) -- Power ignored when missing
     if(arPow and tonumber(arPow[1]) and tonumber(arPow[2]) and tonumber(arPow[3])) then
       mpP = (tonumber(arPow[1]) or 1) -- Proportional power
       mpI = (tonumber(arPow[2]) or 1) -- Integral power
@@ -828,7 +810,7 @@ function NewControl(nTo, sName)
     end; return self
   end
   function self:Dump()
-    local sLabel = (mType ~= "") and (mType.."-") or mType
+    local sLabel = GetPick(not IsEmptyString(mType), mType.."-", mType)
     LogStatus("["..sLabel..mtControl.__type.."] Properties:")
     LogStatus("  Name : "..mName.." ["..tostring(mTo).."]s")
     LogStatus("  Param: {"..mTune.."}")
@@ -863,8 +845,8 @@ function IsControlRec(oRec)
 end
 
 --[[
- * Is the type enabled for control or sensor
- * sTyp > Either sensor or control hash
+ * Is the type enabled for an object
+ * sTyp > Either general, sensor, forcer or control hash
 ]]--
 function IsType(sTyp)
   local tCol = GetOpVar("TYPE_DEFCOLUMN")
@@ -872,8 +854,8 @@ function IsType(sTyp)
 end
 
 --[[
- * Is the column name enabled for control or sensor
- * sTyp > Either sensor or control hash
+ * Is the column name enabled for an object
+ * sTyp > Either general, sensor, forcer or control hash
  * sCol > The name of the column to be checked
 ]]--
 function IsHash(sTyp, sCol)
@@ -882,132 +864,49 @@ function IsHash(sTyp, sCol)
 end
 
 function GetDescriptionID(vID)
-  local tDs = GetOpVar("UNIT_DESCRIPTION")
+  local tDes = GetOpVar("UNIT_DESCRIPTION")
   local nID = (tonumber(vID) or 0)
-  return (tDs and tDs[nID] or nil)
+  return (tDes and tDes[nID] or nil)
 end
 
 function GetDescriptionSize()
-  local tDs = GetOpVar("UNIT_DESCRIPTION")
-  return (tDs and #tDs or 0)
+  local tDes = GetOpVar("UNIT_DESCRIPTION")
+  return (tDes and tDes.__size or 0)
 end
 
-function SetupDataSheet(pnLV, pnProp, tProp, obVar)
-  local syInis = GetOpVar("OPSYM_INITSTRING")
-  for ID = 1, #tProp do -- http://wiki.garrysmod.com/page/Category:DProperties
-    local col = tostring(tProp[ID][2])
-    LogStatus("SetupDataSheet: Processing["..ID.."] <"..col.."> ")
-    if(tProp[ID][1]) then
-      local cow = (tonumber(tProp[ID][3]) or 0)
-      pnLV:AddColumn(col):SetFixedWidth(cow)
-      LogStatus("SetupDataSheet: pnLV:AddColumn("..col.."):SetFixedWidth("..cow..")")
-    end
-    local cat, nam = tostring(tProp[ID][4] or ""), tostring(tProp[ID][2] or "")
-    tProp.Pan = pnProp:CreateRow(cat, nam)
-    LogStatus("SetupDataSheet: DProperties.CreateRow("..cat..","..nam..")")
-    if(not IsValid(tProp.Pan)) then
-      return LogStatus("SetupDataSheet: Create row <"..nam.."> fail #"..ID) end
-    local typ, dat = tostring(tProp[ID][5] or ""), tProp[ID][6]
-    if(typ == "Combo") then
-      local lab, val = dat[1], dat[2];
-      tProp.Pan:Setup(typ, {text = "Select ..."})
-      LogStatus("SetupDataSheet: DProperties_Combo:Setup("..typ..", {text = Select ...})")
-      for n = 1, #lab do -- Add all the choices: http://wiki.garrysmod.com/page/Category:DProperty_Combo
-        tProp.Pan:AddChoice(lab[n], val[n])
-        LogStatus("SetupDataSheet: DProperties_Combo:AddChoice("..lab[n]..", "..val[n]..")")
-      end
-      for k, v in pairs(dat) do -- Apply the override method
-        if(not tonumber(k)) then
-          tProp.Pan[k] = v
-          LogStatus("SetupDataSheet: DProperties_Combo["..k.."] = "..tostring(v))
-        end
-      end
-    else
-      tProp.Pan:Setup(typ)
-      tProp.Pan:SetValue(dat[1]); tProp.Pan:SetToolTip(tProp[ID][7])
-    end
-  end
-  pnLV.OnRowSelected = function(pnSelf, nID, pnLine) -- For override (PASTE)
-    -- Create/Update the properties on the line selected ( If name given is equal )
-    -- Press SHIFT will create a new line ( If the name is new )
-    -- https://wiki.garrysmod.com/page/DListView/AddLine ( PROP --> LIST )
-    local pTyp, pCol = tProp.Type, tProp.List
-    if(inputIsKeyDown(KEY_E)) then -- Import from the console variables
-      local tVal, tIni, tSeq = stringExplode(syInis,obVar:GetValue():gsub("%s",""):Trim(syInis)), {}, {}
-      for ID = 1, #tVal do
-        if(not TransformSettings(tVal[ID], tIni, tSeq)) then
-          LogStatus("SetupDataSheet: pnLV.OnRowSelected(CVAR): Unable to transform <"..tVal[ID]..">") end
-      end; local tRep = GetKeyReportID(tIni[pTyp]) -- What element do we make report for
-      if(not tRep) then return LogStatus("SetupDataSheet: pnLV.OnRowSelected(CVAR): Report fail") end
-      pnLV:Clear(); LogStatus("SetupDataSheet: pnLV.OnRowSelected(CVAR): Clear")
-      local aKey, tUni = tRep.Key, tIni[pTyp]
-      for N = 1, #aKey do
-        local key, cnt = aKey[N]  , 2 -- Count points to the next free slot
-        local val, tab = tUni[key], {key}
-        for ID = 2, #tProp do
-          local col = tProp[ID][1] -- If column definition available add the value
-          if(col) then tab[cnt] = val[col]; cnt = cnt + 1 end
-        end; pnLV:AddLine(unpack(tab))
-        LogStatus("SetupDataSheet: pnLV.OnRowSelected(CVA): Added <"..key..">")
-      end
-    elseif(inputIsKeyDown(KEY_LSHIFT)) then -- Import from the trace entity
-      local trEnt, eKey = LocalPlayer:GetEyeTrace().Entity, GetOpVar("HASH_ENTITY")
-      if(not (trEnt and trEnt:IsValid() and trEnt:GetClass() == GetOpVar("FILE_ENTITY"))) then
-        return LogStatus("SetupDataSheet: pnLV.OnRowSelected(ENT): Skipped <"..tostring(trEnt)..">") end
-      local tData = trEnt[eKey]; if(not tData) then
-        return LogStatus("SetupDataSheet: pnLV.OnRowSelected(ENT): Data <"..tostring(trEnt).."> missing") end
-      tData = tData[pCol]; if(not tData) then
-        return LogStatus("SetupDataSheet: pnLV.OnRowSelected(ENT): List <"..pTyp.."> missing <"..tostring(trEnt)..">") end
-      local tRep = GetKeyReportID(tData) -- Make a report fro the data stored under the type list selected
-      if(not tRep) then return LogStatus("SetupDataSheet: pnLV.OnRowSelected(ENT): Report fail") end
-      for N = 1, #tRep.Key do
-        local key, cnt = tRep.Key[N], 2 -- Count points to the next free slot
-        local val, tab = tData[key], {key}
-        for ID = 2, #tProp do
-          local col = tProp[ID][1] -- If column definition available add the value
-          if(col) then tab[cnt] = val[col]; cnt = cnt + 1 end
-        end; pnLV:AddLine(unpack(tab))
-        LogStatus("SetupDataSheet: pnLV.OnRowSelected(ENT): Added <"..key..">")
-      end
-    else
-      local tVal = {};
-      for ID = 1, #tProp do
-        if(tProp[ID][1]) then tVal[ID] = tProp[ID].Pan:GetValue()
-          LogStatus("SetupDataSheet: pnLV.OnRowSelected: Property["..ID.."] = "..tVal[ID]) end
-      end
-      -- Add the line /tVal/ to the list view. If the line does not exist,
-      -- it will be added, else all matching names will be deleted and the new line will be used
-      for k, v in pairs(pnSelf:GetLines()) do
-        if(tVal[1] == v:GetValue(1)) then pnLV:RemoveLine(k)
-          LogStatus("SetupDataSheet: pnLV.OnRowSelected(ADD)["..k.."]: Removed <"..tVal[1]..">")
-      end end -- Remove the old line if the name is repetitive
-      pnLV:AddLine(unpack(tVal))
-      LogStatus("SetupDataSheet: pnLV.OnRowSelected(ADD): <"..tVal[1]..">")
-    end
-  end
-  pnLV.OnRowRightClick = function(pnSelf, nID, pnLine) -- For override (COPY)
-    -- Copies the list view line into the item properties
-    -- Hold SHIFT to remove the line selected ( cut-paste )
-    -- https://wiki.garrysmod.com/page/DListView/RemoveLine ( LIST --> PROP )
-    if(inputIsKeyDown(KEY_E)) then -- Export to the console variable
-      local tLin, sVal = pnSelf:GetLines(), "" -- Initialize using string
-      for ID = 1, #tLin do local pLin = tLin[ID]
-        sVal = sVal..syInis.."{"..pTyp..":"..pLin:GetValue(1).."}"
-        for N = 2, #tProp do
-          if(tProp[N][1]) then sVal = sVal.."{"..tProp[N][1]..":"..pLin:GetValue(N).."}" end end
-      end; obVar:SetValue(sVal)
-      LogStatus("SetupDataSheet: pnLV.OnRowRightClick(EXP): "..pTyp.." <"..sVal..">")
-    else -- Copy a line into the properties
-      for ID = 1, #tProp do local val = tProp[ID] -- Copy the line selected into the properties menu
-        if(val[1]) then local col = pnLine:GetValue(ID); tProp[ID].Pan:SetValue(col)
-          LogStatus("SetupDataSheet: pnLV.OnRowRightClick: Property["..val[2].."]["..ID.."] = "..col) end end
-      if(inputIsKeyDown(KEY_LSHIFT)) then -- Cut a line
-        pnLV:RemoveLine(nID); LogStatus("SetupDataSheet: pnLV.OnRowRightClick(REM): "..pTyp.." <"..sVal..">")
-      elseif(inputIsKeyDown(KEY_G) ~= 0) then -- Clear all lines
-        pnLV:Clear(); LogStatus("SetupDataSheet: pnLV.OnRowRightClick(CLR): OK")
-      end
-    end
-  end
+function SetDescription(tData)
+  local tDes = GetOpVar("UNIT_DESCRIPTION")
+  local nSiz, nTot = tDes.__size, #tDes; if(nSiz ~= nTot) then
+    return LogStatus("SetDescription: Stack mismatch <"..nSiz.."#"..nTot..">", false) end
+  nSiz = nSiz + 1; tDes[nSiz] = tData; tDes.__size = nSiz
+  return LogStatus("SetDescription: ["..nSiz.."]<"..tostring(tData.Name or "")..">"..tostring(tData.Prop or ""), false)
+end
+
+function InitConstants()
+  libOpVars["LIBRARY_NAME"    ] = "hovermodlib"      -- Name of the library
+  libOpVars["LIBRARY_VERSION" ] = "1.0"              -- General version of the whole thing
+  libOpVars["GOLDEN_RATIO"    ] = 1.61803398875      -- Golden ration for panel resolution be more appealing
+  libOpVars["OPSYM_GENINDENT" ] = " "                -- What symbol is used for indent spacing readability
+  libOpVars["OPSYM_ITEMSPLIT" ] = "/"                -- Primary delimiter to split multiple string items by
+  libOpVars["OPSYM_COMPONENT" ] = ","                -- Secondary delimiter to split individual item components
+  libOpVars["OPSYM_INITSTRING"] = "@"                -- Trigger symbol for string source initialization ( including general settings )
+  libOpVars["OPSYM_INITFILE"  ] = "$"                -- Trigger symbol for file source initialization ( including general settings )
+  libOpVars["OPSYM_COMMENT"   ] = "#"                -- Trigger symbol for file source initialization ( including general settings )
+  libOpVars["NAME_ENTITY"     ] = "hovermodule"      -- The entity name used for limits and stuff
+  libOpVars["NAME_TOOL"       ] = "hovermoduletool"  -- The tool mode which operates the entity
+  libOpVars["TYPE_GENERAL"    ] = "general"          -- General storage type for hover unit properties
+  libOpVars["TYPE_SENSOR"     ] = "sensor"           -- The internal sensor type as string
+  mtSensor.__type  = GetOpVar("TYPE_SENSOR")         -- Define local type for usage inside OOP sensors
+  libOpVars["TYPE_FORCER"     ] = "forcer"           -- The internal forcer type as string
+  mtForcer.__type  = GetOpVar("TYPE_FORCER")         -- Define local type for usage inside OOP forcers
+  libOpVars["TYPE_CONTROL"    ] = "control"          -- The internal control type as string
+  mtControl.__type = GetOpVar("TYPE_CONTROL")        -- Define local type for usage inside OOP control
+  libOpVars["HASH_ENTITY"     ] = "HoverDataMD"      -- Where in the entity the data is stored
+  libOpVars["LOCALIFY_AUTO"   ] = "en"               -- Default translation if a phrase is now found
+  libOpVars["MISS_NOID"       ] = "N"                -- No ID selected
+  libOpVars["MISS_NOAV"       ] = "N/A"              -- Not Available
+  libOpVars["MISS_NOMD"       ] = "X"                -- No model
+  libOpVars["MISS_NOTR"       ] = "Oops, missing ?"  -- No translation found
 end
 
 --[[
@@ -1018,35 +917,53 @@ end
 ]]--
 function GetDeviation(sErr, sCon, stSen)
   local sCo = tostring(sCon):rep(1):Trim() -- Copy a temporary error selection
-  local sEr = tostring(sErr):rep(1):Trim()
+  local sDv = tostring(sErr):rep(1):Trim()
   for key, sen in pairs(stSen) do
-    sEr = sEr:gsub(key, "oSens[\""..tostring(key).."\"].Val") end
-  local sFc = "return (function(oSens) return "..sEr.." end)"
-  local fCm = CompileString(sFc, GetOpVar("FILE_ENTITY").."_"..sCo)
-  if(type(fCm) ~= "function") then
-    LogTable(stSen, "GetDeviation("..sCo.."): Sensors")
-    return LogStatus("GetDeviation("..sCo.."): <"..sFc..">", nil)
-  end; return LogStatus("GetDeviation("..sCo.."): <"..sFc..">", fCm())
+    if(type(sen) == "table" and IsString(key)) then
+      sDv = sDv:gsub(key, "oSens[\""..tostring(key).."\"].Val") end end
+  local sFc = "return (function(oSens) "..sDv.." end)"
+  local suc1, out1 = pcall(CompileString, sFc, GetOpVar("FILE_ENTITY").."_"..sCo); if(not suc1) then
+    return LogStatus("GetDeviation("..sCo.."): Failed primary <"..sFc.."> @"..tostring(out1), nil) end
+  local suc2, out2 = pcall(out1); if(not suc2) then
+    return LogStatus("GetDeviation("..sCo.."): Failed secondary <"..sFc.."> @"..tostring(out2), nil) end
+  return LogStatus("GetDeviation("..sCo.."): <"..sFc..">", out2)
 end
 
+--[[
+ * Updates the target hit list with additional classes if the file is provided
+ * Automatically loads <library_name>_hit.txt into the class target list
+ * bRep > Whenever to replace the internal class targets with the file or not
+]]--
 function InitTargetsHit(bRep)
-  local tTrgs = GetOpVar("CLASS_TARGETS")
-  local lbNam = GetOpVar("LIBRARY_NAME")
+  local tTrgs, lbNam = GetOpVar("CLASS_TARGETS"), GetOpVar("LIBRARY_NAME")
   local fName = GetOpVar("DIRPATH_BASE")..lbNam.."_hit.txt"
   local S = file.Open(fName, "rb", "DATA")
-  if(S) then
-    if(bRep) then
-      for key, _ in pairs(tTrgs) do tTrgs[key] = nil end end
-    local sCh, sLine = "X", ""
-    while(sCh) do sCh = S:Read(1)
-      if(not sCh) then break end
-      if(sCh == "\n") then sLine = sLine:Trim()
-        if(not IsEmptyStr(sLine)) then
-          tTrgs[sLine] = true end; sLine = ""
-      else sLine = sLine..sCh end
-    end; if(not IsEmptyStr(sLine)) then tTrgs[sLine] = true end; S:Close()
-    return LogStatus("InitTargetsHit: Success <"..fName..">", true)
+  if(S) then local isEOF, sLine = false, ""
+    if(bRep) then for key, _ in pairs(tTrgs) do tTrgs[key] = nil end end
+    while(not isEOF) do sLine, isEOF = GetStringFile(S)
+      if(not IsEmptyString(sLine)) then tTrgs[sLine] = true end end
+    S:Close(); return LogStatus("InitTargetsHit: OK <"..fName..">", true)
   else return LogStatus("InitTargetsHit: Missing <"..fName..">", true) end
+end
+
+--[[
+ * Tells the library which log outputs must be skipped
+ * Automatically loads <library_name>(_slskip/_slonly).txt into the log skip settings
+ * bRep > Whenever to replace the internal class targets with the file or not
+]]--
+function SettingsLogs(sHash)
+  local sKey = tostring(sHash or ""):upper():Trim()
+  if(not (sKey == "SKIP" or sKey == "ONLY")) then
+    return LogStatus("SettingsLogs("..sKey.."): Invalid hash", false) end
+  local tLogs, lbNam = GetOpVar("LOG_SETTINGS")[sKey], GetOpVar("LIBRARY_NAME")
+  if(not tLogs) then return LogStatus("SettingsLogs("..sKey.."): Skip table", true) end
+  local fName = GetOpVar("DIRPATH_BASE")..lbNam.."_sl"..sKey:lower()..".txt"
+  local S = file.Open(fName, "rb", "DATA"); table.Empty(tLogs)
+  if(S) then local sLine, isEOF = "", false
+    while(not isEOF) do sLine, isEOF = GetStringFile(S)
+      if(not IsEmptyString(sLine)) then table.insert(tLogs, sLine) end
+    end; S:Close(); return LogStatus("SettingsLogs("..sKey.."): Success <"..fName..">", true)
+  else return LogStatus("SettingsLogs("..sKey.."): Missing <"..fName..">", true) end
 end
 
 --[[
@@ -1056,14 +973,14 @@ end
  * But seriously: Converts "prop/ test " to {["prop"] = true, ["test"] = true}
  * If no arguments are provided or an empty string, uses CLASS_TARGETS
  * sCls > The string to convert to a hash format
- * tGlb > Global hit targets table to use if provided
- * bGlb > Whenever or not to use the global hit targets
+ * tHit > Hit targets table to use if provided
+ * bHit > Whenever or not to use the global hit targets
 ]]--
-function ConvertTraceTargets(sCls, tGlb, bGlb)
+function ConvertTraceTargets(sCls, bHit, tHit)
   local sCls = tostring(sCls or "")
-  local tArg = CaseSelect(type(tGlb)=="table",tGlb,GetOpVar("CLASS_TARGETS"))
-  local tSrc = CaseSelect(bGlb,tArg,{})
-  if(not IsEmptyStr(sCls)) then
+  local tArg = GetPick(type(tHit)=="table",tHit,GetOpVar("CLASS_TARGETS"))
+  local tSrc = GetPick(bHit,tArg,{})
+  if(not IsEmptyString(sCls)) then
     tSrc = GetOpVar("OPSYM_ITEMSPLIT"):Explode(tostring(sCls))
     for ID = 1, #tSrc do -- Kill targets sequentially in order
       tSrc[tSrc[ID]:Trim()] = true; tSrc[ID] = nil end
@@ -1080,19 +997,16 @@ end
   * tSeq   > A place where the sequential type ID is stored
 ]]--
 function TransformSettings(sLine, tBase, tSeq) -- Mecha henshin !
-  local sBase = sLine:Trim()
-  if(sBase:sub(1,1) == "#") then return true end
-  local cnt, tab, typ, key = 1, 0
+  local sBase, cnt, tab, typ, key = sLine:Trim(), 1, 0
+  if(sBase:sub(1,1) == GetOpVar("OPSYM_COMMENT")) then return true end
   for v in sBase:gmatch("{(.-)}") do -- All the items in curly brackets
-    local exp = stringExplode(":",v) -- Explode on : to get key-value pairs
-    local fld, val = tostring(exp[1] or ""):Trim(), tostring(exp[2] or ""):Trim()
-    if(fld == "") then
+    local exp = (":"):Explode(v) -- Explode on : to get key-value pairs
+    local fld = tostring(exp[1] or ""):Trim(); if(IsEmptyString(fld)) then
       return LogStatus("TransformSettings: Key missing <["..tostring(cnt).."],"..sBase..">", false) end
-    if(val == "") then
+    local val = tostring(exp[2] or ""):Trim(); if(IsEmptyString(val)) then
       return LogStatus("TransformSettings: Value missing <["..tostring(cnt).."]["..fld.."],"..sBase..">", false) end
     if(cnt == 1) then
-      typ, key = fld, val
-      if(not IsType(typ)) then
+      typ, key = fld, val; if(not IsType(typ)) then
         return LogStatus("TransformSettings: Type ["..tostring(cnt).."] <"..fld.."> missing", false) end
       if(not tBase[typ]) then tBase[typ] = {} end
       if(not tSeq[typ]) then tSeq[typ] = 0 end; tSeq[typ] = tSeq[typ] + 1
@@ -1105,12 +1019,12 @@ function TransformSettings(sLine, tBase, tSeq) -- Mecha henshin !
 end
 
 --[[
- * Does a post-processing of an initialization parameterization
+ * Does a post-processing of an initialization parametrization
  * tSet  > A value set table to be processed
  * tgHit > If the hit list is not available for the sensor use the global one
  * bgHit > Flag for using the global table or not
 ]]--
-function PostProcessInit(tSet, tgHit, bgHit)
+function PostProcessInit(oPly, tSet, tgHit, bgHit)
   if(CLIENT) then
     return LogStatus("PostProcessInit: Working on client", false) end
   if(not (tSet and type(tSet) == "table")) then
@@ -1128,13 +1042,13 @@ function PostProcessInit(tSet, tgHit, bgHit)
         rec["ID"]  = (tonumber(rec["ID"]) or 0); if(rec["ID"] < 1) then
           return LogStatus("PostProcessInit: Sensor <"..key.."> invalid ID", false) end
         rec["Len"] = (tonumber(rec["Len"]) or 0)
-        if(not (rec["Len"] and mathAbs(rec["Len"]) ~= 0)) then
+        if(not (rec["Len"] and math.abs(rec["Len"]) ~= 0)) then
           return LogStatus("PostProcessInit: Sensor <"..key.."> invalid length", false) end
         rec["Org"], rec["Val"] = GetVectorString(rec["Org"]), 0
         rec["Dir"] = GetVectorString(rec["Dir"])
         if(rec["Dir"] and rec["Dir"]:Length() == 0) then
-          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid direct", false) end
-        rec["Hit"] = ConvertTraceTargets(rec["Hit"],tgHit,bgHit)
+          return NotifyUser(oPly, "PostProcessInit: Sensor <"..key.."> invalid direct", "ERROR", false) end
+        rec["Hit"] = ConvertTraceTargets(rec["Hit"],bgHit,tgHit)
       end
     end
   else LogStatus("PostProcessInit: Sensors skip") end
@@ -1145,7 +1059,7 @@ function PostProcessInit(tSet, tgHit, bgHit)
           return LogStatus("PostProcessInit: Forcer <"..key.."> invalid ID", false) end
         rec["Dir"] = GetVectorString(rec["Dir"])
         if(rec["Dir"] and rec["Dir"]:Length() == 0) then
-          return LogStatus("PostProcessInit: Sensor <"..key.."> invalid direct", false) end
+          return NotifyUser(oPly, "PostProcessInit: Forcer <"..key.."> invalid direct", "ERROR", false) end
         rec["Org"] = GetVectorString(rec["Org"])
       end
     end
@@ -1161,7 +1075,7 @@ function PostProcessInit(tSet, tgHit, bgHit)
         rec["Ref"]    = syItem:Explode(rec["Ref"])
         rec["Ref"][1] = tonumber((rec["Ref"][1]):Trim()) or 0
         rec["Ref"][2] = tostring(rec["Ref"][2] or ""):Trim()
-        rec["Ref"][2] = CaseSelect(not IsEmptyStr(rec["Ref"][2]),rec["Ref"][2],nil)
+        rec["Ref"][2] = GetPick(not IsEmptyString(rec["Ref"][2]),rec["Ref"][2],nil)
         rec["Dev"] = GetDeviation(rec["Prs"], key, tSen) -- Define the deviation function for the error
         rec["Tar"] = syItem:Explode(tostring(rec["Tar"])) -- Forcer mapping for every control
         for k, v in pairs(rec["Tar"]) do rec["Tar"][k] = tostring(v or ""):Trim() end
@@ -1177,58 +1091,52 @@ end
  * sgHit > A trace targets list string to be used if a sensor has none
  * bgHit > Whenever to use the global hit list or not
 ]]--
-function InitializeUnitSource(srSet, sgHit, bgHit)
+function InitializeUnitSource(oPly, srSet, sgHit, bgHit)
   local sHit = tostring(sgHit or ""):Trim()
   local sSet, tSet = tostring(srSet or ""):Trim(), {}
-  local tHit, sMod = ConvertTraceTargets(sHit,nil,bgHit), sSet:sub(1,1)
+  local tHit, sMod = ConvertTraceTargets(sHit,bgHit), sSet:sub(1,1)
   local mdFil, mdStr = GetOpVar("OPSYM_INITFILE"), GetOpVar("OPSYM_INITSTRING")
   if(sMod == mdFil) then -- Use a file
-    local sNm = sSet:sub(2,-1); if(IsEmptyStr(sNm)) then
-      return LogStatus("InitializeUnitSource(file): File name empty",nil) end
-    sNm = GetOpVar("DIRPATH_BASE")..GetOpVar("DIRPATH_SAVE")..sNm..".txt"
+    local sNm = sSet:sub(2,-1); if(IsEmptyString(sNm)) then
+      return LogStatus("InitializeUnitSource(F): File name empty",nil) end
+    if(not sNm:find(".txt", 1, true)) then sNm = sNm..".txt" end
     if(not file.Exists(sNm, "DATA")) then
-      return LogStatus("InitializeUnitSource(file): File missing: "..sNm,nil) end
+      return LogStatus("InitializeUnitSource(F): File missing: "..sNm,nil) end
     local ioF = file.Open(sNm, "rb", "DATA"); if(not ioF) then
-      return LogStatus("InitializeUnitSource(file): File failed <"..tostring(sNm)..">",nil) end
-    local cnt, ln, pk, seq = 1, "", false, {}
-    while(true) do
-      local rd = ioF:Read(1); if(not rd) then break end
-      if(rd == "\n") then -- If the end of the line is reached
+      return LogStatus("InitializeUnitSource(F): File failed <"..tostring(sNm)..">",nil) end
+    local ln, eof, seq  = "", false, {}
+    while(not eof) do ln, eof = GetStringFile(ioF)
+      if(not IsEmptyString(ln)) then
         if(not TransformSettings(ln, tSet, seq)) then
-          return LogStatus("InitializeUnitSource(file): Transform failed <"..ln..">",nil) end
-          cnt, ln = (cnt + 1), ""
-      else ln = ln..rd end
-    end
-    if(not IsEmptyStr(ln)) then
-      if(not TransformSettings(ln, tSet, seq)) then
-        return LogStatus("InitializeUnitSource(file): Transform last failed <"..ln..">",nil) end
+          return LogStatus("InitializeUnitSource(F): Transform failed <"..ln..">",nil) end
+      end
     end; ioF:Close()
-    if(not PostProcessInit(tSet, tHit, bgHit)) then
-      return LogStatus("InitializeUnitSource(file): Post-process fail", nil) end
-    collectgarbage(); return LogStatus("InitializeUnitSource(file): OK", tSet)
+    if(not PostProcessInit(oPly, tSet, tHit, bgHit)) then
+      return LogStatus("InitializeUnitSource(F): Post-process fail", nil) end
+    collectgarbage(); return LogStatus("InitializeUnitSource(F): OK", tSet)
   elseif(sMod == mdStr) then
     local ini, seq = mdStr:Explode(sSet:sub(2,-1)), {}
-      for cnt  = 1, #ini, 1 do
-        local ln = ini[cnt]:Trim()
-        if(not TransformSettings(ln, tSet, seq)) then
-          return LogStatus("InitializeUnitSource(string): Transform failed <"..ln..">",nil) end
+      for cnt  = 1, #ini, 1 do local ln = ini[cnt]:Trim()
+        if(not IsEmptyString(ln)) then
+          if(not TransformSettings(ln, tSet, seq)) then
+            return LogStatus("InitializeUnitSource(S): Transform failed <"..ln..">",nil) end
+        end
       end
-    if(not PostProcessInit(tSet, tHit, bgHit)) then
-      return LogStatus("InitializeUnitSource(string): Post-process fail", nil) end
-    collectgarbage(); return LogStatus("InitializeUnitSource(string): OK", tSet)
+    if(not PostProcessInit(oPly, tSet, tHit, bgHit)) then
+      return LogStatus("InitializeUnitSource(S): Post-process fail", nil) end
+    collectgarbage(); return LogStatus("InitializeUnitSource(S): OK", tSet)
   else return LogStatus("InitializeUnitSource: Mode missed <"..sMod..">", nil) end
 end
 
 --[[
- * Exports a set of maglev module controls
+ * Exports a set of hover module controls
  * into array of initialization strings
  * sKey  > The sensor name/key to export
  * stCon > The sensor structure to be exported
  * tData > Where is the data stored
 ]]--
 local function ExportSensor(sKey, stSen, tData)
-  local tyArg = type(stSen)
-  if(tyArg ~= "table") then
+  local tyArg = type(stSen); if(tyArg ~= "table") then
     return LogStatus("ExportSensor: Argument <"..tyArg.."> mismatch", false) end
   local symCp = GetOpVar("OPSYM_COMPONENT")
   local org, dir, len = stSen["Org"], stSen["Dir"], stSen["Len"]
@@ -1237,20 +1145,20 @@ local function ExportSensor(sKey, stSen, tData)
         sLin = sLin.."{Org:"..tostring(org.x)..symCp..tostring(org.y)..symCp..tostring(org.z).."}"
         sLin = sLin.."{Dir:"..tostring(dir.x)..symCp..tostring(dir.y)..symCp..tostring(dir.z).."}"
   local lst = ""; for hit, _ in pairs(stSen["Hit"]) do lst = lst.."/"..tostring(hit) end
-        lst = lst:sub(2,-1); sLin = sLin..CaseSelect(IsEmptyStr(lst), "", "{Hit:"..lst.."}")
+        lst = lst:sub(2,-1); sLin = sLin..GetPick(IsEmptyString(lst), "", "{Hit:"..lst.."}")
   tData[ID] = sLin; ID = ID + 1; sLin = ""; return true
 end
 
 --[[
- * Exports a set of maglev module controls
+ * Exports a set of hover module controls
  * into array of initialization strings
  * sKey  > The control name/key to export
  * stCon > The control structure to be exported
  * tData > Where is the data stored
 ]]--
 local function ExportControl(sKey, stCon, tData)
-  local tyArg = type(stCon)
-  if(tyArg ~= "table") then return LogStatus("ExportControl: Argument <"..tyArg.."> mismatch", false) end
+  local tyArg = type(stCon); if(tyArg ~= "table") then
+    return LogStatus("ExportControl: Argument <"..tyArg.."> mismatch", false) end
   local symItem = GetOpVar("OPSYM_ITEMSPLIT")
   local cmb, neg, ref = stCon["Cmb"], stCon["Neg"], stCon["Ref"]
   local tun, prs, tar = stCon["Tun"], stCon["Prs"], stCon["Tar"]
@@ -1258,9 +1166,9 @@ local function ExportControl(sKey, stCon, tData)
         sLin = sLin.."{Cmb:"..tostring(cmb):Trim().."}"
         sLin = sLin.."{Neg:"..tostring(neg):Trim().."}"
         sLin = sLin.."{Tar:"; for i = 1, #tar do
-          sLin = sLin..tostring(tar[i]):Trim()..symItem end; sLin = sLin:sub(1,-2).."}"
+        sLin = sLin..tostring(tar[i]):Trim()..symItem end; sLin = sLin:sub(1,-2).."}"
         sLin = sLin.."{Ref:"..tostring(ref[1] or ""):Trim()
-          ..symItem.. (ref[2] and tostring(ref[2]) or ""):Trim().."}"
+          ..symItem..GetPick(ref[2], tostring(ref[2]), ""):Trim().."}"
         sLin = sLin.."{Tun:"..tostring(tun[1] or ""):Trim()..
             symItem..tostring(tun[2] or ""):Trim()..
             symItem..tostring(tun[3] or ""):Trim().."}"
@@ -1269,22 +1177,24 @@ local function ExportControl(sKey, stCon, tData)
 end
 
 --[[
- * Exports a set of maglev module general settings ( properties )
+ * Exports a set of hover module general settings ( properties )
  * into array of initialization strings
  * sKey  > The property name/key to export
- * stCon > The property structure to be exported
+ * stGen > The property structure to be exported
  * tData > Where is the data stored
 ]]--
 local function ExportGeneral(sKey, stGen, tData)
-  local tyArg = type(stGen)
-  if(tyArg ~= "table") then return LogStatus("ExportGeneral: Argument <"..tyArg.."> mismatch", false) end
+  local tyArg = type(stGen); if(tyArg ~= "table") then
+    return LogStatus("ExportGeneral: Argument <"..tyArg.."> mismatch", false) end
   local sLin, ID = "{"..GetOpVar("TYPE_GENERAL")..":"..sKey.."}", (#tData + 1)
-        sLin = sLin.."{Val:"..tostring(stGen.Val).."}"
+  if(type(stGen.Val) == "Vector") then local vVal = stGen.Val
+    sLin = sLin.."{Val:"..tostring(vVal.x)..","..tostring(vVal.y)..","..tostring(vVal.z).."}"
+  else sLin = sLin.."{Val:"..tostring(stGen.Val).."}" end
   tData[ID] = sLin; return true
 end
 
 --[[
- * Exports a set of maglev module forcer settings
+ * Exports a set of hover module forcer settings
  * into array of initialization strings
  * sKey  > The force name/key to export
  * stFor > The force structure to be exported
@@ -1310,7 +1220,7 @@ end
  * tRep.Key > The list of keys (ordered)
  * tRep.Ord > The list of IDs (ordered) (not needed)
 ]]--
-function GetKeyReportID(stSet)
+local function GetKeyReportID(stSet)
   local tRep, cnt = {Cnt = #stSet, Int = 0, All = 0, Key = {}, Ord = {}}, 1
   for k, v in pairs(stSet) do
     tRep.All = tRep.All + 1
@@ -1333,10 +1243,10 @@ function GetKeyReportID(stSet)
 end
 
 --[[
- * Exports a set of maglev module settings
+ * Exports a set of hover module settings
  * into array of initialization strings
  * stSet > A table set to export
- * sType > The set type either /sensor/ or /control/ or /general/
+ * sType > The set type either /sensor/, /forcer/, /control/ or /general/
 ]]--
 function ExportInitString(stSet, sType)
   if(not (stSet and type(stSet) == "table")) then
@@ -1358,17 +1268,18 @@ end
 --[[
  * This function updates the general settings to the specifies fields.
  * When they are read from the file they are strings and must be converted
- * stMaglevData > The maglev initialization data to be updated
- * tGen         > The general setting we need to update the structure with
+ * stHoverData > The hover module initialization data to be updated
+ * tGen        > The general setting we need to update the structure with
 ]]--
-function SetGeneralTable(stMaglevData, tGen)
+function SetGeneralTable(stHoverData, tGen, bReplace)
   local tMap = GetOpVar("MAPPING_GENERAL")
   for key, rec in pairs(tGen) do
     local map = tMap[key]
     local col, foo = map[1], map[3]
-    if(type(col) == "string") then
-      if(type(foo) == "function") then stMaglevData[col] = foo(rec.Val)
-      else stMaglevData[col] = rec.Val end
+    if(bReplace and type(col) == "string") then
+      if(type(foo) == "function") then
+           stHoverData[col] = foo(rec.Val)
+      else stHoverData[col] = rec.Val end
     end
   end
 end
@@ -1376,43 +1287,41 @@ end
 --[[
  * Creates a general purpose table based on non-list entity fields
  * This table is later used for exporting the general setting into a file
- * eMag > The maglev entity to be extracted
+ * eHov > The hover entity to be extracted
 ]]--
-function GetGeneralTable(eMag)
+function GetGeneralTable(eHov)
   local sCls = GetOpVar("FILE_ENTITY")
   local tGen = GetOpVar("MAPPING_GENERAL")
   local sHas = GetOpVar("HASH_ENTITY")
-  if(not (eMag and eMag:IsValid() and eMag:GetClass() == sCls)) then
-    return LogStatus("GetGeneralTable: Entity invalid <"..tostring(eMag)..">") end
-  local magData = eMag[sHas]
+  if(not (eHov and eHov:IsValid() and eHov:GetClass() == sCls)) then
+    return LogStatus("GetGeneralTable: Entity invalid <"..tostring(eHov)..">") end
+  local hovData = eHov[sHas]
   local tExp = {}; for key, val in pairs(tGen) do
-    tExp[key] = {Val = magData[val[1]], ID = val[2]} end
+    tExp[key] = {Val = hovData[val[1]], ID = val[2]} end
   return tExp
 end
 
 --[[
- * Exports a maglev module unit setting into a file
- * eMag  > The maglev module entity
+ * Exports a hover module unit setting into a file
+ * eHov  > The hover module entity
  * sFile > The file to export the settings to
 ]]--
-function ExportUnitSource(eMag, sFile)
-  if(not (eMag and eMag:IsValid())) then
-    return LogStatus("ExportUnitSource: Maglev module invalid", nil) end
-  local sMag, sEnt = eMag:GetClass(), GetOpVar("FILE_ENTITY")
+function ExportUnitSource(eHov, sFile)
+  if(not (eHov and eHov:IsValid())) then
+    return LogStatus("ExportUnitSource: Hover module invalid", nil) end
+  local sMag, sEnt = eHov:GetClass(), GetOpVar("FILE_ENTITY")
   if(sMag ~= sEnt) then -- If another entity is given
-    return LogStatus("ExportUnitSource: Maglev class <"..sMag.."> invalid", nil) end
-  local sNm = tostring(sFile or "default")
-  if(IsEmptyStr(sNm)) then
+    return LogStatus("ExportUnitSource: Hover class <"..sMag.."> invalid", nil) end
+  local sNm = tostring(sFile or "default"); if(IsEmptyString(sNm)) then
     return LogStatus("ExportUnitSource: File name empty", nil) end
-  local sNm = GetOpVar("DIRPATH_BASE")..GetOpVar("DIRPATH_SAVE")..sNm..".txt"
-  local ioF = file.Open(sNm, "wb", "DATA")
-  if(not ioF) then
+  if(not sNm:find(".txt", 1, true)) then sNm = sNm..".txt" end
+  local ioF = file.Open(sNm, "wb", "DATA"); if(not ioF) then
     return LogStatus("ExportUnitSource: Failed to open file <"..sNm..">", nil) end
   local sKey, ID = GetOpVar("HASH_ENTITY"), 1
-  local tData = {ExportInitString(GetGeneralTable(eMag), GetOpVar("TYPE_GENERAL")),
-                 ExportInitString(eMag[sKey].Sensors   , GetOpVar("TYPE_SENSOR")) ,
-                 ExportInitString(eMag[sKey].Forcers   , GetOpVar("TYPE_FORCER")) ,
-                 ExportInitString(eMag[sKey].Control   , GetOpVar("TYPE_CONTROL"))}
+  local tData = {ExportInitString(GetGeneralTable(eHov), GetOpVar("TYPE_GENERAL")),
+                 ExportInitString(eHov[sKey].Sensors   , GetOpVar("TYPE_SENSOR")) ,
+                 ExportInitString(eHov[sKey].Forcers   , GetOpVar("TYPE_FORCER")) ,
+                 ExportInitString(eHov[sKey].Control   , GetOpVar("TYPE_CONTROL"))}
   while(tData[ID]) do
     local tSet, ST = tData[ID], 1
     while(tSet[ST]) do
@@ -1421,61 +1330,83 @@ function ExportUnitSource(eMag, sFile)
   end; ioF:Flush() ioF:Close()
 end
 
-function NotifyUser(pPly,sText,sType)
+function NotifyUser(pPly,sMsg,sTyp,...)
   if(SERVER) then -- Send notification to client that something happened
-    pPly:SendLua("GAMEMODE:AddNotify(\""..sText.."\", NOTIFY_"..sType..", 6)")
-    pPly:SendLua("surface.PlaySound(\"ambient/water/drip"..mathRandom(1, 4)..".wav\")")
-  end
+    pPly:SendLua("GAMEMODE:AddNotify(\""..tostring(sMsg).."\", NOTIFY_"..tostring(sTyp)..", 6)")
+    pPly:SendLua("surface.PlaySound(\"ambient/water/drip"..math.random(1, 4)..".wav\")")
+  end; return ...
 end
 
-local function onMaglevModuleRemove(ent, ...)
+local function onHoverModuleRemove(ent, ...)
   local remID = {...}; for k, v in pairs(remID) do numpad.Remove(v) end
-  LogStatus("onMaglevModuleRemove: Numpad removed <"..tostring(ent)..">")
+  LogStatus("onHoverModuleRemove: Numpad removed <"..tostring(ent)..">")
 end
 
-function NewMaglevModule(oPly, vPos, aAng, stMaglevData)
-  local sLimit = GetOpVar("NAME_ENTITY").."s"
-  if(not oPly:CheckLimit(sLimit)) then
-    return LogStatus("NewMaglevModule: Maglev module limit reached", nil) end
-  local eDye = (stMaglevData.Dye and stMaglevData.Dye or Color(255, 255, 255, 255))
+function NewHoverModule(oPly, vPos, aAng, stHoverData)
+  local sLimit = GetOpVar("NAME_ENTITY"); if(not oPly:CheckLimit(sLimit)) then
+    return LogStatus("NewHoverModule: Hover module limit <"..sLimit.."> reached", nil) end
+  local eDye = GetPick(stHoverData.Dye,stHoverData.Dye,Color(255, 255, 255, 255))
   local sNam = GetOpVar("NAME_TOOL")                -- Get the creator tool
-  local eMag = ents.Create(GetOpVar("FILE_ENTITY")) -- Create the thing
-  if(eMag and eMag:IsValid()) then                  -- Setup the module entity if valid
-    eMag:SetPos(vPos)                               -- Set position
-    eMag:SetAngles(aAng)                            -- Set orientation
-    eMag:SetModel(stMaglevData.Prop)                -- Use the model given
-    eMag:Spawn()                                    -- Make the ENT:Initialize run once
-    eMag:SetPlayer(oPly)                            -- Set the player who has spawned it
-    eMag:SetColor(eDye)                             -- Apply the color if given
-    eMag:SetRenderMode(RENDERMODE_TRANSALPHA)       -- Use the alpha of the color given
-    eMag:SetCollisionGroup(COLLISION_GROUP_NONE)    -- Normal collision: https://wiki.garrysmod.com/page/Enums/COLLISION
-    eMag:SetNotSolid(false)                         -- Make it collide like a solid
-    eMag:CallOnRemove("MaglevModuleNumpadCleanup", onMaglevModuleRemove,
-      numpad.OnDown(oPly, stMaglevData.KeyOn, sNam.."_Power_On"        , eMag ),
-      numpad.OnDown(oPly, stMaglevData.KeyF , sNam.."_ForceForward_On" , eMag ),
-      numpad.OnUp  (oPly, stMaglevData.KeyF , sNam.."_ForceForward_Off", eMag ),
-      numpad.OnDown(oPly, stMaglevData.KeyR , sNam.."_ForceReverse_On" , eMag ),
-      numpad.OnUp  (oPly, stMaglevData.KeyR , sNam.."_ForceReverse_Off", eMag ))
-    if(not eMag:Setup(stMaglevData)) then eMag:Remove() -- Setup the data and controllers
-      return LogStatus("NewMaglevModule: Setup module invalid", nil) end
-    eMag:Activate()                                 -- Start ENT:Think method run in real-time
-    oPly:AddCount  (sLimit, eMag)                   -- Register entity to the max count
-    oPly:AddCleanup(sLimit, eMag)                   -- Register entity to the cleanup list
-    return LogStatus("NewMaglevModule: Success <"..tostring(eMag)..">", eMag);
-  end; return LogStatus("NewMaglevModule: Entity invalid", nil)
+  local eHov = ents.Create(GetOpVar("FILE_ENTITY")) -- Create the thing
+  if(eHov and eHov:IsValid()) then                  -- Setup the module entity if valid
+    eHov:SetPos(vPos)                               -- Set position
+    eHov:SetAngles(aAng)                            -- Set orientation
+    eHov:SetModel(stHoverData.Prop)                 -- Use the model given
+    eHov:Spawn()                                    -- Make the ENT:Initialize run once
+    eHov:SetPlayer(oPly)                            -- Set the player who has spawned it
+    eHov:SetColor(eDye)                             -- Apply the color if given
+    eHov:SetRenderMode(RENDERMODE_TRANSALPHA)       -- Use the alpha of the color given
+    eHov:SetCollisionGroup(COLLISION_GROUP_NONE)    -- Normal collision: https://wiki.garrysmod.com/page/Enums/COLLISION
+    eHov:SetNotSolid(false)                         -- Make it collide like a solid
+    eHov:CallOnRemove("HoverModuleNumpadCleanup", onHoverModuleRemove,
+      numpad.OnDown(oPly, stHoverData.KeyOn, sNam.."_Power_On"        , eHov ),
+      numpad.OnDown(oPly, stHoverData.KeyF , sNam.."_ForceForward_On" , eHov ),
+      numpad.OnUp  (oPly, stHoverData.KeyF , sNam.."_ForceForward_Off", eHov ),
+      numpad.OnDown(oPly, stHoverData.KeyR , sNam.."_ForceReverse_On" , eHov ),
+      numpad.OnUp  (oPly, stHoverData.KeyR , sNam.."_ForceReverse_Off", eHov ))
+    if(not eHov:Setup(stHoverData)) then eHov:Remove() -- Setup the data and controllers
+      return LogStatus("NewHoverModule: Setup module invalid", nil) end
+    eHov:Activate()                                 -- Start ENT:Think method run in real-time
+    oPly:AddCount  (sLimit, eHov)                   -- Register entity to the max count
+    oPly:AddCleanup(sLimit, eHov)                   -- Register entity to the clean-up list
+    return LogStatus("NewHoverModule: OK <"..tostring(eHov)..">", eHov);
+  end; return LogStatus("NewHoverModule: Entity invalid", nil)
 end
 
-function GetLibraryData() return libOpVars end
+function GetPhrase(sKey)
+  local sDef = GetOpVar("MISS_NOTR")
+  local tSet = GetOpVar("LOCALIFY_TABLE")
+  local sKey = tostring(sKey) if(IsNil(tSet[sKey])) then
+    LogStatus("Miss <"..sKey..">"); return GetOpVar("MISS_NOTR") end
+  return (tSet[sKey] or GetOpVar("MISS_NOTR")) -- Translation fail safe
+end
 
-function TranslateProperty(tProp)
-  if(not IsString(tProp.Type)) then
-    return LogStatus("TranslateProperty: Property type invalid", false) end
-  local kTab, sNam = GetOpVar("TRANSLATE_KEYTAB"), GetOpVar("NAME_TOOL")
-  local sPrf = ("tool."..sNam.."."..tProp.Type.."_")
-  for ID = 1, #tProp do
-    local key = tProp[ID][2]; if(not key) then
-      return LogStatus("TranslateProperty: Key missing {"..tProp.Type..":"..ID.."}", false) end
-    for k, v in pairs(kTab) do
-      tProp[ID][k] = languageGetPhrase(sPrf..v..key:lower()) end
-  end; return true
+local function GetLocalify(sCode)
+  local sCode = tostring(sCode or GetOpVar("MISS_NOAV"))
+  if(not CLIENT) then return LogStatus("("..sCode..") Not client", nil) end
+  local sTool, sLimit = GetOpVar("NAME_TOOL"), GetOpVar("NAME_LIMIT")
+  local sPath = GetOpVar("FORM_LANGPATH"):format("", sCode..".lua") -- Translation file path
+  if(not file.Exists("lua/"..sPath, "GAME")) then
+    return LogStatus("("..sCode..") Missing", nil) end
+  local fCode = CompileFile(sPath); if(not fCode) then
+    return LogStatus("("..sCode..") No function", nil) end
+  local bFunc, fFunc = pcall(fCode); if(not bFunc) then
+    return LogStatus("("..sCode..")[1] "..fFunc, nil) end
+  local bCode, tCode = pcall(fFunc, sTool, sLimit); if(not bCode) then
+    return LogStatus("("..sCode..")[2] "..tCode, nil) end
+  return tCode -- The successfully extracted translations
+end
+
+function InitLocalify(sCode)
+  local cuCod = tostring(sCode or GetOpVar("MISS_NOAV"))
+  if(not CLIENT) then return LogStatus("("..cuCod..") Not client", nil) end
+  local thSet = GetOpVar("LOCALIFY_TABLE"); table.Empty(thSet)
+  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
+  local auSet = GetLocalify(auCod); if(not auSet) then
+    return LogStatus("Base mismatch <"..auCod..">", nil) end
+  if(cuCod ~= auCod) then local cuSet = GetLocalify(cuCod)
+    if(cuSet) then -- When the language infornation is extracted apply on success
+      for key, val in pairs(auSet) do auSet[key] = (cuSet[key] or auSet[key]) end
+    else LogStatus("Custom skipped <"..cuCod..">") end -- Apply auto code
+  end; for key, val in pairs(auSet) do thSet[key] = auSet[key]; language.Add(key, val) end
 end

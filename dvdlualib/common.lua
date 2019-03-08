@@ -20,6 +20,7 @@ if not debug.getinfo(3) then
 end
 
 metaCommon.__time = 0
+metaCommon.__clok = 0
 metaCommon.__func = {}
 metaCommon.__sort = {}
 metaCommon.__marg = 1e-10
@@ -101,6 +102,11 @@ function common.isNumber(nVal)
   return (type(nVal) == metaCommon.__type[1])
 end
 
+function common.isInteger(nVal)
+  if(not common.isNumber(nVal)) then return false end
+  local nW, nF = math.modf(nVal); return (nF == 0)
+end
+
 function common.isFunction(fVal)
   return (type(fVal) == metaCommon.__type[4])
 end
@@ -109,6 +115,10 @@ function common.isBool(bVal)
   if(bVal == true ) then return true end
   if(bVal == false) then return true end
   return false
+end
+
+function common.isZero(vVal)
+  return (not ((vVal + vVal) ~= vVal))
 end
 
 function common.isType(sT, iD)
@@ -371,9 +381,9 @@ function common.getSignString(nV)
 end
 
 function common.convSignString(nV)
-  local sS, sV = common.getSignString(nV), tostring(nV)
-  if(common.isDryString(sS)) then return nil end
-  return common.getPick(nV > 0, sS..sV, sV)
+  local sS = common.getSignString(nV); if(not sS) then
+    return common.logStatus("common.convSignString: Not number",nil) end
+  return (sS..tostring(math.abs(nV)))
 end
 
 function common.getType(o)
@@ -561,14 +571,17 @@ function common.addPathLibrary(sB, sE)
 end
 
 function common.tableClear(tT)
-  if(not common.isTable(tT)) then return end
+  if(not common.isTable(tT)) then
+    return common.logStatus("common.tableClear: Missing <"..tostring(tT)..">") end
   for k,v in pairs(tT) do tT[k] = nil end
 end
 
 function common.tableArrGetLinearSpace(nS, nE, nN)
-  local tO, nI, nD = {}, 1, (nE-nS)
-  for nK = nS, nE, (nD/(nN-1)) do
-    tO[nI], nI = nK, (nI+1); end; return tO
+  local fN = common.getClamp(math.floor(tonumber(nN) or 0), 0)
+  local iE, dI, fS, fE = (fN + 1), (nE - nS), 1, (fN+2)
+  local tO, nI, nD = {[fS]=nS, [fE] = nE}, 1, (dI / iE)
+  while(fS <= fE) do fS, fE = (fS + 1), (fE - 1)
+    tO[fS], tO[fE] = tO[fS-1]+nD, tO[fE+1]-nD end; return tO
 end
 
 function common.tableArrReverse(tT)
@@ -733,6 +746,14 @@ function common.tableArrConcat(...)
         IK, ID = (IK + 1), (ID + 1) end
     end
   end; return tO
+end
+
+function common.tableArrExtract2D(tA,sX,eX,sY,eY)
+  local tO, cX, cY = {}
+  for iY = sY, eY  do for iX = sX, eX do
+    if(not tO[iY-sY+1]) then tO[iY-sY+1] = {} end
+    tO[iY-sY+1][iX-sX+1] = tA[iY][iX]
+  end end; return tO
 end
 
 function common.tableArrReverse(tA)
@@ -904,6 +925,29 @@ function common.getFibonacci(vN)
   nN, nA, nB = math.floor(tonumber(vN) or 0), 0, 1
   for iD = 1, nN do nA, nB = nB, (nA + nB) end
   return nA
+end
+
+function common.setTic()
+  metaCommon.__clok = os.clock()
+end
+
+function common.getToc()
+  return (os.clock() - metaCommon.__clok)
+end
+
+function common.getPermute(...)
+  local tV = {...} -- Read input arguments
+  local nV = #tV; if(nV <= 1) then return tV end
+  if(nV == 2) then return {{tV[1], tV[2]}, {tV[2], tV[1]}} end
+  local tO, iO = {}, 1
+  for iD = 1, nV do
+    local cP = common.copyItem(tV)
+    local vP = table.remove(cP, iD) -- Pop element
+    local tP = common.getPermute(unpack(cP))    
+    for iP = 1, #tP do table.insert(tP[iP], vP)
+      tO[iO] = tP[iP]; iO = (iO + 1)
+    end
+  end; return tO
 end
 
 common.randomSetSeed()

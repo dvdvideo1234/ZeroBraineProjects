@@ -1,9 +1,11 @@
-require("dvdlualib/common")
+local common = require("dvdlualib/common")
 
 local language = {__data = {}}
 local logStatus = print
 local __tools = {}
 local __convar = {}
+local __nermsg = {}
+local __lang   = {}
 local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
@@ -21,12 +23,16 @@ local type = function(any)
   return __type(any)
 end
 
-local mtVector = {__type = "Vector"}
+local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
       mtVector.__tostring = function(self) return ("["..self.x..","..self.y..","..self.z.."]") end
+      mtVector.__index = function(self, aK)
+        local cK = mtVector.__idx[aK]
+        return (cK and self[cK] or nil)
+      end  
 local function isVector(a) return (getmetatable(a) == mtVector) end
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
-  self.x, self.y, self.z = tonumber(x) or 0, tonumber(y) or 0, tonumber(z) or 0
+  self.x, self.y, self.z = (tonumber(x) or 0), (tonumber(y) or 0), (tonumber(z) or 0)
   function self:Mul(n) self.x, self.y, self.z = n*self.x, n*self.y, n*self.z end
   function self:Length() return math.sqrt(self.x^2 + self.y^2 + self.z^2) end
   function self:Dot(v) return (self.x*v.x+self.y*v.y+self.z*v.z) end
@@ -76,8 +82,12 @@ mtVector.__mul = function(o1,o2)
   return ov 
 end
 
-local mtAngle = {__type = "Angle"}
+local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
       mtAngle.__tostring = function(self) return ("["..self.p..","..self.y..","..self.r.."]") end
+      mtAngle.__index = function(self, aK)
+        local cK = mtAngle.__idx[aK]
+        return (cK and self[cK] or nil)
+      end  
 local function isAngle(a) return (getmetatable(a) == mtAngle) end
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
@@ -151,14 +161,14 @@ function fileOpen(n, m)
 end
 
 function fileExists(n)
-  local f = fileOpen(n, "r")
+  local f = fileOpen(n, "rb")
   if(f) then
     f:close(); return true; end
   return false
 end
 
 function fileAppend(n, c)
-  local F = fileOpen(n, "a")
+  local F = fileOpen(n, "ab")
   if(not F) then
     return logStatus("fileAppend: Nofile: "..tostring(n), nil)
   end
@@ -194,8 +204,7 @@ function math.Clamp(v,a,b)
 end
 
 function fileCreateDir(sPath)
-  os.execute("md "..sPath)
-  return true
+  return os.execute("mkdir "..sPath)
 end
 
 function table.GetKeys( tab )
@@ -241,6 +250,15 @@ function LocalPlayer() return makePlater() end
 
 function makeEntity()
   local self = {}
+  local __cla = "prop_physics"
+  function self:GetClass() return __cla end
+  function self:SetClass(vC) __cla = vC end
+  local __pos = Vector(0,0,0)
+  local __ang = Angle(0,0,0)
+  function self:GetPos() return __pos end
+  function self:SetPos(vP) __pos = vP end
+  function self:GetAngles() return __ang end
+  function self:SetAngles(vA) __ang = vA end
   function self:IsValid() return true end
   function self:IsPlayer() return false end
   function self:IsVehicle() return false end
@@ -291,3 +309,37 @@ function RunConsoleCommand(a, b)
   if(__convar[a]) then __convar[a] = tostring(b); return end
   __tools[tB[1]]:SetClient(tB[2], b)
 end
+
+function netStart(sK)
+  if(__nermsg[sK]) then tableEmpty(__nermsg[sK])
+  else __nermsg[sK] = {} end
+  __nermsg.__now__key__ = sK
+end
+
+function netWrte(v)
+  local k = __nermsg.__now__key__
+  table.insert(__nermsg[k], v)
+end
+
+function netRead()
+  local k = __nermsg.__now__key__
+  common.logTable(__nermsg, "NET")
+  return table.remove(__nermsg[k])
+end
+
+function netReadEntity()
+  return netRead()
+end
+
+function CompileFile(nS)
+  return loadfile(nS)
+end
+
+function languageAdd(key, val)
+  __lang[key] = val
+end
+
+function languageGetPhrase(key, val)
+  __lang[key] = val
+end
+

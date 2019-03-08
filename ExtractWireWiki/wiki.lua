@@ -5,9 +5,8 @@ local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
 local DSC = wikilib.readDescriptions(API)
-local YTK = "g1A_esGtxM0"
+local YTK = "G_xcm1OFVV0"
 local Lfi = [[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki\countries\ad.png]]
-
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 

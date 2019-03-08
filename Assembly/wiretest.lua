@@ -4,8 +4,8 @@ local common = require("common")
 require("../dvdlualib/gmodlib")
 require("../dvdlualib/asmlib")
 require("../dvdlualib/common")
-local asmlib     = trackasmlib
-local gaTimerSet = ("/"):Explode("CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1")
+local asmlib = trackasmlib
+
 asmlib.InitBase("track", "assembly")
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
 asmlib.SetOpVar("DATE_FORMAT","%d-%m-%y")
@@ -17,14 +17,14 @@ asmlib.SetOpVar("DIRPATH_BAS", "Assembly/")
 asmlib.SetLogControl(1000,false)
 
 asmlib.CreateTable("PIECES",{
-  Timer = gaTimerSet[1],
+  Timer = "CQT@1800@1@1",
   Index = {{1},{4},{1,4}},
   Trigs = {
-    Record = function(arLine, vSource)
+    InsertRecord = function(arLine, vSource)
       local trCls = asmlib.GetOpVar("TRACE_CLASS")
-      arLine[2] = asmlib.GetTerm(arLine[2],"TYPE" ,asmlib.GetCategory())
-      arLine[3] = asmlib.GetTerm(arLine[3],"MODEL",asmlib.ModelToName(arLine[1]))
-      arLine[8] = asmlib.GetTerm(arLine[8],"NULL" ,"NULL")
+      arLine[2] = asmlib.DisableString(arLine[2],asmlib.DefaultType(),"TYPE")
+      arLine[3] = asmlib.DisableString(arLine[3],asmlib.ModelToName(arLine[1]),"MODEL")
+      arLine[8] = asmlib.DisableString(arLine[8],"NULL","NULL")
       if(not ((arLine[8] == "NULL") or trCls[arLine[8]] or asmlib.IsBlank(arLine[8]))) then
         trCls[arLine[8]] = true; asmlib.LogInstance("Register trace <"..
           tostring(arLine[8]).."@"..arLine[1]..">",vSource)
@@ -32,7 +32,7 @@ asmlib.CreateTable("PIECES",{
     end -- Register the class provided to the trace hit list
   },
   Cache = {
-    Record = function(makTab, tCache, snPK, arLine, vSource)
+    InsertRecord = function(makTab, tCache, snPK, arLine, vSource)
       local stData = tCache[snPK]; if(not stData) then
         tCache[snPK] = {}; stData = tCache[snPK] end
       if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
@@ -81,7 +81,7 @@ asmlib.CreateTable("PIECES",{
     end
   },
   Query = {
-    Record = {"%s","%s","%s","%d","%s","%s","%s","%s"},
+    InsertRecord = {"%s","%s","%s","%d","%s","%s","%s","%s"},
     ExportDSV = {2,3,1,4}
   },
   [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
@@ -95,38 +95,39 @@ asmlib.CreateTable("PIECES",{
 },true,true)
 
 asmlib.ImportDSV("PIECES", true, "ex_")
-local sModel = "models/props_phx/construct/1windows/window1x2.mdl"
+local sModel = "models/props_phx/construct/4metal_plate1x2.mdl"
 local stPOA = asmlib.LocatePOA(asmlib.CacheQueryPiece(sModel), 1)
 
-asmlib.RegisterDSV("bbbbbbb", "ex_", "\t", true)
-asmlib.RegisterDSV("ccccccc", "ex_", "\t", true)
-asmlib.RegisterDSV("ddddddd", "ex_", "\t", true)
+local gsINS = "asmlib.InsertRecord({\"%s\", \"%s\", \"%s\", %d, \"%s\", \"%s\", \"%s\", \"%s\"})"
+local gsDSV = "TRACKASSEMBLY_PIECES\t\"%s\"\t\"%s\"\t\"%s\"\t%d\t\"%s\"\t\"%s\"\t\"%s\"\t\"%s\""
+local enFlag = true
+local cvX, cvY, cvZ = asmlib.GetIndexes("V")
+local caP, caY, caR = asmlib.GetIndexes("A")
 
 
 
+local function getDataFormat(sForm, oEnt, ucsEnt, sType, sName, nPnt, sP)
+  if(not (oEnt and oEnt:IsValid() and enFlag)) then return "" end
+  if(not (ucsEnt and ucsEnt:IsValid())) then return "" end
+  local ucsPos, ucsAng, sM = ucsEnt:GetPos(), ucsEnt:GetAngles(), oEnt:GetModel()
+  print("lol", ucsPos)
+  local sO = ""; if(ucsPos[cvX] ~= 0 or ucsPos[cvY] ~= 0 or ucsPos[cvZ] ~= 0) then
+    sO = tostring(ucsPos[cvX])..","..tostring(ucsPos[cvY])..","..tostring(ucsPos[cvZ]) end
+  local sA = ""; if(ucsAng[caP] ~= 0 or ucsAng[caY] ~= 0 or ucsAng[caP] ~= 0) then
+    sA = tostring(ucsAng[caP])..","..tostring(ucsAng[caY])..","..tostring(ucsAng[caR]) end
+  local sC = (oEnt:GetClass() ~= "prop_physics" and oEnt:GetClass() or "")
+  local sN = asmlib.IsBlank(sName) and asmlib.ModelToName(sM) or sName
+  return sForm:format(sM, sType, sN, tonumber(nPnt or 0), sP, sO, sA, sC)
+end
 
+local B = makeEntity()
+local U = makeEntity()
+B:SetModel("models/props_phx/construct/1windows/window1x2.mdl")
+U:SetPos(Vector(7,8,9))
+U:SetAngles(Angle(17,18,19))
+B:SetClass("asdfg")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(getDataFormat(gsINS, B, U, "TEST", "", 4, "1,2,3"))
 
 
 

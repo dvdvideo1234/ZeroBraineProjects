@@ -24,9 +24,9 @@ local API = {
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
   REPLACE = {
-    ["MASK"] = "https://wiki.garrysmod.com/page/Enums/%s",
-    ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/%s",
-    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/%s"
+    ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
+    ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
+    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
   }
 }
 
