@@ -168,7 +168,7 @@ function common.logUnpackInfo(tInf)
          tInf.linedefined, tInf.namewhat   , tInf.name, tInf.nparams
 end
 
-function common.logStackTB(sMsg, ...)
+function common.logCallStack(sMsg, ...)
   local iLev, sFmt = 1, metaCommon.__fmtb
   if(sMsg) then common.logStatus(tostring(sMsg)) end
   while(true) do local tInf = debug.getinfo(iLev)

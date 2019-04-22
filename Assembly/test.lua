@@ -94,14 +94,11 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.ImportDSV("PIECES", true, "ex_")
+asmlib.ImportDSV(6, true, "ex_")
 local sModel = "models/props_phx/construct/1windows/window1x2.mdl"
 local stPOA = asmlib.LocatePOA(asmlib.CacheQueryPiece(sModel), 1)
 
-asmlib.RegisterDSV("bbbbbbb", "ex_", "\t", true)
-asmlib.RegisterDSV("ccccccc", "ex_", "\t", true)
-asmlib.RegisterDSV("ddddddd", "ex_", "\t", true)
-
+asmlib.RemoveDSV("ADDITIONS","ex_")
 
 
 

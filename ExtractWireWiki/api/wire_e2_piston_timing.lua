@@ -10,8 +10,8 @@ local API = {
     prep = true  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={80,5,13}},
-    {name="APPLY",cols={"Entity.wiremod.extensions", "Out", "Description"},size={35,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={80,5,13}},
+    {name="APPLY",cols={"Entity wiremod extensions", "Out", "Description"},size={35,5,13}}
   },
   FILE = {
     exts = "wire_e2_piston_timing",
@@ -32,7 +32,8 @@ local API = {
     ["wave"] = "https://en.wikipedia.org/wiki/Sine",
     ["triangular"] = "https://en.wikipedia.org/wiki/Triangle_wave",
     ["cross-product"] = "https://en.wikipedia.org/wiki/Cross_product",
-    ["ramp"] = "https://en.wikipedia.org/wiki/Ramp_function"
+    ["ramp"] = "https://en.wikipedia.org/wiki/Ramp_function",
+    ["local-axis"] = "https://en.wikipedia.org/wiki/Cartesian_coordinate_system"
   }
 }
 

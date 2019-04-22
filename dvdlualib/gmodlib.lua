@@ -48,12 +48,10 @@ function Vector(x,y,z)
     local z = self.x * v.y - self.y * v.x
     return Vector(x,y,z) -- self.x, self.y, self.z = x, y, z; return self
   end
-  function self:Normalize()
-    local m = self:Length()
+  function self:Normalize() local m = self:Length()
     if(m ~= 0) then self.x, self.y, self.z = self.x/m, self.y/m, self.z/m end
   end
-  function self:GetNormalized()
-    local m = self:Length()
+  function self:GetNormalized() local m = self:Length()
     if(m ~= 0) then return Vector(self.x/m, self.y/m, self.z/m) end; return Vector()
   end
   return self
@@ -135,7 +133,7 @@ function math.Round( num, idp )
 end
 
 function CreateConVar(a, b, c, d)
-  local self = {}
+  local self = {}; __convar[a] = b
   local nam, val, flg, dsc = a, b, c, d
   function self:GetString() return tostring(val) end
   function self:SetString(s) val = tostring(s):rep(1) end
@@ -143,6 +141,10 @@ function CreateConVar(a, b, c, d)
   function self:GetBool()   return tobool(val) end
   function self:GetInt()   return math.floor(tonumber(val) or 0) end
   return self
+end
+
+function GetConVar(a)
+  return __convar[a]
 end
 
 function SysTime() return os.clock() end
@@ -161,10 +163,17 @@ function fileOpen(n, m)
 end
 
 function fileExists(n)
+  local a,b,c = os.execute("cd "..n)
+  if(a and b == "exit" and c == 0) then return true end
   local f = fileOpen(n, "rb")
-  if(f) then
-    f:close(); return true; end
+  if(f) then f:close(); return true; end
   return false
+end
+
+function fileDelete(n)
+  local p = common.stringGetFilePath(n)
+  local n = common.stringGetFileName(n)
+  local a,b,c = os.execute("cd "..p.." && del /f "..n)
 end
 
 function fileAppend(n, c)
@@ -343,3 +352,5 @@ function languageGetPhrase(key, val)
   __lang[key] = val
 end
 
+cleanup = {}
+cleanup.Register = function() end

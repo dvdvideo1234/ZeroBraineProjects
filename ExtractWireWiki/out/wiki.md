@@ -1,121 +1,62 @@
-|............Instance.creator............|.Out.|.Description.|
-|----------------------------------------|-----|-------------|
-|allStControl(![image][ref-xxx])|![image][ref-n]|Returns the used state control count|
-|maxStControl(![image][ref-xxx])|![image][ref-n]|Returns the upper state control count|
-|newStControl(![image][ref-xxx])|![image][ref-xsc]|Returns state control object with dynamic sampling time|
-|newStControl(![image][ref-n])|![image][ref-xsc]|Returns state control object with static sampling time|
-|noStControl(![image][ref-xxx])|![image][ref-xsc]|Returns invalid state control object|
+﻿|ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑInstanceˑcreatorˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|--------------------------------------------------------------------------------|-----|-------------|
 
-|..............Class.methods.............|.Out.|.Description.|
-|----------------------------------------|-----|-------------|
-|![image][ref-xsc]:dumpConsole(![image][ref-s])|![image][ref-xsc]|Dumps state control internal parameters into the console|
-|![image][ref-xsc]:getBias(![image][ref-xxx])|![image][ref-n]|Returns state control control bias|
-|![image][ref-xsc]:getControl(![image][ref-xxx])|![image][ref-n]|Returns state control automated control signal signal|
-|![image][ref-xsc]:getControlTerm(![image][ref-xxx])|![image][ref-r]|Returns state control automated control term signal|
-|![image][ref-xsc]:getControlTerm(![image][ref-xxx])|![image][ref-v]|Returns state control automated control term signal|
-|![image][ref-xsc]:getControlTermD(![image][ref-xxx])|![image][ref-n]|Returns state control derivative automated control term signal|
-|![image][ref-xsc]:getControlTermI(![image][ref-xxx])|![image][ref-n]|Returns state control integral automated control term signal|
-|![image][ref-xsc]:getControlTermP(![image][ref-xxx])|![image][ref-n]|Returns state control proportional automated control term signal|
-|![image][ref-xsc]:getCopy(![image][ref-xxx])|![image][ref-xsc]|Returns state control object copy instance|
-|![image][ref-xsc]:getErrorDelta(![image][ref-xxx])|![image][ref-n]|Returns state control process error delta|
-|![image][ref-xsc]:getErrorNow(![image][ref-xxx])|![image][ref-n]|Returns state control process current error|
-|![image][ref-xsc]:getErrorOld(![image][ref-xxx])|![image][ref-n]|Returns state control process passed error|
-|![image][ref-xsc]:getGain(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:getGain(![image][ref-xxx])|![image][ref-v]|Returns state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:getGainD(![image][ref-xxx])|![image][ref-n]|Returns state control derivative term gain|
-|![image][ref-xsc]:getGainI(![image][ref-xxx])|![image][ref-n]|Returns state control integral term gain|
-|![image][ref-xsc]:getGainID(![image][ref-xxx])|![image][ref-r]|Returns state control integral term gain and derivative term gain|
-|![image][ref-xsc]:getGainID(![image][ref-xxx])|![image][ref-v]|Returns state control integral term gain and derivative term gain|
-|![image][ref-xsc]:getGainP(![image][ref-xxx])|![image][ref-n]|Returns state control proportional term gain|
-|![image][ref-xsc]:getGainPD(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:getGainPD(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:getGainPI(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain and integral term gain|
-|![image][ref-xsc]:getGainPI(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term gain and integral term gain|
-|![image][ref-xsc]:getManual(![image][ref-xxx])|![image][ref-n]|Returns state control manual control signal value|
-|![image][ref-xsc]:getPower(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power, integral term power and derivative term power|
-|![image][ref-xsc]:getPower(![image][ref-xxx])|![image][ref-v]|Returns state control proportional term power, integral term power and derivative term power|
-|![image][ref-xsc]:getPowerD(![image][ref-xxx])|![image][ref-n]|Returns state control derivative term power|
-|![image][ref-xsc]:getPowerI(![image][ref-xxx])|![image][ref-n]|Returns state control integral term power|
-|![image][ref-xsc]:getPowerID(![image][ref-xxx])|![image][ref-r]|Returns state control integral term power and derivative term power|
-|![image][ref-xsc]:getPowerID(![image][ref-xxx])|![image][ref-xv2]|Returns state control integral term power and derivative term power|
-|![image][ref-xsc]:getPowerP(![image][ref-xxx])|![image][ref-n]|Returns state control proportional term power|
-|![image][ref-xsc]:getPowerPD(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power and derivative term power|
-|![image][ref-xsc]:getPowerPD(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term power and derivative term power|
-|![image][ref-xsc]:getPowerPI(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power and integral term power|
-|![image][ref-xsc]:getPowerPI(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term power and integral term power|
-|![image][ref-xsc]:getTimeBench(![image][ref-xxx])|![image][ref-n]|Returns state control process benchmark time|
-|![image][ref-xsc]:getTimeDelta(![image][ref-xxx])|![image][ref-n]|Returns state control dymamic process time delta|
-|![image][ref-xsc]:getTimeNow(![image][ref-xxx])|![image][ref-n]|Returns state control process current time|
-|![image][ref-xsc]:getTimeOld(![image][ref-xxx])|![image][ref-n]|Returns state control process passed time|
-|![image][ref-xsc]:getTimeRatio(![image][ref-xxx])|![image][ref-n]|Returns state control process time ratio|
-|![image][ref-xsc]:getTimeSample(![image][ref-xxx])|![image][ref-n]|Returns state control static process time delta|
-|![image][ref-xsc]:getType(![image][ref-xxx])|![image][ref-s]|Returns state control control type|
-|![image][ref-xsc]:getWindup(![image][ref-xxx])|![image][ref-r]|Returns state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:getWindup(![image][ref-xxx])|![image][ref-xv2]|Returns state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:getWindupD(![image][ref-xxx])|![image][ref-n]|Returns state control windup lower bound|
-|![image][ref-xsc]:getWindupU(![image][ref-xxx])|![image][ref-n]|Returns state control windup upper bound|
-|![image][ref-xsc]:isActive(![image][ref-xxx])|![image][ref-n]|Checks state control activated working flag|
-|![image][ref-xsc]:isCombined(![image][ref-xxx])|![image][ref-n]|Checks state control combined flag spreading proportional term gain across others|
-|![image][ref-xsc]:isIntegrating(![image][ref-xxx])|![image][ref-n]|Checks integral enabled flag|
-|![image][ref-xsc]:isInverted(![image][ref-xxx])|![image][ref-n]|Checks state control inverted feedback flag of the reference and setpoint|
-|![image][ref-xsc]:isManual(![image][ref-xxx])|![image][ref-n]|Checks state control manual control flag|
-|![image][ref-xsc]:remGain(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:remGainD(![image][ref-xxx])|![image][ref-xsc]|Removes state control derivative term gain|
-|![image][ref-xsc]:remGainI(![image][ref-xxx])|![image][ref-xsc]|Removes state control integral term gain|
-|![image][ref-xsc]:remGainID(![image][ref-xxx])|![image][ref-xsc]|Removes state control integral term gain and derivative term gain|
-|![image][ref-xsc]:remGainP(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain|
-|![image][ref-xsc]:remGainPD(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:remGainPI(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and integral term gain|
-|![image][ref-xsc]:remSelf(![image][ref-xxx])|![image][ref-n]|Removes the state control from the list|
-|![image][ref-xsc]:remTimeSample(![image][ref-xxx])|![image][ref-xsc]|Removes state control static process time delta|
-|![image][ref-xsc]:remWindup(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:remWindupD(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound|
-|![image][ref-xsc]:remWindupU(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup upper bound|
-|![image][ref-xsc]:resState(![image][ref-xxx])|![image][ref-xsc]|Resets state control automated internal parameters|
-|![image][ref-xsc]:setBias(![image][ref-n])|![image][ref-xsc]|Updates state control control bias|
-|![image][ref-xsc]:setGain(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:setGain(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:setGain(![image][ref-v])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
-|![image][ref-xsc]:setGainD(![image][ref-n])|![image][ref-xsc]|Updates state control derivative term gain|
-|![image][ref-xsc]:setGainI(![image][ref-n])|![image][ref-xsc]|Updates state control integral term gain|
-|![image][ref-xsc]:setGainID(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control integral term gain and derivative term gain|
-|![image][ref-xsc]:setGainID(![image][ref-r])|![image][ref-xsc]|Updates state control integral term gain and derivative term gain|
-|![image][ref-xsc]:setGainID(![image][ref-xv2])|![image][ref-xsc]|Updates state control derivative term gain and derivative term gain|
-|![image][ref-xsc]:setGainP(![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain|
-|![image][ref-xsc]:setGainPD(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:setGainPD(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:setGainPD(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
-|![image][ref-xsc]:setGainPI(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
-|![image][ref-xsc]:setGainPI(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
-|![image][ref-xsc]:setGainPI(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
-|![image][ref-xsc]:setIsActive(![image][ref-n])|![image][ref-xsc]|Updates state control activated working flag|
-|![image][ref-xsc]:setIsCombined(![image][ref-n])|![image][ref-xsc]|Updates combined flag spreading proportional term gain across others|
-|![image][ref-xsc]:setIsIntegrating(![image][ref-n])|![image][ref-xsc]|Updates integral enabled flag|
-|![image][ref-xsc]:setIsInverted(![image][ref-n])|![image][ref-xsc]|Updates state control inverted feedback flag of the reference and setpoint|
-|![image][ref-xsc]:setIsManual(![image][ref-n])|![image][ref-xsc]|Updates state control manual control signal value|
-|![image][ref-xsc]:setManual(![image][ref-n])|![image][ref-xsc]|Updates state control manual control value|
-|![image][ref-xsc]:setPower(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
-|![image][ref-xsc]:setPower(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
-|![image][ref-xsc]:setPower(![image][ref-v])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
-|![image][ref-xsc]:setPowerD(![image][ref-n])|![image][ref-xsc]|Updates state control derivative term power|
-|![image][ref-xsc]:setPowerI(![image][ref-n])|![image][ref-xsc]|Updates state control integral term power|
-|![image][ref-xsc]:setPowerID(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control integral term power and derivative term power|
-|![image][ref-xsc]:setPowerID(![image][ref-r])|![image][ref-xsc]|Updates state control integral term power and derivative term power|
-|![image][ref-xsc]:setPowerID(![image][ref-xv2])|![image][ref-xsc]|Updates state control derivative term power and derivative term power|
-|![image][ref-xsc]:setPowerP(![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power|
-|![image][ref-xsc]:setPowerPD(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
-|![image][ref-xsc]:setPowerPD(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
-|![image][ref-xsc]:setPowerPD(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
-|![image][ref-xsc]:setPowerPI(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
-|![image][ref-xsc]:setPowerPI(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
-|![image][ref-xsc]:setPowerPI(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
-|![image][ref-xsc]:setState(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Works state control automated internal parameters|
-|![image][ref-xsc]:setTimeSample(![image][ref-n])|![image][ref-xsc]|Updates state control static process time delta|
-|![image][ref-xsc]:setWindup(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:setWindup(![image][ref-r])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:setWindup(![image][ref-xv2])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
-|![image][ref-xsc]:setWindupD(![image][ref-n])|![image][ref-xsc]|Updates state control windup lower bound|
-|![image][ref-xsc]:setWindupU(![image][ref-n])|![image][ref-xsc]|Updates state control windup upper bound|
+|ˑˑˑˑEntityˑwiremodˑextensionsˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|-----------------------------------|-----|-------------|
+|![image][ref-e]:allPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of all piston keys|
+|![image][ref-e]:clrPiston(![image][ref-xxx])|![image][ref-e]|Clears all pistons from the `E2` chip|
+|![image][ref-e]:cntPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of integer piston keys|
+|![image][ref-e]:getMaxPiston(![image][ref-n])|![image][ref-n]|Returns the piston highest point parameter by an integer key|
+|![image][ref-e]:getMaxPiston(![image][ref-n])|![image][ref-v]|Returns the piston highest point parameter by an integer key|
+|![image][ref-e]:getMaxPiston(![image][ref-s])|![image][ref-n]|Returns the piston highest point parameter by a string key|
+|![image][ref-e]:getMaxPiston(![image][ref-s])|![image][ref-v]|Returns the piston highest point parameter by a string key|
+|![image][ref-e]:getMinPiston(![image][ref-n])|![image][ref-n]|Returns the piston lowest point parameter by an integer key|
+|![image][ref-e]:getMinPiston(![image][ref-n])|![image][ref-v]|Returns the piston lowest point parameter by an integer key|
+|![image][ref-e]:getMinPiston(![image][ref-s])|![image][ref-n]|Returns the piston lowest point parameter by a string key|
+|![image][ref-e]:getMinPiston(![image][ref-s])|![image][ref-v]|Returns the piston lowest point parameter by a string key|
+|![image][ref-e]:getPiston(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns piston bearing timing by an integer key|
+|![image][ref-e]:getPiston(![image][ref-n],![image][ref-v])|![image][ref-n]|Returns piston vector timing by an integer key|
+|![image][ref-e]:getPiston(![image][ref-s],![image][ref-n])|![image][ref-n]|Returns piston bearing timing by a string key|
+|![image][ref-e]:getPiston(![image][ref-s],![image][ref-v])|![image][ref-n]|Returns piston vector timing by a string key|
+|![image][ref-e]:getPistonAxis(![image][ref-n])|![image][ref-v]|Returns shaft rotation axis by an integer key|
+|![image][ref-e]:getPistonAxis(![image][ref-s])|![image][ref-v]|Returns shaft rotation axis by a string key|
+|![image][ref-e]:getPistonBase(![image][ref-n])|![image][ref-e]|Returns the engine base entity by an integer key|
+|![image][ref-e]:getPistonBase(![image][ref-s])|![image][ref-e]|Returns the engine base entity by a string key|
+|![image][ref-e]:isPistonRamp(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by an integer key|
+|![image][ref-e]:isPistonRamp(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by a string key|
+|![image][ref-e]:isPistonSign(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
+|![image][ref-e]:isPistonSign(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
+|![image][ref-e]:isPistonSignX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
+|![image][ref-e]:isPistonSignX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
+|![image][ref-e]:isPistonWave(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
+|![image][ref-e]:isPistonWave(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
+|![image][ref-e]:isPistonWaveX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
+|![image][ref-e]:isPistonWaveX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
+|![image][ref-e]:putPistonAxis(![image][ref-xxx])|![image][ref-e]|Clears the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-r])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-v])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-xv2])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonBase(![image][ref-xxx])|![image][ref-e]|Clears the base prop to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonBase(![image][ref-e])|![image][ref-e]|Stores the base prop to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:remPiston(![image][ref-n])|![image][ref-e]|Removes the piston by an integer key|
+|![image][ref-e]:remPiston(![image][ref-s])|![image][ref-e]|Removes the piston by a string key|
+|![image][ref-e]:setPistonRamp(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonRamp(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonSign(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonSign(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
+|![image][ref-e]:setPistonWave(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonWave(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by a string key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by a string key and highest point local vector|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

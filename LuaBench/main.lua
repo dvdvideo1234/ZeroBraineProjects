@@ -5,10 +5,14 @@ require("../dvdlualib/gmodlib")
 require("../dvdlualib/asmlib")
 require("../dvdlualib/common")
 
-local nT = 600
+local function roll1(R, H, L)
+  local vP = ((H  > 0) and ((R > H or R  < L) and  1 or -1) or nil)
+  local vN = ((H  < 0) and ((R < H or R  > L) and -1 or  1) or nil)
+  local vZ = ((H == 0) and ((R < H) and -1 or 1) or nil)
+  return (vZ or vP or vN)
+end
 
-local function f1(tA) return asmlib.DisableString1(unpack(tA)) end
-local function f2(tA) return asmlib.DisableString2(unpack(tA)) end
+local function roll2(R, H, L) return ((R >= H or R < L) and  1 or -1) end
 
 local stEstim = {
   addEstim(f1, "old"),

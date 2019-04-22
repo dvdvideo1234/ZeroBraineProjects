@@ -97,6 +97,8 @@ local wikiRefer = { ["is"] = "n",
   __this = {"dump", "res", "set", "upd", "smp", "add", "rem", "no", "new"}
 }
 
+-- https://stackoverflow.com/questions/17978720/invisible-characters-ascii
+local wikiSpace = "ˑ" -- Space character for drawing table column names
 -- A bunch of patterns when matched transform a word into MD quote
 local wikiQuote = {["%d"] = true, ["_"]=true}
 -- A bunch of functions when matched transform a word into MD quote
@@ -210,6 +212,14 @@ function wikilib.normalDir(sD) local sS = tostring(sD)
 end
 
 function wikilib.updateAPI(API, DSC)
+  for iD = 1, #API.POOL do
+    local val = API.POOL[iD]
+    if(val.cols) then
+      for iK = 1, #val.cols do
+        val.cols[iK] = val.cols[iK]:gsub(" ", wikiSpace)
+      end
+    end
+  end
   local t = API.POOL[1]
   local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
   local bR = apiGetValue(API,"FLAG", "prep")
@@ -238,11 +248,14 @@ function wikilib.updateAPI(API, DSC)
       for k, v in pairs(tR) do local sD = DSC[api]
         if(k:sub(1,1) ~= "#") then
           local nF, nB = sD:find(k, 1, true)
-          if(nF and nB) then 
+          if(nF and nB) then
             nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
-            if(sD:sub(nF,nF)..sD:sub(nB,nB) == "``") then
+            local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
+            if(cF..cB == "``") then
               DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB+1,-1)
-            else
+            elseif(cF..cB == "  ") then
+              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+            elseif(cB == ",") then
               DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
             end
           end
@@ -456,10 +469,11 @@ end
 function wikilib.printDescriptionTable(API, DSC, iN)
   local tPool = API.POOL[iN]
   if(not tPool) then return end   
-  local nC, tC = #tPool.cols, {}
-  local tH = {}; for ID = 1, nC do 
+  local nC, tC, tH = #tPool.cols, {}, {}
+  for ID = 1, nC do
+    local cat = ((tPool.size[ID] - tPool.cols[ID]:len()) / 2)
     tH[ID] = ("-"):rep(common.getClamp((tPool.size[ID] or tPool.cols[ID]:len()), 3))
-    tC[ID] = common.stringCenter(tPool.cols[ID],tPool.size[ID],".")
+    tC[ID] = wikiSpace:rep(math.floor(cat))..tPool.cols[ID]..wikiSpace:rep(math.ceil(cat))
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
   local sM = wikiFormat.msp
@@ -545,7 +559,6 @@ local wikiFolder = {}
       }
       wikiFolder.__drem = "(.*)/"
       wikiFolder.__dept = 3   -- The folder depth offset
-      wikiFolder.__depc = "ˑ" -- The folder depth character
       wikiFolder.__ubom = {
         ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
         ["UTF16"] = {0xFE, 0xFF},            -- UTF16
@@ -696,7 +709,7 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
   if(iR == 0) then local sB = tostring(tS[5] or "/")
     io.write("`"..sB..sR.."`"..tP.base:sub(nE+1, -1)..wikiNewLN); io.write("\n") end
   for iD = 1, tC.__top do local vC = tP.cont[tC[iD].__key]
-    if(vC.root) then local dC = wikiFolder.__depc
+    if(vC.root) then local dC = wikiSpace
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")

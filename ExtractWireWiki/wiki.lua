@@ -1,17 +1,18 @@
-local sExp = "stcontrol"
+local sExp = "wire_e2_piston_timing"
 
 local sProg = "ExtractWireWiki/"
 local wikilib = require(sProg.."lib/wikilib")
 
 local API = require(sProg.."api/"..sExp)
 local DSC = wikilib.readDescriptions(API)
-local YTK = "G_xcm1OFVV0"
+local YTK = "fcq9MzsdfkY"
 local Lfi = [[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki\countries\ad.png]]
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
 local f, s = io.open(sProg.."out/wiki.md", "wb")
 if(f) then io.output(f)
+  wikilib.writeBOM("UTF8")
   wikilib.setInternalType(API)
   wikilib.updateAPI(API, DSC)
   wikilib.makeReturnValues(API)
