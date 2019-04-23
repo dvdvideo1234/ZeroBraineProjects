@@ -1,5 +1,3 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
-
 local common = require('common')
 
 local wikilib   = {} -- Reference to the library
@@ -105,7 +103,10 @@ local wikiQuote = {["%d"] = true, ["_"]=true}
 local wikiQuFoo = {common.stringIsUpper}
 -- Characters to exclude from the word quoting
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true}
-local wikiNewLN = "  " -- Stores the new line in MD
+-- Stores the new line abbreviature in MD
+local wikiNewLN = "  "
+-- Stores the base folder for all operations
+local wikiBaseFolder = ""
 
 local function isQuote(sS)
   local bR = false
@@ -209,6 +210,10 @@ end
 
 function wikilib.normalDir(sD) local sS = tostring(sD)
   return ((sS:sub(-1,-1) == "/") and sS or (sS.."/"))
+end
+
+function wikilib.setBaseFolder(sB)
+  wikiBaseFolder = wikilib.normalDir(common.stringTrim(sB:gsub("\\","/"), "/"))
 end
 
 function wikilib.updateAPI(API, DSC)

@@ -1,16 +1,23 @@
-local sExp = "wire_e2_piston_timing"
+local sEXP = "wire_e2_piston_timing"
 
-local sProg = "ExtractWireWiki/"
-local wikilib = require(sProg.."lib/wikilib")
+local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
+-- local sPRG = "ExtractWireWiki/" -- From the main folder
+local sPRG = "" -- From the project folder
 
-local API = require(sProg.."api/"..sExp)
+package.path = package.path..";"..sIDE.."myprograms/?.lua"
+
+local wikilib = require(sPRG.."lib/wikilib")
+local common  = require("common")
+local API = require(sPRG.."api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
-local YTK = "fcq9MzsdfkY"
-local Lfi = [[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki\countries\ad.png]]
+
+local YTK = "MRta5VOO8hE"
+
+wikilib.setBaseFolder([[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki]])
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
-local f, s = io.open(sProg.."out/wiki.md", "wb")
+local f, s = io.open(sPRG.."out/wiki.md", "wb")
 if(f) then io.output(f)
   wikilib.writeBOM("UTF8")
   wikilib.setInternalType(API)
@@ -21,7 +28,6 @@ if(f) then io.output(f)
   wikilib.printDescriptionTable(API, DSC, 2)
  -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
-  print(wikilib.insLocal(Lfi))
   print(wikilib.insRefCountry("bg"))
   print(wikilib.insType("s"))
   print(wikilib.insImage("http://www.famfamfam.com/lab/icons/flags/flags_preview_large.png", 8))
