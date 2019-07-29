@@ -26,7 +26,10 @@ local API = {
   REPLACE = {
     ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
     ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
-    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
+    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
+    ["TraceLine"] = "https://wiki.garrysmod.com/page/util/TraceLine",
+    ["TRACE_IN"] = "https://wiki.garrysmod.com/page/Structures/Trace",
+    ["TRACE_OUT"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
   }
 }
 
