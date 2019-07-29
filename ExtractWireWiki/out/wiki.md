@@ -1,62 +1,87 @@
-﻿|ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑInstanceˑcreatorˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
-|--------------------------------------------------------------------------------|-----|-------------|
+﻿|ˑˑˑˑˑˑˑInstance.creatorˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|------------------------------|-----|-------------|
+|maxFSensors(![image][ref-xxx])|![image][ref-n]|Returns the upper flash sensor count|
+|newFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor relative to the world by zero origin position, zero direction vector, zero length distance|
+|newFSensor(![image][ref-v])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, zero direction vector, zero length distance|
+|newFSensor(![image][ref-v],![image][ref-v])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, direction vector, zero length distance|
+|newFSensor(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xfs]|Returns flash sensor relative to the world by origin position, direction vector, length distance|
+|noFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns invalid flash sensor object|
+|![image][ref-e]:setFSensor(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor local to the entity by zero origin position, zero direction vector, zero length distance|
+|![image][ref-e]:setFSensor(![image][ref-v])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, zero direction vector, zero length distance|
+|![image][ref-e]:setFSensor(![image][ref-v],![image][ref-v])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, direction vector, zero length distance|
+|![image][ref-e]:setFSensor(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xfs]|Returns flash sensor local to the entity by origin position, direction vector, length distance|
+|sumFSensors(![image][ref-xxx])|![image][ref-n]|Returns the used flash sensor count|
 
-|ˑˑˑˑEntityˑwiremodˑextensionsˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
-|-----------------------------------|-----|-------------|
-|![image][ref-e]:allPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of all piston keys|
-|![image][ref-e]:clrPiston(![image][ref-xxx])|![image][ref-e]|Clears all pistons from the `E2` chip|
-|![image][ref-e]:cntPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of integer piston keys|
-|![image][ref-e]:getMaxPiston(![image][ref-n])|![image][ref-n]|Returns the piston highest point parameter by an integer key|
-|![image][ref-e]:getMaxPiston(![image][ref-n])|![image][ref-v]|Returns the piston highest point parameter by an integer key|
-|![image][ref-e]:getMaxPiston(![image][ref-s])|![image][ref-n]|Returns the piston highest point parameter by a string key|
-|![image][ref-e]:getMaxPiston(![image][ref-s])|![image][ref-v]|Returns the piston highest point parameter by a string key|
-|![image][ref-e]:getMinPiston(![image][ref-n])|![image][ref-n]|Returns the piston lowest point parameter by an integer key|
-|![image][ref-e]:getMinPiston(![image][ref-n])|![image][ref-v]|Returns the piston lowest point parameter by an integer key|
-|![image][ref-e]:getMinPiston(![image][ref-s])|![image][ref-n]|Returns the piston lowest point parameter by a string key|
-|![image][ref-e]:getMinPiston(![image][ref-s])|![image][ref-v]|Returns the piston lowest point parameter by a string key|
-|![image][ref-e]:getPiston(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns piston bearing timing by an integer key|
-|![image][ref-e]:getPiston(![image][ref-n],![image][ref-v])|![image][ref-n]|Returns piston vector timing by an integer key|
-|![image][ref-e]:getPiston(![image][ref-s],![image][ref-n])|![image][ref-n]|Returns piston bearing timing by a string key|
-|![image][ref-e]:getPiston(![image][ref-s],![image][ref-v])|![image][ref-n]|Returns piston vector timing by a string key|
-|![image][ref-e]:getPistonAxis(![image][ref-n])|![image][ref-v]|Returns shaft rotation axis by an integer key|
-|![image][ref-e]:getPistonAxis(![image][ref-s])|![image][ref-v]|Returns shaft rotation axis by a string key|
-|![image][ref-e]:getPistonBase(![image][ref-n])|![image][ref-e]|Returns the engine base entity by an integer key|
-|![image][ref-e]:getPistonBase(![image][ref-s])|![image][ref-e]|Returns the engine base entity by a string key|
-|![image][ref-e]:isPistonRamp(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by an integer key|
-|![image][ref-e]:isPistonRamp(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by a string key|
-|![image][ref-e]:isPistonSign(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
-|![image][ref-e]:isPistonSign(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
-|![image][ref-e]:isPistonSignX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
-|![image][ref-e]:isPistonSignX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
-|![image][ref-e]:isPistonWave(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
-|![image][ref-e]:isPistonWave(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
-|![image][ref-e]:isPistonWaveX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
-|![image][ref-e]:isPistonWaveX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
-|![image][ref-e]:putPistonAxis(![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-r])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-v])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-xv2])|![image][ref-e]|Stores the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonBase(![image][ref-e])|![image][ref-e]|Stores the base prop to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:remPiston(![image][ref-n])|![image][ref-e]|Removes the piston by an integer key|
-|![image][ref-e]:remPiston(![image][ref-s])|![image][ref-e]|Removes the piston by a string key|
-|![image][ref-e]:resPistonAxis(![image][ref-xxx])|![image][ref-e]|Clears the base prop [`local-axis`](https://en.wikipedia.org/wiki/Cartesian_coordinate_system) to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:resPistonBase(![image][ref-xxx])|![image][ref-e]|Clears the base prop to use with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:setPistonRamp(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonRamp(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonSign(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonSign(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
-|![image][ref-e]:setPistonWave(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonWave(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by a string key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with [`wave`](https://en.wikipedia.org/wiki/Sine) output by a string key and highest point local vector|
+|ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑClass.methodsˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|--------------------------------------------------|-----|-------------|
+|![image][ref-xfs]:addEntityHitOnly(![image][ref-e])|![image][ref-xfs]|Adds the entity to the flash sensor internal only hit list|
+|![image][ref-xfs]:addEntityHitSkip(![image][ref-e])|![image][ref-xfs]|Adds the entity to the flash sensor internal ignore hit list|
+|![image][ref-xfs]:addHitOnly(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Adds the option to the flash sensor internal hit only list|
+|![image][ref-xfs]:addHitOnly(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Adds the option to the flash sensor internal hit only list|
+|![image][ref-xfs]:addHitSkip(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Adds the option to the flash sensor internal ignore hit list|
+|![image][ref-xfs]:addHitSkip(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Adds the option to the flash sensor internal ignore hit list|
+|![image][ref-xfs]:getAttachEntity(![image][ref-xxx])|![image][ref-e]|Returns the attachment entity of the flash sensor|
+|![image][ref-xfs]:getCollisionGroup(![image][ref-xxx])|![image][ref-n]|Returns flash sensor trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
+|![image][ref-xfs]:getCopy(![image][ref-xxx])|![image][ref-xfs]|Returns flash sensor copy instance of the current object|
+|![image][ref-xfs]:getDirection(![image][ref-xxx])|![image][ref-v]|Returns flash sensor direction vector|
+|![image][ref-xfs]:getDirectionLocal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor world direction vector converted to attachment entity local axis|
+|![image][ref-xfs]:getDirectionLocal(![image][ref-a])|![image][ref-v]|Returns flash sensor world direction vector converted to angle local axis|
+|![image][ref-xfs]:getDirectionLocal(![image][ref-e])|![image][ref-v]|Returns flash sensor world direction vector converted to entity local axis|
+|![image][ref-xfs]:getDirectionWorld(![image][ref-xxx])|![image][ref-v]|Returns flash sensor local direction vector converted to attachment entity world axis|
+|![image][ref-xfs]:getDirectionWorld(![image][ref-a])|![image][ref-v]|Returns flash sensor local direction vector converted to angle world axis|
+|![image][ref-xfs]:getDirectionWorld(![image][ref-e])|![image][ref-v]|Returns flash sensor local direction vector converted to entity world axis|
+|![image][ref-xfs]:getEntity(![image][ref-xxx])|![image][ref-e]|Returns the flash sensor sampled trace `Entity` entity|
+|![image][ref-xfs]:getFraction(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Fraction` in the interval `[0-1]` number|
+|![image][ref-xfs]:getFractionLeftSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `FractionLeftSolid` in the interval `[0-1]` number|
+|![image][ref-xfs]:getFractionLeftSolidLength(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `FractionLeftSolid` multiplied by its length distance number|
+|![image][ref-xfs]:getFractionLength(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Fraction` multiplied by its length distance number|
+|![image][ref-xfs]:getHitBox(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitBox` number|
+|![image][ref-xfs]:getHitGroup(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitGroup` group `ID` number|
+|![image][ref-xfs]:getHitNormal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor the sampled trace surface `HitNormal` vector|
+|![image][ref-xfs]:getHitPos(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `HitPos` location vector|
+|![image][ref-xfs]:getHitTexture(![image][ref-xxx])|![image][ref-s]|Returns the flash sensor sampled trace `HitTexture` string|
+|![image][ref-xfs]:getLength(![image][ref-xxx])|![image][ref-n]|Returns flash sensor length distance|
+|![image][ref-xfs]:getMask(![image][ref-xxx])|![image][ref-n]|Returns flash sensor trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
+|![image][ref-xfs]:getMatType(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `MatType` material type number|
+|![image][ref-xfs]:getNormal(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `Normal` aim vector|
+|![image][ref-xfs]:getOrigin(![image][ref-xxx])|![image][ref-v]|Returns flash sensor origin position|
+|![image][ref-xfs]:getOriginLocal(![image][ref-xxx])|![image][ref-v]|Returns flash sensor world origin position converted to attachment entity local axis|
+|![image][ref-xfs]:getOriginLocal(![image][ref-e])|![image][ref-v]|Returns flash sensor world origin position converted to entity local axis|
+|![image][ref-xfs]:getOriginLocal(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash sensor world origin position converted to position/angle local axis|
+|![image][ref-xfs]:getOriginWorld(![image][ref-xxx])|![image][ref-v]|Returns flash sensor local origin position converted to attachment entity world axis|
+|![image][ref-xfs]:getOriginWorld(![image][ref-e])|![image][ref-v]|Returns flash sensor local origin position converted to entity world axis|
+|![image][ref-xfs]:getOriginWorld(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash sensor local origin position converted to position/angle world axis|
+|![image][ref-xfs]:getPhysicsBone(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `PhysicsBone` `ID` number|
+|![image][ref-xfs]:getStartPos(![image][ref-xxx])|![image][ref-v]|Returns the flash sensor sampled trace `StartPos` vector|
+|![image][ref-xfs]:getSurfaceProps(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `SurfaceProps` `ID` type number|
+|![image][ref-xfs]:getSurfacePropsName(![image][ref-xxx])|![image][ref-s]|Returns the flash sensor sampled trace `SurfaceProps` `ID` type name string|
+|![image][ref-xfs]:isAllSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `AllSolid` flag|
+|![image][ref-xfs]:isHit(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `Hit` flag|
+|![image][ref-xfs]:isHitNoDraw(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitNoDraw` flag|
+|![image][ref-xfs]:isHitNonWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitNonWorld` flag|
+|![image][ref-xfs]:isHitSky(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitSky` flag|
+|![image][ref-xfs]:isHitWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `HitWorld` flag|
+|![image][ref-xfs]:isIgnoreWorld(![image][ref-xxx])|![image][ref-n]|Returns the ignore world flag of the flash sensor|
+|![image][ref-xfs]:isStartSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash sensor sampled trace `StartSolid` flag|
+|![image][ref-xfs]:remEntityHitOnly(![image][ref-e])|![image][ref-xfs]|Removes the entity from the flash sensor internal only hit list|
+|![image][ref-xfs]:remEntityHitSkip(![image][ref-e])|![image][ref-xfs]|Removes the entity from the flash sensor internal ignore hit list|
+|![image][ref-xfs]:remHit(![image][ref-xxx])|![image][ref-xfs]|Removes all the options from the flash sensor internal hit preferences|
+|![image][ref-xfs]:remHit(![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal hit preferences|
+|![image][ref-xfs]:remHitOnly(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Removes the option from the flash sensor internal only hit list|
+|![image][ref-xfs]:remHitOnly(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal only hit list|
+|![image][ref-xfs]:remHitSkip(![image][ref-s],![image][ref-n])|![image][ref-xfs]|Removes the option from the flash sensor internal ignore hit list|
+|![image][ref-xfs]:remHitSkip(![image][ref-s],![image][ref-s])|![image][ref-xfs]|Removes the option from the flash sensor internal ignore hit list|
+|![image][ref-xfs]:remSelf(![image][ref-xxx])|![image][ref-n]|Removes the flash sensor from the list|
+|![image][ref-xfs]:setAttachEntity(![image][ref-e])|![image][ref-xfs]|Updates the attachment entity of the flash sensor|
+|![image][ref-xfs]:setCollisionGroup(![image][ref-n])|![image][ref-xfs]|Updates flash sensor trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
+|![image][ref-xfs]:setDirection(![image][ref-v])|![image][ref-xfs]|Updates the flash sensor direction vector|
+|![image][ref-xfs]:setIsIgnoreWorld(![image][ref-n])|![image][ref-xfs]|Updates the ignore world flag of the flash sensor|
+|![image][ref-xfs]:setLength(![image][ref-n])|![image][ref-xfs]|Updates flash sensor length distance|
+|![image][ref-xfs]:setMask(![image][ref-n])|![image][ref-xfs]|Updates flash sensor trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
+|![image][ref-xfs]:setOrigin(![image][ref-v])|![image][ref-xfs]|Updates the flash sensor origin position|
+|![image][ref-xfs]:smpLocal(![image][ref-xxx])|![image][ref-xfs]|Samples the flash sensor and updates the trace result according to attachment entity local axis|
+|![image][ref-xfs]:smpLocal(![image][ref-e])|![image][ref-xfs]|Samples the flash sensor and updates the trace result according to argument local axis|
+|![image][ref-xfs]:smpWorld(![image][ref-xxx])|![image][ref-xfs]|Samples the flash sensor and updates the trace result according to the world axis|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

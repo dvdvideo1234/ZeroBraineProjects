@@ -2,15 +2,15 @@
 `╠═══`[`data`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data)  
 `║ˑˑˑ╠═══`[`autosave`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave) --> Some helpful scripts and backups  
 `║ˑˑˑ║ˑˑˑ╠═══`[`draw_cam.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave/draw_cam.lua) [952B]  
-`║ˑˑˑ║ˑˑˑ╠═══`[`z_autorun_add_pieces.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave/z_autorun_add_pieces.lua) [10kB]  
-`║ˑˑˑ║ˑˑˑ╚═══`[`z_autorun_add_test_ron_attachments_model.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave/z_autorun_add_test_ron_attachments_model.lua) [10kB]  
+`║ˑˑˑ║ˑˑˑ╠═══`[`z_autorun_add_pieces.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave/z_autorun_add_pieces.lua) [11kB]  
+`║ˑˑˑ║ˑˑˑ╚═══`[`z_autorun_add_test_ron_attachments_model.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/autosave/z_autorun_add_test_ron_attachments_model.lua) [3kB]  
 `║ˑˑˑ╠═══`[`discontinued`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued)  
 `║ˑˑˑ║ˑˑˑ╠═══`[`owner-discontinued`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-discontinued) --> List containing models discontinued by addon owners  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╠═══`[`Ron's 2ft track pack.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-discontinued/Ron's%202ft%20track%20pack.txt) [2kB]  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╠═══`[`Ron's 56 gauge rails.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-discontinued/Ron's%2056%20gauge%20rails.txt) [48kB]  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╚═══`[`SligWolf's minitrains.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-discontinued/SligWolf's%20minitrains.txt) [892B]  
 `║ˑˑˑ║ˑˑˑ╚═══`[`owner-maintained`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-maintained) --> List containing models supported by the addon owners  
-`║ˑˑˑ║ˑˑˑˑˑˑˑ╚═══`[`Ron's 2ft track pack.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-maintained/Ron's%202ft%20track%20pack.lua) [65kB]  
+`║ˑˑˑ║ˑˑˑˑˑˑˑ╚═══`[`Ron's 2ft track pack.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/discontinued/owner-maintained/Ron's%202ft%20track%20pack.lua) [61kB]  
 `║ˑˑˑ╠═══`[`dupes`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/dupes)  
 `║ˑˑˑ║ˑˑˑ╚═══`[`wire_extension_test.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/dupes/wire_extension_test.txt) [2kB]  
 `║ˑˑˑ╠═══`[`expression2`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2) --> Neat and helpful dedicated E2s  
@@ -71,7 +71,7 @@
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╠═══`[`sv_TRACKASSEMBLY_PHYSPROPERTIES.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv_TRACKASSEMBLY_PHYSPROPERTIES.txt) [6kB]  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╚═══`[`sv_TRACKASSEMBLY_PIECES.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv_TRACKASSEMBLY_PIECES.txt) [342kB]  
 `║ˑˑˑ║ˑˑˑ╠═══`[`trackasmlib_dsv.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib_dsv.txt) [18B] --> Example DSV load list  
-`║ˑˑˑ║ˑˑˑ╠═══`[`trackasmlib_log.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib_log.txt) [0B] --> Example logs output  
+`║ˑˑˑ║ˑˑˑ╠═══`[`trackasmlib_log.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib_log.txt) [46kB] --> Example logs output  
 `║ˑˑˑ║ˑˑˑ╚═══`[`trackasmlib_slskip.txt`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib_slskip.txt) [1kB] --> Example log settings skip list  
 `║ˑˑˑ╚═══`[`workshop`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/workshop) --> Workshop publish related files  
 `║ˑˑˑˑˑˑˑ╠═══`[`addon.json`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/workshop/addon.json) [315B]  
@@ -95,10 +95,10 @@
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╠═══`[`fr.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/fr.lua) [8kB]  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╠═══`[`ja.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/ja.lua) [8kB]  
 `║ˑˑˑ║ˑˑˑ║ˑˑˑ╚═══`[`ru.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/ru.lua) [10kB]  
-`║ˑˑˑ║ˑˑˑ╚═══`[`trackasmlib.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua) [179kB] --> Segment assembly library control  
+`║ˑˑˑ║ˑˑˑ╚═══`[`trackasmlib.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua) [186kB] --> Segment assembly library control  
 `║ˑˑˑ╚═══`[`weapons`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons)  
 `║ˑˑˑˑˑˑˑ╚═══`[`gmod_tool`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod_tool)  
 `║ˑˑˑˑˑˑˑˑˑˑˑ╚═══`[`stools`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod_tool/stools)  
 `║ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ╚═══`[`trackassembly.lua`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod_tool/stools/trackassembly.lua) [76kB] --> Tool script  
-`╠═══`[`readme.md`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md) [23kB]  
+`╠═══`[`readme.md`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md) [27kB]  
 `╚═══`[`workshop_publish.bat`](https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/workshop_publish.bat) [2kB]  

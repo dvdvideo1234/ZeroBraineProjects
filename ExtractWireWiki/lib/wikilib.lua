@@ -281,11 +281,14 @@ function wikilib.readDescriptions(API)
   local fR = io.open(sN, "rb"); if(not fR) then
     return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
   local sC = cT..fR:read("*all")..cB
-  local fC, oE = load(sC); if(fC) then local bS, fC = pcall(fC)
-    if(bS) then return fC() else
+  local fC, oE = load(sC); if(fC) then
+    local bS, fC = pcall(fC); if(bS) then return fC() else
       common.logStatus("wikilib.readDescriptions: Execution error: "..fC) end
   else
-    common.logStatus("wikilib.readDescriptions: Compilation chunk:\n"..sC)
+    common.logStatus("wikilib.readDescriptions: Compilation chunk:\n")
+    common.logStatus("--------------------------------------------\n")
+    common.logStatus(sC)
+    common.logStatus("--------------------------------------------\n")
     error("wikilib.readDescriptions: Compilation error: "..oE)
   end
 end
@@ -472,8 +475,7 @@ function wikilib.printTypeTable(API)
 end
 
 function wikilib.printDescriptionTable(API, DSC, iN)
-  local tPool = API.POOL[iN]
-  if(not tPool) then return end   
+  local tPool = API.POOL[iN]; if(not tPool) then return end   
   local nC, tC, tH = #tPool.cols, {}, {}
   for ID = 1, nC do
     local cat = ((tPool.size[ID] - tPool.cols[ID]:len()) / 2)

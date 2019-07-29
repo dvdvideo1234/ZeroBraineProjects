@@ -103,6 +103,9 @@ asmlib.CreateTable("PIECES",{
 local myPrefix = "aaa"
 local myType = "TEST"
 local myName = "TEST-NAME"
+local myScript = "zzzzzzz"
+
+asmlib.LogInstance(">>> "..myScript)
 
 local myTable = {
   ["models/props_phx/construct/metal_plate1x2.mdl"] = { -- Here goes the model of your pack
@@ -117,12 +120,9 @@ local myTable = {
 
 if(not asmlib.SynchronizeDSV("PIECES", myTable, true, myPrefix)) then
   error("Failed to synchronize track pieces")
-else -- You are saving me from all the work for manually generating these
-  asmlib.LogInstance("TranslateDSV start <"..myPrefix..">")
+else
   if(not asmlib.TranslateDSV("PIECES", myPrefix)) then
     error("Failed to translate DSV into Lua") end
-  asmlib.LogInstance("TranslateDSV done <"..myPrefix..">")
 end -- Now we have Lua inserts and DSV
 
-asmlib.ImportDSV("PIECES", true, myPrefix)
-asmlib.ExportDSV("PIECES")
+trackasmlib.LogInstance("<<< "..myScript)

@@ -1,5 +1,5 @@
 local API = {
-  NAME = "MakePiece",
+  NAME = "setPiston",
   FLAG = {
     icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
@@ -10,8 +10,8 @@ local API = {
     prep = true  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={80,5,13}},
-    {name="APPLY",cols={"Entity wiremod extensions", "Out", "Description"},size={35,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={40,5,13}},
+    {name="APPLY",cols={"Entity wiremod extensions", "Out", "Description"},size={25,5,13}}
   },
   FILE = {
     exts = "wire_e2_piston_timing",

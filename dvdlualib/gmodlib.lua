@@ -23,6 +23,27 @@ local type = function(any)
   return __type(any)
 end
 
+local mtMatrix = {__type = "Matrix"}
+      mtMatrix.__tostring = function(self)
+        local sM = ""
+        for iR = 1, 4 do
+          sM = sM.."["..table.concat(self[iR], ",").."]"
+          if(self[iR+1]) then sM = sM.."\n" end
+        end; return sM
+      end
+      mtMatrix.__index = mtMatrix
+local function isMatrix(a) return (getmetatable(a) == mtMatrix) end
+function Matrix()
+  local self = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; setmetatable(self, mtMatrix)
+  function self:ToTable() local tM = {}
+    for iR = 1, 4 do tM[iR] = {}
+      for iC = 1, 4 do tM[iR][iC] = self[iR][iC] end
+    end; return tM
+  end
+  
+  return self
+end
+
 local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
       mtVector.__tostring = function(self) return ("["..self.x..","..self.y..","..self.z.."]") end
       mtVector.__index = function(self, aK)
@@ -150,8 +171,8 @@ end
 function SysTime() return os.clock() end
 
 function fileOpen(n, m)
-  local f, e = io.open(n, m)
-  if(not f) then
+  local s, f, e = pcall(io.open, n, m)
+  if(not (s and f)) then
     return logStatus("fileOpen: "..tostring(e), nil)
   end
   local mt = getmetatable(f)
@@ -163,10 +184,10 @@ function fileOpen(n, m)
 end
 
 function fileExists(n)
-  local a,b,c = os.execute("cd "..n)
-  if(a and b == "exit" and c == 0) then return true end
-  local f = fileOpen(n, "rb")
-  if(f) then f:close(); return true; end
+  local a,b,c,d = pcall(os.execute, "cd "..n)
+  if(a and b and c == "exit" and d == 0) then return true end
+  local s, f = pcall(fileOpen, n, "rb")
+  if(s and f) then f:close(); return true; end
   return false
 end
 

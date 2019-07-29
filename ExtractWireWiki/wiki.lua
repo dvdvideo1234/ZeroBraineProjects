@@ -1,4 +1,4 @@
-local sEXP = "wire_e2_piston_timing"
+local sEXP = "fsensor"
 
 local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
 -- local sPRG = "ExtractWireWiki/" -- From the main folder
@@ -11,7 +11,7 @@ local common  = require("common")
 local API = require(sPRG.."api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
 
-local YTK = "MRta5VOO8hE"
+local YTK = "pl12yIDPm3M"
 
 wikilib.setBaseFolder([[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki]])
 
