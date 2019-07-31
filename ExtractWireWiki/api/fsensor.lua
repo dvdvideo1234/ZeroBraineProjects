@@ -27,9 +27,9 @@ local API = {
     ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
     ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
-    ["TraceLine"] = "https://wiki.garrysmod.com/page/util/TraceLine",
-    ["TRACE_IN"] = "https://wiki.garrysmod.com/page/Structures/Trace",
-    ["TRACE_OUT"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
+    ["trace-line"] = "https://wiki.garrysmod.com/page/util/TraceLine",
+    ["trace"] = "https://wiki.garrysmod.com/page/Structures/Trace",
+    ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
   }
 }
 

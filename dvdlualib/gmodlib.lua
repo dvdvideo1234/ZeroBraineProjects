@@ -161,6 +161,7 @@ function CreateConVar(a, b, c, d)
   function self:GetNumber() return tonumber(val) end
   function self:GetBool()   return tobool(val) end
   function self:GetInt()   return math.floor(tonumber(val) or 0) end
+  function self:GetName() return tostring(nam) end
   return self
 end
 
@@ -310,6 +311,7 @@ function makeEntity()
   function self:GetModel() return __model end
   function self:LookupAttachment(sK) return __atach.Nam[sK] end
   function self:GetAttachment(iD) return __atach.ID[iD] end
+  function self:CallOnRemove() return nil end
   return self
 end
 
@@ -365,13 +367,29 @@ function CompileFile(nS)
   return loadfile(nS)
 end
 
-function languageAdd(key, val)
+--------------------------------------------------------------------------------------------------------------------------------
+language = {}
+function language.Add(key, val)
   __lang[key] = val
 end
 
-function languageGetPhrase(key, val)
+function language.GetPhrase(key, val)
   __lang[key] = val
 end
 
+--------------------------------------------------------------------------------------------------------------------------------
 cleanup = {}
 cleanup.Register = function() end
+
+--------------------------------------------------------------------------------------------------------------------------------
+util = {}
+util.TraceLine = function() end
+
+--------------------------------------------------------------------------------------------------------------------------------
+bit  = {}
+bit.bor = function() end
+
+--------------------------------------------------------------------------------------------------------------------------------
+cvars = {}
+cvars.RemoveChangeCallback = function() end
+cvars.AddChangeCallback = function() end

@@ -98,7 +98,7 @@ local wikiRefer = { ["is"] = "n",
 -- https://stackoverflow.com/questions/17978720/invisible-characters-ascii
 local wikiSpace = "ˑ" -- Space character for drawing table column names
 -- A bunch of patterns when matched transform a word into MD quote
-local wikiQuote = {["%d"] = true, ["_"]=true}
+local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true}
 -- A bunch of functions when matched transform a word into MD quote
 local wikiQuFoo = {common.stringIsUpper}
 -- Characters to exclude from the word quoting
@@ -259,6 +259,8 @@ function wikilib.updateAPI(API, DSC)
             if(cF..cB == "``") then
               DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB+1,-1)
             elseif(cF..cB == "  ") then
+              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+            elseif(cF..cB == " ") then
               DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
             elseif(cB == ",") then
               DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
