@@ -1,4 +1,4 @@
-local sEXP = "fsensor"
+local sEXP = "ftracer"
 
 local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
 -- local sPRG = "ExtractWireWiki/" -- From the main folder

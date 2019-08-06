@@ -22,7 +22,7 @@ local wikiType = {
     {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
     {"xrd", "RangerData"   , "[Ranger data] class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
     {"xwl", "WireLink"     , "[Wire link] class"       , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
-    {"xfs", ""             , "[Flash sensor] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FSensor"},
+    {"xft", ""             , "[Flash tracer] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer"},
     {"xsc", ""             , "[State controller] class", "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
     {"xxx", ""             , "[Void] data type"        , "https://en.wikipedia.org/wiki/Void_type"}
   },
@@ -44,7 +44,7 @@ local wikiType = {
     ["vector4"]    = 15,
     ["ranger"]     = 16,
     ["wirelink"]   = 17,
-    ["fsensor"]    = 18,
+    ["ftracer"]    = 18,
     ["stcontrol"]  = 19,
     ["void"]       = 20
   }
@@ -107,6 +107,8 @@ local wikiDiver = {[","]=true, [")"]=true, ["("] = true}
 local wikiNewLN = "  "
 -- Stores the base folder for all operations
 local wikiBaseFolder = ""
+-- Stores the symbol for line divider and the repetition count
+local wikiLineDiv = {"-", 120}
 
 local function isQuote(sS)
   local bR = false
@@ -225,10 +227,17 @@ function wikilib.updateAPI(API, DSC)
       end
     end
   end
-  local t = API.POOL[1]
+  local t, w = API.POOL[1]
   local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
   local bR = apiGetValue(API,"FLAG", "prep")
+  local wD = apiGetValue(API,"FLAG", "wdsc")
+  if(wD) then API.POOL.wdsc = {}
+    w = apiGetValue(API,"POOL", "wdsc")
+  end
   for api, dsc in pairs(DSC) do
+    if(wD) then 
+      table.insert(w, "E2Helper.Descriptions[\""..api.."\"] = \""..dsc.."\"\n")
+    end
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
@@ -270,6 +279,12 @@ function wikilib.updateAPI(API, DSC)
       end
     end
     table.insert(t, api)
+  end
+  if(wD) then table.sort(w)
+    for iD = 1, #w do io.write(w[iD]) end
+    io.write("\n")
+    io.write(wikiLineDiv[1]:rep(wikiLineDiv[2]))
+    io.write("\n\n")
   end
 end
 
