@@ -1,5 +1,3 @@
-require("dvdlualib/gmodlib")
-
 local registerType = function() end
 local E2Lib = {}
 E2Lib.RegisterExtension = function() end
@@ -43,23 +41,36 @@ registerType("fsensor", "xfs", nil,
 
 --[[ ****************************************************************************** ]]
 
-E2Lib.RegisterExtension("fsensor", true, "Lets E2 chips trace ray attachments and check for hits.")
+E2Lib.RegisterExtension("ftracer", true, "Lets E2 chips trace ray attachments and check for hits.")
+
+-- Client and server have independent value
+local gnIndependentUsed = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+-- Server tells the client what value to use
+local gnServerControled = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY, FCVAR_REPLICATED)
 
 local gsZeroStr   = "" -- Empty string to use instead of creating one everywhere
+local gsNotAvStr  = "N/A" -- What to prinf wjen something is not available
 local gaZeroAng   = Angle() -- Dummy zero angle for transformations
 local gvZeroVec   = Vector() -- Dummy zero vector for transformations
-local gtStringMT  = getmetatable(gsZeroStr) -- Store the string metatable
-local gtStoreOOP  = {} -- Store flash sensors here linked to the entity of the E2
+local gtStoreOOP  = {} -- Store flash tracers here linked to the entity of the E2
 local gnMaxBeam   = 50000 -- The tracer maximum length just about one cube map
 local gtEmptyVar  = {["#empty"]=true}; gtEmptyVar[gsZeroStr] = true -- Variable being set to empty string
-local gsVarPrefx  = "wire_expression2_fsensor" -- This is used for variable prefix
+local gsVarPrefx  = "wire_expression2_ftracer" -- This is used for variable prefix
+local gtStringMT  = getmetatable(gsVarPrefx) -- Store the string metatable
 local gtBoolToNum = {[true]=1,[false]=0} -- This is used to convert between GLua boolean and wire boolean
 local gtMethList  = {} -- Placeholder for blacklist and convar prefix
-local gnServContr = bitBor(FCVAR_ARCHIVE, FCVAR_ARCHIVE_XBOX, FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_PRINTABLEONLY)
-local varMethSkip = CreateConVar(gsVarPrefx.."_skip", gsZeroStr, gnServContr, "E2 FSensor entity method black list")
-local varMethOnly = CreateConVar(gsVarPrefx.."_only", gsZeroStr, gnServContr, "E2 FSensor entity method white list")
-local varMaxTotal = CreateConVar(gsVarPrefx.."_max" , 30, gnServContr, "E2 FSensor maximum count")
+local gtConvEnab  = {["LocalToWorld"] = LocalToWorld, ["WorldToLocal"] = WorldToLocal} -- Cooordinate conversion list
+local varMethSkip = CreateConVar(gsVarPrefx.."_skip", gsZeroStr, gnServerControled, "E2 FTracer entity method black list")
+local varMethOnly = CreateConVar(gsVarPrefx.."_only", gsZeroStr, gnServerControled, "E2 FTracer entity method white list")
+local varMaxTotal = CreateConVar(gsVarPrefx.."_max" , 30, gnServerControled, "E2 FTracer maximum count")
+local varEnStatus = CreateConVar(gsVarPrefx.."_enst",  1, gnIndependentUsed, "Print E2 status in the chat area")
 local gsVNS, gsVNO = varMethSkip:GetName(), varMethOnly:GetName()
+local gsDefPrint  = "TALK" -- Default print location
+local gtPrintName = {} -- Conttains the print location specificators
+      gtPrintName["NOTIFY" ] = 1
+      gtPrintName["CONSOLE"] = 2
+      gtPrintName["TALK"   ] = 3
+      gtPrintName["CENTER" ] = 4
 
 function isEntity(vE)
   return (vE and vE:IsValid())
@@ -80,12 +91,14 @@ function remValue(tSrc, aKey, bCall)
   tSrc[aKey] = nil; if(bCall) then collectgarbage() end
 end
 
-function logError(sMsg, ...)
-  outError("E2:fsensor:"..tostring(sMsg)); return ...
-end
-
-function logStatus(sMsg, ...)
-  outPrint("E2:fsensor:"..tostring(sMsg)); return ...
+local function logStatus(sMsg, oSelf, nPos, ...)
+  if(varEnStatus:GetBool()) then
+    local nPos = tonumber(nPos) or gtPrintName[gsDefPrint]
+    local oPly, oEnt = oSelf.player, oSelf.entity
+    local sNam, sEID = oPly:Nick() , tostring(oEnt:EntIndex())
+    local sTxt = "E2{"..sEID.."}{"..sNam.."}:ftracer:"..tostring(sMsg)
+    oPly:PrintMessage(nPos, sTxt:sub(1, 200))
+  end; return ...
 end
 
 function convArrayKeys(tA)
@@ -214,11 +227,14 @@ function remSensorEntity(eChip)
   logStatus("Cleanup ["..tostring(mSen).."] items for "..tostring(eChip))
 end
 
-function trcLocal(oFSen, eB)
+local function trcLocal(oFSen, eB, vP, vA)
   if(not oFSen) then return nil end
-  local eE = (eB and eB or oFSen.mEnt)
-  if(not isEntity(eE)) then return oFSen end
-  local eP, eA = eE:GetPos(), eE:GetAngles()
+  local eE, eP, eA = (eB and eB or oFSen.mEnt)
+  if(not isEntity(eE)) then
+    eP, eA = Vector(), Angle()
+    eP.x, eP.y, eP.z = vP[1], vP[2], vP[3]
+    eA.p, eP.y, eP.r = vA[1], vA[2], vA[3]
+  else eP, eA = eE:GetPos(), eE:GetAngles() end
   local trS, trE = oFSen.mTrI.start, oFSen.mTrI.endpos
   trS:Set(oFSen.mPos); trS:Rotate(eA); trS:Add(eP)
   trE:Set(oFSen.mDir); trE:Rotate(eA); trE:Add(trS)
@@ -234,6 +250,31 @@ function trcWorld(oFSen)
   utilTraceLine(oFSen.mTrI); return oFSen
 end
 
+local function dumpItem(oFTrc, oSelf, sNam, sPos)
+  local sP = tostring(sPos or gsDefPrint)
+  local nP = gtPrintName[sP] -- Print location setup
+  print(nP, sP)
+  if(not isHere(nP)) then return oFTrc end
+  logStatus("["..tostring(sNam or gsNotAvStr).."] Data:", self)
+  logStatus(" Len: "..tostring(oFTrc.mLen or gsNotAvStr), self)
+  logStatus(" Pos: "..tostring(oFTrc.mPos or gsNotAvStr), self)
+  logStatus(" Dir: "..tostring(oFTrc.mDir or gsNotAvStr), self)
+  logStatus(" Ent: "..tostring(oFTrc.mEnt or gsNotAvStr), self)
+  logStatus(" E2 : "..tostring(oFTrc.mSet or gsNotAvStr), self)
+  local nSz = oFTrc.mHit.Size; if(nSz <= 0) then return oFTrc end
+  for iH = 1, nSz do
+    local tHit = oFTrc.mHit[iH]
+    local tS, tO = tHit.SKIP, tHit.ONLY
+    logStatus(" Hit: ["..tostring(iH).."]"..tostring(tHit.CALL or gsNotAvStr), self)
+    if(tS) then for kS, vS in pairs(tS) do
+        logStatus(" Hit [SKIP] : {"..tostring(kS).."} > {"..tostring(vS).."}", self)
+    end end
+    if(tO) then for kO, vO in pairs(tO) do
+        logStatus(" Hit [ONLY] : {"..tostring(kO).."} > {"..tostring(vO).."}", self)
+    end end
+  end; return oFTrc -- The dump method
+end
+
 function newItem(oSelf, vEnt, vPos, vDir, nLen)
   local eChip = oSelf.entity; if(not isEntity(eChip)) then
     return logError("Entity invalid", nil) end
@@ -245,14 +286,13 @@ function newItem(oSelf, vEnt, vPos, vDir, nLen)
   local oFSen, tSen = {}, gtStoreOOP[eChip]; oFSen.mSet, oFSen.mHit = eChip, {Size=0, ID={}};
   if(not tSen) then gtStoreOOP[eChip] = {}; tSen = gtStoreOOP[eChip] end
   if(isEntity(vEnt)) then oFSen.mEnt = vEnt -- Store attachment entity to manage local sampling
-    oFSen.mHit.Ent = {SKIP={[vEnt]=true},ONLY={}} -- Store the base entity for ignore
+    oFSen.mHit.Ent = {SKIP={},ONLY={}} -- No entities are store for ONLY or SKIP by default
   else oFSen.mHit.Ent, oFSen.mEnt = {SKIP={},ONLY={}}, nil end -- Make sure the entity is cleared
   -- Local tracer position the trace starts from
   oFSen.mPos, oFSen.mDir = Vector(), Vector()
   if(isHere(vPos)) then oFSen.mPos.x, oFSen.mPos.y, oFSen.mPos.z = vPos[1], vPos[2], vPos[3] end
   -- Local tracer direction to read the data of
   if(isHere(vDir)) then oFSen.mDir.x, oFSen.mDir.y, oFSen.mDir.z = vDir[1], vDir[2], vDir[3] end
-  if(oFSen.mDir:Length() == 0) then logStatus("Direction zero <"..tostring(oFSen.mDir).."> !") end
   -- How long the flash sensor length will be. Must be positive
   oFSen.mLen = (tonumber(nLen) or 0)
   oFSen.mLen = (oFSen.mLen == 0 and getNorm(vDir) or oFSen.mLen)
@@ -290,8 +330,52 @@ function newItem(oSelf, vEnt, vPos, vDir, nLen)
   end
 
   function oFSen:remHitSkip( sM,  vN)
+    local this, self = self, oSelf
     return setHitFilter(this, self, sM, "SKIP", vN, nil)
   end
+  
+  function oFSen:addEntityHitSkip(vE)
+    local this, self = self, oSelf
+    if(not this) then return nil end
+    if(not isEntity(vE)) then return nil end
+    this.mHit.Ent.SKIP[vE] = true; return this
+  end
+  
+  function oFSen:remEntityHitSkip(vE)
+    local this, self = self, oSelf
+    if(not this) then return nil end
+    if(not isEntity(vE)) then return nil end
+    remValue(this.mHit.Ent.SKIP, vE, true); return this
+  end
+  
+  function oFSen:remAttachEntity()
+    local this, self = self, oSelf
+    if(not this) then return nil end
+    remValue(this, "mEnt"); return this
+  end
+  
+  function oFSen:setAttachEntity(eE)
+    local this, self = self, oSelf
+    if(not this) then return nil end
+    if(not isEntity(eE)) then return this end
+    this.mEnt = eE; return this
+  end
+  
+  function oFSen:addHitOnly(sM, vN)
+    local this, self = self, oSelf
+    return setHitFilter(this, self, sM, "ONLY", vN, true)
+  end
+  
+  
+  function oFSen:dumpItem(sN, sT)
+    local this, self = self, oSelf
+  return dumpItem(this, self, sN, sT)
+end
+
+  
+  
+  
+  
   
   return oFSen
 end

@@ -4,6 +4,10 @@ E2Helper.Descriptions["addHitOnly(xft:sn)"] = "Adds the option to the flash trac
 E2Helper.Descriptions["addHitOnly(xft:ss)"] = "Adds the option to the flash tracer internal hit only list"
 E2Helper.Descriptions["addHitSkip(xft:sn)"] = "Adds the option to the flash tracer internal ignore hit list"
 E2Helper.Descriptions["addHitSkip(xft:ss)"] = "Adds the option to the flash tracer internal ignore hit list"
+E2Helper.Descriptions["dumpItem(xft:n)"] = "Dumps the flash tracer to the chat area by number identifier"
+E2Helper.Descriptions["dumpItem(xft:s)"] = "Dumps the flash tracer to the chat area by string identifier"
+E2Helper.Descriptions["dumpItem(xft:sn)"] = "Dumps the flash tracer by number identifier in the specified area by first argument"
+E2Helper.Descriptions["dumpItem(xft:ss)"] = "Dumps the flash tracer by string identifier in the specified area by first argument"
 E2Helper.Descriptions["getAttachEntity(xft:)"] = "Returns the attachment entity of the ..xtp.."
 E2Helper.Descriptions["getCollisionGroup(xft:)"] = "Returns flash tracer trace collision group enums COLLISION_GROUP"
 E2Helper.Descriptions["getCopy(xft:)"] = "Returns flash tracer copy instance of the current object"
@@ -90,7 +94,6 @@ E2Helper.Descriptions["sumFTracers()"] = "Returns the used flash tracer count"
 
 |ˑˑˑˑˑˑˑInstance.creatorˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
 |------------------------------|-----|-------------|
-|maxFTracers(![image][ref-xxx])|![image][ref-n]|Returns the upper flash tracer count|
 |newFTracer(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer relative to the world by zero origin position, zero direction vector, zero length distance|
 |newFTracer(![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by length distance, direction vector, zero length distance|
 |newFTracer(![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the world by origin position, zero direction vector, zero length distance|
@@ -104,7 +107,6 @@ E2Helper.Descriptions["sumFTracers()"] = "Returns the used flash tracer count"
 |![image][ref-e]:setFTracer(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the entity by origin position, direction vector from up, length distance|
 |![image][ref-e]:setFTracer(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer local to the entity by origin position, direction vector, length distance from direction vector|
 |![image][ref-e]:setFTracer(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer local to the entity by origin position, direction vector, length distance|
-|sumFTracers(![image][ref-xxx])|![image][ref-n]|Returns the used flash tracer count|
 
 |ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑClass.methodsˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
 |--------------------------------------------------|-----|-------------|
@@ -114,6 +116,10 @@ E2Helper.Descriptions["sumFTracers()"] = "Returns the used flash tracer count"
 |![image][ref-xft]:addHitOnly(![image][ref-s],![image][ref-s])|![image][ref-xft]|Adds the option to the flash tracer internal hit only list|
 |![image][ref-xft]:addHitSkip(![image][ref-s],![image][ref-n])|![image][ref-xft]|Adds the option to the flash tracer internal ignore hit list|
 |![image][ref-xft]:addHitSkip(![image][ref-s],![image][ref-s])|![image][ref-xft]|Adds the option to the flash tracer internal ignore hit list|
+|![image][ref-xft]:dumpItem(![image][ref-n])|![image][ref-xft]|Dumps the flash tracer to the chat area by number identifier|
+|![image][ref-xft]:dumpItem(![image][ref-s])|![image][ref-xft]|Dumps the flash tracer to the chat area by string identifier|
+|![image][ref-xft]:dumpItem(![image][ref-s],![image][ref-n])|![image][ref-xft]|Dumps the flash tracer by number identifier in the specified area by first argument|
+|![image][ref-xft]:dumpItem(![image][ref-s],![image][ref-s])|![image][ref-xft]|Dumps the flash tracer by string identifier in the specified area by first argument|
 |![image][ref-xft]:getAttachEntity(![image][ref-xxx])|![image][ref-e]|Returns the attachment entity of the ..xtp..|
 |![image][ref-xft]:getCollisionGroup(![image][ref-xxx])|![image][ref-n]|Returns flash tracer trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
 |![image][ref-xft]:getCopy(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer copy instance of the current object|
@@ -159,6 +165,7 @@ E2Helper.Descriptions["sumFTracers()"] = "Returns the used flash tracer count"
 |![image][ref-xft]:isHitWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitWorld`` flag|
 |![image][ref-xft]:isIgnoreWorld(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer trace ``IgnoreWorld`` flag|
 |![image][ref-xft]:isStartSolid(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``StartSolid`` flag|
+|maxFTracers(![image][ref-xxx])|![image][ref-n]|Returns the upper flash tracer count|
 |![image][ref-xft]:remAttachEntity(![image][ref-xxx])|![image][ref-xft]|Removes the attachment entity of the ..xtp..|
 |![image][ref-xft]:remEntityHitOnly(![image][ref-e])|![image][ref-xft]|Removes the entity from the flash tracer internal only hit list|
 |![image][ref-xft]:remEntityHitSkip(![image][ref-e])|![image][ref-xft]|Removes the entity from the flash tracer internal ignore hit list|
@@ -180,6 +187,7 @@ E2Helper.Descriptions["sumFTracers()"] = "Returns the used flash tracer count"
 |![image][ref-xft]:smpLocal(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to argument entity|
 |![image][ref-xft]:smpLocal(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to argument position and angle|
 |![image][ref-xft]:smpWorld(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to the world axis|
+|sumFTracers(![image][ref-xxx])|![image][ref-n]|Returns the used flash tracer count|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

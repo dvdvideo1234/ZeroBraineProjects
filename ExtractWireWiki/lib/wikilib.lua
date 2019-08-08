@@ -257,7 +257,7 @@ function wikilib.updateAPI(API, DSC)
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
-    if(api:find(API.NAME)) then t = API.POOL[1] else t = API.POOL[2] end
+    if(api:find(API.NAME.."(",1,true)) then t = API.POOL[1] else t = API.POOL[2] end
     if(API.REPLACE) then local tR = API.REPLACE
       for k, v in pairs(tR) do local sD = DSC[api]
         if(k:sub(1,1) ~= "#") then

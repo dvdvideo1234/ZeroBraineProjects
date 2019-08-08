@@ -1,5 +1,3 @@
-require("dvdlualib/gmodlib")
-
 local registerType = function() end
 local E2Lib = {}
 E2Lib.RegisterExtension = function() end
@@ -145,6 +143,18 @@ function getType(oStCon)
   end; return tableConcat(oStCon.mType, "-")
 end
 
+local function dumpItem(oStCon, oSelf, sNam)
+  logStatus("["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."] Data:", oSelf)
+  logStatus(" Human: ["..tostring(oStCon.mbMan).."] {V="..tostring(oStCon.mvMan)..", B="..tostring(oStCon.mBias).."}", oSelf)
+  logStatus(" Gains: {P="..tostring(oStCon.mkP)..", I="..tostring(oStCon.mkI)..", D="..tostring(oStCon.mkD).."}", oSelf)
+  logStatus(" Power: {P="..tostring(oStCon.mpP)..", I="..tostring(oStCon.mpI)..", D="..tostring(oStCon.mpD).."}", oSelf)
+  logStatus(" Limit: {D="..tostring(oStCon.mSatD)..", U="..tostring(oStCon.mSatU).."}", oSelf)
+  logStatus(" Error: {O="..tostring(oStCon.mErrO)..", N="..tostring(oStCon.mErrN).."}", oSelf)
+  logStatus(" Value: ["..tostring(oStCon.mvCon).."] {P="..tostring(oStCon.mvP)..", I="..tostring(oStCon.mvI)..", D=" ..tostring(oStCon.mvD).."}", oSelf)
+  logStatus(" Flags: ["..tostring(oStCon.mbOn).."] {C="..tostring(oStCon.mbCmb)..", R=" ..tostring(oStCon.mbInv)..", I="..tostring(oStCon.meInt).."}", oSelf)
+  return oStCon -- The dump method
+end
+
 function newItem(oSelf, nTo)
   local eChip = oSelf.entity; if(not isEntity(eChip)) then
     return logError("Entity invalid", nil) end
@@ -177,8 +187,15 @@ function newItem(oSelf, nTo)
     end; return 1
   end
 
-  
-  
+
+  function oStCon:dumpChat(nN) local this = self
+  return dumpItem(this, self, nN)
+end
+
+  function oStCon:dumpChat(sN) local this = self
+  return dumpItem(this, self, sN)
+end
+
   
   
   return oStCon

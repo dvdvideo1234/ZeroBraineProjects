@@ -2,7 +2,8 @@ local common = require("dvdlualib/common")
 
 local language = {__data = {}}
 local logStatus = print
-local __tools = {}
+local __tools  = {}
+local __entity = {}
 local __convar = {}
 local __nermsg = {}
 local __lang   = {}
@@ -15,12 +16,9 @@ end
 
 local type = function(any)
   local typ = __type(any)
-  if(typ == "table") then
-    local mt = getmetatable(any)
-    if(mt) then
-      return (mt.__type and tostring(mt.__type) or typ) end
-    return __type(any) end
-  return __type(any)
+  if(typ == "table") then local mt = getmetatable(any)
+    return (mt.__type and tostring(mt.__type) or typ)
+  end; return typ
 end
 
 local mtMatrix = {__type = "Matrix"}
@@ -45,7 +43,7 @@ function Matrix()
 end
 
 local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
-      mtVector.__tostring = function(self) return ("["..self.x..","..self.y..","..self.z.."]") end
+      mtVector.__tostring = function(self) return ("VEC{"..self.x..","..self.y..","..self.z.."}") end
       mtVector.__index = function(self, aK)
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
@@ -102,7 +100,7 @@ mtVector.__mul = function(o1,o2)
 end
 
 local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
-      mtAngle.__tostring = function(self) return ("["..self.p..","..self.y..","..self.r.."]") end
+      mtAngle.__tostring = function(self) return ("ANG{"..self.p..","..self.y..","..self.r.."}") end
       mtAngle.__index = function(self, aK)
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
@@ -116,6 +114,10 @@ function Angle(p,y,r)
     else self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0; end
   end
   return self
+end
+
+function CompileFile(nS)
+  return loadfile(nS)
 end
 
 function string.Explode(separator, str, withpattern)
@@ -171,49 +173,11 @@ end
 
 function SysTime() return os.clock() end
 
-function fileOpen(n, m)
-  local s, f, e = pcall(io.open, n, m)
-  if(not (s and f)) then
-    return logStatus("fileOpen: "..tostring(e), nil)
-  end
-  local mt = getmetatable(f)
-  mt.Read  = mt.read
-  mt.Write = mt.write
-  mt.Close = mt.close
-  mt.Flush = mt.flush
-  return f
-end
-
-function fileExists(n)
-  local a,b,c,d = pcall(os.execute, "cd "..n)
-  if(a and b and c == "exit" and d == 0) then return true end
-  local s, f = pcall(fileOpen, n, "rb")
-  if(s and f) then f:close(); return true; end
-  return false
-end
-
-function fileDelete(n)
-  local p = common.stringGetFilePath(n)
-  local n = common.stringGetFileName(n)
-  local a,b,c = os.execute("cd "..p.." && del /f "..n)
-end
-
-function fileAppend(n, c)
-  local F = fileOpen(n, "ab")
-  if(not F) then
-    return logStatus("fileAppend: Nofile: "..tostring(n), nil)
-  end
-  F:seek("end")
-  F:write(tostring(c))
-  F:flush()
-  F:close()
-end
-
 function CompileString(s)
   return load(s)
 end
 
-function stringTrim( s, char )
+function string.Trim( s, char )
   local char = char or "%s"
   return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
 end
@@ -222,11 +186,6 @@ function IsValid(anyV) return anyV ~= nil end
 
 function sqlTableExists(anyTable) return true end
 function sqlQuery(sQ) return {} end
-
-function utilIsValidModel(sMdl)
-  if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
-  return false
-end
 
 function math.Clamp(v,a,b)
   if(v <= a) then return a end
@@ -259,59 +218,16 @@ function table.Empty(tT)
   for k,v in pairs(tT) do tT[k] = nil end
 end
 
-function languageAdd(key,val)
-  language.__data[key] = val
-end
-
-function languageGetPhrase(key)
-  local a = language.__data[key]; print(key); return a
-end
-
 function CurTime() return os.clock() end
 
-function makePlater()
+function LocalPlayer()
   local self = {}
   function self:IsValid() return true end
   function self:IsPlayer() return true end
   function self:Nick() return "YOLO" end
-  return self
-end
-
-function LocalPlayer() return makePlater() end
-
-function makeEntity()
-  local self = {}
-  local __cla = "prop_physics"
-  function self:GetClass() return __cla end
-  function self:SetClass(vC) __cla = vC end
-  local __pos = Vector(0,0,0)
-  local __ang = Angle(0,0,0)
-  function self:GetPos() return __pos end
-  function self:SetPos(vP) __pos = vP end
-  function self:GetAngles() return __ang end
-  function self:SetAngles(vA) __ang = vA end
-  function self:IsValid() return true end
-  function self:IsPlayer() return false end
-  function self:IsVehicle() return false end
-  function self:IsNPC() return false end
-  function self:IsRagdoll() return false end
-  function self:IsWeapon() return false end
-  function self:IsWidget() return false end 
-  local __bdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
-  function self:GetBodyGroups() return __bdygrp end
-  function self:GetBodygroup(id) return __bdygrp.data[id] end
-  function self:SetCollisionGroup() return nil end
-  function self:SetSolid() return nil end
-  function self:SetMoveType() return nil end
-  function self:SetNotSolid() return nil end
-  function self:SetNoDraw() return nil end
-  local __model = ""
-  local __atach = {ID = {[1]={["test"]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}}, Nam = {["test"] = 1}}
-  function self:SetModel(sM) __model = sM end
-  function self:GetModel() return __model end
-  function self:LookupAttachment(sK) return __atach.Nam[sK] end
-  function self:GetAttachment(iD) return __atach.ID[iD] end
-  function self:CallOnRemove() return nil end
+  function self:PrintMessage(n, m)
+    print("[player]["..tostring(n).."]["..tostring(m)"]")
+  end
   return self
 end
 
@@ -325,50 +241,16 @@ function makeTool(sM)
   __tools[self.Mode] = self
   return self
 end
-
-function utilGetPlayerTrace(pl)
-  return {}
-end
-
-function utilTraceLine(dt)
-  return {}
-end
-
-function entsCreate() return makeEntity() end
-
+  
 function RunConsoleCommand(a, b)
   local tB = ("_"):Explode(a)
   if(__convar[a]) then __convar[a] = tostring(b); return end
   __tools[tB[1]]:SetClient(tB[2], b)
 end
 
-function netStart(sK)
-  if(__nermsg[sK]) then tableEmpty(__nermsg[sK])
-  else __nermsg[sK] = {} end
-  __nermsg.__now__key__ = sK
-end
-
-function netWrte(v)
-  local k = __nermsg.__now__key__
-  table.insert(__nermsg[k], v)
-end
-
-function netRead()
-  local k = __nermsg.__now__key__
-  common.logTable(__nermsg, "NET")
-  return table.remove(__nermsg[k])
-end
-
-function netReadEntity()
-  return netRead()
-end
-
-function CompileFile(nS)
-  return loadfile(nS)
-end
-
 --------------------------------------------------------------------------------------------------------------------------------
 language = {}
+
 function language.Add(key, val)
   __lang[key] = val
 end
@@ -377,19 +259,150 @@ function language.GetPhrase(key, val)
   __lang[key] = val
 end
 
+function language.List() return __lang end
+
 --------------------------------------------------------------------------------------------------------------------------------
 cleanup = {}
-cleanup.Register = function() end
+
+function cleanup.Register() end
 
 --------------------------------------------------------------------------------------------------------------------------------
 util = {}
-util.TraceLine = function() end
+
+function util.TraceLine() end
+function util.IsValidModel(sMdl)
+  if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
+  return false
+end
+function util.GetPlayerTrace(pl)
+  return {}
+end
+
+function util.TraceLine(dt)
+  return {}
+end
 
 --------------------------------------------------------------------------------------------------------------------------------
 bit  = {}
-bit.bor = function() end
+
+function bit.bor() end
 
 --------------------------------------------------------------------------------------------------------------------------------
 cvars = {}
-cvars.RemoveChangeCallback = function() end
-cvars.AddChangeCallback = function() end
+
+function cvars.RemoveChangeCallback() end
+function cvars.AddChangeCallback() end
+
+--------------------------------------------------------------------------------------------------------------------------------
+file = {}
+
+function file.Open(n, m)
+  local s, f, e = pcall(io.open, n, m)
+  if(not (s and f)) then
+    return logStatus("fileOpen: "..tostring(e), nil)
+  end
+  local mt = getmetatable(f)
+  mt.Read  = mt.read
+  mt.Write = mt.write
+  mt.Close = mt.close
+  mt.Flush = mt.flush
+  return f
+end
+
+function file.Exists(n)
+  local a,b,c,d = pcall(os.execute, "cd "..n)
+  if(a and b and c == "exit" and d == 0) then return true end
+  local s, f = pcall(fileOpen, n, "rb")
+  if(s and f) then f:close(); return true; end
+  return false
+end
+
+function file.Delete(n)
+  local p = common.stringGetFilePath(n)
+  local n = common.stringGetFileName(n)
+  local a,b,c = os.execute("cd "..p.." && del /f "..n)
+end
+
+function file.Append(n, c)
+  local F = fileOpen(n, "ab")
+  if(not F) then
+    return logStatus("fileAppend: Nofile: "..tostring(n), nil)
+  end
+  F:seek("end")
+  F:write(tostring(c))
+  F:flush()
+  F:close()
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+ents = {}
+local mtEntity = {__type = "Entity"}
+      mtEntity.__tostring = function(oE) return ("ENT{"..oE:EntIndex().."}{"..oE:GetClass().."}") end
+      mtEntity.__index = mtEntity
+local function isVector(a) return (getmetatable(a) == mtVector) end
+function ents.Create()
+  local self = {}; setmetatable(self, mtEntity)
+  local mcla = "prop_physics"
+  local mid = (#__entity + 1)
+  local mpos = Vector(0,0,0)
+  local mang = Angle(0,0,0)
+  local mmodel = ""
+  local matach = {ID = {[1]={["test"]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}}, Nam = {["test"] = 1}}
+  local mbdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
+  function self:GetClass() return mcla end
+  function self:SetClass(vC) mcla = vC end
+  function self:EntIndex() return mid end
+  function self:GetPos() return mpos end
+  function self:SetPos(vP) mpos = vP end
+  function self:GetAngles() return mang end
+  function self:SetAngles(vA) mang = vA end
+  function self:IsValid() return true end
+  function self:IsPlayer() return false end
+  function self:IsVehicle() return false end
+  function self:IsNPC() return false end
+  function self:IsRagdoll() return false end
+  function self:IsWeapon() return false end
+  function self:IsWidget() return false end 
+  function self:GetBodyGroups() return mbdygrp end
+  function self:GetBodygroup(id) return mbdygrp.data[id] end
+  function self:SetCollisionGroup() return nil end
+  function self:SetSolid() return nil end
+  function self:SetMoveType() return nil end
+  function self:SetNotSolid() return nil end
+  function self:SetNoDraw() return nil end
+  function self:SetModel(sM) mmodel = sM end
+  function self:GetModel() return mmodel end
+  function self:LookupAttachment(sK) return matach.Nam[sK] end
+  function self:GetAttachment(iD) return matach.ID[iD] end
+  function self:CallOnRemove() return nil end
+  table.insert(__entity, mid, self)
+  return self
+end  
+
+function ents.GetAll()
+  return __entity
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+net = {}
+
+function net.Start(sK)
+  if(__nermsg[sK]) then tableEmpty(__nermsg[sK])
+  else __nermsg[sK] = {} end
+  __nermsg.__now__key__ = sK
+end
+
+function net.Wrte(v)
+  local k = __nermsg.__now__key__
+  table.insert(__nermsg[k], v)
+end
+
+function net.Read()
+  local k = __nermsg.__now__key__
+  common.logTable(__nermsg, "NET")
+  return table.remove(__nermsg[k])
+end
+
+function net.ReadEntity()
+  return netRead()
+end
