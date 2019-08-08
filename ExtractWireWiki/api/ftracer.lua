@@ -7,11 +7,12 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true   -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    wdsc = false,  -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    mosp = true   -- (TRUE) Enables `monospace` font for the function names
   },
   POOL = {
     {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={30,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={50,5,13}},
+    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={46,5,13}},
   },
   FILE = {
     exts = "ftracer",

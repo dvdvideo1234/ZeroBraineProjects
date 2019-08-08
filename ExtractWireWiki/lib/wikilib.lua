@@ -81,6 +81,7 @@ local wikiFormat = {
   __loc = "file:///%s",
   __cou = "%s/countries/%s",
   __typ = "%s/types/%s",
+  __wds = "E2Helper.Descriptions[\"%s\"] = \"%s\"\n",
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -120,6 +121,10 @@ end
 
 local function toType(...)
   return (wikiFormat.__tfm:format(...))
+end
+
+local function toWireDSC(...)
+  return (wikiFormat.__wds:format(...))
 end
 
 local function toCountry(...)
@@ -236,7 +241,7 @@ function wikilib.updateAPI(API, DSC)
   end
   for api, dsc in pairs(DSC) do
     if(wD) then 
-      table.insert(w, "E2Helper.Descriptions[\""..api.."\"] = \""..dsc.."\"\n")
+      table.insert(w, toWireDSC(api, dsc))
     end
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
@@ -257,7 +262,7 @@ function wikilib.updateAPI(API, DSC)
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
-    if(api:find(API.NAME.."(",1,true)) then t = API.POOL[1] else t = API.POOL[2] end
+    if(api:find(API.NAME.."%(")) then t = API.POOL[1] else t = API.POOL[2] end
     if(API.REPLACE) then local tR = API.REPLACE
       for k, v in pairs(tR) do local sD = DSC[api]
         if(k:sub(1,1) ~= "#") then
@@ -501,6 +506,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
   local sM = wikiFormat.msp
+  local bMsp = apiGetValue(API, "FLAG", "mosp")
   local bIco = apiGetValue(API, "FLAG", "icon")
   local bErr = apiGetValue(API, "FLAG", "erro")
   local sObj = apiGetValue(API, "TYPE", "OBJ")
@@ -545,12 +551,14 @@ function wikilib.printDescriptionTable(API, DSC, iN)
               else ret = sS..sV end
             end
             
+            local sR = n:gsub("%(.-%)", ""); if(bMsp) then sR = "`"..sR.."`" end
+            
             if(obj:find(sV)) then
-              wikilib.printRow({n:gsub("%(.-%)", "("..wikilib.concatType(API, vars)
-                    ..")"), wikilib.concatType(API, ret), DSC[n]})      
+              wikilib.printRow({sR.."("..wikilib.concatType(API, vars)
+                    ..")", wikilib.concatType(API, ret), DSC[n]})      
             else
-              wikilib.printRow({wikilib.concatType(API, obj)..sM..n:gsub("%(.-%)", "("
-                      ..wikilib.concatType(API, vars)..")"), wikilib.concatType(API, ret), DSC[n]})
+              wikilib.printRow({wikilib.concatType(API, obj)..sM..sR.."("
+                      ..wikilib.concatType(API, vars)..")", wikilib.concatType(API, ret), DSC[n]})
             end
           end
         end

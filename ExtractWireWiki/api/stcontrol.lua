@@ -7,11 +7,12 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true   -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    wdsc = false,  -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    mosp = true   -- (TRUE) Enables `monospace` font for the function names
   },
   POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={40,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={40,5,13}},
+    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={20,5,13}},
+    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={35,5,13}},
   },
   FILE = {
     exts = "stcontrol",
