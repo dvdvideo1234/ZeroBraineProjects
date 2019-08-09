@@ -31,7 +31,7 @@ local API = {
     ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
     ["trace-line"] = "https://wiki.garrysmod.com/page/util/TraceLine",
-    ["trace"] = "https://wiki.garrysmod.com/page/Structures/Trace",
+    ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
     ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
   }
 }

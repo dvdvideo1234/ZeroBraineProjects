@@ -250,8 +250,9 @@ function wikilib.updateAPI(API, DSC)
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
+        local cQ = sW:sub(1,1)..sW:sub(-1,-1)
         for k, v in pairs(wikiQuote) do
-          if(sW:match(k)) then
+          if(sW:match(k) and cQ ~= "``") then
             local sF, sB = sW:sub(1,1), sW:sub(-1,-1)
             if(wikiDiver[sF]) then
               tD[ID] = sF.."`"..sW:sub(2,-1).."`"
@@ -524,7 +525,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   local sS, sA = wikiFormat.tsp, wikiFormat.asp
   local sV = wikilib.convTypeE2Description(API,"void")[1]
   for i, n in ipairs(tPool) do
-    local arg, vars, obj = n:match("%(.-%)"), "", ""
+    local arg, vars, obj = n:match(wikiBraketsIN), "", ""
     if(arg) then arg = arg:sub(2,-2)
       local tsk = common.stringExplode(arg, sM)
       if(not arg:find(sM)) then
@@ -545,7 +546,9 @@ function wikilib.printDescriptionTable(API, DSC, iN)
         if(not wikilib.isValidMatch(rmv)) then if(bErr) then
           error("wikilib.printDescriptionTable: Duplicated function <"..rmv.__nam.."> !") end
         end
+        
         local ret = ""; sortMatch(rmv)
+        
         for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
           if(not DSC[api.com]) then
             common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
@@ -553,6 +556,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
             if(bErr) then
               error("wikilib.printDescriptionTable: Description missing <"..api.com.."> !") end
           end
+          
           if(n == api.com) then
             if(ret == "") then local cap = rmk:find("%L", 1)
               if(n:find(API.NAME)) then
@@ -562,7 +566,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
               else ret = sS..sV end
             end
             
-            local sR = n:gsub("%(.-%)", ""); if(bMsp) then sR = "`"..sR.."`" end
+            local sR = n:gsub(wikiBraketsIN, ""); if(bMsp) then sR = "`"..sR.."`" end
             
             if(obj:find(sV)) then
               wikilib.printRow({sR.."("..wikilib.concatType(API, vars)
