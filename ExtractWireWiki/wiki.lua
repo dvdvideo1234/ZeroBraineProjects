@@ -1,4 +1,4 @@
-local sEXP = "ftracer"
+local sEXP = "stcontrol"
 
 local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
 -- local sPRG = "ExtractWireWiki/" -- From the main folder
@@ -24,8 +24,7 @@ if(f) then io.output(f)
   wikilib.updateAPI(API, DSC)
   wikilib.makeReturnValues(API)
   wikilib.printMatchedAPI(API, DSC)
-  wikilib.printDescriptionTable(API, DSC, 1)
-  wikilib.printDescriptionTable(API, DSC, 2)
+  for iD = 1, #API.POOL do wikilib.printDescriptionTable(API, DSC, iD) end
   -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
   print(wikilib.insRefCountry("bg"))

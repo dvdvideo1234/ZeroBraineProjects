@@ -95,7 +95,10 @@ local wikiFormat = {
 local wikiRefer = { ["is"] = "n",
   __this = {"dump", "res", "set", "upd", "smp", "add", "rem", "no", "new"}
 }
-
+-- Pattern for something in brackets including the brakets
+local wikiBraketsIN = "%(.-%)"
+-- What the instance creator might start with
+local wikiMakeOOP = {["new"]=true, ["no"]=true, ["set"]=true}
 -- https://stackoverflow.com/questions/17978720/invisible-characters-ascii
 local wikiSpace = "ˑ" -- Space character for drawing table column names
 -- A bunch of patterns when matched transform a word into MD quote
@@ -232,16 +235,17 @@ function wikilib.updateAPI(API, DSC)
       end
     end
   end
-  local t, w = API.POOL[1]
+  local tA, tW
+  local sO = apiGetValue(API,"TYPE", "OBJ")
   local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
   local bR = apiGetValue(API,"FLAG", "prep")
   local wD = apiGetValue(API,"FLAG", "wdsc")
   if(wD) then API.POOL.wdsc = {}
-    w = apiGetValue(API,"POOL", "wdsc")
+    tW = apiGetValue(API,"POOL", "wdsc")
   end
   for api, dsc in pairs(DSC) do
     if(wD) then 
-      table.insert(w, toWireDSC(api, dsc))
+      table.insert(tW, toWireDSC(api, dsc))
     end
     if(apiGetValue(API,"FLAG", "quot")) then
       local tD = common.stringExplode(dsc, " ")
@@ -262,7 +266,14 @@ function wikilib.updateAPI(API, DSC)
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
-    if(api:find(API.NAME.."%(")) then t = API.POOL[1] else t = API.POOL[2] end
+
+    if(wikiMakeOOP[api:gsub(API.NAME..wikiBraketsIN, "")]) then
+      tA = API.POOL[1] 
+    elseif(api:find(sO..":")) then
+      tA = API.POOL[2]
+    else
+      tA = API.POOL[3]
+    end
     if(API.REPLACE) then local tR = API.REPLACE
       for k, v in pairs(tR) do local sD = DSC[api]
         if(k:sub(1,1) ~= "#") then
@@ -283,10 +294,10 @@ function wikilib.updateAPI(API, DSC)
         end
       end
     end
-    table.insert(t, api)
+    table.insert(tA, api)
   end
-  if(wD) then table.sort(w)
-    for iD = 1, #w do io.write(w[iD]) end
+  if(wD) then table.sort(tW)
+    for iD = 1, #tW do io.write(tW[iD]) end
     io.write("\n")
     io.write(wikiLineDiv[1]:rep(wikiLineDiv[2]))
     io.write("\n\n")
@@ -398,7 +409,7 @@ function wikilib.convApiE2Description(API, sE2)
     end
     iS = sE:find("(", 1, true)
     tInfo.foo = common.stringTrim(sE:sub(1, iS-1))
-    sE = common.stringTrim(sE:match("%(.-%)")):sub(2,-2)
+    sE = common.stringTrim(sE:match(wikiBraketsIN)):sub(2,-2)
     tInfo.par = common.stringExplode(sE, sA)
     for ID = 1, #tInfo.par do
       tInfo.par[ID] = common.stringTrim(tInfo.par[ID])

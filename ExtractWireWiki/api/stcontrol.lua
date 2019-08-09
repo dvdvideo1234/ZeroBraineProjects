@@ -13,6 +13,7 @@ local API = {
   POOL = {
     {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={20,5,13}},
     {name="APPLY",cols={"Class.methods", "Out", "Description"},size={35,5,13}},
+    {name="SETUP",cols={"General.functions", "Out", "Description"},size={20,5,13}},
   },
   FILE = {
     exts = "stcontrol",

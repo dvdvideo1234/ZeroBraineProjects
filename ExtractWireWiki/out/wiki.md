@@ -1,99 +1,139 @@
-﻿|ˑˑˑˑˑˑˑInstance.creatorˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
-|------------------------------|-----|-------------|
-|`newFTracer`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer relative to the world by zero origin position, zero direction vector, zero length distance|
-|`newFTracer`(![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by length distance, direction vector, zero length distance|
-|`newFTracer`(![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the world by origin position, zero direction vector, zero length distance|
-|`newFTracer`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by origin position, direction vector from up, length distance|
-|`newFTracer`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the world by origin position, direction vector, length distance from direction vector|
-|`newFTracer`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by origin position, direction vector, length distance|
-|`noFTracer`(![image][ref-xxx])|![image][ref-xft]|Returns invalid flash tracer object|
-|![image][ref-e]:`setFTracer`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer local to the entity by zero origin position, zero direction vector, zero length distance|
-|![image][ref-e]:`setFTracer`(![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the entity by length distance, direction vector, zero length distance|
-|![image][ref-e]:`setFTracer`(![image][ref-v])|![image][ref-xft]|Returns flash tracer local to the entity by origin position, zero direction vector, zero length distance|
-|![image][ref-e]:`setFTracer`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the entity by origin position, direction vector from up, length distance|
-|![image][ref-e]:`setFTracer`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer local to the entity by origin position, direction vector, length distance from direction vector|
-|![image][ref-e]:`setFTracer`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer local to the entity by origin position, direction vector, length distance|
+﻿|ˑˑInstance.creatorˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|--------------------|-----|-------------|
+|`newStControl`(![image][ref-xxx])|![image][ref-xsc]|Returns state control object with dynamic sampling time|
+|`newStControl`(![image][ref-n])|![image][ref-xsc]|Returns state control object with static sampling time|
+|`noStControl`(![image][ref-xxx])|![image][ref-xsc]|Returns invalid state control object|
 
-|ˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑClass.methodsˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
-|----------------------------------------------|-----|-------------|
-|![image][ref-xft]:`addEntityHitOnly`(![image][ref-e])|![image][ref-xft]|Adds the entity to the flash tracer internal only hit list|
-|![image][ref-xft]:`addEntityHitSkip`(![image][ref-e])|![image][ref-xft]|Adds the entity to the flash tracer internal ignore hit list|
-|![image][ref-xft]:`addHitOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Adds the option to the flash tracer internal hit only list|
-|![image][ref-xft]:`addHitOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Adds the option to the flash tracer internal hit only list|
-|![image][ref-xft]:`addHitSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Adds the option to the flash tracer internal ignore hit list|
-|![image][ref-xft]:`addHitSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Adds the option to the flash tracer internal ignore hit list|
-|![image][ref-xft]:`dumpItem`(![image][ref-n])|![image][ref-xft]|Dumps the flash tracer to the chat area by number identifier|
-|![image][ref-xft]:`dumpItem`(![image][ref-s])|![image][ref-xft]|Dumps the flash tracer to the chat area by string identifier|
-|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Dumps the flash tracer by number identifier in the specified area by first argument|
-|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Dumps the flash tracer by string identifier in the specified area by first argument|
-|![image][ref-xft]:`getAttachEntity`(![image][ref-xxx])|![image][ref-e]|Returns the attachment entity of the ..xtp..|
-|![image][ref-xft]:`getCollisionGroup`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
-|![image][ref-xft]:`getCopy`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer copy instance of the current object|
-|![image][ref-xft]:`getDirection`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer direction vector|
-|![image][ref-xft]:`getDirectionLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer world direction vector converted to attachment entity local axis|
-|![image][ref-xft]:`getDirectionLocal`(![image][ref-a])|![image][ref-v]|Returns flash tracer world direction vector converted to angle local axis|
-|![image][ref-xft]:`getDirectionLocal`(![image][ref-e])|![image][ref-v]|Returns flash tracer world direction vector converted to entity local axis|
-|![image][ref-xft]:`getDirectionWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer local direction vector converted to attachment entity world axis|
-|![image][ref-xft]:`getDirectionWorld`(![image][ref-a])|![image][ref-v]|Returns flash tracer local direction vector converted to angle world axis|
-|![image][ref-xft]:`getDirectionWorld`(![image][ref-e])|![image][ref-v]|Returns flash tracer local direction vector converted to entity world axis|
-|![image][ref-xft]:`getEntity`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Entity` entity|
-|![image][ref-xft]:`getFraction`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Fraction` in the interval `[0-1]` number|
-|![image][ref-xft]:`getFractionLeftSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``FractionLeftSolid`` in the interval `[0-1]` number|
-|![image][ref-xft]:`getFractionLeftSolidLength`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``FractionLeftSolid`` multiplied by its length distance number|
-|![image][ref-xft]:`getFractionLength`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Fraction` multiplied by its length distance number|
-|![image][ref-xft]:`getHitBox`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitBox`` number|
-|![image][ref-xft]:`getHitGroup`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitGroup`` group `ID` number|
-|![image][ref-xft]:`getHitNormal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) surface ``HitNormal`` vector|
-|![image][ref-xft]:`getHitPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitPos`` location vector|
-|![image][ref-xft]:`getHitTexture`(![image][ref-xxx])|![image][ref-s]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitTexture`` string|
-|![image][ref-xft]:`getLength`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer length distance|
-|![image][ref-xft]:`getMask`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
-|![image][ref-xft]:`getMatType`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``MatType`` material type number|
-|![image][ref-xft]:`getNormal`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Normal` aim vector|
-|![image][ref-xft]:`getOrigin`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer origin position|
-|![image][ref-xft]:`getOriginLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer world origin position converted to attachment entity local axis|
-|![image][ref-xft]:`getOriginLocal`(![image][ref-e])|![image][ref-v]|Returns flash tracer world origin position converted to entity local axis|
-|![image][ref-xft]:`getOriginLocal`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash tracer world origin position converted to position/angle local axis|
-|![image][ref-xft]:`getOriginWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer local origin position converted to attachment entity world axis|
-|![image][ref-xft]:`getOriginWorld`(![image][ref-e])|![image][ref-v]|Returns flash tracer local origin position converted to entity world axis|
-|![image][ref-xft]:`getOriginWorld`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash tracer local origin position converted to position/angle world axis|
-|![image][ref-xft]:`getPhysicsBone`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``PhysicsBone`` `ID` number|
-|![image][ref-xft]:`getStart`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer trace start poisition sent to [`trace-line`](https://wiki.garrysmod.com/page/util/TraceLine)|
-|![image][ref-xft]:`getStartPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``StartPos`` vector|
-|![image][ref-xft]:`getStop`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer trace stop poisition sent to [`trace-line`](https://wiki.garrysmod.com/page/util/TraceLine)|
-|![image][ref-xft]:`getSurfaceProps`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``SurfaceProps`` `ID` type number|
-|![image][ref-xft]:`getSurfacePropsName`(![image][ref-xxx])|![image][ref-s]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``SurfaceProps`` `ID` type name string|
-|![image][ref-xft]:`isAllSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``AllSolid`` flag|
-|![image][ref-xft]:`isHit`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Hit` flag|
-|![image][ref-xft]:`isHitNoDraw`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitNoDraw`` flag|
-|![image][ref-xft]:`isHitNonWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitNonWorld`` flag|
-|![image][ref-xft]:`isHitSky`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitSky`` flag|
-|![image][ref-xft]:`isHitWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``HitWorld`` flag|
-|![image][ref-xft]:`isIgnoreWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer trace ``IgnoreWorld`` flag|
-|![image][ref-xft]:`isStartSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) ``StartSolid`` flag|
-|`maxFTracers`(![image][ref-xxx])|![image][ref-n]|Returns the upper flash tracer count|
-|![image][ref-xft]:`remAttachEntity`(![image][ref-xxx])|![image][ref-xft]|Removes the attachment entity of the ..xtp..|
-|![image][ref-xft]:`remEntityHitOnly`(![image][ref-e])|![image][ref-xft]|Removes the entity from the flash tracer internal only hit list|
-|![image][ref-xft]:`remEntityHitSkip`(![image][ref-e])|![image][ref-xft]|Removes the entity from the flash tracer internal ignore hit list|
-|![image][ref-xft]:`remHit`(![image][ref-xxx])|![image][ref-xft]|Removes all the options from the flash tracer internal hit preferences|
-|![image][ref-xft]:`remHit`(![image][ref-s])|![image][ref-xft]|Removes the option from the flash tracer internal hit preferences|
-|![image][ref-xft]:`remHitOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the flash tracer internal only hit list|
-|![image][ref-xft]:`remHitOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the flash tracer internal only hit list|
-|![image][ref-xft]:`remHitSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the flash tracer internal ignore hit list|
-|![image][ref-xft]:`remHitSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the flash tracer internal ignore hit list|
-|![image][ref-xft]:`remSelf`(![image][ref-xxx])|![image][ref-n]|Removes the flash tracer from the list|
-|![image][ref-xft]:`setAttachEntity`(![image][ref-e])|![image][ref-xft]|Updates the attachment entity of the ..xtp..|
-|![image][ref-xft]:`setCollisionGroup`(![image][ref-n])|![image][ref-xft]|Updates flash tracer trace collision group enums [`COLLISION_GROUP`](https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP)|
-|![image][ref-xft]:`setDirection`(![image][ref-v])|![image][ref-xft]|Updates the flash tracer direction vector|
-|![image][ref-xft]:`setIsIgnoreWorld`(![image][ref-n])|![image][ref-xft]|Updates the flash tracer trace ``IgnoreWorld`` flag|
-|![image][ref-xft]:`setLength`(![image][ref-n])|![image][ref-xft]|Updates flash tracer length distance|
-|![image][ref-xft]:`setMask`(![image][ref-n])|![image][ref-xft]|Updates flash tracer trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
-|![image][ref-xft]:`setOrigin`(![image][ref-v])|![image][ref-xft]|Updates the flash tracer origin position|
-|![image][ref-xft]:`smpLocal`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to attachment entity local axis|
-|![image][ref-xft]:`smpLocal`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to argument entity|
-|![image][ref-xft]:`smpLocal`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to argument position and angle|
-|![image][ref-xft]:`smpWorld`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) according to the world axis|
-|`sumFTracers`(![image][ref-xxx])|![image][ref-n]|Returns the used flash tracer count|
+|ˑˑˑˑˑˑˑˑˑˑˑClass.methodsˑˑˑˑˑˑˑˑˑˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|-----------------------------------|-----|-------------|
+|![image][ref-xsc]:`dumpItem`(![image][ref-n])|![image][ref-xsc]|Dumps state control to the chat area by number identifier|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s])|![image][ref-xsc]|Dumps state control to the chat area by string identifier|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xsc]|Dumps state control by number identifier in the specified area by first argument|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xsc]|Dumps state control by string identifier in the specified area by first argument|
+|![image][ref-xsc]:`getBias`(![image][ref-xxx])|![image][ref-n]|Returns state control control bias|
+|![image][ref-xsc]:`getControl`(![image][ref-xxx])|![image][ref-n]|Returns state control automated control signal signal|
+|![image][ref-xsc]:`getControlTerm`(![image][ref-xxx])|![image][ref-r]|Returns state control automated control term signal|
+|![image][ref-xsc]:`getControlTerm`(![image][ref-xxx])|![image][ref-v]|Returns state control automated control term signal|
+|![image][ref-xsc]:`getControlTermD`(![image][ref-xxx])|![image][ref-n]|Returns state control derivative automated control term signal|
+|![image][ref-xsc]:`getControlTermI`(![image][ref-xxx])|![image][ref-n]|Returns state control integral automated control term signal|
+|![image][ref-xsc]:`getControlTermP`(![image][ref-xxx])|![image][ref-n]|Returns state control proportional automated control term signal|
+|![image][ref-xsc]:`getCopy`(![image][ref-xxx])|![image][ref-xsc]|Returns state control object copy instance|
+|![image][ref-xsc]:`getErrorDelta`(![image][ref-xxx])|![image][ref-n]|Returns state control process error delta|
+|![image][ref-xsc]:`getErrorNow`(![image][ref-xxx])|![image][ref-n]|Returns state control process current error|
+|![image][ref-xsc]:`getErrorOld`(![image][ref-xxx])|![image][ref-n]|Returns state control process passed error|
+|![image][ref-xsc]:`getGain`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`getGain`(![image][ref-xxx])|![image][ref-v]|Returns state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`getGainD`(![image][ref-xxx])|![image][ref-n]|Returns state control derivative term gain|
+|![image][ref-xsc]:`getGainI`(![image][ref-xxx])|![image][ref-n]|Returns state control integral term gain|
+|![image][ref-xsc]:`getGainID`(![image][ref-xxx])|![image][ref-r]|Returns state control integral term gain and derivative term gain|
+|![image][ref-xsc]:`getGainID`(![image][ref-xxx])|![image][ref-xv2]|Returns state control integral term gain and derivative term gain|
+|![image][ref-xsc]:`getGainP`(![image][ref-xxx])|![image][ref-n]|Returns state control proportional term gain|
+|![image][ref-xsc]:`getGainPD`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`getGainPD`(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`getGainPI`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`getGainPI`(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`getManual`(![image][ref-xxx])|![image][ref-n]|Returns state control manual control signal value|
+|![image][ref-xsc]:`getPower`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power, integral term power and derivative term power|
+|![image][ref-xsc]:`getPower`(![image][ref-xxx])|![image][ref-v]|Returns state control proportional term power, integral term power and derivative term power|
+|![image][ref-xsc]:`getPowerD`(![image][ref-xxx])|![image][ref-n]|Returns state control derivative term power|
+|![image][ref-xsc]:`getPowerI`(![image][ref-xxx])|![image][ref-n]|Returns state control integral term power|
+|![image][ref-xsc]:`getPowerID`(![image][ref-xxx])|![image][ref-r]|Returns state control integral term power and derivative term power|
+|![image][ref-xsc]:`getPowerID`(![image][ref-xxx])|![image][ref-xv2]|Returns state control integral term power and derivative term power|
+|![image][ref-xsc]:`getPowerP`(![image][ref-xxx])|![image][ref-n]|Returns state control proportional term power|
+|![image][ref-xsc]:`getPowerPD`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power and derivative term power|
+|![image][ref-xsc]:`getPowerPD`(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term power and derivative term power|
+|![image][ref-xsc]:`getPowerPI`(![image][ref-xxx])|![image][ref-r]|Returns state control proportional term power and integral term power|
+|![image][ref-xsc]:`getPowerPI`(![image][ref-xxx])|![image][ref-xv2]|Returns state control proportional term power and integral term power|
+|![image][ref-xsc]:`getTimeBench`(![image][ref-xxx])|![image][ref-n]|Returns state control process benchmark time|
+|![image][ref-xsc]:`getTimeDelta`(![image][ref-xxx])|![image][ref-n]|Returns state control dymamic process time delta|
+|![image][ref-xsc]:`getTimeNow`(![image][ref-xxx])|![image][ref-n]|Returns state control process current time|
+|![image][ref-xsc]:`getTimeOld`(![image][ref-xxx])|![image][ref-n]|Returns state control process passed time|
+|![image][ref-xsc]:`getTimeRatio`(![image][ref-xxx])|![image][ref-n]|Returns state control process time ratio|
+|![image][ref-xsc]:`getTimeSample`(![image][ref-xxx])|![image][ref-n]|Returns state control static process time delta|
+|![image][ref-xsc]:`getType`(![image][ref-xxx])|![image][ref-s]|Returns state control control type|
+|![image][ref-xsc]:`getWindup`(![image][ref-xxx])|![image][ref-r]|Returns state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`getWindup`(![image][ref-xxx])|![image][ref-xv2]|Returns state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`getWindupD`(![image][ref-xxx])|![image][ref-n]|Returns state control windup lower bound|
+|![image][ref-xsc]:`getWindupU`(![image][ref-xxx])|![image][ref-n]|Returns state control windup upper bound|
+|![image][ref-xsc]:`isActive`(![image][ref-xxx])|![image][ref-n]|Checks state control activated working flag|
+|![image][ref-xsc]:`isCombined`(![image][ref-xxx])|![image][ref-n]|Checks state control combined flag spreading proportional term gain across others|
+|![image][ref-xsc]:`isIntegrating`(![image][ref-xxx])|![image][ref-n]|Checks integral enabled flag|
+|![image][ref-xsc]:`isInverted`(![image][ref-xxx])|![image][ref-n]|Checks state control inverted feedback flag of the reference and setpoint|
+|![image][ref-xsc]:`isManual`(![image][ref-xxx])|![image][ref-n]|Checks state control manual control flag|
+|![image][ref-xsc]:`remGain`(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`remGainD`(![image][ref-xxx])|![image][ref-xsc]|Removes state control derivative term gain|
+|![image][ref-xsc]:`remGainI`(![image][ref-xxx])|![image][ref-xsc]|Removes state control integral term gain|
+|![image][ref-xsc]:`remGainID`(![image][ref-xxx])|![image][ref-xsc]|Removes state control integral term gain and derivative term gain|
+|![image][ref-xsc]:`remGainP`(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain|
+|![image][ref-xsc]:`remGainPD`(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`remGainPI`(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`remSelf`(![image][ref-xxx])|![image][ref-n]|Removes the state control from the list|
+|![image][ref-xsc]:`remTimeSample`(![image][ref-xxx])|![image][ref-xsc]|Removes state control static process time delta|
+|![image][ref-xsc]:`remWindup`(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`remWindupD`(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup lower bound|
+|![image][ref-xsc]:`remWindupU`(![image][ref-xxx])|![image][ref-xsc]|Removes state control windup upper bound|
+|![image][ref-xsc]:`resState`(![image][ref-xxx])|![image][ref-xsc]|Resets state control automated internal parameters|
+|![image][ref-xsc]:`setBias`(![image][ref-n])|![image][ref-xsc]|Updates state control control bias|
+|![image][ref-xsc]:`setGain`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`setGain`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`setGain`(![image][ref-v])|![image][ref-xsc]|Updates state control proportional term gain, integral term gain and derivative term gain|
+|![image][ref-xsc]:`setGainD`(![image][ref-n])|![image][ref-xsc]|Updates state control derivative term gain|
+|![image][ref-xsc]:`setGainI`(![image][ref-n])|![image][ref-xsc]|Updates state control integral term gain|
+|![image][ref-xsc]:`setGainID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control integral term gain and derivative term gain|
+|![image][ref-xsc]:`setGainID`(![image][ref-r])|![image][ref-xsc]|Updates state control integral term gain and derivative term gain|
+|![image][ref-xsc]:`setGainID`(![image][ref-xv2])|![image][ref-xsc]|Updates state control derivative term gain and derivative term gain|
+|![image][ref-xsc]:`setGainP`(![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain|
+|![image][ref-xsc]:`setGainPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`setGainPD`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`setGainPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term gain and derivative term gain|
+|![image][ref-xsc]:`setGainPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`setGainPI`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`setGainPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
+|![image][ref-xsc]:`setIsActive`(![image][ref-n])|![image][ref-xsc]|Updates state control activated working flag|
+|![image][ref-xsc]:`setIsCombined`(![image][ref-n])|![image][ref-xsc]|Updates combined flag spreading proportional term gain across others|
+|![image][ref-xsc]:`setIsIntegrating`(![image][ref-n])|![image][ref-xsc]|Updates integral enabled flag|
+|![image][ref-xsc]:`setIsInverted`(![image][ref-n])|![image][ref-xsc]|Updates state control inverted feedback flag of the reference and setpoint|
+|![image][ref-xsc]:`setIsManual`(![image][ref-n])|![image][ref-xsc]|Updates state control manual control signal value|
+|![image][ref-xsc]:`setManual`(![image][ref-n])|![image][ref-xsc]|Updates state control manual control value|
+|![image][ref-xsc]:`setPower`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
+|![image][ref-xsc]:`setPower`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
+|![image][ref-xsc]:`setPower`(![image][ref-v])|![image][ref-xsc]|Updates state control proportional term power, integral term power and derivative term power|
+|![image][ref-xsc]:`setPowerD`(![image][ref-n])|![image][ref-xsc]|Updates state control derivative term power|
+|![image][ref-xsc]:`setPowerI`(![image][ref-n])|![image][ref-xsc]|Updates state control integral term power|
+|![image][ref-xsc]:`setPowerID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control integral term power and derivative term power|
+|![image][ref-xsc]:`setPowerID`(![image][ref-r])|![image][ref-xsc]|Updates state control integral term power and derivative term power|
+|![image][ref-xsc]:`setPowerID`(![image][ref-xv2])|![image][ref-xsc]|Updates state control derivative term power and derivative term power|
+|![image][ref-xsc]:`setPowerP`(![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term power and derivative term power|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-r])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term power and integral term power|
+|![image][ref-xsc]:`setState`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Works state control automated internal parameters|
+|![image][ref-xsc]:`setTimeSample`(![image][ref-n])|![image][ref-xsc]|Updates state control static process time delta|
+|![image][ref-xsc]:`setWindup`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`setWindup`(![image][ref-r])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`setWindup`(![image][ref-xv2])|![image][ref-xsc]|Updates state control windup lower bound and windup upper bound|
+|![image][ref-xsc]:`setWindupD`(![image][ref-n])|![image][ref-xsc]|Updates state control windup lower bound|
+|![image][ref-xsc]:`setWindupU`(![image][ref-n])|![image][ref-xsc]|Updates state control windup upper bound|
+|![image][ref-xsc]:`tuneAH`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Astrom-Hagglund method `(AH)`|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Ziegler-Nichols auto-oscilation method `(ZN)`|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-xsc]|Tunes the state control using the Ziegler-Nichols auto-oscilation method with overshot option `(ZN)`|
+|![image][ref-xsc]:`tuneIAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the integral absolute error method `(IAE)`|
+|![image][ref-xsc]:`tuneISE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the integral square error method `(ISE)`|
+|![image][ref-xsc]:`tuneITAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the integral of time-weighted absolute error method `(ITAE)`|
+|![image][ref-xsc]:`tuneOverCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Chien-Hrones-Reswick method `(CHR)` load rejection `20%` overshot|
+|![image][ref-xsc]:`tuneOverCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Chien-Hrones-Reswick method `(CHR)` set point track `20%` overshot|
+|![image][ref-xsc]:`tuneProcCC`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Choen-Coon method `(CC)`|
+|![image][ref-xsc]:`tuneProcCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Chien-Hrones-Reswick method `(CHR)` load rejection|
+|![image][ref-xsc]:`tuneProcCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Chien-Hrones-Reswick method `(CHR)` set point track|
+|![image][ref-xsc]:`tuneProcZN`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state control using the Ziegler-Nichols plant process method `(ZN)`|
+
+|ˑGeneral.functionsˑˑ|ˑOutˑ|ˑDescriptionˑ|
+|--------------------|-----|-------------|
+|`maxStControls`(![image][ref-xxx])|![image][ref-n]|Returns the upper state control count|
+|`sumStControls`(![image][ref-xxx])|![image][ref-n]|Returns the used state control count|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
