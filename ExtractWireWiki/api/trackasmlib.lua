@@ -9,8 +9,9 @@ local API = {
     qref = true   -- (TRUE) Quote the string in the link reference
   },
   POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={80,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={80,5,13}},
+    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={0,5,13}},
+    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={70,5,13}},
+    {name="SETUP",cols={"General.functions", "Out", "Description"},size={70,5,13}},
   },
   FILE = {
     exts = "trackasmlib_wire",

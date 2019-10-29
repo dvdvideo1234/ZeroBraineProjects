@@ -1,6 +1,0 @@
-# TranslateDSV:(aaa@PIECES) 20-05-19 09:32:24 [ LUA ]
-# Data settings:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
-PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl", "TEST", "TEST-NAME", 1, "NULL", "0,-47.455105,1.482965", "0,-90,0", "NULL"})
-PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl", "TEST", "TEST-NAME", 2, "NULL", "0, 47.455105,1.482965", "0, 90,0", "NULL"})
-PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", "TEST", "TEST-NAME", 1, "NULL", "0,-23.73248,1.482965", "0,-90,0", "NULL"})
-PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", "TEST", "TEST-NAME", 2, "NULL", "0, 71.17773,1.482965", "0, 90,0", "NULL"})

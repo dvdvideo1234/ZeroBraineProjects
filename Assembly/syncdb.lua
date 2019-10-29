@@ -1,9 +1,11 @@
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/?.lua"
+
 require("dvdlualib/common")
 require("dvdlualib/gmodlib")
 require("dvdlualib/asmlib")
 local asmlib = trackasmlib
 local string = string
-      string.Trim = stringTrim
 local stringExplode = string.Explode
 local stringSub   =  string.sub
 local stringFind  = string.find
@@ -126,3 +128,5 @@ else
 end -- Now we have Lua inserts and DSV
 
 trackasmlib.LogInstance("<<< "..myScript)
+
+asmlib.RegisterDSV("test_prog.lua", "aaa", "\t", true)

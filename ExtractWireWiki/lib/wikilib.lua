@@ -44,25 +44,249 @@ local wikiType = {
     ["vector4"]    = 15,
     ["ranger"]     = 16,
     ["wirelink"]   = 17,
-    ["ftracer"]    = 18,
+    ["ftrace"]     = 18,
     ["stcontrol"]  = 19,
     ["void"]       = 20
   }
 }
 
-wikiDChunk = {
-top = [===[
-return function()
-local E2Helper = {}; E2Helper.Descriptions = {}
+local wikiEncodeURL = {
+  ["%20"]= " "	,
+  ["%21"]= "!"	,
+  ["%22"]= "\""	,
+  ["%23"]= "#"	,
+  ["%24"]= "$"	,
+  ["%25"]= "%"	,
+  ["%26"]= "&"	,
+  ["%27"]= "'"	,
+  ["%28"]= "("	,
+  ["%29"]= ")"	,
+  ["%2A"]= "*"	,
+  ["%2B"]= "+"	,
+  ["%2C"]= ","	,
+  ["%2D"]= "-"	,
+  ["%2E"]= "."	,
+  ["%2F"]= "/"	,
+  ["%30"]= "0"	,
+  ["%31"]= "1"	,
+  ["%32"]= "2"	,
+  ["%33"]= "3"	,
+  ["%34"]= "4"	,
+  ["%35"]= "5"	,
+  ["%36"]= "6"	,
+  ["%37"]= "7"	,
+  ["%38"]= "8"	,
+  ["%39"]= "9"	,
+  ["%3A"]= ":"	,
+  ["%3B"]= ";"	,
+  ["%3C"]= "<"	,
+  ["%3D"]= "="	,
+  ["%3E"]= ">"	,
+  ["%3F"]= "?"	,
+  ["%40"]= "@"	,
+  ["%41"]= "A"	,
+  ["%42"]= "B"	,
+  ["%43"]= "C"	,
+  ["%44"]= "D"	,
+  ["%45"]= "E"	,
+  ["%46"]= "F"	,
+  ["%47"]= "G"	,
+  ["%48"]= "H"	,
+  ["%49"]= "I"	,
+  ["%4A"]= "J"	,
+  ["%4B"]= "K"	,
+  ["%4C"]= "L"	,
+  ["%4D"]= "M"	,
+  ["%4E"]= "N"	,
+  ["%4F"]= "O"	,
+  ["%50"]= "P"	,
+  ["%51"]= "Q"	,
+  ["%52"]= "R"	,
+  ["%53"]= "S"	,
+  ["%54"]= "T"	,
+  ["%55"]= "U"	,
+  ["%56"]= "V"	,
+  ["%57"]= "W"	,
+  ["%58"]= "X"	,
+  ["%59"]= "Y"	,
+  ["%5A"]= "Z"	,
+  ["%5B"]= "["	,
+  ["%5C"]= "\\"	,
+  ["%5D"]= "]"	,
+  ["%5E"]= "^"	,
+  ["%5F"]= "_"	,
+  ["%60"]= "`"	,
+  ["%61"]= "a"	,
+  ["%62"]= "b"	,
+  ["%63"]= "c"	,
+  ["%64"]= "d"	,
+  ["%65"]= "e"	,
+  ["%66"]= "f"	,
+  ["%67"]= "g"	,
+  ["%68"]= "h"	,
+  ["%69"]= "i"	,
+  ["%6A"]= "j"	,
+  ["%6B"]= "k"	,
+  ["%6C"]= "l"	,
+  ["%6D"]= "m"	,
+  ["%6E"]= "n"	,
+  ["%6F"]= "o"	,
+  ["%70"]= "p"	,
+  ["%71"]= "q"	,
+  ["%72"]= "r"	,
+  ["%73"]= "s"	,
+  ["%74"]= "t"	,
+  ["%75"]= "u"	,
+  ["%76"]= "v"	,
+  ["%77"]= "w"	,
+  ["%78"]= "x"	,
+  ["%79"]= "y"	,
+  ["%7A"]= "z"	,
+  ["%7B"]= "{"	,
+  ["%7C"]= "|"	,
+  ["%7D"]= "}"	,
+  ["%7E"]= "~"	,
+  ["%7F"]= " "	,
+  ["%80"]= "`"	,
+  ["%81"]= "?"	,
+  ["%82"]= "‚"	,
+  ["%83"]= "?"	,
+  ["%84"]= "„"	,
+  ["%85"]= "…"	,
+  ["%86"]= "†"	,
+  ["%87"]= "‡"	,
+  ["%88"]= "?"	,
+  ["%89"]= "‰"	,
+  ["%8A"]= "S"	,
+  ["%8B"]= "‹"	,
+  ["%8C"]= "?"	,
+  ["%8D"]= "?"	,
+  ["%8E"]= "Z"	,
+  ["%8F"]= "?"	,
+  ["%90"]= "?"	,
+  ["%91"]= "‘"	,
+  ["%92"]= "’"	,
+  ["%93"]= "“"	,
+  ["%94"]= "”"	,
+  ["%95"]= "•"	,
+  ["%96"]= "–"	,
+  ["%97"]= "—"	,
+  ["%98"]= "?"	,
+  ["%99"]= "™"	,
+  ["%9A"]= "s"	,
+  ["%9B"]= "›"	,
+  ["%9C"]= "?"	,
+  ["%9D"]= "?"	,
+  ["%9E"]= "z"	,
+  ["%9F"]= "Y"	,
+  ["%A0"]= " "	,
+  ["%A1"]= "?"	,
+  ["%A2"]= "?"	,
+  ["%A3"]= "?"	,
+  ["%A4"]= "¤"	,
+  ["%A5"]= "?"	,
+  ["%A6"]= "¦"	,
+  ["%A7"]= "§"	,
+  ["%A8"]= "?"	,
+  ["%A9"]= "©"	,
+  ["%AA"]= "?"	,
+  ["%AB"]= "«"	,
+  ["%AC"]= "¬"	,
+  ["%AD"]= "­"	,
+  ["%AE"]= "®"	,
+  ["%AF"]= "?"	,
+  ["%B0"]= "°"	,
+  ["%B1"]= "±"	,
+  ["%B2"]= "?"	,
+  ["%B3"]= "?"	,
+  ["%B4"]= "?"	,
+  ["%B5"]= "µ"	,
+  ["%B6"]= "¶"	,
+  ["%B7"]= "·"	,
+  ["%B8"]= "?"	,
+  ["%B9"]= "?"	,
+  ["%BA"]= "?"	,
+  ["%BB"]= "»"	,
+  ["%BC"]= "?"	,
+  ["%BD"]= "?"	,
+  ["%BE"]= "?"	,
+  ["%BF"]= "?"	,
+  ["%C0"]= "A"	,
+  ["%C1"]= "A"	,
+  ["%C2"]= "A"	,
+  ["%C3"]= "A"	,
+  ["%C4"]= "A"	,
+  ["%C5"]= "A"	,
+  ["%C6"]= "?"	,
+  ["%C7"]= "C"	,
+  ["%C8"]= "E"	,
+  ["%C9"]= "E"	,
+  ["%CA"]= "E"	,
+  ["%CB"]= "E"	,
+  ["%CC"]= "I"	,
+  ["%CD"]= "I"	,
+  ["%CE"]= "I"	,
+  ["%CF"]= "I"	,
+  ["%D0"]= "?"	,
+  ["%D1"]= "N"	,
+  ["%D2"]= "O"	,
+  ["%D3"]= "O"	,
+  ["%D4"]= "O"	,
+  ["%D5"]= "O"	,
+  ["%D6"]= "O"	,
+  ["%D7"]= "?"	,
+  ["%D8"]= "O"	,
+  ["%D9"]= "U"	,
+  ["%DA"]= "U"	,
+  ["%DB"]= "U"	,
+  ["%DC"]= "U"	,
+  ["%DD"]= "Y"	,
+  ["%DE"]= "?"	,
+  ["%DF"]= "?"	,
+  ["%E0"]= "a"	,
+  ["%E1"]= "a"	,
+  ["%E2"]= "a"	,
+  ["%E3"]= "a"	,
+  ["%E4"]= "a"	,
+  ["%E5"]= "a"	,
+  ["%E6"]= "?"	,
+  ["%E7"]= "c"	,
+  ["%E8"]= "e"	,
+  ["%E9"]= "e"	,
+  ["%EA"]= "e"	,
+  ["%EB"]= "e"	,
+  ["%EC"]= "i"	,
+  ["%ED"]= "i"	,
+  ["%EE"]= "i"	,
+  ["%EF"]= "i"	,
+  ["%F0"]= "?"	,
+  ["%F1"]= "n"	,
+  ["%F2"]= "o"	,
+  ["%F3"]= "o"	,
+  ["%F4"]= "o"	,
+  ["%F5"]= "o"	,
+  ["%F6"]= "o"	,
+  ["%F7"]= "?"	,
+  ["%F8"]= "o"	,
+  ["%F9"]= "u"	,
+  ["%FA"]= "u"	,
+  ["%FB"]= "u"	,
+  ["%FC"]= "u"	,
+  ["%FD"]= "y"	,
+  ["%FE"]= "?"	,
+  ["%FF"]= "y"	
+}
 
---[[ ******************************************************************************
- This header is automatically injected into the chunk
-****************************************************************************** ]]--
-
-]===],
-bot = [===[
-return DSC  -- The return value is automatically injected into the chunk
-end
+local wikiDChunk = {
+top = "",
+bot = "",
+inj =
+[===[
+--[[ 
+******************************************************************************
+* This header is automatically injected into the chunk                       *
+******************************************************************************
+]]--
 ]===]
 }
 
@@ -77,7 +301,7 @@ local wikiFormat = {
   __ins = "!%s",
   __ref = "[%s]",
   __img = "[image][%s]",
-  __ytb = "[![](http://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
+  __ytb = "[![](https://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
   __loc = "file:///%s",
   __cou = "%s/countries/%s",
   __typ = "%s/types/%s",
@@ -226,6 +450,11 @@ function wikilib.setBaseFolder(sB)
   wikiBaseFolder = wikilib.normalDir(common.stringTrim(sB:gsub("\\","/"), "/"))
 end
 
+function wikilib.setDescriptionChunk(sT, sB)
+  wikiDChunk.top = table.concat({"return function()",sT,wikiDChunk.inj},"\n")
+  wikiDChunk.bot = table.concat({wikiDChunk.inj,sB,"end"},"\n")
+end -- The return value is automatically injected into the chunk
+
 function wikilib.updateAPI(API, DSC)
   for iD = 1, #API.POOL do
     local val = API.POOL[iD]
@@ -314,8 +543,9 @@ function wikilib.readDescriptions(API)
   local cT, cB = wikiDChunk.top, wikiDChunk.bot
   local fR = io.open(sN, "rb"); if(not fR) then
     return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
-  local sC = cT..fR:read("*all")..cB
-  local fC, oE = load(sC); if(fC) then
+  local sC = (cT..fR:read("*all")..cB)
+  local fC, oE = load(sC)
+  if(fC) then
     local bS, fC = pcall(fC); if(bS) then return fC() else
       common.logStatus("wikilib.readDescriptions: Execution error: "..fC) end
   else
@@ -324,7 +554,7 @@ function wikilib.readDescriptions(API)
     common.logStatus(sC)
     common.logStatus("--------------------------------------------\n")
     error("wikilib.readDescriptions: Compilation error: "..oE)
-  end
+  end  
 end
 
 function wikilib.printTypeReference(API, bExt)
@@ -772,6 +1002,16 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
   end
 end
 
+function wikilib.getDecodeURL(URL)
+  local cU = tostring(URL or ""):rep(1)
+  for key, val in pairs(wikiEncodeURL) do
+    cU = cU:gsub("%"..key, val)
+  end; return cU
+end
+
+function wikilib.isEncodedURL(URL)
+  return ((tostring(URL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
+end
 
 wikilib.common = common
 

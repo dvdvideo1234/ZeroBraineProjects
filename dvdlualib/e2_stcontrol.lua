@@ -38,163 +38,149 @@ registerType("stcontrol", "xsc", nil,
 
 E2Lib.RegisterExtension("stcontrol", true, "Lets E2 chips have dedicated state control objects")
 
+-- Client and server have independent value
+local gnIndependentUsed = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+-- Server tells the client what value to use
+local gnServerControled = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY, FCVAR_REPLICATED)
+
 local gtComponent = {"P", "I", "D"} -- The names of each term. This is used for indexing and checking
 local gsFormatPID = "(%s%s%s)" -- The general type format for the control power setup
-local gtMissName  = {"Xx", "X", "Nr"} -- This is a placeholder for missing/default type
-local gtStoreOOP  = {} -- Store state controllers here linked to the entity of the E2
+local gtMissName  = {"Xx", "X", "Nr"} -- This is a place holder for missing/default type
 local gsVarPrefx  = "wire_expression2_stcontrol" -- This is used for variable prefix
-local gnServContr = bitBor(FCVAR_ARCHIVE, FCVAR_ARCHIVE_XBOX, FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_PRINTABLEONLY)
-local varMaxTotal = CreateConVar(gsVarPrefx.."_max" , 20, gnServContr, "E2 StControl maximum count")
+local varEnStatus = CreateConVar(gsVarPrefx.."_enst",  1, gnIndependentUsed, "Enables status output messages")
+local varDefPrint = CreateConVar(gsVarPrefx.."_dprn", "TALK", gnServerControled, "FTracer default status output")
+local gsDefPrint  = varDefPrint:GetString() -- Default print location
+local gsFormLogs  = "E2{%s}{%s}:stcontrol: %s" -- Contains the logs format of the addon
+local gtPrintName = {} -- Contains the print location specification
+			gtPrintName["NOTIFY" ] = 1
+			gtPrintName["CONSOLE"] = 2
+			gtPrintName["TALK"   ] = 3
+			gtPrintName["CENTER" ] = 4
 
-function isEntity(vE)
-  return (vE and vE:IsValid())
+local gsVDP = varDefPrint:GetName()
+cvars.RemoveChangeCallback(gsVDP, gsVDP.."_call")
+cvars.AddChangeCallback(gsVDP, function(sVar, vOld, vNew)
+	local sK = tostring(vNew):upper(); if(gtPrintName[sK]) then gsDefPrint = sK end
+end, gsVDP.."_call")
+
+local function isValid(vE)
+	return (vE and vE:IsValid())
 end
 
-function isHere(vV)
-  return (vV ~= nil)
+local function getSign(nV)
+	return ((nV > 0 and 1) or (nV < 0 and -1) or 0)
 end
 
-function getSign(nV)
-  return ((nV > 0 and 1) or (nV < 0 and -1) or 0)
+local function getValue(kV,eV,pV)
+	return (kV*getSign(eV)*mathAbs(eV)^pV)
 end
 
-function getValue(kV,eV,pV)
-  return (kV*getSign(eV)*mathAbs(eV)^pV)
+local function logStatus(sMsg, oSelf, nPos, ...)
+	if(varEnStatus:GetBool()) then
+		local nPos = tonumber(nPos) or gtPrintName[gsDefPrint]
+		local oPly, oEnt = oSelf.player, oSelf.entity
+		local sNam, sEID = oPly:Nick() , tostring(oEnt:EntIndex())
+		local sTxt = gsFormLogs:format(sNam, sEID, tostring(sMsg))
+		oPly:PrintMessage(nPos, sTxt:sub(1, 200))
+	end; return ...
 end
 
-function remValue(tSrc, aKey, bCall)
-  tSrc[aKey] = nil; if(bCall) then collectgarbage() end
+local function setGains(oStCon, oSelf, vP, vI, vD, bZ)
+	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
+	local nP, nI = (tonumber(vP) or 0), (tonumber(vI) or 0)
+	local nD, sT = (tonumber(vD) or 0), "" -- Store control type
+	if(vP and ((nP > 0) or (bZ and nP >= 0))) then oStCon.mkP = nP end
+	if(vI and ((nI > 0) or (bZ and nI >= 0))) then oStCon.mkI = (nI / 2)
+		if(oStCon.mbCmb) then oStCon.mkI = oStCon.mkI * oStCon.mkP end
+	end -- Available settings with non-zero coefficients
+	if(vD and ((nD > 0) or (bZ and nD >= 0))) then oStCon.mkD = nD
+		if(oStCon.mbCmb) then oStCon.mkD = oStCon.mkD * oStCon.mkP end
+	end -- Build control type
+	for key, val in pairs(gtComponent) do
+		if(oStCon["mk"..val] > 0) then sT = sT..val end end
+	if(sT:len() == 0) then sT = gtMissName[2]:rep(3) end -- Check for invalid control
+	oStCon.mType[2] = sT; return oStCon
 end
 
-function logError(sMsg, ...)
-  outError("E2:stcontrol:"..tostring(sMsg)); return ...
+local function getCode(nN)
+	local nW, nF = mathModf(nN, 1)
+	if(nN == 1) then return gtMissName[3] end -- [Natural conventional][y=k*x]
+	if(nN ==-1) then return "Rr" end -- [Reciprocal relation][y=1/k*x]
+	if(nN == 0) then return "Sr" end -- [Sign function relay term][y=k*sign(x)]
+	if(nF ~= 0) then
+		if(nW ~= 0) then
+			if(nF > 0) then return "Gs" end -- [Power positive fractional][y=x^( n); n> 1]
+			if(nF < 0) then return "Gn" end -- [Power negative fractional][y=x^(-n); n<-1]
+		else
+			if(nF > 0) then return "Fs" end -- [Power positive fractional][y=x^( n); 0<n< 1]
+			if(nF < 0) then return "Fn" end -- [Power negative fractional][y=x^(-n); 0>n>-1]
+		end
+	else
+		if(nN > 0) then return "Ex" end -- [Exponential relation][y=x^n]
+		if(nN < 0) then return "Er" end -- [Reciprocal-exp relation][y=1/x^n]
+	end; return gtMissName[1] -- [Invalid settings][N/A]
 end
 
-function logStatus(sMsg, ...)
-  outPrint("E2:stcontrol:"..tostring(sMsg)); return ...
+local function setPower(oStCon, oSelf, vP, vI, vD)
+	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
+	oStCon.mpP, oStCon.mpI, oStCon.mpD = (tonumber(vP) or 1), (tonumber(vI) or 1), (tonumber(vD) or 1)
+	oStCon.mType[1] = gsFormatPID:format(getCode(oStCon.mpP), getCode(oStCon.mpI), getCode(oStCon.mpD))
+	return oStCon
 end
 
-function getControllersCount() local mC = 0
-  for ent, con in pairs(gtStoreOOP) do mC = mC + #con end; return mC
+local function resState(oStCon, oSelf)
+	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
+	oStCon.mErrO, oStCon.mErrN = 0, 0 -- Reset the error
+	oStCon.mvCon, oStCon.meInt = 0, true -- Control value and integral enabled
+	oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
+	oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Update clock
+	return oStCon
 end
 
-function remControllersEntity(eChip)
-  if(not isEntity(eChip)) then return end
-  local tCon = gtStoreOOP[eChip]; if(not next(tCon)) then return end
-  local mCon = #tCon; for ID = 1, mCon do tableRemove(tCon) end
-  logStatus("Clear ["..tostring(mCon).."] items for "..tostring(eChip))
+local function getType(oStCon)
+	if(not oStCon) then local mP, mT = gtMissName[1], gtMissName[2]
+		return (gsFormatPID:format(mP,mP,mP).."-"..mT:rep(3))
+	end; return tableConcat(oStCon.mType, "-")
 end
 
-function setGains(oStCon, vP, vI, vD, bZ)
-  if(not oStCon) then return logError("Object missing", nil) end
-  local nP, nI = (tonumber(vP) or 0), (tonumber(vI) or 0)
-  local nD, sT = (tonumber(vD) or 0), "" -- Store control type
-  if(vP and ((nP > 0) or (bZ and nP >= 0))) then oStCon.mkP = nP end
-  if(vI and ((nI > 0) or (bZ and nI >= 0))) then oStCon.mkI = (nI / 2)
-    if(oStCon.mbCmb) then oStCon.mkI = oStCon.mkI * oStCon.mkP end
-  end -- Available settings with non-zero coefficients
-  if(vD and ((nD > 0) or (bZ and nD >= 0))) then oStCon.mkD = nD
-    if(oStCon.mbCmb) then oStCon.mkD = oStCon.mkD * oStCon.mkP end
-  end -- Build control type
-  for key, val in pairs(gtComponent) do
-    if(oStCon["mk"..val] > 0) then sT = sT..val end end
-  if(sT:len() == 0) then sT = gtMissName[2]:rep(3) end -- Check for invalid control
-  oStCon.mType[2] = sT; collectgarbage(); return oStCon
-end
-
-function getCode(nN)
-  local nW, nF = mathModf(nN, 1)
-  if(nN == 1) then return gtMissName[3] end -- [Natural conventional][y=k*x]
-  if(nN ==-1) then return "Rr" end -- [Reciprocal relation][y=1/k*x]
-  if(nN == 0) then return "Sr" end -- [Sign function relay term][y=k*sign(x)]
-  if(nF ~= 0) then
-    if(nW ~= 0) then
-      if(nF > 0) then return "Gs" end -- [Power positive fractional][y=x^( n); n> 1]
-      if(nF < 0) then return "Gn" end -- [Power negative fractional][y=x^(-n); n<-1]
-    else
-      if(nF > 0) then return "Fs" end -- [Power positive fractional][y=x^( n); 0<n< 1]
-      if(nF < 0) then return "Fn" end -- [Power negative fractional][y=x^(-n); 0>n>-1]
-    end
-  else
-    if(nN > 0) then return "Ex" end -- [Exponential relation][y=x^n]
-    if(nN < 0) then return "Er" end -- [Reciprocal-exp relation][y=1/x^n]
-  end; return gtMissName[1] -- [Invalid settings][N/A]
-end
-
-function setPower(oStCon, vP, vI, vD)
-  if(not oStCon) then return logError("Object missing", nil) end
-  oStCon.mpP, oStCon.mpI, oStCon.mpD = (tonumber(vP) or 1), (tonumber(vI) or 1), (tonumber(vD) or 1)
-  oStCon.mType[1] = gsFormatPID:format(getCode(oStCon.mpP), getCode(oStCon.mpI), getCode(oStCon.mpD))
-  return oStCon
-end
-
-function resState(oStCon)
-  if(not oStCon) then return logError("Object missing", nil) end
-  oStCon.mErrO, oStCon.mErrN = 0, 0 -- Reset the error
-  oStCon.mvCon, oStCon.meInt = 0, true -- Control value and integral enabled
-  oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
-  oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Update clock
-  return oStCon
-end
-
-function getType(oStCon)
-  if(not oStCon) then local mP, mT = gtMissName[1], gtMissName[2]
-    return (gsFormatPID:format(mP,mP,mP).."-"..mT:rep(3))
-  end; return tableConcat(oStCon.mType, "-")
-end
-
-local function dumpItem(oStCon, oSelf, sNam)
-  logStatus("["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."] Data:", oSelf)
-  logStatus(" Human: ["..tostring(oStCon.mbMan).."] {V="..tostring(oStCon.mvMan)..", B="..tostring(oStCon.mBias).."}", oSelf)
-  logStatus(" Gains: {P="..tostring(oStCon.mkP)..", I="..tostring(oStCon.mkI)..", D="..tostring(oStCon.mkD).."}", oSelf)
-  logStatus(" Power: {P="..tostring(oStCon.mpP)..", I="..tostring(oStCon.mpI)..", D="..tostring(oStCon.mpD).."}", oSelf)
-  logStatus(" Limit: {D="..tostring(oStCon.mSatD)..", U="..tostring(oStCon.mSatU).."}", oSelf)
-  logStatus(" Error: {O="..tostring(oStCon.mErrO)..", N="..tostring(oStCon.mErrN).."}", oSelf)
-  logStatus(" Value: ["..tostring(oStCon.mvCon).."] {P="..tostring(oStCon.mvP)..", I="..tostring(oStCon.mvI)..", D=" ..tostring(oStCon.mvD).."}", oSelf)
-  logStatus(" Flags: ["..tostring(oStCon.mbOn).."] {C="..tostring(oStCon.mbCmb)..", R=" ..tostring(oStCon.mbInv)..", I="..tostring(oStCon.meInt).."}", oSelf)
-  return oStCon -- The dump method
+local function dumpItem(oStCon, oSelf, sNam, sPos)
+	local sP = tostring(sPos or gsDefPrint)
+	local nP = gtPrintName[sP] -- Print location setup
+	if(not nP) then return oStCon end
+	logStatus("["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."] Data:", oSelf, nP)
+	logStatus(" Human: ["..tostring(oStCon.mbMan).."] {V="..tostring(oStCon.mvMan)..", B="..tostring(oStCon.mBias).."}", oSelf, nP)
+	logStatus(" Gains: {P="..tostring(oStCon.mkP)..", I="..tostring(oStCon.mkI)..", D="..tostring(oStCon.mkD).."}", oSelf, nP)
+	logStatus(" Power: {P="..tostring(oStCon.mpP)..", I="..tostring(oStCon.mpI)..", D="..tostring(oStCon.mpD).."}", oSelf, nP)
+	logStatus(" Limit: {D="..tostring(oStCon.mSatD)..", U="..tostring(oStCon.mSatU).."}", oSelf, nP)
+	logStatus(" Error: {O="..tostring(oStCon.mErrO)..", N="..tostring(oStCon.mErrN).."}", oSelf, nP)
+	logStatus(" Value: ["..tostring(oStCon.mvCon).."] {P="..tostring(oStCon.mvP)..", I="..tostring(oStCon.mvI)..", D=" ..tostring(oStCon.mvD).."}", oSelf, nP)
+	logStatus(" Flags: ["..tostring(oStCon.mbOn).."] {C="..tostring(oStCon.mbCmb)..", R=" ..tostring(oStCon.mbInv)..", I="..tostring(oStCon.meInt).."}", oSelf, nP)
+	return oStCon -- The dump method
 end
 
 function newItem(oSelf, nTo)
-  local eChip = oSelf.entity; if(not isEntity(eChip)) then
-    return logError("Entity invalid", nil) end
-  local nTot, nMax = getControllersCount(), varMaxTotal:GetInt()
-  if(nMax <= 0) then remControllersEntity(eChip)
-    return logError("Limit invalid ["..tostring(nMax).."]", nil) end
-  if(nTot >= nMax) then remControllersEntity(eChip)
-    return logError("Count reached ["..tostring(nMax).."]", nil) end
-  local oStCon, sM = {}, gtMissName[3]; oStCon.mnTo = tonumber(nTo) -- Place to store the object
-  if(oStCon.mnTo and oStCon.mnTo <= 0) then remControllersEntity(eChip)
-    return logError("Delta mismatch ["..tostring(oStCon.mnTo).."]", nil) end
-  local sT, tCon = gsFormatPID:format(sM, sM, sM), gtStoreOOP[eChip]
-  if(not tCon) then gtStoreOOP[eChip] = {}; tCon = gtStoreOOP[eChip] end
-  oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
-  oStCon.mErrO, oStCon.mErrN, oStCon.mType = 0, 0, {sT, gtMissName[2]:rep(3)} -- Error state values
-  oStCon.mvCon, oStCon.mTimB, oStCon.meInt = 0, 0, true -- Control value and integral enabled
-  oStCon.mBias, oStCon.mSatD, oStCon.mSatU = 0, nil, nil -- Saturation limits and settings
-  oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
-  oStCon.mkP, oStCon.mkI, oStCon.mkD = 0, 0, 0 -- P, I and D term gains
-  oStCon.mpP, oStCon.mpI, oStCon.mpD = 1, 1, 1 -- Raise the error to power of that much
-  oStCon.mbCmb, oStCon.mbInv, oStCon.mbOn, oStCon.mbMan = false, false, false, false
-  oStCon.mvMan, oStCon.mSet = 0, eChip -- Configure manual mode and store indexing
-  eChip:CallOnRemove("stcontrol_remove_ent", remControllersEntity)
-  tableInsert(tCon, oStCon); collectgarbage()
+	local eChip = oSelf.entity; if(not isValid(eChip)) then
+		return logStatus("Entity invalid", oSelf, nil, nil) end
+	local oStCon, sM = {}, gtMissName[3]; oStCon.mnTo = tonumber(nTo) -- Place to store the object
+	if(oStCon.mnTo and oStCon.mnTo <= 0) then
+		return logStatus("Delta mismatch ["..tostring(oStCon.mnTo).."]", oSelf, nil, nil) end
+	local sType = gsFormatPID:format(sM, sM, sM) -- Error state values
+	oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
+	oStCon.mErrO, oStCon.mErrN, oStCon.mType = 0, 0, {sType, gtMissName[2]:rep(3)}
+	oStCon.mvCon, oStCon.mTimB, oStCon.meInt = 0, 0, true -- Control value and integral enabled
+	oStCon.mBias, oStCon.mSatD, oStCon.mSatU = 0, nil, nil -- Saturation limits and settings
+	oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
+	oStCon.mkP, oStCon.mkI, oStCon.mkD = 0, 0, 0 -- P, I and D term gains
+	oStCon.mpP, oStCon.mpI, oStCon.mpD = 1, 1, 1 -- Raise the error to power of that much
+	oStCon.mbCmb, oStCon.mbInv, oStCon.mbOn, oStCon.mbMan = false, false, false, false
+	oStCon.mvMan, oStCon.mSet = 0, eChip -- Configure manual mode and store indexing
+	-- return oStCon -- Return the created controller object
   
-  function oStCon:remSelf() local this = self
-    if(not this) then return 0 end
-    local tSet = gtStoreOOP[this.mSet]; if(not tSet) then return 0 end
-    for ID = 1, #tSet do if(tSet[ID] == this) then tableRemove(tSet, ID); break end
-    end; return 1
+  function oStCon:dumpItem(nT, sN)
+    local this, self = self, oSelf
+    return dumpItem(this, self, sN, nT)
   end
 
-
-  function oStCon:dumpChat(nN) local this = self
-  return dumpItem(this, self, nN)
-end
-
-  function oStCon:dumpChat(sN) local this = self
-  return dumpItem(this, self, sN)
-end
 
   
   

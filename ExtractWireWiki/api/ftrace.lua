@@ -1,5 +1,5 @@
 local API = {
-  NAME = "FTracer",
+  NAME = "FTrace",
   FLAG = {
     icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
@@ -16,8 +16,8 @@ local API = {
     {name="SETUP",cols={"General.functions", "Out", "Description"},size={20,5,13}},
   },
   FILE = {
-    exts = "ftracer",
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2/",
+    exts = "ftrace",
+    base = "E:/Documents/Lua-Projs/SVN/wire-extras",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom"
   },

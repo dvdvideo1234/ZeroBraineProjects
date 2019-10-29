@@ -12,5 +12,3 @@ asmlib.SetIndexes("A",1,2,3)
 asmlib.SetIndexes("S",4,5,6,7)
 asmlib.SetOpVar("DIRPATH_BAS", "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Assembly/")
 asmlib.SetLogControl(1000,false)
-
-asmlib.RemoveDSV("asdasdads", "aaaex_")

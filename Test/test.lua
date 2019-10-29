@@ -1,41 +1,22 @@
 local com = require("dvdlualib/common")
 local gmd = require("dvdlualib/gmodlib")
 require("../dvdlualib/asmlib")
-local asm = trackasmlib
+local asmlib = trackasmlib
 
-asm.InitBase("track", "assembly")
-asm.SetOpVar("LOG_MAXLOGS", 10000)
-asm.SetOpVar("LOG_LOGFILE", false)
+local tableConcat = table.concat
 
-local a = asm.MakeContainer("a")
-local b = asm.MakeContainer("a")
+asmlib.InitBase("track", "assembly")
+asmlib.SetOpVar("LOG_MAXLOGS", 10000)
+asmlib.SetOpVar("LOG_LOGFILE", false)
 
-print(a,b)
+asmlib.SetOpVar("FORM_DRWSPKY", "%+6s")
 
-a:Insert("1", "test1"):Insert("2", "test2"):Insert("7", "test7")
-a:Insert(1, "int1"):Insert(2, "int2"):Insert(7, "int7")
+local o1 = Vector()
+local d1 = Vector(3,3)
+local o2 = Vector(8,7)
+local d2 = Vector(1,0)
 
-print("---------------------------------------")
-com.logTable(a:GetData(), "Data")
-com.logTable(a:GetHashID(), "HashID")
-print("TOP", a:GetSize())
-print("CNT", a:GetCount())
-print("SHA", a:GetKept())
-
-a:Delete("2"):Delete(7)
-
-print("---------------------------------------")
-com.logTable(a:GetData(), "Data")
-com.logTable(a:GetHashID(), "HashID")
-print("TOP", a:GetSize())
-print("CNT", a:GetCount())
-print("SHA", a:GetKept())
-
-
-
-
-
-
-
+local f1, f2 = o1:IntersectRay(d1,o2,d2)
+print(o1 + f1 * d1:GetNormalized(), o2 + f2 * d2:GetNormalized())
 
 

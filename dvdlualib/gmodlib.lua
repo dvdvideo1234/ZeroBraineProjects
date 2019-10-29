@@ -10,6 +10,7 @@ local __lang   = {}
 local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
+
 function tobool(any)
   if(__tobool[tostring(any)]) then return false end return true
 end
@@ -51,12 +52,21 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
 local function isVector(a) return (getmetatable(a) == mtVector) end
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
-  self.x, self.y, self.z = (tonumber(x) or 0), (tonumber(y) or 0), (tonumber(z) or 0)
+  self.x, self.y, self.z = 0, 0, 0
+  if(getmetatable(x) == mtVector) then
+    self.x, self.y, self.z = x.x, x.y, x.z
+  else
+    self.x, self.y, self.z = (tonumber(x) or 0), (tonumber(y) or 0), (tonumber(z) or 0)
+  end
+  function self:LengthSqr() return self.x^2 + self.y^2 + self.z^2 end
   function self:Mul(n) self.x, self.y, self.z = n*self.x, n*self.y, n*self.z end
+  function self:Div(n) self:Mul(1/n) end
   function self:Length() return math.sqrt(self.x^2 + self.y^2 + self.z^2) end
   function self:Dot(v) return (self.x*v.x+self.y*v.y+self.z*v.z) end
   function self:Add(v) self.x, self.y, self.z = (self.x+v.x), (self.y+v.y), (self.z+v.z); return self end
   function self:Sub(v) self.x, self.y, self.z = (self.x-v.x), (self.y-v.y), (self.z-v.z); return self end
+  function self:GetSub(...) local v = Vector(self); v:Sub(...); return v end
+  function self:Unpack() return self.x, self.y, self.z end
   function self:Set(x,y,z)
     if(getmetatable(x) == mtVector) then self.x, self.y, self.z = x.x, x.y, x.z;
     else self.x, self.y, self.z = tonumber(x) or 0, tonumber(y) or 0, tonumber(z) or 0; end
@@ -73,6 +83,62 @@ function Vector(x,y,z)
   function self:GetNormalized() local m = self:Length()
     if(m ~= 0) then return Vector(self.x/m, self.y/m, self.z/m) end; return Vector()
   end
+  function self:Determinant(vec2, vec3)
+    local a, b, c = self:Unpack()
+    local d, e, f = vec2:Unpack()
+    local g, h, i = vec3:Unpack()
+    return ((a*e*i)+(b*f*g)+(d*h*c)-(g*e*c)-(h*f*a)-(d*b*i))
+  end
+  function self:Project(vec)
+    local vs = Vector(self)
+    self:Set(vec)
+    self:Normalize()
+    self:Mul(vs:Dot(self))
+  end
+  function self:GetProject(...)
+    local v = Vector(self)
+    v:Project(...)
+    return v
+  end
+  function self:AngleBetween(vec, nrm)
+    if(nrm == nil) then
+      return math.acos(self:Dot(vec) / math.sqrt(self:LengthSqr() * vec:LengthSqr()))
+    end
+    return math.atan2(self:Determinant(vec, nrm:GetNormalized()), self:Dot(vec))
+  end
+    
+  --[[
+   * This function traces both lines and if they are not parallel
+   * calculates their point of intersection. Every ray is
+   * determined by an origin /vO/ and direction /vD/
+   * On success returns the length and point of the closest
+   * intersect distance to the orthogonal connecting line.
+   * The true center is calculated by using the last two return values
+   * Takes:
+   *   vO1 --> Position origin of the first ray ( self )
+   *   vD1 --> Direction of the first ray
+   *   vO2 --> Position origin of the second ray
+   *   vD2 --> Direction of the second ray
+   * Returns:
+   *   f1 --> Intersection fraction of the first ray
+   *   f2 --> Intersection fraction of the second ray
+   *   x1 --> Intersection location of the first ray
+   *   x2 --> Intersection location of the second ray
+   *   xx --> Intersection location of both rays
+  ]]--
+  function self:IntersectRay(vD1, vO2, vD2)
+    local d1 = vD1:GetNormalized()
+    if(d1:Length() == 0) then return nil end
+    local d2 = vD2:GetNormalized()
+    if(d2:Length() == 0) then return nil end
+    local dx, oo = d1:Cross(d2), vO2:GetSub(self)
+    local dn = (dx:Length())^2
+    if(dn <= 0) then return nil end
+    local f1 = oo:Determinant(d2, dx) / dn
+    local f2 = oo:Determinant(d1, dx) / dn
+    return f1, f2
+  end
+    
   return self
 end
 
@@ -184,17 +250,10 @@ end
 
 function IsValid(anyV) return anyV ~= nil end
 
-function sqlTableExists(anyTable) return true end
-function sqlQuery(sQ) return {} end
-
 function math.Clamp(v,a,b)
   if(v <= a) then return a end
   if(v >= b) then return b end 
   return v
-end
-
-function fileCreateDir(sPath)
-  return os.execute("mkdir "..sPath)
 end
 
 function table.GetKeys( tab )
@@ -224,9 +283,9 @@ function LocalPlayer()
   local self = {}
   function self:IsValid() return true end
   function self:IsPlayer() return true end
-  function self:Nick() return "YOLO" end
+  function self:Nick() return "[Sk&Bh]YOLO" end
   function self:PrintMessage(n, m)
-    print("[player]["..tostring(n).."]["..tostring(m)"]")
+    print("[player]["..tostring(n).."] "..tostring(m))
   end
   return self
 end
@@ -334,6 +393,10 @@ function file.Append(n, c)
   F:close()
 end
 
+function file.CreateDir(sPath)
+  return os.execute("mkdir "..sPath)
+end
+
 --------------------------------------------------------------------------------------------------------------------------------
 ents = {}
 local mtEntity = {__type = "Entity"}
@@ -406,3 +469,9 @@ end
 function net.ReadEntity()
   return netRead()
 end
+
+--------------------------------------------------------------------------------------------------------------------------------
+sql = {}
+
+function sql.TableExists(anyTable) return true end
+function sql.Query(sQ) return {} end

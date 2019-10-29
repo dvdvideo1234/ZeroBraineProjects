@@ -1,4 +1,4 @@
-local sEXP = "ftracer"
+local sEXP = "ftrace"
 
 local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
 -- local sPRG = "ExtractWireWiki/" -- From the main folder
@@ -7,7 +7,16 @@ local sPRG = "" -- From the project folder
 package.path = package.path..";"..sIDE.."myprograms/?.lua"
 
 local wikilib = require(sPRG.."lib/wikilib")
-local common  = require("common")
+
+wikilib.setDescriptionChunk(
+[[
+local E2Helper = {Descriptions = {}}
+]],
+[[
+return E2Helper.Descriptions
+]]
+)
+
 local API = require(sPRG.."api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
 

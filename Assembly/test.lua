@@ -1,17 +1,22 @@
 package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/?.lua"
 
-local tableConcat = table and table.concat
+CLIENT = true
 
 local common = require("common")
-require("../dvdlualib/gmodlib")
-require("../dvdlualib/asmlib")
-require("../dvdlualib/common")
+require("dvdlualib/gmodlib")
+require("dvdlualib/asmlib")
+--require("dvdlualib/common")
+
+local tableConcat = table and table.concat
+local fileOpen = file.Open
+
 
 local asmlib     = trackasmlib
 local gaTimerSet = {} -- ("/"):Explode("CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1")
 asmlib.InitBase("track", "assembly")
-asmlib.SetOpVar("MODE_DATABASE", "SQL")
-asmlib.SetOpVar("DATE_FORMAT","%d-%m-%y")
+asmlib.SetOpVar("MODE_DATABASE", "LUA")
+asmlib.SetOpVar("DATE_FORMAT","%y-%m-%d")
 asmlib.SetOpVar("TIME_FORMAT","%H:%M:%S")
 asmlib.SetIndexes("V",1,2,3)
 asmlib.SetIndexes("A",1,2,3)
@@ -208,133 +213,10 @@ asmlib.CreateTable("PHYSPROPERTIES",{
   [3] = {"NAME"  , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.SetOpVar("STRUCT_SPAWN",{
-  Name = "Spawn data definition", Size = 4,
-  Draw = {"%+6s",
-    ["REC"] = function(scr, key, typ, inf, def, spn)
-      local fmt = asmlib.GetOpVar("FORM_DRAWDBG")
-      local out = tostring(spn[key] or ""):sub(8, -1)
-      local fky = tostring(def.Draw[1] or "%s")
-      scr:DrawText(fmt:format(fky:format(key), typ, out, inf))
-    end,
-    ["MTX"] = function(scr, key, typ, inf, def, spn)
-      local fmt = asmlib.GetOpVar("FORM_DRAWDBG")
-      local tab = spn[key]:ToTable()
-      local fky = tostring(def.Draw[1] or "%s")
-      for iR = 1, 4 do
-        local out = "{"..tostring(iR).."}["..tableConcat(tab[iR], ",").."]"
-        scr:DrawText(fmt:format(fky:format(key), typ, out, inf))
-      end
-    end,
-  },
-  {Name = "Origin", Size = 11,
-    {"F"   , "VEC", "Origin forward vector"},
-    {"R"   , "VEC", "Origin right vector"},
-    {"U"   , "VEC", "Origin up vector"},
-    {"BPos", "VEC", "Base coordinate position"},
-    {"BAng", "ANG", "Base coordinate angle"},
-    {"OPos", "VEC", "Origin position"},
-    {"OAng", "ANG", "Origin angle"},
-    {"SPos", "VEC", "Piece spawn position"},
-    {"SAng", "ANG", "Piece spawn angle"},
-    {"SMtx", "MTX", "Spawn translation and rotation matrix"},
-    {"RLen", "NUM", "Piece active radius"}
-  },
-  {Name = "Holder", Size = 6,
-    {"HRec", "REC", "Pointer to the holder record"},
-    {"HID" , "NUM", "Point ID the holder has selected"},
-    {"HPnt", "VEC", "P # Holder active point location"},
-    {"HOrg", "VEC", "O # Holder piece location origin when snapped"},
-    {"HAng", "ANG", "A # Holder piece orientation origin when snapped"},
-    {"HMtx", "MTX", "Holder translation and rotation matrix"}
-  },
-  {Name = "Traced", Size = 6,
-    {"TRec", "REC", "Pointer to the trace record"},
-    {"TID" , "NUM", "Point ID that the trace has found"},
-    {"TPnt", "VEC", "P # Trace active point location"},
-    {"TOrg", "VEC", "O # Trace piece location origin when snapped"},
-    {"TAng", "ANG", "A # Trace piece orientation origin when snapped"},
-    {"TMtx", "MTX", "Trace translation and rotation matrix"}
-  },
-  {Name = "Offsets", Size = 2,
-    {"ANxt", "ANG", "Origin angle offsets"},
-    {"PNxt", "VEC", "Piece position offsets"}
-  }
-})
-
--- asmlib.ProcessDSV()
-
--- local sModel = "models/props_phx/construct/1windows/window1x2.mdl"
--- local stPOA = asmlib.LocatePOA(asmlib.CacheQueryPiece(sModel), 1)
-
--- common.logTable(asmlib.GetBuilderID(1))
--- common.logTable(asmlib.GetCacheSpawn(LocalPlayer()))
-
-function DrawTextSpawn(oScreen, sCol, sMeth, tArgs)
-  local ply = LocalPlayer()
-  local gnR = asmlib.GetOpVar("GOLDEN_RATIO")
-  local stS = asmlib.GetCacheSpawn(ply)
-  local arK = asmlib.GetOpVar("STRUCT_SPAWN")
-  local w,h = oScreen:GetSize()
-  oScreen:SetTextEdge(w - (2 - gnR)*w,0)
-  oScreen:DrawText(tostring(arK.Name),sCol,sMeth,tArgs)
-  for iD = 1, arK.Size, 1 do local def = arK[iD]
-    oScreen:DrawText("---- "..tostring(def.Name).." ----")
-    for iK = 1, def.Size do local row = def[iK]
-      if(asmlib.IsHere(row[1])) then
-        local key = tostring(row[1] or "")
-        local typ = tostring(row[2] or "")
-        local inf = tostring(row[3] or "")
-        local foo = arK.Draw[typ]
-        if(foo) then
-          local bs, se = pcall(foo, oScreen, key, typ, inf, arK, stS)
-          if(not bs) then asmlib.LogInstance(se); return end
-        else
-          local fmt = asmlib.GetOpVar("FORM_DRAWDBG")
-          local val = tostring(stS[key] or "")
-          local fky = tostring(arK.Draw[1] or "%s")
-          oScreen:DrawText(fmt:format(fky:format(key), typ, val, inf))
-        end
-      end
-    end
-  end
-end
 
 
-asmlib.SetButtonSlider = function(cPanel,sVar,sTyp,nMin,nMax,nDec,tBtn)
-  local sY, pY, dX, dY = 45, 0, 2, 2; pY = dY
-  local sX = asmlib.GetOpVar("WIDTH_CPANEL")
-  local sNam = asmlib.GetOpVar("TOOLNAME_PL")..sVar
-  local sTag = "tool."..asmlib.GetOpVar("TOOLNAME_NL").."."..sVar
-  if(asmlib.IsTable(tBtn) and tBtn[1]) then
-    local sPtn = asmlib.GetOpVar("FORM_LOGBTNSLD")
-    local nBtn, iCnt, bX, bY = #tBtn, 1, dX, pY
-    local wB, hB = ((sX - ((nBtn + 1) * dX)) / nBtn), 20
-    while(tBtn[iCnt]) do local vBtn = tBtn[iCnt]
-      local sTxt, sTyp = tostring(vBtn.Text), tostring(vBtn.Tip)
-      local pButton = {}; if(not IsValid(pButton)) then
-        LogInstance(sPtn:format(sVar,sTxt,"Panel invalid")); return nil end
-      if(vBtn.Tip) then pButton:SetTooltip(tostring(vBtn.Tip)) end
-      pButton.DoClick = function()
-        local pS, sE = pcall(vBtn.Click, pButton, sVar, asmlib.GetAsmConvar(sVar, sTyp))
-        if(not pS) then asmlib.LogInstance(sPtn:format(sVar,sTxt,"Error: "..sE)); return nil end
-      end
-      tBtn.__obj = tBtn.__obj or {}
-      tBtn.__obj[iCnt] = pButton
-      bX, iCnt = (bX + (wB + dX)), (iCnt + 1)
-    end; pY = pY + (dY + hB)
-  end
-  return tBtn
-end
 
 
- local a = asmlib.SetButtonSlider({},"nextz","FLT",-5, 5,7,
-    {{Text="+"   , Click=function(pBut, sNam, vV) asmlib.SetAsmConvar(nil,sNam,snapInc(pBut,vV, asmlib.GetAsmConvar("incsnplin","FLT"))) end},
-     {Text="-"   , Click=function(pBut, sNam, vV) asmlib.SetAsmConvar(nil,sNam,snapInc(pBut,vV,-asmlib.GetAsmConvar("incsnplin","FLT"))) end},
-     {Text="+/-" , Click=function(pBut, sNam, vV) asmlib.SetAsmConvar(nil,sNam,-vV) end},
-     {Text="@M"  , Click=function(pBut, sNam, vV) SetClipboardText(vV) end},
-     {Text="@0"  , Click=function(pBut, sNam, vV) asmlib.SetAsmConvar(nil,sNam, 0) end}})
 
---common.logTable(a)
---a.__obj[5].DoClick()
+
 
