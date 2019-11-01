@@ -1,4 +1,4 @@
-local common = require('common')
+local common = require("common")
 
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
@@ -280,6 +280,7 @@ local wikiEncodeURL = {
 local wikiDChunk = {
 top = "",
 bot = "",
+mch = "DSC",
 inj =
 [===[
 --[[ 
@@ -450,9 +451,10 @@ function wikilib.setBaseFolder(sB)
   wikiBaseFolder = wikilib.normalDir(common.stringTrim(sB:gsub("\\","/"), "/"))
 end
 
-function wikilib.setDescriptionChunk(sT, sB)
+function wikilib.setDescriptionChunk(sT, sB, sD)
   wikiDChunk.top = table.concat({"return function()",sT,wikiDChunk.inj},"\n")
   wikiDChunk.bot = table.concat({wikiDChunk.inj,sB,"end"},"\n")
+  wikiDChunk.mch = tostring(sD or "DSC")
 end -- The return value is automatically injected into the chunk
 
 function wikilib.updateAPI(API, DSC)
@@ -625,18 +627,31 @@ end
 
 -- e2function stcontrol stcontrol:setPower(number nP, number nI, number nD)
 function wikilib.convApiE2Description(API, sE2)
+  local iS, tD, sT = nil, nil
   local sE = common.stringTrim(sE2)
   local sM, sA = wikiFormat.msp, wikiFormat.asp
+  local bErr = apiGetValue(API, "FLAG", "erro")
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
-    sE = common.stringTrim(sE:sub(11, -1))
-    iS = sE:find("%s", 1)
-    tInfo.ret = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS)))[1]
+    sE = common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
+    local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS)))
+    if(not tD) then 
+      common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+      common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+      if(bErr) then
+        error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+    end; tInfo.ret = tD[1]
     sE = common.stringTrim(sE:sub(iS, -1))
     iS = sE:find(sM, 1, true)
     if(iS) then
-      tInfo.obj = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS-1)))[1]
-      sE   = common.stringTrim(sE:sub(iS+1, -1))     
+      local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS-1)))
+      if(not tD) then 
+        common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+        common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+        if(bErr) then
+          error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+      end; tInfo.obj = tD[1]
+      sE = common.stringTrim(sE:sub(iS+1, -1))     
     end
     iS = sE:find("(", 1, true)
     tInfo.foo = common.stringTrim(sE:sub(1, iS-1))
@@ -646,7 +661,14 @@ function wikilib.convApiE2Description(API, sE2)
       tInfo.par[ID] = common.stringTrim(tInfo.par[ID])
       iS = tInfo.par[ID]:find(" ", 1, true)
       if(not iS) then break end
-      tInfo.par[ID] = wikilib.convTypeE2Description(API,tInfo.par[ID]:sub(1, iS-1))[1]
+      sT = tInfo.par[ID]:sub(1, iS-1)
+      local tD = wikilib.convTypeE2Description(API,sT)
+      if(not tD) then 
+        common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+        common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+        if(bErr) then
+          error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+      end; tInfo.par[ID] = tD[1]
     end; tInfo.com = tInfo.foo.."("
     if(tInfo.obj) then
       tInfo.com = tInfo.com..tInfo.obj..sM end
@@ -712,7 +734,7 @@ end
 
 function wikilib.printMatchedAPI(API, DSC, sNam)
   local tK = wikiMList; table.sort(tK)
-  local sN = tostring(sNam or "DSC")
+  local sN = tostring(sNam or wikiDChunk.mch)
   for ID = 1, tK.__top do
     if(not DSC[tK[ID]]) then
       common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
@@ -764,7 +786,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
       tsk[1], tsk[2] = common.stringTrim(tsk[1]), common.stringTrim(tsk[2])
       local k, len = 1, tsk[2]:len(); obj = sS..tsk[1]
       while(k <= len) do local sbc = tsk[2]:sub(k,k)
-        if(sbc == "x") then
+        if(sbc == "x") then -- Wiremod type is three letters
           sbc = tsk[2]:sub(k, k+2); k = (k + 2) -- The end of the current type
         end; k = (k + 1)
         vars = vars..sS..sbc

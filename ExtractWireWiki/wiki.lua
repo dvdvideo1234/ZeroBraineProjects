@@ -7,6 +7,7 @@ local sPRG = "" -- From the project folder
 package.path = package.path..";"..sIDE.."myprograms/?.lua"
 
 local wikilib = require(sPRG.."lib/wikilib")
+local common  = require("common")
 
 wikilib.setDescriptionChunk(
 [[
@@ -14,7 +15,8 @@ local E2Helper = {Descriptions = {}}
 ]],
 [[
 return E2Helper.Descriptions
-]]
+]],
+"E2Helper.Descriptions"
 )
 
 local API = require(sPRG.."api/"..sEXP)
@@ -33,7 +35,16 @@ if(f) then io.output(f)
   wikilib.updateAPI(API, DSC)
   wikilib.makeReturnValues(API)
   wikilib.printMatchedAPI(API, DSC)
-  for iD = 1, #API.POOL do wikilib.printDescriptionTable(API, DSC, iD) end
+  if(type(API.TEXT) == "function") then
+    local bS, sT = pcall(API.TEXT)
+    if(not bS) then error("Header taxt fail: "..sT.." !") end
+    io.write(tostring(sT or "").."\n")
+  end
+  for iD = 1, #API.POOL do
+    if(API.POOL[iD][1]) then
+      wikilib.printDescriptionTable(API, DSC, iD)
+    end
+  end
   -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
   print(wikilib.insRefCountry("bg"))

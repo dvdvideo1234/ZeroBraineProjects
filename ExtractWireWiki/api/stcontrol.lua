@@ -7,8 +7,8 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = false,  -- (TRUE) Outouts the direct wire-based description in the markdown overhead
-    mosp = true   -- (TRUE) Enables `monospace` font for the function names
+    wdsc = false, -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
     {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={20,5,13}},
@@ -17,7 +17,7 @@ local API = {
   },
   FILE = {
     exts = "stcontrol",
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2/",
+    base = "E:/Documents/Lua-Projs/SVN/wire-extras",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom"
   },
