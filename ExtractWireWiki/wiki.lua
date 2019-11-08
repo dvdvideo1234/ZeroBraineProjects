@@ -1,4 +1,4 @@
-local sEXP = "ftrace"
+local sEXP = "prop"
 
 local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
 -- local sPRG = "ExtractWireWiki/" -- From the main folder
@@ -9,23 +9,13 @@ package.path = package.path..";"..sIDE.."myprograms/?.lua"
 local wikilib = require(sPRG.."lib/wikilib")
 local common  = require("common")
 
-wikilib.setDescriptionChunk(
-[[
-local E2Helper = {Descriptions = {}}
-]],
-[[
-return E2Helper.Descriptions
-]],
-"E2Helper.Descriptions"
-)
-
 local API = require(sPRG.."api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
 
 local YTK = "pl12yIDPm3M"
 
 wikilib.setBaseFolder([[E:\Documents\Lua-Projs\ZeroBraineIDE\ZeroBraineProjects\ExtractWireWiki]])
-
+wikilib.addPrefixNameOOP(API.TYPE.DSG) -- Designation name prefixes
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
 local f, s = io.open(sPRG.."out/wiki.md", "wb")
@@ -47,6 +37,7 @@ if(f) then io.output(f)
   end
   -- wikilib.printTypeTable(API)
   wikilib.printTypeReference(API)
+  wikilib.printLinkReferences(API)
   print(wikilib.insRefCountry("bg"))
   print(wikilib.insType("s"))
   print(wikilib.insImage("http://www.famfamfam.com/lab/icons/flags/flags_preview_large.png", 8))

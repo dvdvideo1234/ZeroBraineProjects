@@ -7,7 +7,7 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols or all-upper
     qref = true,  -- (TRUE) Quote the string in the link reference
-    prep = true  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
+    prep = true   -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={40,5,13}},

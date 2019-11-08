@@ -39,7 +39,7 @@ function Matrix()
       for iC = 1, 4 do tM[iR][iC] = self[iR][iC] end
     end; return tM
   end
-  
+
   return self
 end
 
@@ -48,7 +48,7 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
       mtVector.__index = function(self, aK)
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
-      end  
+      end
 local function isVector(a) return (getmetatable(a) == mtVector) end
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
@@ -106,7 +106,7 @@ function Vector(x,y,z)
     end
     return math.atan2(self:Determinant(vec, nrm:GetNormalized()), self:Dot(vec))
   end
-    
+
   --[[
    * This function traces both lines and if they are not parallel
    * calculates their point of intersection. Every ray is
@@ -138,20 +138,20 @@ function Vector(x,y,z)
     local f2 = oo:Determinant(d1, dx) / dn
     return f1, f2
   end
-    
+
   return self
 end
 
 mtVector.__add = function(o1,o2)
   local v1 = isVector(o1) and o1 or Vector(o1)
   local v2 = isVector(o2) and o2 or Vector(o2)
-  local ov = Vector(); ov:Set(v1); ov:Add(v2); return ov 
+  local ov = Vector(); ov:Set(v1); ov:Add(v2); return ov
 end
 
 mtVector.__sub = function(o1,o2)
   local v1 = isVector(o1) and o1 or Vector(o1)
   local v2 = isVector(o2) and o2 or Vector(o2)
-  local ov = Vector(); ov:Set(v1); ov:Sub(v2); return ov 
+  local ov = Vector(); ov:Set(v1); ov:Sub(v2); return ov
 end
 
 mtVector.__mul = function(o1,o2)
@@ -162,7 +162,7 @@ mtVector.__mul = function(o1,o2)
   if(v1 and tonumber(o2)) then ov:Set(v1); ov:Mul(tonumber(o2)); return ov end
   if(v2 and tonumber(o1)) then ov:Set(v2); ov:Mul(tonumber(o1)); return ov end
   print("Cannot preform multiplication between <"..type(o1).."/"..type(o2)..">")
-  return ov 
+  return ov
 end
 
 local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
@@ -170,7 +170,7 @@ local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
       mtAngle.__index = function(self, aK)
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
-      end  
+      end
 local function isAngle(a) return (getmetatable(a) == mtAngle) end
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
@@ -199,7 +199,7 @@ function string.Explode(separator, str, withpattern)
 end
 
 function string.GetFileFromFilename( path )
-	if (not path:find( "\\" ) and not path:find( "/" ) ) then return path end 
+	if (not path:find( "\\" ) and not path:find( "/" ) ) then return path end
 	return path:match( "[\\/]([^/\\]+)$" ) or ""
 end
 
@@ -252,7 +252,7 @@ function IsValid(anyV) return anyV ~= nil end
 
 function math.Clamp(v,a,b)
   if(v <= a) then return a end
-  if(v >= b) then return b end 
+  if(v >= b) then return b end
   return v
 end
 
@@ -287,6 +287,9 @@ function LocalPlayer()
   function self:PrintMessage(n, m)
     print("[player]["..tostring(n).."] "..tostring(m))
   end
+  function self:ConCommand(a)
+    print("player:ConCommand(\""..tostring(a:gsub("\n","|")).."\")")
+  end
   return self
 end
 
@@ -300,7 +303,7 @@ function makeTool(sM)
   __tools[self.Mode] = self
   return self
 end
-  
+
 function RunConsoleCommand(a, b)
   local tB = ("_"):Explode(a)
   if(__convar[a]) then __convar[a] = tostring(b); return end
@@ -425,7 +428,7 @@ function ents.Create()
   function self:IsNPC() return false end
   function self:IsRagdoll() return false end
   function self:IsWeapon() return false end
-  function self:IsWidget() return false end 
+  function self:IsWidget() return false end
   function self:GetBodyGroups() return mbdygrp end
   function self:GetBodygroup(id) return mbdygrp.data[id] end
   function self:SetCollisionGroup() return nil end
@@ -440,7 +443,7 @@ function ents.Create()
   function self:CallOnRemove() return nil end
   table.insert(__entity, mid, self)
   return self
-end  
+end
 
 function ents.GetAll()
   return __entity

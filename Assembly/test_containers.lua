@@ -20,13 +20,13 @@ a:Record("1",111)
 a:Record("2",222)
 a:Record("3",333)
 
-print("ghh", a:KeyFind(333))
+print("ghh", a:Find(55))
 
 common.logTable(a:GetData(),"GetData")
 common.logTable(a:GetHashID(),"GetHashID")
 
 print("-----------------------------")
-local v = a:Pull(3)
+a:Pull(3)
 a:Delete("2")
 
 common.logTable(a:GetData(),"GetData")

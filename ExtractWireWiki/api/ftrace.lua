@@ -7,13 +7,13 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = false, -- (TRUE) Outouts the direct wire-based description in the markdown overhead
+    wdsc = false, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
-    {name="MAKE",cols={"Instance.creator", "Out", "Description"},size={32,5,13}},
-    {name="APPLY",cols={"Class.methods", "Out", "Description"},size={35,5,13}},
-    {name="SETUP",cols={"General.functions", "Out", "Description"},size={20,5,13}},
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13}},
+    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={20,5,13}}
   },
   FILE = {
     exts = "ftrace",
@@ -35,9 +35,15 @@ local API = {
     ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
     ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
   },
+  HDESC = {
+    top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",
+    bot = "return E2Helper.Descriptions",
+    dsc = "E2Helper.Descriptions"
+  }
 }
 
-local ref_example = "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftracer.txt"
+local ref_example = "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"
+
 local tConvar = {
   {"skip", "Contains trace generator blacklisted methods ( ex. `GetSkin`/`GetModel`/`IsVehicle` )"},
   {"only", "Contains trace generator whitelisted methods ( ex. `GetSkin`/`GetModel`/`IsVehicle` )"},
@@ -69,15 +75,15 @@ and you can use it as many times as you need, without creating a new one.
 ```
 
 ### How to create an instance then?
-You can create a local trace sensor object by attaching it to a base entity. When sampled
+You can create a local trace object by attaching it to a base entity. When sampled
 locally, it will use this attachment entity to orient its direction and length in pure Lua.
 You can also call the class constructor without an entity to make it world-space based.
-Remember that negating the trace sensor length will result in negating the trace direction.
-That is used because the trace sensor length must always be positive so the direction is reversed instead.
+Remember that negating the trace length will result in negating the trace direction.
+That is used because the trace length must always be positive so the direction is reversed instead.
 
 ### Do you have an example by any chance?
 The internal type of the class is `%s` and internal expression type `%s`, so to create 
-a tracer sensor instance you can take a [look at the example](%s).
+a tracer instance you can take a [look at the example](%s).
 
 ### Can you show me the methods of the class?
 The description of the API is provided in the table below.

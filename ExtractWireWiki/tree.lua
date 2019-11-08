@@ -8,7 +8,7 @@ local wikilib = require(sProg.."lib/wikilib")
 local API     = require(sProg.."api/"..sExp)
 local sP = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/"..sProg
 
-wikilib.folderSet("D:/SystemTemp")
+-- wikilib.folderSet("D:/SystemTemp")
 
 local sSVN = "TrackAssemblyTool_GIT_master"
 
