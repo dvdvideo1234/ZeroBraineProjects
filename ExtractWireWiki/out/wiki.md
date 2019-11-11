@@ -47,7 +47,7 @@ All the function descriptions are available in the table below:
 |![image][ref-e]:`propManipulate`(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-n],![image][ref-n])||Allows to do any single prop core function in one term (position, rotation, freeze, gravity, notsolid)|
 |![image][ref-e]:`propNotSolid`(![image][ref-n])||Passing `0` makes the entity solid, everything else makes it non-solid.|
 |![image][ref-e]:`propPhysicalMaterial`()|![image][ref-s]|Returns the surface material of a prop.|
-|![image][ref-e]:`propPhysicalMaterial`(![image][ref-s])||Changes the surface material of a prop (eg. wood, metal, ... See [`Material_surface_properties`](https://developer.valvesoftware.com/wiki/Material_surface_properties)).|
+|![image][ref-e]:`propPhysicalMaterial`(![image][ref-s])||Changes the surface material of a prop (eg. wood, metal, ... See [`Material_surface_properties`](https://developer.valvesoftware.com/wiki/Material_surface_properties) ).|
 |![image][ref-e]:`propSetBuoyancy`(![image][ref-n])||Sets the prop's buoyancy ratio from `0` to `1`|
 |![image][ref-e]:`propSetElasticity`(![image][ref-n])||Sets prop's elasticity coefficient (default is `1`)|
 |![image][ref-e]:`propSetFriction`(![image][ref-n])||Sets prop's friction coefficient (default is `1`)|

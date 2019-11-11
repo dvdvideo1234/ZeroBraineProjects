@@ -3,279 +3,8 @@ local common = require("common")
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiType = {
-  list = {
-    {"a"  , "Angle"        , "[Angle] class"           , "https://en.wikipedia.org/wiki/Euler_angles"},
-    {"b"  , "Bone"         , "[Bone] class"            , "https://github.com/wiremod/wire/wiki/Expression-2#Bone"},
-    {"c"  , "ComplexNumber", "[Complex] number"        , "https://en.wikipedia.org/wiki/Complex_number"},
-    {"e"  , "Entity"       , "[Entity] class"          , "https://en.wikipedia.org/wiki/Entity"},
-    {"xm2", "Matrix2"      , "[Matrix] 2x2"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"m"  , "Matrix"       , "[Matrix] 3x3"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"xm4", "Matrix4"      , "[Matrix] 4x4"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"n"  , "Number"       , "[Number]"                , "https://en.wikipedia.org/wiki/Number"},
-    {"q"  , "Quaternion"   , "[Quaternion]"            , "https://en.wikipedia.org/wiki/Quaternion"},
-    {"r"  , "Array"        , "[Array]"                 , "https://en.wikipedia.org/wiki/Array_data_structure"},
-    {"s"  , "String"       , "[String] class"          , "https://en.wikipedia.org/wiki/String_(computer_science)"},
-    {"t"  , "Table"        , "[Table]"                 , "https://github.com/wiremod/wire/wiki/Expression-2#Table"},
-    {"xv2", "Vector2"      , "[Vector] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
-    {"v"  , "Vector"       , "[Vector] 3D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
-    {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
-    {"xrd", "RangerData"   , "[Ranger data] class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
-    {"xwl", "WireLink"     , "[Wire link] class"       , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
-    {"xft", ""             , "[Flash tracer] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer"},
-    {"xsc", ""             , "[State controller] class", "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
-    {"xxx", ""             , "[Void] data type"        , "https://en.wikipedia.org/wiki/Void_type"}
-  },
-  idx = {
-    ["angle"]      = 1,
-    ["bone"]       = 2,
-    ["complex"]    = 3,
-    ["entity"]     = 4,
-    ["matrix2"]    = 5,
-    ["matrix"]     = 6,
-    ["matrix4"]    = 7,
-    ["number"]     = 8,
-    ["quaternion"] = 9,
-    ["array"]      = 10,
-    ["string"]     = 11,
-    ["table"]      = 12,
-    ["vector2"]    = 13,
-    ["vector"]     = 14,
-    ["vector4"]    = 15,
-    ["ranger"]     = 16,
-    ["wirelink"]   = 17,
-    ["ftrace"]     = 18,
-    ["stcontrol"]  = 19,
-    ["void"]       = 20
-  }
-}
-
-local wikiEncodeURL = {
-  ["%20"]= " "	,
-  ["%21"]= "!"	,
-  ["%22"]= "\""	,
-  ["%23"]= "#"	,
-  ["%24"]= "$"	,
-  ["%25"]= "%"	,
-  ["%26"]= "&"	,
-  ["%27"]= "'"	,
-  ["%28"]= "("	,
-  ["%29"]= ")"	,
-  ["%2A"]= "*"	,
-  ["%2B"]= "+"	,
-  ["%2C"]= ","	,
-  ["%2D"]= "-"	,
-  ["%2E"]= "."	,
-  ["%2F"]= "/"	,
-  ["%30"]= "0"	,
-  ["%31"]= "1"	,
-  ["%32"]= "2"	,
-  ["%33"]= "3"	,
-  ["%34"]= "4"	,
-  ["%35"]= "5"	,
-  ["%36"]= "6"	,
-  ["%37"]= "7"	,
-  ["%38"]= "8"	,
-  ["%39"]= "9"	,
-  ["%3A"]= ":"	,
-  ["%3B"]= ";"	,
-  ["%3C"]= "<"	,
-  ["%3D"]= "="	,
-  ["%3E"]= ">"	,
-  ["%3F"]= "?"	,
-  ["%40"]= "@"	,
-  ["%41"]= "A"	,
-  ["%42"]= "B"	,
-  ["%43"]= "C"	,
-  ["%44"]= "D"	,
-  ["%45"]= "E"	,
-  ["%46"]= "F"	,
-  ["%47"]= "G"	,
-  ["%48"]= "H"	,
-  ["%49"]= "I"	,
-  ["%4A"]= "J"	,
-  ["%4B"]= "K"	,
-  ["%4C"]= "L"	,
-  ["%4D"]= "M"	,
-  ["%4E"]= "N"	,
-  ["%4F"]= "O"	,
-  ["%50"]= "P"	,
-  ["%51"]= "Q"	,
-  ["%52"]= "R"	,
-  ["%53"]= "S"	,
-  ["%54"]= "T"	,
-  ["%55"]= "U"	,
-  ["%56"]= "V"	,
-  ["%57"]= "W"	,
-  ["%58"]= "X"	,
-  ["%59"]= "Y"	,
-  ["%5A"]= "Z"	,
-  ["%5B"]= "["	,
-  ["%5C"]= "\\"	,
-  ["%5D"]= "]"	,
-  ["%5E"]= "^"	,
-  ["%5F"]= "_"	,
-  ["%60"]= "`"	,
-  ["%61"]= "a"	,
-  ["%62"]= "b"	,
-  ["%63"]= "c"	,
-  ["%64"]= "d"	,
-  ["%65"]= "e"	,
-  ["%66"]= "f"	,
-  ["%67"]= "g"	,
-  ["%68"]= "h"	,
-  ["%69"]= "i"	,
-  ["%6A"]= "j"	,
-  ["%6B"]= "k"	,
-  ["%6C"]= "l"	,
-  ["%6D"]= "m"	,
-  ["%6E"]= "n"	,
-  ["%6F"]= "o"	,
-  ["%70"]= "p"	,
-  ["%71"]= "q"	,
-  ["%72"]= "r"	,
-  ["%73"]= "s"	,
-  ["%74"]= "t"	,
-  ["%75"]= "u"	,
-  ["%76"]= "v"	,
-  ["%77"]= "w"	,
-  ["%78"]= "x"	,
-  ["%79"]= "y"	,
-  ["%7A"]= "z"	,
-  ["%7B"]= "{"	,
-  ["%7C"]= "|"	,
-  ["%7D"]= "}"	,
-  ["%7E"]= "~"	,
-  ["%7F"]= " "	,
-  ["%80"]= "`"	,
-  ["%81"]= "?"	,
-  ["%82"]= "‚"	,
-  ["%83"]= "?"	,
-  ["%84"]= "„"	,
-  ["%85"]= "…"	,
-  ["%86"]= "†"	,
-  ["%87"]= "‡"	,
-  ["%88"]= "?"	,
-  ["%89"]= "‰"	,
-  ["%8A"]= "S"	,
-  ["%8B"]= "‹"	,
-  ["%8C"]= "?"	,
-  ["%8D"]= "?"	,
-  ["%8E"]= "Z"	,
-  ["%8F"]= "?"	,
-  ["%90"]= "?"	,
-  ["%91"]= "‘"	,
-  ["%92"]= "’"	,
-  ["%93"]= "“"	,
-  ["%94"]= "”"	,
-  ["%95"]= "•"	,
-  ["%96"]= "–"	,
-  ["%97"]= "—"	,
-  ["%98"]= "?"	,
-  ["%99"]= "™"	,
-  ["%9A"]= "s"	,
-  ["%9B"]= "›"	,
-  ["%9C"]= "?"	,
-  ["%9D"]= "?"	,
-  ["%9E"]= "z"	,
-  ["%9F"]= "Y"	,
-  ["%A0"]= " "	,
-  ["%A1"]= "?"	,
-  ["%A2"]= "?"	,
-  ["%A3"]= "?"	,
-  ["%A4"]= "¤"	,
-  ["%A5"]= "?"	,
-  ["%A6"]= "¦"	,
-  ["%A7"]= "§"	,
-  ["%A8"]= "?"	,
-  ["%A9"]= "©"	,
-  ["%AA"]= "?"	,
-  ["%AB"]= "«"	,
-  ["%AC"]= "¬"	,
-  ["%AD"]= "­"	,
-  ["%AE"]= "®"	,
-  ["%AF"]= "?"	,
-  ["%B0"]= "°"	,
-  ["%B1"]= "±"	,
-  ["%B2"]= "?"	,
-  ["%B3"]= "?"	,
-  ["%B4"]= "?"	,
-  ["%B5"]= "µ"	,
-  ["%B6"]= "¶"	,
-  ["%B7"]= "·"	,
-  ["%B8"]= "?"	,
-  ["%B9"]= "?"	,
-  ["%BA"]= "?"	,
-  ["%BB"]= "»"	,
-  ["%BC"]= "?"	,
-  ["%BD"]= "?"	,
-  ["%BE"]= "?"	,
-  ["%BF"]= "?"	,
-  ["%C0"]= "A"	,
-  ["%C1"]= "A"	,
-  ["%C2"]= "A"	,
-  ["%C3"]= "A"	,
-  ["%C4"]= "A"	,
-  ["%C5"]= "A"	,
-  ["%C6"]= "?"	,
-  ["%C7"]= "C"	,
-  ["%C8"]= "E"	,
-  ["%C9"]= "E"	,
-  ["%CA"]= "E"	,
-  ["%CB"]= "E"	,
-  ["%CC"]= "I"	,
-  ["%CD"]= "I"	,
-  ["%CE"]= "I"	,
-  ["%CF"]= "I"	,
-  ["%D0"]= "?"	,
-  ["%D1"]= "N"	,
-  ["%D2"]= "O"	,
-  ["%D3"]= "O"	,
-  ["%D4"]= "O"	,
-  ["%D5"]= "O"	,
-  ["%D6"]= "O"	,
-  ["%D7"]= "?"	,
-  ["%D8"]= "O"	,
-  ["%D9"]= "U"	,
-  ["%DA"]= "U"	,
-  ["%DB"]= "U"	,
-  ["%DC"]= "U"	,
-  ["%DD"]= "Y"	,
-  ["%DE"]= "?"	,
-  ["%DF"]= "?"	,
-  ["%E0"]= "a"	,
-  ["%E1"]= "a"	,
-  ["%E2"]= "a"	,
-  ["%E3"]= "a"	,
-  ["%E4"]= "a"	,
-  ["%E5"]= "a"	,
-  ["%E6"]= "?"	,
-  ["%E7"]= "c"	,
-  ["%E8"]= "e"	,
-  ["%E9"]= "e"	,
-  ["%EA"]= "e"	,
-  ["%EB"]= "e"	,
-  ["%EC"]= "i"	,
-  ["%ED"]= "i"	,
-  ["%EE"]= "i"	,
-  ["%EF"]= "i"	,
-  ["%F0"]= "?"	,
-  ["%F1"]= "n"	,
-  ["%F2"]= "o"	,
-  ["%F3"]= "o"	,
-  ["%F4"]= "o"	,
-  ["%F5"]= "o"	,
-  ["%F6"]= "o"	,
-  ["%F7"]= "?"	,
-  ["%F8"]= "o"	,
-  ["%F9"]= "u"	,
-  ["%FA"]= "u"	,
-  ["%FB"]= "u"	,
-  ["%FC"]= "u"	,
-  ["%FD"]= "y"	,
-  ["%FE"]= "?"	,
-  ["%FF"]= "y"
-}
+local wikiType  = require("lib/wiki_type")
+local wikiEncodeURL = require("lib/wiki_uenc")
 
 local wikiDChunk = {
 top = "",
@@ -307,6 +36,7 @@ local wikiFormat = {
   __cou = "%s/countries/%s",
   __typ = "%s/types/%s",
   __wds = "E2Helper.Descriptions[\"%s\"] = \"%s\"\n",
+  __url = "%s://%s",
   tsp = "/",
   asp = ",",
   msp = ":",
@@ -332,13 +62,16 @@ local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true}
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true, ["."] = true}
 -- Stores the new line abbreviature in MD
 local wikiNewLN = "  "
--- Stores the base folder for all operations
-local wikiBaseFolder = ""
+
 -- Stores the symbol for line divider and the repetition count
 local wikiLineDiv = {"-", 120}
 
 local function isQuote(sS)
   return (common.stringHasLetter(sS) and common.stringIsUpper(sS))
+end
+
+local function toURL(dir, soc)
+  return (wikiFormat.__url:format(tostring(soc or "https"), dir))
 end
 
 local function toType(...)
@@ -437,34 +170,91 @@ function wikilib.setInternalType(API)
   end
 end
 
-function wikilib.normalDir(sD) local sS = tostring(sD)
+function wikilib.normalDir(sD)
+  local sS = tostring(sD):gsub("\\","/"):gsub("/+","/")
   return ((sS:sub(-1,-1) == "/") and sS or (sS.."/"))
-end
-
-function wikilib.setBaseFolder(sB)
-  wikiBaseFolder = wikilib.normalDir(common.stringTrim(sB:gsub("\\","/"), "/"))
 end
 
 function wikilib.addPrefixNameOOP(...)
   local tA = {...}; if(type(tA[1]) == "table") then tA = tA[1] end
-  for key, val in ipairs(tA) do local sv = tostring(val or "")
+  for key, val in ipairs(tA) do
+    local sv = common.stringTrim(tostring(val or ""))
     if(sv ~= "") then wikiMakeOOP[sv] = true end
   end
 end
 
 function wikilib.remPrefixNameOOP(...)
   local tA = {...}; if(type(tA[1]) == "table") then tA = tA[1] end
-  for key, val in ipairs(tA) do local sv = tostring(val or "")
+  for key, val in ipairs(tA) do
+    local sv = common.stringTrim(tostring(val or ""))
     if(sv ~= "") then wikiMakeOOP[sv] = false end
   end
+end
+
+function wikilib.setDecoderURL(vE)
+  local sE = tostring(vE or wikiEncodeURL.mod)
+  if(wikiEncodeURL.enc[sE]) then wikiEncodeURL.mod = sE else
+    common.logStatus("wikilib.setDecoderURL: Code mismatch <"..sE.."> !")
+    if(bErr) then
+      error("wikilib.setDecoderURL: Code mismatch <"..sE.."> !") end
+  end
+end
+
+function wikilib.urlSymbolize(sURL)
+  local sB = tostring(sURL or "")
+  local tO = {Size = 0}
+  for iD = 1, sB:len() do
+    tO.Size = tO.Size + 1
+    tO[tO.Size] = sB:sub(iD,iD)
+  end; return tO
+end
+
+function wikilib.getDecodeURL(sURL)
+  local sK = tostring(wikiEncodeURL.mod)
+  if(not wikiEncodeURL.enc[sK]) then
+    common.logStatus("wikilib.getDecodeURL: Code missing <"..sK.."> !")
+    if(bErr) then
+      error("wikilib.getDecodeURL: Code missing <"..sK.."> !") end
+  end
+  local nB, nE = 0, 0
+  local cU = tostring(sURL or ""):rep(1)
+  for key, val in pairs(wikiEncodeURL.dec[sK]) do
+    local nB, nE = cU:find(key, nB + 1, true)
+    if(nB and nE) then
+      cU = cU:sub(1, nB-1)..string.char(val)..cU:sub(nE+1, -1)
+    end
+  end; return cU
+end
+
+function wikilib.getEncodeURL(sURL)
+  local sK = tostring(wikiEncodeURL.mod)
+  if(not wikiEncodeURL.enc[sK]) then
+    common.logStatus("wikilib.getEncodeURL: Code missing <"..sK.."> !")
+    if(bErr) then
+      error("wikilib.getEncodeURL: Code missing <"..sK.."> !") end
+  end
+  local cU, sO = tostring(sURL or ""):rep(1), ""
+  local tU = wikilib.urlSymbolize(cU)
+  for iD = 1, tU.Size do
+    local sC = tU[iD]
+    local iC = sC:byte()
+    if((iC >= 127) or (iC < 32) or (not sC:find("[%./A-Za-z0-9]"))) then
+      tU[iD] = wikiEncodeURL.enc[sK][iC]
+    end
+  end; return table.concat(tU, "")
+end
+
+function wikilib.isEncodedURL(sURL)
+  return ((tostring(sURL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
 end
 
 function wikilib.updateAPI(API, DSC)
   local tA, tW
   local sO = apiGetValue(API,"TYPE", "OBJ")
-  local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
   local bR = apiGetValue(API,"FLAG", "prep")
   local wD = apiGetValue(API,"FLAG", "wdsc")
+  local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
+  wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
   if(wD) then API.POOL.wdsc = {}
     tW = apiGetValue(API,"POOL", "wdsc")
   end
@@ -1025,7 +815,10 @@ local function folderLinkItem(tR, vC)
   if(wikiFolder.__flag.urls) then
     local cD = wikiFolder.__idir
     local tU, sR = wikiFolder.__furl, tR.link
-    sR = (sR and wikilib.normalDir(sR) or tU[2])
+    local sN = wikilib.normalDir(sR)
+    local sU = wikilib.getEncodeURL(sN)
+    local cU = toURL(sU)
+    sR = (sR and cU or tU[2])
     sO = toLinkURL("`"..sO.."`", sR..vC.name:gsub("%s","%%20"))
     if(vC.name == cD[1]) then sO = sO:gsub("/%"..cD[1].."%)$",")")
   elseif(vC.name == cD[2]) then
@@ -1034,7 +827,7 @@ local function folderLinkItem(tR, vC)
 end
 
 --[[
- * This proints out the recursive tree
+ * This prints out the recursive tree
  * tP > Structure to print
  * vA > The type of graph symbols to use
  * vR > Previous iretaration graph recursion depth ( omited )
@@ -1066,17 +859,6 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
     end
   end
-end
-
-function wikilib.getDecodeURL(URL)
-  local cU = tostring(URL or ""):rep(1)
-  for key, val in pairs(wikiEncodeURL) do
-    cU = cU:gsub("%"..key, val)
-  end; return cU
-end
-
-function wikilib.isEncodedURL(URL)
-  return ((tostring(URL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
 end
 
 wikilib.common = common
