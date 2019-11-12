@@ -21,7 +21,8 @@ local API = {
     base = "E:/Documents/Lua-Projs/SVN/Wire/", -- Repository base folder
     path = "data/wiki",                        -- Direct function return refinition
     slua = "lua/entities/gmod_wire_expression2/core/custom/", -- Repository source file subfolder
-    blob = "github.com/wiremod/wire/blob/master/",
+    repo = "github.com/wiremod/wire",
+    blob = "blob/master",
   },
   TYPE = {
     OBJ = "e", -- Here stays the internal type of the class for the generated API documentation

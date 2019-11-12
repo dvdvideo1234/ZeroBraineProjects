@@ -6,6 +6,8 @@ local wikiMatch = {} -- Stores the APIs hashed list information
 local wikiType  = require("lib/wiki_type")
 local wikiEncodeURL = require("lib/wiki_uenc")
 
+wikilib.common = common
+
 local wikiDChunk = {
 top = "",
 bot = "",
@@ -168,11 +170,6 @@ function wikilib.setInternalType(API)
   for ID = 1, #aT do local key = aT[ID]
     wikiRefer[key] = tostring(apiGetValue(API,"TYPE", "OBJ") or "xxx")
   end
-end
-
-function wikilib.normalDir(sD)
-  local sS = tostring(sD):gsub("\\","/"):gsub("/+","/")
-  return ((sS:sub(-1,-1) == "/") and sS or (sS.."/"))
 end
 
 function wikilib.addPrefixNameOOP(...)
@@ -342,7 +339,7 @@ function wikilib.readDescriptions(API)
         cB = (cB or wikiDChunk.bot).." end"
   local cD = apiGetValue(API,"HDESC", "dsc")
         cD = cD or wikiDChunk.dsc
-  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sLua)
+  local sN = common.normFolder(sBas)..common.normFolder(sLua)
         sN = sN.."cl_"..sE2:lower()..".lua"
   local fR = io.open(sN, "rb"); if(not fR) then
     return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
@@ -429,7 +426,7 @@ function wikilib.readReturnValues(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sPth = apiGetValue(API,"FILE", "path")
   local sE2  = apiGetValue(API,"FILE", "exts")
-  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sPth)
+  local sN = common.normFolder(sBas)..common.normFolder(sPth)
         sN = sN..sE2:lower().."_rt.txt"
   local fR = io.open(sN, "r"); if(not fR) then
     return common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
@@ -521,7 +518,7 @@ function wikilib.makeReturnValues(API)
   local sE2  = apiGetValue(API,"FILE", "exts")
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
-  local sN = wikilib.normalDir(sBas)..wikilib.normalDir(sLua)
+  local sN = common.normFolder(sBas)..common.normFolder(sLua)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
         sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
@@ -703,19 +700,23 @@ local wikiFolder = {}
         hide = false, -- Show hidden directories
         size = false, -- Show file size
         hash = false, -- So directory hash address
-        urls = false  -- Use URLs for the files /wikiFolder.__furl/
+        urls = false, -- Use URLs for the files /wikiFolder.__furl/
+        namr = false  -- Use Repo name for the tree name
       }
       wikiFolder.__mems = {"", "k", "m", "t"} -- File zire amout round
       wikiFolder.__memi = 3                   -- File zire amout round ID
 
-function wikilib.folderReplaceURL(sF, sU)
-  local sF = wikilib.normalDir(tostring(sF or ""):gsub("\\","/"))
-  local sU = wikilib.normalDir(tostring(sU or ""):gsub("\\","/")):gsub("%s","%%20")
+function wikilib.folderReplaceURL(sF, ...)
+  local sF, sU = common.normFolder(tostring(sF or "")), ""
+  local tA = {...} if(tA and common.isTable(tA[1])) then tA = tA[1] end
+  for key, val in ipairs(tA) do
+    sU = sU..common.normFolder(tostring(val or ""))
+  end
   wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
 end
 
 function wikilib.folderSet(sT)
-  wikiFolder.__temp = wikilib.normalDir(sT)
+  wikiFolder.__temp = common.normFolder(sT)
 end
 
 function wikilib.folderRoundSize(vS)
@@ -810,16 +811,17 @@ function wikilib.folderReadStructure(sP, iV)
   end; fD:close(); os.remove(nT) return tT
 end
 
-local function folderLinkItem(tR, vC)
-  local sO = vC.name
-  if(wikiFolder.__flag.urls) then
+local function folderLinkItem(tR, vC, bB)
+  local sR, tU = tR.link, wikiFolder.__furl
+  local sO, tF = vC.name, wikiFolder.__flag
+  if(tF.urls) then
     local cD = wikiFolder.__idir
-    local tU, sR = wikiFolder.__furl, tR.link
-    local sN = wikilib.normalDir(sR)
+    local sN = common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
-    local cU = toURL(sU)
-    sR = (sR and cU or tU[2])
-    sO = toLinkURL("`"..sO.."`", sR..vC.name:gsub("%s","%%20"))
+    local sB = (bB and "" or wikilib.getEncodeURL(sO))
+    local sR = tostring(sR and toURL(sU) or tU[2])
+          sR = (bB and sR:sub(1,-2) or sR)
+    sO = toLinkURL("`"..sO.."`", sR..sB)
     if(vC.name == cD[1]) then sO = sO:gsub("/%"..cD[1].."%)$",")")
   elseif(vC.name == cD[2]) then
     sO = sO:gsub("/%.%.%)",""):match("(.*[/\\])"):sub(1,-2)..")"; end
@@ -832,18 +834,34 @@ end
  * vA > The type of graph symbols to use
  * vR > Previous iretaration graph recursion depth ( omited )
  * sR > Previous iretaration graph recursion destination ( omited )
- * tD
+ * tD > API description list the thing is done for ( omited )
+ * sG > The repo tree is generated for ( omited )
 ]]
-function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
+function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG)
   local tS = wikiFolder.__syms
+  local sG = common.getPick(common.isString(sG), sG, nil)
   local tD = common.getPick(common.isTable(tD), tD, nil)
   local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local iR = common.getClamp(tonumber(vR) or 0, 0)
   local nS, nE = tP.base:find(wikiFolder.__drem); tS = tS[iA]
   local iI, tC = wikiFolder.__dept, common.sortTable(tP.cont, {"name"}, true)
-  if(iR == 0) then local sB = tostring(tS[5] or "/")
-    io.write("`"..sB..sR.."`"..tP.base:sub(nE+1, -1)..wikiNewLN); io.write("\n") end
+  if(iR == 0) then
+    local sN = tP.base:sub(nE+1, -1)
+    local sB = tostring(tS[5] or "/")
+    if(tF.namr and sG) then
+      local sT = common.stringTrim(sG, "/")
+      local sM = sT:match("/%w+$")
+      if(not common.isNil(sM)) then sN = sM:sub(2,-1)
+        local sN = folderLinkItem({link=sG}, {name=sN}, tF.namr)
+        io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+      else
+        io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+      end
+    else
+      io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+    end
+  end
   for iD = 1, tC.__top do local vC = tP.cont[tC[iD].__key]
     if(vC.root) then local dC = wikiSpace
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
@@ -851,7 +869,7 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD)
+      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD, sG)
     else
       local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
@@ -860,7 +878,5 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD)
     end
   end
 end
-
-wikilib.common = common
 
 return wikilib

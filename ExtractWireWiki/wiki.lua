@@ -1,24 +1,20 @@
+package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local basepg = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects"
+local common = require("common")
+common.addLibrary(basepg, "ExtractWireWiki")
+
 local sEXP = "prop"
 
-local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE"
-local fIDE = "/%s/?.lua"
-local tIDE = 
-{
-  "myprograms",
-  "ExtractWireWiki/lib"
-}; for k, v in ipairs(tIDE) do package.path = package.path..";"..sIDE..fIDE:format(v) end
-
 local wikilib = require("lib/wikilib")
-local common  = require("common")
 
-local API = require(sPRG.."api/"..sEXP)
+local API = require("api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
 
 local YTK = "pl12yIDPm3M"
 
 wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
 
-local f, s = io.open(sPRG.."out/wiki.md", "wb")
+local f, s = io.open("out/wiki.md", "wb")
 if(f) then io.output(f)
   wikilib.writeBOM("UTF8")
   wikilib.setInternalType(API)
@@ -40,7 +36,7 @@ if(f) then io.output(f)
   wikilib.printLinkReferences(API)
   print(wikilib.insRefCountry("bg"))
   print(wikilib.insType("s"))
-  print(wikilib.insImage("http://www.famfamfam.com/lab/icons/flags/flags_preview_large.png", 8))
+  print(wikilib.insImage("http://www.famfamfam.com/lab/icons/flags/flags_preview_large.png"))
   for iD = 0, 3 do print(wikilib.insYoutubeVideo(YTK, iD)) end
 else
   error("main.lua: File descriptopr fail: "..tostring(s))
