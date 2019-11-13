@@ -1,8 +1,13 @@
 package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
 local common = require("common")
--- http://w3.impa.br/~diego/software/luasocket/http.html
+-- http://notebook.kulchenko.com/programming/https-ssl-calls-with-lua-and-luasec
 local https = require("ssl.https")
-local tBOM  = {"ef","bb","bf"}
+
+local tBOM =
+{
+  ["UTF-8"] = {"ef","bb","bf"}
+}
+
 local fURL = "https://www.rulit.me/books/%s-%s-%s-%d.html"
 local sPth = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/SocketHTTP/%s.txt"
 
@@ -44,9 +49,31 @@ end
 for iB = 1, #tList do local vList = tList[iB]
   local oF, sE = io.open(sPth:format(tostring(vList.Name or "default")), "wb")
   if(oF) then
-    for iD = 1, #tBOM do oF:write(string.char(tonumber(tBOM[iD], 16))) end
     for iP = 1, tonumber(vList.Size or 1) do
-      concat(oF, https.request(fURL:format(vList.Name, vList.Mode, vList.ID, iP)), (tonumber(vList.Wrap) or 80))
+      local vN = tostring(vList.Name or "default")
+      local vM = tostring(vList.Mode or "read")
+      local vD = tostring(vList.ID or "0")
+      local vW = (tonumber(vList.Wrap) or 80)
+      local body, code, headers, status = https.request(fURL:format(vN, vM, vD, iP))
+      local tStat = common.stringExplode(status, " ")
+      if(tStat[2]:find("2%d%d$") and tStat[3] == "OK") then
+        if(iP == 1) then local sHead = headers["content-type"]
+          if(sHead) then local tHead = common.stringExplode(sHead, " ")
+            for iC = 1, #tHead do local vHead = tHead[iC]
+              local iB, iE = vHead:find("charset%s*=%s*")
+              if(iB and iE) then
+                vHead = vHead:gsub("charset%s*=%s*", "")
+                vHead = common.stringTrim(vHead, ";")
+                local vBOM = tBOM[vHead]; if(not vBOM) then
+                  error("Character encoding sequence missing! ["..vHead.."]") end
+                common.logStatus("Encoding: "..vHead)
+                for iD = 1, #vBOM do oF:write(string.char(tonumber(vBOM[iD], 16))) end
+              end
+            end
+          else error("Character encoding set not found! ["..sHead.."]") end
+        end -- common.logTable({code, headers, status}, "STATUS")
+        concat(oF, body, vW)
+      end
     end; oF:flush(); oF:close()
   else
     print(sE)
