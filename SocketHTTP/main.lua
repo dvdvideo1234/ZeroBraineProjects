@@ -1,4 +1,6 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local sRoot = "E:/ZeroBraneStudio1.80/"
+
+package.path = package.path..";"..sRoot.."myprograms/?.lua"
 local common = require("common")
 -- http://notebook.kulchenko.com/programming/https-ssl-calls-with-lua-and-luasec
 local https = require("ssl.https")
@@ -9,12 +11,13 @@ local tBOM =
 }
 
 local fURL = "https://www.rulit.me/books/%s-%s-%s-%d.html"
-local sPth = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/SocketHTTP/%s.txt"
+local sPth = sRoot.."ZeroBraineProjects/SocketHTTP/%s.txt"
 
 -- https://www.rulit.me/books/tajnata-read-182168-1.html
 local tList =
 {
-  {Name = "tajnata", Mode= "read", ID = "182168", Size = 3, Wrap = 120}
+  {Name = "tajnata", Mode= "read", ID = "182168", Size = 3, Wrap = math.huge},
+  {Name = "telegraf", Mode= "read", ID = "182166", Size = 4, Wrap = 80}
 }
 
 local function concat(oF, sBody, iWrp)
@@ -54,7 +57,8 @@ for iB = 1, #tList do local vList = tList[iB]
       local vM = tostring(vList.Mode or "read")
       local vD = tostring(vList.ID or "0")
       local vW = (tonumber(vList.Wrap) or 80)
-      local body, code, headers, status = https.request(fURL:format(vN, vM, vD, iP))
+      local vURL = fURL:format(vN, vM, vD, iP)
+      local body, code, headers, status = https.request(vURL)
       local tStat = common.stringExplode(status, " ")
       if(tStat[2]:find("2%d%d$") and tStat[3] == "OK") then
         if(iP == 1) then local sHead = headers["content-type"]
@@ -79,11 +83,3 @@ for iB = 1, #tList do local vList = tList[iB]
     print(sE)
   end
 end
-
-
-
-
-
-
-
-
