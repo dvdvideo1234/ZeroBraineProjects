@@ -20,7 +20,9 @@ local API = {
     base = "E:/Documents/Lua-Projs/SVN/wire-extras",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
-    cvar = "wire_expression2_stcontrol"
+    cvar = "wire_expression2_stcontrol",
+    repo = "github.com/dvdvideo1234/ControlSystemsE2",
+    blob = "blob/master",
   },
   TYPE = {
     OBJ = "xsc",

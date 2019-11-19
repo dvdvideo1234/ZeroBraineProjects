@@ -48,11 +48,41 @@ local API = {
     FRM = "type-%s.png",
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
+  HDESC = {
+    top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",
+    bot = "return E2Helper.Descriptions",
+    dsc = "E2Helper.Descriptions"
+  },
   REPLACE = {
     ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
     ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
+  },
+  REFLN = {
+    {"ref-e2-data" , "https://github.com/wiremod/wire/wiki/Expression-2#Datatypes"},
+    {"ref-ta-tool" , "https://github.com/dvdvideo1234/TrackAssemblyTool"},
+    {"ref-gmod", "https://en.wikipedia.org/wiki/Garry%27s_Mod"},
+    {"ref-exp2", "https://github.com/wiremod/wire/wiki/Expression-2"},
+    {"ref-convar", "https://developer.valvesoftware.com/wiki/ConVar"},
+    {"ref-weld", "https://gmod.fandom.com/wiki/Weld_Tool"},
+    {"ref-no-collide","https://gmod.fandom.com/wiki/No_Collide"}
   }
 }
+
+API.TEXT = function() return ([===[
+### Description
+The [`Track assembly tool`][ref-ta-tool] [`Expression 2`][ref-exp2] API is used for a wrapper of the library functions, which handle the track piece
+snapping, so you can call them inside an [`E2`][ref-exp2] and thus create your own automatically generated layouts. This also can be
+used when you need to implement track switchers, where you just `snap` desired track piece to the track end you wish to use.
+You can then apply your desired properties, like `disable physgun` [`no-collide`][ref-no-collide] and [`weld`][ref-weld] to make
+sure the piece is not going anywhere and it is not generating server collisions.
+ 
+### Data types
+This list is derived from the Wiremod types wiki [located here][ref-e2-data].
+Here are all the icons for the data types of this addon summarized in the table below:
+
+### API functions list
+For every table, there is a wrapper function that reads the desired data you want:
+]===]) end
 
 return API

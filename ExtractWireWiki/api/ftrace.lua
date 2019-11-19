@@ -20,7 +20,23 @@ local API = {
     base = "E:/Documents/Lua-Projs/SVN/wire-extras",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
-    cvar = "wire_expression2_ftrace"
+    cvar = "wire_expression2_ftrace",
+    repo = "github.com/dvdvideo1234/ControlSystemsE2",
+    blob = "blob/master",
+    desc = {
+      ["lang"]   = "Languages and translations",
+      ["e2_code_test_ftrace.txt"] = "Tracer class example",
+      ["e2_code_test_stcontrol.txt"] = "Controller class example",
+      ["stcontrol_dump.txt"] = "Controller class dump string",
+      ["pictures"] = "Contains addon pictures",
+      ["workshop"] = "Workshop related crap",
+      ["lua"] = "Contains all GLua woremod sub-addons",
+      ["cl_ftrace.lua"] = "FTrace class API description",
+      ["cl_stcontrol.lua"] = "FTrace class API description",
+      ["ftrace.lua"] = "StControl class API implementation",
+      ["stcontrol.lua"] = "StControl class API implementation",
+      ["workshop_publish.bat"] = "Automatic workshop publisher for windows"
+    }
   },
   TYPE = {
     OBJ = "xft",
@@ -33,16 +49,19 @@ local API = {
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
     ["trace-line"] = "https://wiki.garrysmod.com/page/util/TraceLine",
     ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
-    ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult"
+    ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult",
+    ["FTrace"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace",
+    ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
   },
   HDESC = {
     top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",
     bot = "return E2Helper.Descriptions",
     dsc = "E2Helper.Descriptions"
+  },
+  REFLN = {
+    {"ref_example", "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"},
   }
 }
-
-local ref_example = "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"
 
 local tConvar = {
   {"skip", "Contains trace generator blacklisted methods ( ex. `GetSkin`/`GetModel`/`IsVehicle` )"},
@@ -69,7 +88,7 @@ instance that is designed to be `@persist`and initialized in expression
 `first() || dupefinished()`. That way you create the tracer instance once
 and you can use it as many times as you need, without creating a new one.
 
-### What console variables can be used to setup it
+### What console variables can be used to setup it?
 ```
 ]===]..getConvar()..[===[
 ```
@@ -83,11 +102,11 @@ That is used because the trace length must always be positive so the direction i
 
 ### Do you have an example by any chance?
 The internal type of the class is `%s` and internal expression type `%s`, so to create 
-a tracer instance you can take a [look at the example](%s).
+a tracer instance you can take a [look at the example][ref_example].
 
 ### Can you show me the methods of the class?
 The description of the API is provided in the table below.
-]===]):format(API.NAME, API.TYPE.OBJ, API.FILE.exts, ref_example)
+]===]):format(API.NAME, API.TYPE.OBJ, API.FILE.exts)
 end
 
 return API

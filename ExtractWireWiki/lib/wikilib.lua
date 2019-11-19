@@ -4,49 +4,11 @@ local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
 local wikiType  = require("lib/wiki_type")
+local wikiFolder = require("lib/wiki_folder")
+local wikiFormat = require("lib/wiki_format")
+local wikiDChunk = require("lib/wiki_dscchnk")
 local wikiEncodeURL = require("lib/wiki_uenc")
-
 wikilib.common = common
-
-local wikiDChunk = {
-top = "",
-bot = "",
-mch = "DSC",
-inj =
-[===[
---[[
-******************************************************************************
-* This header is automatically injected into the chunk                       *
-******************************************************************************
-]]--
-]===]
-}
-
--- Stores a bynch of format strings for various stuff ( wikilib.setFormat )
-local wikiFormat = {
-  __prj = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki",
-  __tfm = "type-%s.png",
-  __tfc = "%s.png",
-  __rty = "ref-%s",
-  __rbr = "[%s]: %s",
-  __lnk = "[%s](%s)",
-  __ins = "!%s",
-  __ref = "[%s]",
-  __img = "[image][%s]",
-  __ytb = "[![](https://img.youtube.com/vi/%s/%d.jpg)](http://www.youtube.com/watch?v=%s \"\")",
-  __loc = "file:///%s",
-  __cou = "%s/countries/%s",
-  __typ = "%s/types/%s",
-  __wds = "E2Helper.Descriptions[\"%s\"] = \"%s\"\n",
-  __url = "%s://%s",
-  tsp = "/",
-  asp = ",",
-  msp = ":",
-  esp = "=",
-  hsh = "#",
-  fnd = "e2function",
-  npt = "%)%s-=%s-e2function"
-}
 
 -- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
 local wikiRefer = { ["is"] = "n",
@@ -59,7 +21,7 @@ local wikiMakeOOP = {["new"]=true, ["no"]=true, ["make"]=true, ["create"]=true}
 -- https://stackoverflow.com/questions/17978720/invisible-characters-ascii
 local wikiSpace = " " -- Space character for drawing table column names
 -- A bunch of patterns when matched transform a word into MD quote
-local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true}
+local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true, ["%u+%u+"]=true}
 -- Characters to exclude from the word quoting
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true, ["."] = true}
 -- Stores the new line abbreviature in MD
@@ -69,11 +31,17 @@ local wikiNewLN = "  "
 local wikiLineDiv = {"-", 120}
 
 local function isQuote(sS)
-  return (common.stringHasLetter(sS) and common.stringIsUpper(sS))
+  local bLet = wikilib.common.stringHasLetter(sS)
+  local bUpp = wikilib.common.stringIsUpper(sS)
+  return (bLet and bUpp)
 end
 
 local function toURL(dir, soc)
   return (wikiFormat.__url:format(tostring(soc or "https"), dir))
+end
+
+local function toSSS(...)
+  return (wikiFormat.__sss:format(...))
 end
 
 local function toType(...)
@@ -98,6 +66,14 @@ end
 
 local function toLinkRef(...)
   return (wikiFormat.__rbr:format(...))
+end
+
+local function toLinkRefSrc(...)
+  return (wikiFormat.__lrs:format(...))
+end
+
+local function toRef(...)
+  return (wikiFormat.__ref:format(...))
 end
 
 local function toRefer(...)
@@ -131,7 +107,7 @@ end
 
 local function apiGetValue(API, sTab, sKey, vDef)
   local tTab = API[sTab]
-  local bTab = common.isTable(tTab)
+  local bTab = wikilib.common.isTable(tTab)
   return (bTab and tTab[sKey] or vDef)
 end
 
@@ -175,7 +151,7 @@ end
 function wikilib.addPrefixNameOOP(...)
   local tA = {...}; if(type(tA[1]) == "table") then tA = tA[1] end
   for key, val in ipairs(tA) do
-    local sv = common.stringTrim(tostring(val or ""))
+    local sv = wikilib.common.stringTrim(tostring(val or ""))
     if(sv ~= "") then wikiMakeOOP[sv] = true end
   end
 end
@@ -183,7 +159,7 @@ end
 function wikilib.remPrefixNameOOP(...)
   local tA = {...}; if(type(tA[1]) == "table") then tA = tA[1] end
   for key, val in ipairs(tA) do
-    local sv = common.stringTrim(tostring(val or ""))
+    local sv = wikilib.common.stringTrim(tostring(val or ""))
     if(sv ~= "") then wikiMakeOOP[sv] = false end
   end
 end
@@ -191,7 +167,7 @@ end
 function wikilib.setDecoderURL(vE)
   local sE = tostring(vE or wikiEncodeURL.mod)
   if(wikiEncodeURL.enc[sE]) then wikiEncodeURL.mod = sE else
-    common.logStatus("wikilib.setDecoderURL: Code mismatch <"..sE.."> !")
+    wikilib.common.logStatus("wikilib.setDecoderURL: Code mismatch <"..sE.."> !")
     if(bErr) then
       error("wikilib.setDecoderURL: Code mismatch <"..sE.."> !") end
   end
@@ -209,7 +185,7 @@ end
 function wikilib.getDecodeURL(sURL)
   local sK = tostring(wikiEncodeURL.mod)
   if(not wikiEncodeURL.enc[sK]) then
-    common.logStatus("wikilib.getDecodeURL: Code missing <"..sK.."> !")
+    wikilib.common.logStatus("wikilib.getDecodeURL: Code missing <"..sK.."> !")
     if(bErr) then
       error("wikilib.getDecodeURL: Code missing <"..sK.."> !") end
   end
@@ -226,7 +202,7 @@ end
 function wikilib.getEncodeURL(sURL)
   local sK = tostring(wikiEncodeURL.mod)
   if(not wikiEncodeURL.enc[sK]) then
-    common.logStatus("wikilib.getEncodeURL: Code missing <"..sK.."> !")
+    wikilib.common.logStatus("wikilib.getEncodeURL: Code missing <"..sK.."> !")
     if(bErr) then
       error("wikilib.getEncodeURL: Code missing <"..sK.."> !") end
   end
@@ -245,12 +221,37 @@ function wikilib.isEncodedURL(sURL)
   return ((tostring(sURL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
 end
 
+function wikilib.replaceToken(sT, tR, bR, bQ)
+  local qR = wikilib.common.getPick(bQ, "`", "")
+  local sD, sO = tostring(sT or ""), tostring(sT or "")
+  if(tR and wikilib.common.isTable(tR)) then
+    for k, v in pairs(tR) do
+      if(k:sub(1,1) ~= "#") then
+        local nF, nB = sD:find(k, 1, true)
+        if(nF and nB) then
+          nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
+          local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
+          if(cF..cB == "``") then
+            sO = sD:sub(1,nF-1)..toSSS(cF,k,cB).."("..sX..")"..sD:sub(nB+1,-1)
+          elseif(cF..cB == "  ") then
+            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+          elseif(cF..cB == " ") then
+            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+          elseif(cB == ",") then
+            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+          end
+        end
+      end
+    end
+  end; return sO
+end
+
 function wikilib.updateAPI(API, DSC)
   local tA, tW
   local sO = apiGetValue(API,"TYPE", "OBJ")
-  local bR = apiGetValue(API,"FLAG", "prep")
   local wD = apiGetValue(API,"FLAG", "wdsc")
-  local qR = apiGetValue(API,"FLAG", "qref") and "`" or ""
+  local bR = apiGetValue(API,"FLAG", "prep")
+  local bQ = apiGetValue(API,"FLAG", "qref")
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
   if(wD) then API.POOL.wdsc = {}
     tW = apiGetValue(API,"POOL", "wdsc")
@@ -260,11 +261,11 @@ function wikilib.updateAPI(API, DSC)
       table.insert(tW, toWireDSC(api, dsc))
     end
     if(apiGetValue(API,"FLAG", "quot")) then
-      local tD = common.stringExplode(dsc, " ")
+      local tD = wikilib.common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
         local cQ = sW:sub(1,1)..sW:sub(-1,-1)
         for k, v in pairs(wikiQuote) do
-          if(sW:match(k) and cQ ~= "``") then
+          if((sW:match(k) and cQ ~= "``") or isQuote(sW)) then         
             local sF, sB = sW:sub(1,1), sW:sub(-1,-1)
             if(wikiDiver[sF] or wikiDiver[sB]) then
               local nF, nB = 1, sW:len() -- Strip exclusion characters
@@ -278,8 +279,6 @@ function wikilib.updateAPI(API, DSC)
             else
               tD[ID] = "`"..sW.."`"
             end
-          elseif(isQuote(sW)) then
-            tD[ID] = "`"..sW.."`"
           end
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
@@ -294,24 +293,7 @@ function wikilib.updateAPI(API, DSC)
       tA = API.POOL[3] -- The functoion is a helper API
     end
     if(API.REPLACE) then local tR = API.REPLACE
-      for k, v in pairs(tR) do local sD = DSC[api]
-        if(k:sub(1,1) ~= "#") then
-          local nF, nB = sD:find(k, 1, true)
-          if(nF and nB) then
-            nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
-            local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
-            if(cF..cB == "``") then
-              DSC[api] = sD:sub(1,nF-1)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB+1,-1)
-            elseif(cF..cB == "  ") then
-              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
-            elseif(cF..cB == " ") then
-              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
-            elseif(cB == ",") then
-              DSC[api] = sD:sub(1,nF)..("[%s%s%s]"):format(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
-            end
-          end
-        end
-      end
+      DSC[api] = wikilib.replaceToken(DSC[api], tR, bR, bQ)
     end
     table.insert(tA, api)
   end
@@ -339,33 +321,34 @@ function wikilib.readDescriptions(API)
         cB = (cB or wikiDChunk.bot).." end"
   local cD = apiGetValue(API,"HDESC", "dsc")
         cD = cD or wikiDChunk.dsc
-  local sN = common.normFolder(sBas)..common.normFolder(sLua)
+  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
         sN = sN.."cl_"..sE2:lower()..".lua"
   local fR = io.open(sN, "rb"); if(not fR) then
-    return common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
+    return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
+  wikilib.common.logStatus("Description: "..sN)
   local sC = (cT..fR:read("*all")..cB)
   local fC, oE = load(sC)
   if(fC) then local bS, fC = pcall(fC);
     if(bS) then bS, fC = pcall(fC);
       if(bS) then return fC else
-        common.logStatus("wikilib.readDescriptions[2]: Compilation chunk:\n")
-        common.logStatus("--------------------------------------------\n")
-        common.logStatus(sC)
-        common.logStatus("--------------------------------------------\n")
-        common.logStatus("wikilib.readDescriptions[2]: Execution error: "..fC)
+        wikilib.common.logStatus("wikilib.readDescriptions[2]: Compilation chunk:\n")
+        wikilib.common.logStatus("--------------------------------------------\n")
+        wikilib.common.logStatus(sC)
+        wikilib.common.logStatus("--------------------------------------------\n")
+        wikilib.common.logStatus("wikilib.readDescriptions[2]: Execution error: "..fC)
       end
     else
-      common.logStatus("wikilib.readDescriptions[1]: Compilation chunk:\n")
-      common.logStatus("--------------------------------------------\n")
-      common.logStatus(sC)
-      common.logStatus("--------------------------------------------\n")
-      common.logStatus("wikilib.readDescriptions[1]: Execution error: "..fC)
+      wikilib.common.logStatus("wikilib.readDescriptions[1]: Compilation chunk:\n")
+      wikilib.common.logStatus("--------------------------------------------\n")
+      wikilib.common.logStatus(sC)
+      wikilib.common.logStatus("--------------------------------------------\n")
+      wikilib.common.logStatus("wikilib.readDescriptions[1]: Execution error: "..fC)
     end
   else
-    common.logStatus("wikilib.readDescriptions: Compilation chunk:\n")
-    common.logStatus("--------------------------------------------\n")
-    common.logStatus(sC)
-    common.logStatus("--------------------------------------------\n")
+    wikilib.common.logStatus("wikilib.readDescriptions: Compilation chunk:\n")
+    wikilib.common.logStatus("--------------------------------------------\n")
+    wikilib.common.logStatus(sC)
+    wikilib.common.logStatus("--------------------------------------------\n")
     error("wikilib.readDescriptions: Compilation error: "..oE)
   end
 end
@@ -409,7 +392,7 @@ function wikilib.concatType(API, sT)
   local bI = apiGetValue(API, "FLAG", "icon")
   if(bI) then
     local sL = apiGetValue(API,"TYPE", "LNK")
-    local exp = common.stringExplode(sV, sS)
+    local exp = wikilib.common.stringExplode(sV, sS)
     for iN = 1, #exp do
       if(bVo and exp[iN] == sVo) then exp[iN] = ""
       else
@@ -426,17 +409,17 @@ function wikilib.readReturnValues(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sPth = apiGetValue(API,"FILE", "path")
   local sE2  = apiGetValue(API,"FILE", "exts")
-  local sN = common.normFolder(sBas)..common.normFolder(sPth)
+  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sPth)
         sN = sN..sE2:lower().."_rt.txt"
   local fR = io.open(sN, "r"); if(not fR) then
-    return common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
+    return wikilib.common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
   local sL = fR:read("*line")
   while(sL ~= nil) do
-    local sT = common.stringTrim(sL)
+    local sT = wikilib.common.stringTrim(sL)
     if(sL ~= "") then
-      local tT = common.stringExplode(sT, ":")
-      tT[1] = common.stringTrim(tostring(tT[1]))
-      tT[2] = common.stringTrim(tostring(tT[2]))
+      local tT = wikilib.common.stringExplode(sT, ":")
+      tT[1] = wikilib.common.stringTrim(tostring(tT[1]))
+      tT[2] = wikilib.common.stringTrim(tostring(tT[2]))
       print("wikilib.readReturnValues", tT[1], tT[2])
       wikiMatch[tT[1]] = tT[2]
     end
@@ -451,44 +434,44 @@ end
 -- e2function stcontrol stcontrol:setPower(number nP, number nI, number nD)
 function wikilib.convApiE2Description(API, sE2)
   local iS, tD, sT = nil, nil
-  local sE = common.stringTrim(sE2)
+  local sE = wikilib.common.stringTrim(sE2)
   local sM, sA = wikiFormat.msp, wikiFormat.asp
   local bErr = apiGetValue(API, "FLAG", "erro")
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
-    sE = common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
+    sE = wikilib.common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
     local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS)))
     if(not tD) then
-      common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
-      common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+      wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+      wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
       if(bErr) then
         error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
     end; tInfo.ret = tD[1]
-    sE = common.stringTrim(sE:sub(iS, -1))
+    sE = wikilib.common.stringTrim(sE:sub(iS, -1))
     iS = sE:find(sM, 1, true)
     if(iS) then
       local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS-1)))
       if(not tD) then
-        common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
-        common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+        wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+        wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
         if(bErr) then
           error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
       end; tInfo.obj = tD[1]
-      sE = common.stringTrim(sE:sub(iS+1, -1))
+      sE = wikilib.common.stringTrim(sE:sub(iS+1, -1))
     end
     iS = sE:find("(", 1, true)
-    tInfo.foo = common.stringTrim(sE:sub(1, iS-1))
-    sE = common.stringTrim(sE:match(wikiBraketsIN)):sub(2,-2)
-    tInfo.par = common.stringExplode(sE, sA)
+    tInfo.foo = wikilib.common.stringTrim(sE:sub(1, iS-1))
+    sE = wikilib.common.stringTrim(sE:match(wikiBraketsIN)):sub(2,-2)
+    tInfo.par = wikilib.common.stringExplode(sE, sA)
     for ID = 1, #tInfo.par do
-      tInfo.par[ID] = common.stringTrim(tInfo.par[ID])
+      tInfo.par[ID] = wikilib.common.stringTrim(tInfo.par[ID])
       iS = tInfo.par[ID]:find(" ", 1, true)
       if(not iS) then break end
       sT = tInfo.par[ID]:sub(1, iS-1)
       local tD = wikilib.convTypeE2Description(API,sT)
       if(not tD) then
-        common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
-        common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+        wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+        wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
         if(bErr) then
           error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
       end; tInfo.par[ID] = tD[1]
@@ -509,7 +492,7 @@ function wikilib.isValidMatch(tM)
   end
   for api, val in pairs(tL) do
     local all = #val; if(all  > 1) then
-      return common.logStatus("wikilib.isValidMatch: API <"..api.."> doubled", false)
+      return wikilib.common.logStatus("wikilib.isValidMatch: API <"..api.."> doubled", false)
     end
   end; return true
 end
@@ -518,24 +501,24 @@ function wikilib.makeReturnValues(API)
   local sE2  = apiGetValue(API,"FILE", "exts")
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
-  local sN = common.normFolder(sBas)..common.normFolder(sLua)
+  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
         sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
-    return common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
+    return wikilib.common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
   local sL, tF, tK, sA, bA, bE = fR:read("*line"), wikiMatch, wikiMList, "", false, false
   local mP, mH, mF = wikiFormat.npt, wikiFormat.hsh, wikiFormat.fnd
   while(sL ~= nil) do
-    local fL = common.stringTrim(sL)
+    local fL = wikilib.common.stringTrim(sL)
     local eL = fL:find(mP)
     local mL = fL:gsub(mP, mH)
     if(fL:find(mF) and not bA) then sA, bA = "", true end
     if(bA) then sA = sA.." "..fL
-      if(mL:find(")")) then sA = common.stringTrim(sA)
-        local tE = common.stringExplode(sA, sE)
-        local sP, sO = common.stringTrim(tE[1]), nil
-        if(tE[2]) then sO = common.stringTrim(tE[2]) end
-        local tL = common.stringExplode(sP, " ")
+      if(mL:find(")")) then sA = wikilib.common.stringTrim(sA)
+        local tE = wikilib.common.stringExplode(sA, sE)
+        local sP, sO = wikilib.common.stringTrim(tE[1]), nil
+        if(tE[2]) then sO = wikilib.common.stringTrim(tE[2]) end
+        local tL = wikilib.common.stringExplode(sP, " ")
         local typ, foo = tL[2], tL[3]
         local mth = (foo:find(sM) or  0)
         local brk = (foo:find("%(") or -1)
@@ -560,7 +543,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
   local sN = tostring(sNam or wikiDChunk.mch)
   for ID = 1, tK.__top do
     if(not DSC[tK[ID]]) then
-      common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
+      wikilib.common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
   end
 end
 
@@ -570,10 +553,10 @@ function wikilib.printTypeTable(API)
   wikilib.printRow({"---", "---"})
   local sQ = apiGetValue(API, "FLAG", "qref") and "`" or ""
   for ID = 1, #tT do local sL = tT[ID][4]
-    local sI = common.stringTrim(tT[ID][1])
-    local sD = common.stringTrim(tT[ID][3])
-    if(sL and not common.isDryString(sL)) then
-      sL = common.stringTrim(sL)
+    local sI = wikilib.common.stringTrim(tT[ID][1])
+    local sD = wikilib.common.stringTrim(tT[ID][3])
+    if(sL and not wikilib.common.isDryString(sL)) then
+      sL = wikilib.common.stringTrim(sL)
       local sR = sD:match("%[.+%]"); if(sR) then
         sR = sR:gsub("%[", "%%%["):gsub("%]", "%%%]")
         sD = sD:gsub(sR, sR:gsub("%[", "%["..sQ):gsub("%]", sQ.."%]").."%("..sL.."%)")
@@ -593,8 +576,8 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   for ID = 1, nC do local scol = tPool.cols[ID]
     local csiz, clen = tPool.size[ID], scol:len()
     if(csiz < clen) then
-      common.logStatus("wikilib.printDescriptionTable: Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !")
-      common.logStatus("wikilib.printDescriptionTable: Header mismatch <"..scol.."> ["..csiz.." < "..clen.."] !")
+      wikilib.common.logStatus("wikilib.printDescriptionTable: Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !")
+      wikilib.common.logStatus("wikilib.printDescriptionTable: Header mismatch <"..scol.."> ["..csiz.." < "..clen.."] !")
       if(bErr) then
         error("wikilib.printDescriptionTable: Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !") end
     end
@@ -610,11 +593,11 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   for i, n in ipairs(tPool) do
     local arg, vars, obj = n:match(wikiBraketsIN), "", ""
     if(arg) then arg = arg:sub(2,-2)
-      local tsk = common.stringExplode(arg, sM)
+      local tsk = wikilib.common.stringExplode(arg, sM)
       if(not arg:find(sM)) then
         tsk[2], tsk[1] = tsk[1], sV end
       if(tsk[2] == "") then tsk[2] = sV end
-      tsk[1], tsk[2] = common.stringTrim(tsk[1]), common.stringTrim(tsk[2])
+      tsk[1], tsk[2] = wikilib.common.stringTrim(tsk[1]), wikilib.common.stringTrim(tsk[2])
       local k, len = 1, tsk[2]:len(); obj = sS..tsk[1]
       while(k <= len) do local sbc = tsk[2]:sub(k,k)
         if(sbc == "x") then -- Wiremod type is three letters
@@ -634,8 +617,8 @@ function wikilib.printDescriptionTable(API, DSC, iN)
 
         for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
           if(not DSC[api.com]) then
-            common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
-            common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com.."> !")
+            wikilib.common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
+            wikilib.common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com.."> !")
             if(bErr) then
               error("wikilib.printDescriptionTable: Description missing <"..api.com.."> !") end
           end
@@ -662,53 +645,16 @@ function wikilib.printDescriptionTable(API, DSC, iN)
         end
       end
     end; if(iM == 0) then
-      common.logStatus("wikilib.printDescriptionTable: Description mismatch <"..n.."> !")
+      wikilib.common.logStatus("wikilib.printDescriptionTable: Description mismatch <"..n.."> !")
       if(bErr) then error("wikilib.printDescriptionTable: Description mismatch <"..n.."> !") end
     end
   end
   io.write("\n")
 end
 
-local wikiFolder = {}
-      wikiFolder.__temp = "/temp"
-      wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
-      wikiFolder.__read = "*line"
-      wikiFolder.__drof = "Directory of "
-      wikiFolder.__fdat = "%d%d%-%d%d%-%d%d%d%d%s+%d%d:%d%d"
-      wikiFolder.__idir = {".", "..", "<DIR>"}
-      wikiFolder.__pdir = {["."] = true, [".."] = true}
-      wikiFolder.__fcmd = "cd %s && dir > %s"
-      wikiFolder.__ranm = 60 -- Random string file name
-      wikiFolder.__syms = { -- https://en.wikipedia.org/wiki/Code_page_437
-        {"└", "├", "─", "│", "┌"},
-        {"╚", "╠", "═", "║", "╔"},
-        {"╙", "╟", "─", "║", "╓"},
-        {"╘", "╞", "═", "│", "╒"},
-        {"`", "|", "-", "|", "/"},
-        {"+", "+", "-", "|", "*"}
-      }
-      wikiFolder.__drem = "(.*)/"
-      wikiFolder.__dept = 3   -- The folder depth offset
-      wikiFolder.__ubom = {
-        ["UTF8" ] = {0xEF, 0xBB, 0xBF},      -- UTF8
-        ["UTF16"] = {0xFE, 0xFF},            -- UTF16
-        ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF32
-      }
-      wikiFolder.__furl = {"",""}
-      wikiFolder.__flag = {
-        prnt = false, -- Show the parent directory in the tree
-        hide = false, -- Show hidden directories
-        size = false, -- Show file size
-        hash = false, -- So directory hash address
-        urls = false, -- Use URLs for the files /wikiFolder.__furl/
-        namr = false  -- Use Repo name for the tree name
-      }
-      wikiFolder.__mems = {"", "k", "m", "t"} -- File zire amout round
-      wikiFolder.__memi = 3                   -- File zire amout round ID
-
 function wikilib.folderReplaceURL(sF, ...)
-  local sF, sU = common.normFolder(tostring(sF or "")), ""
-  local tA = {...} if(tA and common.isTable(tA[1])) then tA = tA[1] end
+  local sF, sU = wikilib.common.normFolder(tostring(sF or "")), ""
+  local tA = {...} if(tA and wikilib.common.isTable(tA[1])) then tA = tA[1] end
   for key, val in ipairs(tA) do
     sU = sU..common.normFolder(tostring(val or ""))
   end
@@ -716,32 +662,31 @@ function wikilib.folderReplaceURL(sF, ...)
 end
 
 function wikilib.folderSet(sT)
-  wikiFolder.__temp = common.normFolder(sT)
+  wikiFolder.__temp = wikilib.common.normFolder(sT)
 end
 
 function wikilib.folderRoundSize(vS)
   local tM, iM = wikiFolder.__mems, wikiFolder.__memi
   if(tonumber(vS)) then
-    iM = common.getClamp(math.floor(tonumber(nS) or 1), 1, #tM)
+    iM = wikilib.common.getClamp(math.floor(tonumber(nS) or 1), 1, #tM)
     return iM -- Return the parameter used
   else local iD, sS = 1, tostring(vS); while(tM[iD]) do
     if(tM[iD] == vS) then iM = iD; return iD end end
-    common.logStatus("wikilib.folderRoundSize: Mismatch <"..vS.."> !")
+    wikilib.common.logStatus("wikilib.folderRoundSize: Mismatch <"..vS.."> !")
     if(bErr) then error("wikilib.folderRoundSize: Mismatch <"..vS.."> !") end
   end
 end
 
 function wikilib.folderFlag(sF, bF)
-  local tF = wikiFolder.__flag
-  local sF = tostring(sF)
+  local tF, sF = wikiFolder.__flag, tostring(sF)
   if(tF[sF] ~= nil) then tF[sF] = (bF and bF or false)
-  else common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
+  else wikilib.common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
     if(bErr) then error("wikilib.folderFlag: Mismatch <"..sF.."> !") end
   end
 end
 
 function wikilib.writeBOM(sF, vE)
-  local sC, lE = tostring(sF or ""), common.toBool(lE)
+  local sC, lE = tostring(sF or ""), wikilib.common.toBool(lE)
   local tU = wikiFolder.__ubom[sC]; if(not tU) then
     return error("wikilib.writeBOM: Missed ("..tostring(lE)..") <"..sC..">") end
   if(not lE) then for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
@@ -752,8 +697,8 @@ end
 function wikilib.fileSize(sS)
   local tM, sO = wikiFolder.__mems, ""
   local iM, sM = wikiFolder.__memi, #tM
-  local tE = common.stringExplode(sS, " ")
-  common.tableArrReverse(tE)
+  local tE = wikilib.common.stringExplode(sS, " ")
+  wikilib.common.tableArrReverse(tE)
   for iD = 1, sM do tE[iD] = (tonumber(tE[iD]) or 0) end
   if(tE[iM] ~= 0) then
     for iD = sM, iM, -1 do
@@ -769,16 +714,16 @@ end
 function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
   local sU = wikiFolder.__furl
-  local sR = common.randomGetString(wikiFolder.__ranm)
+  local sR = wikilib.common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__temp..vT..".txt"
   os.execute(wikiFolder.__fcmd:format(sP, nT))
   local fD, oE = io.open(nT, "rb"); if(not fD) then
-    common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
+    wikilib.common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
     error("wikilib.folderReadStructure: Open error: "..oE)
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
-    while(sL) do sL = common.stringTrim(sL)
+    while(sL) do sL = wikilib.common.stringTrim(sL)
     if(sL:sub(1, 13) == wikiFolder.__drof) then
       tT.base = sL:sub(14, -1):gsub("\\","/")
       if(sU[1] ~= "" and sU[2] ~= "") then
@@ -786,10 +731,10 @@ function wikilib.folderReadStructure(sP, iV)
         if(uS and uE) then tT.link = sU[2]..sP:sub(uE+1, -1) end
       end
     elseif(sL:sub(1, 17):match(wikiFolder.__fdat)) then
-      local sS = common.stringTrim(sL:sub(18, 36))
-      local sN = common.stringTrim(sL:sub(37, -1))
+      local sS = wikilib.common.stringTrim(sL:sub(18, 36))
+      local sN = wikilib.common.stringTrim(sL:sub(37, -1))
       if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
-        if(tF.prnt) then
+        if(tF.prnt and iT > 1) then
           if(not tT.cont) then tT.cont = {} end; iD = iD + 1
           tT.cont[iD] = {size = sS, name = sN}
         end
@@ -816,15 +761,36 @@ local function folderLinkItem(tR, vC, bB)
   local sO, tF = vC.name, wikiFolder.__flag
   if(tF.urls) then
     local cD = wikiFolder.__idir
-    local sN = common.normFolder(sR)
+    local sN = wikilib.common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
     local sB = (bB and "" or wikilib.getEncodeURL(sO))
     local sR = tostring(sR and toURL(sU) or tU[2])
           sR = (bB and sR:sub(1,-2) or sR)
-    sO = toLinkURL("`"..sO.."`", sR..sB)
-    if(vC.name == cD[1]) then sO = sO:gsub("/%"..cD[1].."%)$",")")
-  elseif(vC.name == cD[2]) then
-    sO = sO:gsub("/%.%.%)",""):match("(.*[/\\])"):sub(1,-2)..")"; end
+    if(tF.ufbr) then local vP = sR..sB
+      local tR = wikiFolder.__refl
+            tR.Size = tR.Size + 1
+      local sL = wikilib.common.stringGetFileName(vP)
+      local vR = "ref-"..tR.Size.."-"..sL
+      tR[tR.Size] = toLinkRef(vR, vP)
+      sO = toLinkRefSrc("`"..sO.."`", vR)
+      if(vC.name == cD[1]) then
+        tR[tR.Size] = tR[tR.Size]:sub(1,-3)
+      elseif(vC.name == cD[2]) then
+        local vR = wikilib.common.stringTrim(sR, "/")
+              vR = wikilib.common.stringGetFileName(vR)
+        local nB, nE = tR[tR.Size]:find(vR.."/"..sB, 1, true)
+        if(nB and nE) then
+          tR[tR.Size] = tR[tR.Size]:sub(1, nB-2)
+        end
+      end
+    else
+      sO = toLinkURL("`"..sO.."`", sR..sB)  
+      if(vC.name == cD[1]) then
+        sO = sO:gsub("/%"..cD[1].."%)$",")")
+      elseif(vC.name == cD[2]) then
+        sO = sO:gsub("/%.%.%)",""):match("(.*[/\\])"):sub(1,-2)..")"
+      end
+    end
   end; return sO
 end
 
@@ -836,23 +802,24 @@ end
  * sR > Previous iretaration graph recursion destination ( omited )
  * tD > API description list the thing is done for ( omited )
  * sG > The repo tree is generated for ( omited )
+ * tQ > Word to link creation table
 ]]
-function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG)
-  local tS = wikiFolder.__syms
-  local sG = common.getPick(common.isString(sG), sG, nil)
-  local tD = common.getPick(common.isTable(tD), tD, nil)
-  local iA = common.getClamp(tonumber(vA) or 1, 1, #tS)
+function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)
+  local tS, tR = wikiFolder.__syms, wikiFolder.__refl
+  local sG = wikilib.common.getPick(common.isString(sG), sG, nil)
+  local tD = wikilib.common.getPick(common.isTable(tD), tD, nil)
+  local iA = wikilib.common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
-  local iR = common.getClamp(tonumber(vR) or 0, 0)
+  local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   local nS, nE = tP.base:find(wikiFolder.__drem); tS = tS[iA]
-  local iI, tC = wikiFolder.__dept, common.sortTable(tP.cont, {"name"}, true)
+  local iI, tC = wikiFolder.__dept, wikilib.common.sortTable(tP.cont, {"name"}, true)
   if(iR == 0) then
     local sN = tP.base:sub(nE+1, -1)
     local sB = tostring(tS[5] or "/")
     if(tF.namr and sG) then
-      local sT = common.stringTrim(sG, "/")
+      local sT = wikilib.common.stringTrim(sG, "/")
       local sM = sT:match("/%w+$")
-      if(not common.isNil(sM)) then sN = sM:sub(2,-1)
+      if(not wikilib.common.isNil(sM)) then sN = sM:sub(2,-1)
         local sN = folderLinkItem({link=sG}, {name=sN}, tF.namr)
         io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
       else
@@ -867,15 +834,24 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG)
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
-      local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
+      local sP = wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)
+      local sL = ((tD and tD[vC.name]) and (" --> "..sP) or "")
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD, sG)
+      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD, sG, tQ)
     else
-      local sL = ((tD and tD[vC.name]) and (" --> "..tostring(tD[vC.name] or "")) or "")
+      local sP = wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)
+      local sL = ((tD and tD[vC.name]) and (" --> "..sP) or "")
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
     end
+  end
+end
+
+function wikilib.folderDrawTreeRef()
+  local tR = wikiFolder.__refl
+  if(tR.Size and tR.Size > 0) then io.write("\n\n")
+    for iD = 1, tR.Size do io.write(tR[iD]); io.write("\n") end
   end
 end
 

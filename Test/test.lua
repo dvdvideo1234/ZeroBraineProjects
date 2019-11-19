@@ -5,18 +5,42 @@ local asmlib = trackasmlib
 
 local tableConcat = table.concat
 
-asmlib.InitBase("track", "assembly")
-asmlib.SetOpVar("LOG_MAXLOGS", 10000)
-asmlib.SetOpVar("LOG_LOGFILE", false)
+local mtVector = getmetatable(Vector())
 
-asmlib.SetOpVar("FORM_DRWSPKY", "%+6s")
+--[[---------------------------------------------------------
+Recalculates the orthogonality of an up vector according to the
+other vector given as forward direction direction. The call
+changes the self vector assigned as an up direction
+ * self > The up direction being orthogonalized
+ * vF   > The forward direction for the orthogonalization process
+ * vR   > The function returns the right vector on success
+Note: The normalization of the three vectors 
+-----------------------------------------------------------]]
+print(meta)
 
-local o1 = Vector()
-local d1 = Vector(3,3)
-local o2 = Vector(8,7)
-local d2 = Vector(1,0)
+mtVector.__index = mtVector
 
-local f1, f2 = o1:IntersectRay(d1,o2,d2)
-print(o1 + f1 * d1:GetNormalized(), o2 + f2 * d2:GetNormalized())
+mtVector.Orthogonal = function(self, vF, bN)
+  local vR = vF:Cross(self)
+  self:Set(vR:Cross(vF))
+  if(bN) then
+    vF:Normalize()
+    vR:Normalize()
+    self:Normalize()
+  end
+  return vR
+end
+
+local x = Vector(5,0,0)
+local z = Vector(4,0,4)
+local y = z:Orthogonal(x)
+print(x)
+print(y)
+print(z)
+
+
+
+
+
 
 

@@ -22,14 +22,14 @@ local API = {
     path = "data/wiki",                        -- Direct function return refinition
     slua = "lua/entities/gmod_wire_expression2/core/custom/", -- Repository source file subfolder
     repo = "github.com/wiremod/wire",
-    blob = "blob/master",
+    blob = "blob/master"
   },
   TYPE = {
     OBJ = "e", -- Here stays the internal type of the class for the generated API documentation
     FRM = "Type-%s.png", -- Format of the dedicated type from the project
     -- API type images format for the arguments if replacement by images is enabled
     LNK = "https://raw.githubusercontent.com/wiki/wiremod/wire/%s",
-    -- The prefixes list for the name to identify the finction as OOP creator
+    -- The prefixes list for the name to identify the function as OOP creator
     DSG = {"prop", "seat"}
   },
   REPLACE = {
