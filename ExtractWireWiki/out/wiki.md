@@ -1,60 +1,74 @@
-﻿|              Entity extensions               | Out | Description |
+﻿### Description
+The prop core functionality is used generally for manipulating [props][ref-prp-typ] using an E2 script within [Garry's mod][ref-gmod]
+environment. Manipulation type can be anything like creating, deleting, teleporting, angling, gravity, inertia, buoyancy
+and much more. The data types are general for the [E2][ref-exp2] chip and you can [find them here][ref-e2-data]!
+ 
+### What [console variables][ref-convar] can be used to setup it
+```
+sbox_E2_maxProps          : Controls the maximum amount of props spawned via E2 set this to `-1` to disable the limit.
+sbox_E2_maxPropsPerSecond : Controls the maximum amount of props spawned for one second. Don't set this too high!  
+sbox_E2_PropCore          : Controls enable/disable of the extension. Setup values are written below.
+  0 : The extension is disabled.
+  1 : Only admins can use the extension.
+  2 : Players can affect their own props.
+```
+
+### Expression 2 API
+All the function descriptions are available in the table below:
+
+|         Instance creator         | Out | Description |
+|----------------------------------|-----|-------------|
+|`propSpawn`(![image][ref-e],![image][ref-a],![image][ref-n])|![image][ref-e]|Rotation, Frozen Spawns a prop with the model of the template entity and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-e],![image][ref-n])|![image][ref-e]|Entity template, Frozen Spawns a prop with the model of the template entity. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-e],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Position, Rotation, Frozen Spawns a prop with the model of the template entity, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-e],![image][ref-v],![image][ref-n])|![image][ref-e]|Entity template, Position, Frozen Spawns a prop with the model of the template entity at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-s],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Rotation, Frozen Spawns a prop with the model denoted by the string filepath and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-s],![image][ref-n])|![image][ref-e]|Use the model string or a template entity to spawn a prop. You can set the position and/or the rotation as well. The last number indicates frozen/unfrozen.|
+|`propSpawn`(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Position, Rotation, Frozen Spawns a prop with the model denoted by the string file path, at the position denoted by the vector, and rotated to the angle given. If frozen is `0`, then it will spawn unfrozen.|
+|`propSpawn`(![image][ref-s],![image][ref-v],![image][ref-n])|![image][ref-e]|Model path, Position, Frozen Spawns a prop with the model denoted by the string filepath at the position denoted by the vector. If frozen is `0`, then it will spawn unfrozen.|
+|`seatSpawn`(![image][ref-s],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
+|`seatSpawn`(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Model path, Frozen Spawns a prop with the model denoted by the string filepath. If frozen is `0`, then it will spawn unfrozen.|
+
+|               Prop core method               | Out | Description |
 |----------------------------------------------|-----|-------------|
-|![image][ref-e]:allPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of all piston keys|
-|![image][ref-e]:clrPiston(![image][ref-xxx])|![image][ref-e]|Clears the pistons from the `E2` chip|
-|![image][ref-e]:cntPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of integer piston keys|
-|![image][ref-e]:getPiston(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the piston bearing timing by an integer key|
-|![image][ref-e]:getPiston(![image][ref-n],![image][ref-v])|![image][ref-n]|Returns the piston vector timing by an integer key|
-|![image][ref-e]:getPiston(![image][ref-s],![image][ref-n])|![image][ref-n]|Returns the piston bearing timing by a string key|
-|![image][ref-e]:getPiston(![image][ref-s],![image][ref-v])|![image][ref-n]|Returns the piston vector timing by a string key|
-|![image][ref-e]:getPistonAxis(![image][ref-n])|![image][ref-v]|Returns the shaft rotation axis by an integer key|
-|![image][ref-e]:getPistonAxis(![image][ref-s])|![image][ref-v]|Returns the shaft rotation axis by a string key|
-|![image][ref-e]:getPistonBase(![image][ref-n])|![image][ref-e]|Returns the engine base entity by an integer key|
-|![image][ref-e]:getPistonBase(![image][ref-s])|![image][ref-e]|Returns the engine base entity by a string key|
-|![image][ref-e]:getPistonMax(![image][ref-n])|![image][ref-n]|Returns the piston number highest point parameter by an integer key|
-|![image][ref-e]:getPistonMax(![image][ref-s])|![image][ref-n]|Returns the piston number highest point parameter by a string key|
-|![image][ref-e]:getPistonMaxX(![image][ref-n])|![image][ref-v]|Returns the piston vector highest point parameter by an integer key|
-|![image][ref-e]:getPistonMaxX(![image][ref-s])|![image][ref-v]|Returns the piston vector highest point parameter by a string key|
-|![image][ref-e]:getPistonMin(![image][ref-n])|![image][ref-n]|Returns the piston number lowest point parameter by an integer key|
-|![image][ref-e]:getPistonMin(![image][ref-s])|![image][ref-n]|Returns the piston number lowest point parameter by a string key|
-|![image][ref-e]:getPistonMinX(![image][ref-n])|![image][ref-v]|Returns the piston vector lowest point parameter by an integer key|
-|![image][ref-e]:getPistonMinX(![image][ref-s])|![image][ref-v]|Returns the piston vector lowest point parameter by a string key|
-|![image][ref-e]:getPistonTopRoll(![image][ref-v])|![image][ref-v]|Returns the crankshaft roll direction vector relative to the engine base|
-|![image][ref-e]:isPistonRamp(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by an integer key|
-|![image][ref-e]:isPistonRamp(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by a string key|
-|![image][ref-e]:isPistonSign(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
-|![image][ref-e]:isPistonSign(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
-|![image][ref-e]:isPistonSignX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in cross-product [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
-|![image][ref-e]:isPistonSignX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in cross-product [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
-|![image][ref-e]:isPistonWave(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
-|![image][ref-e]:isPistonWave(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
-|![image][ref-e]:isPistonWaveX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) wave mode by an integer key|
-|![image][ref-e]:isPistonWaveX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) wave mode by a string key|
-|![image][ref-e]:putPistonAxis(![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-r])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-v])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonAxis(![image][ref-xv2])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:putPistonBase(![image][ref-e])|![image][ref-e]|Stores the base prop entity used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:remPiston(![image][ref-n])|![image][ref-e]|Removes the piston by an integer key|
-|![image][ref-e]:remPiston(![image][ref-s])|![image][ref-e]|Removes the piston by a string key|
-|![image][ref-e]:resPistonAxis(![image][ref-xxx])|![image][ref-e]|Clears the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:resPistonBase(![image][ref-xxx])|![image][ref-e]|Clears the base prop entity used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
-|![image][ref-e]:setPistonRamp(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonRamp(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonSign(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonSign(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
-|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
-|![image][ref-e]:setPistonWave(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by an integer key and highest point angle in degrees|
-|![image][ref-e]:setPistonWave(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by a string key and highest point angle in degrees|
-|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by an integer key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by a string key and highest point local vector|
-|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by a string key and highest point local vector|
+|![image][ref-e]:`deparent`()||Unparents an entity, so it moves freely again.|
+|![image][ref-e]:`parentTo`()||Parents one entity to another.|
+|![image][ref-e]:`parentTo`(![image][ref-e])||Parents one entity to another.|
+|![image][ref-e]:`propBreak`()||Breaks/Explodes breakable/explodable props (Useful for Mines).|
+|![image][ref-e]:`propDelete`()||Deletes the specified prop.|
+|![image][ref-e]:`propDrag`(![image][ref-n])||Passing `0` makes the entity not be affected by drag|
+|![image][ref-e]:`propDraw`(![image][ref-n])||Passing `0` disables rendering for the entity (makes it really invisible)|
+|![image][ref-e]:`propFreeze`(![image][ref-n])||Passing `0` unfreezes the entity, everything else freezes it.|
+|![image][ref-e]:`propGetElasticity`()|![image][ref-n]|Gets prop's elasticity coefficient|
+|![image][ref-e]:`propGetFriction`()|![image][ref-n]|Gets prop's friction coefficient|
+|![image][ref-e]:`propGravity`(![image][ref-n])||Passing `0` makes the entity weightless, everything else makes it weighty.|
+|![image][ref-e]:`propInertia`(![image][ref-v])||Sets the directional inertia|
+|![image][ref-e]:`propMakePersistent`(![image][ref-n])||Setting to `1` will make the prop persistent.|
+|![image][ref-e]:`propManipulate`(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-n],![image][ref-n])||Allows to do any single prop core function in one term (position, rotation, freeze, gravity, notsolid)|
+|![image][ref-e]:`propNotSolid`(![image][ref-n])||Passing `0` makes the entity solid, everything else makes it non-solid.|
+|![image][ref-e]:`propPhysicalMaterial`()|![image][ref-s]|Returns the surface material of a prop.|
+|![image][ref-e]:`propPhysicalMaterial`(![image][ref-s])||Changes the surface material of a prop (eg. wood, metal, ... See [`Material_surface_properties`](https://developer.valvesoftware.com/wiki/Material_surface_properties) ).|
+|![image][ref-e]:`propSetBuoyancy`(![image][ref-n])||Sets the prop's buoyancy ratio from `0` to `1`|
+|![image][ref-e]:`propSetElasticity`(![image][ref-n])||Sets prop's elasticity coefficient (default is `1`)|
+|![image][ref-e]:`propSetFriction`(![image][ref-n])||Sets prop's friction coefficient (default is `1`)|
+|![image][ref-e]:`propSetVelocity`(![image][ref-v])||Sets the velocity of the prop for the next iteration|
+|![image][ref-e]:`propSetVelocityInstant`(![image][ref-v])||Sets the initial velocity of the prop|
+|![image][ref-e]:`propShadow`(![image][ref-n])||Passing `0` disables rendering for the entity's shadow|
+|![image][ref-e]:`propStatic`(![image][ref-n])||Sets to `1` to make the entity static (disables movement, physgun, unfreeze, drive...) or `0` to cancel.|
+|![image][ref-e]:`reposition`(![image][ref-v])||Deprecated. Kept for backwards-compatibility.|
+|![image][ref-e]:`rerotate`(![image][ref-a])||Deprecated. Kept for backwards-compatibility.|
+|![image][ref-e]:`setAng`(![image][ref-a])||Set the rotation of an entity.|
+|![image][ref-e]:`setPos`(![image][ref-v])||Sets the position of an entity.|
+|![image][ref-e]:`use`()||Simulates a player pressing their use key on the entity.|
+
+|        General functions         | Out | Description |
+|----------------------------------|-----|-------------|
+|`propCanCreate`()|![image][ref-n]|Returns `1` when `propSpawn`() will successfully spawn a prop until the limit is reached.|
+|![image][ref-r]:`propDelete`()|![image][ref-n]|Deletes all the props in the given array, returns the amount of props deleted.|
+|![image][ref-t]:`propDelete`()|![image][ref-n]|Deletes all the props in the given table, returns the amount of props deleted.|
+|`propDeleteAll`()||Removes all entities spawned by this `E2`|
+|`propSpawnEffect`(![image][ref-n])||Set to `1` to enable prop spawn effect, `0` to disable.|
+|`propSpawnUndo`(![image][ref-n])||Set to `0` to force prop removal on `E2` shutdown, and suppress Undo entries for props.|
 
 |Icon|Description|
 |---|---|
@@ -79,24 +93,26 @@
 |![image][ref-xsc]|[`State controller`](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class|
 |![image][ref-xxx]|[`Void`](https://en.wikipedia.org/wiki/Void_type) data type|
 
-[ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
-[ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
-[ref-c]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-c.png
-[ref-e]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-e.png
-[ref-xm2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xm2.png
-[ref-m]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-m.png
-[ref-xm4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xm4.png
-[ref-n]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-n.png
-[ref-q]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-q.png
-[ref-r]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-r.png
-[ref-s]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-s.png
-[ref-t]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-t.png
-[ref-xv2]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xv2.png
-[ref-v]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-v.png
-[ref-xv4]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xv4.png
-[ref-xrd]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xrd.png
-[ref-xwl]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xwl.png
-[ref-xft]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xft.png
-[ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xsc.png
-[ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xxx.png
+[ref-a]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Angle.png
+[ref-b]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Bone.png
+[ref-c]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-ComplexNumber.png
+[ref-e]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Entity.png
+[ref-xm2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix2.png
+[ref-m]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix.png
+[ref-xm4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Matrix4.png
+[ref-n]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Number.png
+[ref-q]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Quaternion.png
+[ref-r]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Array.png
+[ref-s]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-String.png
+[ref-t]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Table.png
+[ref-xv2]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector2.png
+[ref-v]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector.png
+[ref-xv4]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-Vector4.png
+[ref-xrd]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-RangerData.png
+[ref-xwl]: https://raw.githubusercontent.com/wiki/wiremod/wire/Type-WireLink.png
 
+[ref-prp-typ]: https://developer.valvesoftware.com/wiki/Prop_Types_Overview
+[ref-e2-data]: https://github.com/wiremod/wire/wiki/Expression-2#Datatypes
+[ref-gmod]: https://en.wikipedia.org/wiki/Garry%27s_Mod
+[ref-exp2]: https://github.com/wiremod/wire/wiki/Expression-2
+[ref-convar]: https://developer.valvesoftware.com/wiki/ConVar

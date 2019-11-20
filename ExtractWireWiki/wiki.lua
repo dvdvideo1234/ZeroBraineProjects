@@ -1,18 +1,20 @@
 package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
-local basepg = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects"
 local common = require("common")
-common.addLibrary(basepg, "ExtractWireWiki")
+local sProject = "ExtractWireWiki"
+local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
+common.addLibrary(sBase, sProject, "dvdlualib")
 
-local sEXP = "piston_timing"
+local sEXP = "prop"
 
-local wikilib = require("lib/wikilib")
+local wikilib = require("wikilib")
 
 local API = require("api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
 
 local YTK = "pl12yIDPm3M"
 
-local f, s = io.open("out/wiki.md", "wb")
+local sB = sBase..common.normFolder(sProject)
+local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then
     wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition

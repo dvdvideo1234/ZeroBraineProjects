@@ -1,5 +1,5 @@
 local wikiFolder = {}
-      wikiFolder.__temp = "/temp"
+      wikiFolder.__temp = os.getenv("TEMP")
       wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
       wikiFolder.__read = "*line"
       wikiFolder.__drof = "Directory of "

@@ -3,11 +3,11 @@ local common = require("common")
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiType  = require("lib/wikilib_type")
-local wikiFolder = require("lib/wikilib_folder")
-local wikiFormat = require("lib/wikilib_format")
-local wikiDChunk = require("lib/wikilib_dscchnk")
-local wikiEncodeURL = require("lib/wikilib_uenc")
+local wikiType  = require("wikilib/type")
+local wikiFolder = require("wikilib/folder")
+local wikiFormat = require("wikilib/format")
+local wikiDChunk = require("wikilib/dscchnk")
+local wikiEncodeURL = require("wikilib/uenc")
 wikilib.common = common
 
 -- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
@@ -676,7 +676,7 @@ function wikilib.folderReplaceURL(sF, ...)
   wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
 end
 
-function wikilib.folderSet(sT)
+function wikilib.folderSetTemp(sT)
   wikiFolder.__temp = wikilib.common.normFolder(sT)
 end
 
@@ -869,5 +869,7 @@ function wikilib.folderDrawTreeRef()
     for iD = 1, tR.Size do io.write(tR[iD]); io.write("\n") end
   end
 end
+
+wikilib.folderSetTemp(os.getenv("TEMP"))
 
 return wikilib
