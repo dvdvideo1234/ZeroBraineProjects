@@ -3,8 +3,8 @@ local basepg = "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects"
 local common = require("common")
 common.addLibrary(basepg, "ExtractWireWiki", "dvdlualib")
 
-local sEXP = "ftrace"
-local sSVN = "ControlSystemsE2"
+local sEXP = "piston_timing"
+local sSVN = "E2PistonTiming"
 
 local wikilib = require("lib/wikilib")
 local API     = require("api/"..sEXP)

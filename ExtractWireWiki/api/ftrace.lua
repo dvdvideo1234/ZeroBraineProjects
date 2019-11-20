@@ -8,7 +8,8 @@ local API = {
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
     wdsc = false, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
-    mosp = true   -- (TRUE) Enables monospace font for the function names
+    mosp = true,  -- (TRUE) Enables monospace font for the function names
+    prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13}},

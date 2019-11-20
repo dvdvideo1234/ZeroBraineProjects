@@ -1,0 +1,91 @@
+"TableToKeyValues"
+{
+	"name"		"Construction Props"
+	"icon"		"icon16/page.png"
+	"parentid"		"0"
+	"id"		"1"
+	"version"		"3"
+	"contents"
+	{
+		"1"
+		}
+			"type"		"model"
+			"model"		"models/keycard/keycard.mdl"
+		}
+		"2"
+		}
+			"type"		"header"
+			"text"		"Test"
+		}
+		"3"
+		}
+			"type"		"model"
+			"model"		"models/keycardspawner/keycardspawner.mdl"
+		}
+		"4"
+		}
+			"type"		"model"
+			"model"		"models/kobilica/guipmonitorbig.mdl"
+		}
+		"5"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_cell_tower1.mdl"
+		}
+		"6"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_cell_tower2.mdl"
+		}
+		"7"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_domestic_dish.mdl"
+		}
+		"8"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_large_drum.mdl"
+		}
+		"9"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_large_omni.mdl"
+		}
+		"10"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_log.mdl"
+		}
+		"11"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_orbital_dish.mdl"
+		}
+		"12"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_panel.mdl"
+		}
+		"13"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_sector.mdl"
+		}
+		"14"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_small_drum.mdl"
+		}
+		"15"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_small_omni.mdl"
+		}
+		"16"
+		}
+			"type"		"model"
+			"model"		"models/radio/ra_uplink_dish.mdl"
+		}
+	}
+}

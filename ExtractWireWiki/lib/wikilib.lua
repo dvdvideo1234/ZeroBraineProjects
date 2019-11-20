@@ -3,11 +3,11 @@ local common = require("common")
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiType  = require("lib/wiki_type")
-local wikiFolder = require("lib/wiki_folder")
-local wikiFormat = require("lib/wiki_format")
-local wikiDChunk = require("lib/wiki_dscchnk")
-local wikiEncodeURL = require("lib/wiki_uenc")
+local wikiType  = require("lib/wikilib_type")
+local wikiFolder = require("lib/wikilib_folder")
+local wikiFormat = require("lib/wikilib_format")
+local wikiDChunk = require("lib/wikilib_dscchnk")
+local wikiEncodeURL = require("lib/wikilib_uenc")
 wikilib.common = common
 
 -- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
@@ -312,6 +312,7 @@ function wikilib.setDescriptionChunk(sT, sB, sD)
 end -- The return value is automatically injected into the chunk
 
 function wikilib.readDescriptions(API)
+  local sC   = "" -- This stores description chunk
   local sE2  = apiGetValue(API,"FILE", "exts")
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
@@ -321,12 +322,26 @@ function wikilib.readDescriptions(API)
         cB = (cB or wikiDChunk.bot).." end"
   local cD = apiGetValue(API,"HDESC", "dsc")
         cD = cD or wikiDChunk.dsc
-  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
-        sN = sN.."cl_"..sE2:lower()..".lua"
-  local fR = io.open(sN, "rb"); if(not fR) then
-    return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
-  wikilib.common.logStatus("Description: "..sN)
-  local sC = (cT..fR:read("*all")..cB)
+        cD = (cD and tostring(cD) or "")
+  local sI = apiGetValue(API,"HDESC", "inj")
+        sI = sI or wikiDChunk.inj
+        sI = (sI and tostring(sI) or "")
+  if(API.DSCHUNK) then wikilib.common.logStatus("Description: API > "..type(API.DSCHUNK))
+    if(wikilib.common.isString(API.DSCHUNK)) then
+      sC = (cT..sI..API.DSCHUNK..sI..cB)
+    elseif(wikilib.common.isFunction(API.DSCHUNK)) then
+      local bS, sC = pcall(API.DSCHUNK)
+      if(bS) then sC = (cT..sI..sC..sI..cB)
+      else wikilib.common.logStatus("wikilib.readDescriptions: API chink unsuccessful: "..type(API.DSCHUNK)) end
+    else wikilib.common.logStatus("wikilib.readDescriptions: API chink not supported: "..type(API.DSCHUNK)) end
+  else
+    local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
+          sN = sN.."cl_"..sE2:lower()..".lua"
+    local fR = io.open(sN, "rb"); if(not fR) then
+      return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end    
+    wikilib.common.logStatus("Description: "..sN)
+    sC = (cT..sI..fR:read("*all")..sI..cB)
+  end
   local fC, oE = load(sC)
   if(fC) then local bS, fC = pcall(fC);
     if(bS) then bS, fC = pcall(fC);
@@ -829,18 +844,18 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)
       io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
     end
   end
-  for iD = 1, tC.__top do local vC = tP.cont[tC[iD].__key]
+  for iD = 1, tC.__top do local vC, sL = tP.cont[tC[iD].__key], ""
     if(vC.root) then local dC = wikiSpace
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
-      local sP = wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)
-      local sL = ((tD and tD[vC.name]) and (" --> "..sP) or "")
+      if(tD and tD[vC.name]) then
+        sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
       wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD, sG, tQ)
     else
-      local sP = wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)
-      local sL = ((tD and tD[vC.name]) and (" --> "..sP) or "")
+      if(tD and tD[vC.name]) then
+        sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")

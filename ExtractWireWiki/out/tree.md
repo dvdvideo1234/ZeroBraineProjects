@@ -1,52 +1,58 @@
-﻿`╔`[`ControlSystemsE2`][ref-1-ControlSystemsE2]  
+﻿`╔`[`E2PistonTiming`][ref-1-E2PistonTiming]  
 `╠═══`[`data`][ref-2-data]  
-`║   ╠═══`[`Expression2`][ref-3-Expression2]  
-`║   ║   ╠═══`[`e2_code_test_ftrace.txt`][ref-4-e2%5Fcode%5Ftest%5Fftrace.txt] [1kB] --> Tracer class example  
-`║   ║   ╠═══`[`e2_code_test_stcontrol.txt`][ref-5-e2%5Fcode%5Ftest%5Fstcontrol.txt] [784B] --> Controller class example  
-`║   ║   ╚═══`[`stcontrol_dump.txt`][ref-6-stcontrol%5Fdump.txt] [250B] --> Controller class dump string  
-`║   ╠═══`[`pictures`][ref-7-pictures] --> Contains addon pictures  
-`║   ║   ╚═══`[`icon.jpg`][ref-8-icon.jpg] [59kB]  
-`║   ╚═══`[`workshop`][ref-9-workshop] --> Workshop related crap  
-`║       ╠═══`[`addon.json`][ref-10-addon.json] [313B]  
-`║       ╠═══`[`addon.txt`][ref-11-addon.txt] [124B]  
-`║       ╠═══`[`description.txt`][ref-12-description.txt] [1kB]  
-`║       ╚═══`[`key.txt`][ref-13-key.txt] [9B]  
-`╠═══`[`license`][ref-14-license] [35kB]  
-`╠═══`[`lua`][ref-15-lua] --> Contains all GLua woremod sub-addons  
-`║   ╚═══`[`entities`][ref-16-entities]  
-`║       ╚═══`[`gmod_wire_expression2`][ref-17-gmod%5Fwire%5Fexpression2]  
-`║           ╚═══`[`core`][ref-18-core]  
-`║               ╚═══`[`custom`][ref-19-custom]  
-`║                   ╠═══`[`cl_ftrace.lua`][ref-20-cl%5Fftrace.lua] [13kB] --> [FTrace](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace) class API description  
-`║                   ╠═══`[`cl_stcontrol.lua`][ref-21-cl%5Fstcontrol.lua] [12kB] --> [FTrace](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace) class API description  
-`║                   ╠═══`[`ftrace.lua`][ref-22-ftrace.lua] [32kB] --> [StControl](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class API implementation  
-`║                   ╚═══`[`stcontrol.lua`][ref-23-stcontrol.lua] [34kB] --> [StControl](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class API implementation  
-`╠═══`[`readme.md`][ref-24-readme.md] [1kB]  
-`╚═══`[`workshop_publish.bat`][ref-25-workshop%5Fpublish.bat] [1kB] --> Automatic workshop publisher for windows  
+`║   ╠═══`[`Expression2`][ref-3-Expression2] --> Expression 2 examples  
+`║   ║   ╠═══`[`basics.txt`][ref-4-basics.txt] [1kB]  
+`║   ║   ╠═══`[`converted.txt`][ref-5-converted.txt] [1kB]  
+`║   ║   ╠═══`[`converted_min.txt`][ref-6-converted%5Fmin.txt] [931B]  
+`║   ║   ╚═══`[`equivalent.txt`][ref-7-equivalent.txt] [905B]  
+`║   ╠═══`[`backup`][ref-8-backup] --> Excel for compating output  
+`║   ║   ╠═══`[`functions_compare.xlsx`][ref-9-functions%5Fcompare.xlsx] [34kB]  
+`║   ║   ╚═══`[`general_signed_piston.xlsx`][ref-10-general%5Fsigned%5Fpiston.xlsx] [100kB]  
+`║   ╠═══`[`pictures`][ref-11-pictures] --> Contains addon pictures  
+`║   ║   ╠═══`[`icon.jpg`][ref-12-icon.jpg] [59kB]  
+`║   ║   ╚═══`[`piston_sign.jpg`][ref-13-piston%5Fsign.jpg] [74kB]  
+`║   ╚═══`[`workshop`][ref-14-workshop] --> Workshop related control crap  
+`║       ╠═══`[`addon.json`][ref-15-addon.json] [312B]  
+`║       ╠═══`[`addon.txt`][ref-16-addon.txt] [120B]  
+`║       ╠═══`[`description.txt`][ref-17-description.txt] [911B]  
+`║       ╚═══`[`key.txt`][ref-18-key.txt] [9B]  
+`╠═══`[`license`][ref-19-license] [34kB]  
+`╠═══`[`lua`][ref-20-lua] --> Contains all GLua woremod sub-addons  
+`║   ╚═══`[`entities`][ref-21-entities]  
+`║       ╚═══`[`gmod_wire_expression2`][ref-22-gmod%5Fwire%5Fexpression2]  
+`║           ╚═══`[`core`][ref-23-core]  
+`║               ╚═══`[`custom`][ref-24-custom]  
+`║                   ╠═══`[`cl_wire_e2_piston_timing.lua`][ref-25-cl%5Fwire%5Fe2%5Fpiston%5Ftiming.lua] [6kB] --> Piston API description  
+`║                   ╚═══`[`wire_e2_piston_timing.lua`][ref-26-wire%5Fe2%5Fpiston%5Ftiming.lua] [16kB] --> Piston API implementation  
+`╠═══`[`readme.md`][ref-27-readme.md] [2kB]  
+`╚═══`[`workshop_publish.bat`][ref-28-workshop%5Fpublish.bat] [1kB] --> Automatic workshop publisher for windows  
 
 
-[ref-1-ControlSystemsE2]: https://github.com/dvdvideo1234/ControlSystemsE2
-[ref-2-data]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data
-[ref-3-Expression2]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2
-[ref-4-e2%5Fcode%5Ftest%5Fftrace.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2%5Fcode%5Ftest%5Fftrace.txt
-[ref-5-e2%5Fcode%5Ftest%5Fstcontrol.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2%5Fcode%5Ftest%5Fstcontrol.txt
-[ref-6-stcontrol%5Fdump.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/stcontrol%5Fdump.txt
-[ref-7-pictures]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/pictures
-[ref-8-icon.jpg]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/pictures/icon.jpg
-[ref-9-workshop]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/workshop
-[ref-10-addon.json]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/workshop/addon.json
-[ref-11-addon.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/workshop/addon.txt
-[ref-12-description.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/workshop/description.txt
-[ref-13-key.txt]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/workshop/key.txt
-[ref-14-license]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/license
-[ref-15-lua]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua
-[ref-16-entities]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities
-[ref-17-gmod%5Fwire%5Fexpression2]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2
-[ref-18-core]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core
-[ref-19-custom]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom
-[ref-20-cl%5Fftrace.lua]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/cl%5Fftrace.lua
-[ref-21-cl%5Fstcontrol.lua]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/cl%5Fstcontrol.lua
-[ref-22-ftrace.lua]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/ftrace.lua
-[ref-23-stcontrol.lua]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/stcontrol.lua
-[ref-24-readme.md]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/readme.md
-[ref-25-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/workshop%5Fpublish.bat
+[ref-1-E2PistonTiming]: https://github.com/dvdvideo1234/E2PistonTiming
+[ref-2-data]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data
+[ref-3-Expression2]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/Expression2
+[ref-4-basics.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/Expression2/basics.txt
+[ref-5-converted.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/Expression2/converted.txt
+[ref-6-converted%5Fmin.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/Expression2/converted%5Fmin.txt
+[ref-7-equivalent.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/Expression2/equivalent.txt
+[ref-8-backup]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/backup
+[ref-9-functions%5Fcompare.xlsx]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/backup/functions%5Fcompare.xlsx
+[ref-10-general%5Fsigned%5Fpiston.xlsx]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/backup/general%5Fsigned%5Fpiston.xlsx
+[ref-11-pictures]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/pictures
+[ref-12-icon.jpg]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/pictures/icon.jpg
+[ref-13-piston%5Fsign.jpg]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/pictures/piston%5Fsign.jpg
+[ref-14-workshop]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/workshop
+[ref-15-addon.json]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/workshop/addon.json
+[ref-16-addon.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/workshop/addon.txt
+[ref-17-description.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/workshop/description.txt
+[ref-18-key.txt]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/data/workshop/key.txt
+[ref-19-license]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/license
+[ref-20-lua]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua
+[ref-21-entities]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities
+[ref-22-gmod%5Fwire%5Fexpression2]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities/gmod%5Fwire%5Fexpression2
+[ref-23-core]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core
+[ref-24-custom]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom
+[ref-25-cl%5Fwire%5Fe2%5Fpiston%5Ftiming.lua]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/cl%5Fwire%5Fe2%5Fpiston%5Ftiming.lua
+[ref-26-wire%5Fe2%5Fpiston%5Ftiming.lua]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/wire%5Fe2%5Fpiston%5Ftiming.lua
+[ref-27-readme.md]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/readme.md
+[ref-28-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/E2PistonTiming/blob/master/workshop%5Fpublish.bat

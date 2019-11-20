@@ -1,59 +1,60 @@
-﻿### Description
-The [`Track assembly tool`][ref-ta-tool] [`Expression 2`][ref-exp2] API is used for a wrapper of the library functions, which handle the track piece
-snapping, so you can call them inside an [`E2`][ref-exp2] and thus create your own automatically generated layouts. This also can be
-used when you need to implement track switchers, where you just `snap` desired track piece to the track end you wish to use.
-You can then apply your desired properties, like `disable physgun` [`no-collide`][ref-no-collide] and [`weld`][ref-weld] to make
-sure the piece is not going anywhere and it is not generating server collisions.
- 
-### Data types
-This list is derived from the Wiremod types wiki [located here][ref-e2-data].
-Here are all the icons for the data types of this addon summarized in the table below:
-
-### API functions list
-For every table, there is a wrapper function that reads the desired data you want:
-
-|                            Class methods                             | Out | Description |
-|----------------------------------------------------------------------|-----|-------------|
-|![image][ref-e]:trackasmlibApplyPhysicalAnchor(![image][ref-e],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Anchors the track entity to a base entity with weld `0/1` and no-collide `0/1` no-collide-world `0/1` and force limit.|
-|![image][ref-e]:trackasmlibApplyPhysicalSettings(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-e]|Modifies track entity physical settings with phys-gun enabled, freeze, gravity toggle and surface material behavior|
-|![image][ref-e]:trackasmlibAttachAdditions(![image][ref-xxx])|![image][ref-n]|Attaches the track entity additions when available|
-|![image][ref-e]:trackasmlibAttachBodyGroups(![image][ref-s])|![image][ref-n]|Attaches track piece body-groups by providing selection code|
-|![image][ref-e]:trackasmlibGenActivePointDSV(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-s]|Exports the track entity as external database record|
-|![image][ref-e]:trackasmlibGenActivePointINS(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-s]|Exports the track entity as internal database record|
-|![image][ref-e]:trackasmlibGetAdditionsCount(![image][ref-xxx])|![image][ref-n]|Returns record additions count by entity|
-|![image][ref-e]:trackasmlibGetAdditionsLine(![image][ref-n])|![image][ref-r]|Returns record additions line by entity|
-|![image][ref-e]:trackasmlibGetBodyGroups(![image][ref-xxx])|![image][ref-s]|Returns the track bodygoup selection list|
-|![image][ref-e]:trackasmlibGetName(![image][ref-xxx])|![image][ref-s]|Returns record name by entity|
-|![image][ref-e]:trackasmlibGetOffset(![image][ref-n],![image][ref-s])|![image][ref-r]|Returns record snap offsets by entity|
-|![image][ref-e]:trackasmlibGetPointsCount(![image][ref-xxx])|![image][ref-n]|Returns record points count by entity|
-|![image][ref-e]:trackasmlibGetSkin(![image][ref-xxx])|![image][ref-s]|Returns the track skin selection list|
-|![image][ref-e]:trackasmlibGetType(![image][ref-xxx])|![image][ref-s]|Returns record track type by entity|
-|![image][ref-e]:trackasmlibHasAdditions(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by entity|
-|![image][ref-e]:trackasmlibIsPiece(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a])|![image][ref-e]|Duplicates the given track using the new position and angle|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code, color and alpha as numbers by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha is `255` by entity|
-|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track entity snap position and angle array by holder model, point `ID`, active radius, flatten, ignore type, position offset and angle offset|
-
-|                          General functions                           | Out | Description |
-|----------------------------------------------------------------------|-----|-------------|
-|trackasmlibGetAdditionsCount(![image][ref-s])|![image][ref-n]|Returns record additions count by model|
-|trackasmlibGetAdditionsLine(![image][ref-s],![image][ref-n])|![image][ref-r]|Returns record additions line by model|
-|trackasmlibGetName(![image][ref-s])|![image][ref-s]|Returns record name by model|
-|trackasmlibGetOffset(![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-r]|Returns record snap offsets by model|
-|trackasmlibGetPointsCount(![image][ref-s])|![image][ref-n]|Returns record points count by model|
-|trackasmlibGetProperty(![image][ref-xxx])|![image][ref-r]|Returns the surface property types|
-|trackasmlibGetProperty(![image][ref-s])|![image][ref-r]|Returns the surface properties available for a given type|
-|trackasmlibGetType(![image][ref-s])|![image][ref-s]|Returns record track type by model|
-|trackasmlibHasAdditions(![image][ref-s])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by model|
-|trackasmlibIsPiece(![image][ref-s])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color and aplha as numbers by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha is `255` by model|
-|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track surface snap position and angle array by position, angle, model, point `ID`, position offset and angle offset|
+﻿|              Entity extensions               | Out | Description |
+|----------------------------------------------|-----|-------------|
+|![image][ref-e]:allPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of all piston keys|
+|![image][ref-e]:clrPiston(![image][ref-xxx])|![image][ref-e]|Clears the pistons from the `E2` chip|
+|![image][ref-e]:cntPiston(![image][ref-xxx])|![image][ref-n]|Returns the count of integer piston keys|
+|![image][ref-e]:getPiston(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the piston bearing timing by an integer key|
+|![image][ref-e]:getPiston(![image][ref-n],![image][ref-v])|![image][ref-n]|Returns the piston vector timing by an integer key|
+|![image][ref-e]:getPiston(![image][ref-s],![image][ref-n])|![image][ref-n]|Returns the piston bearing timing by a string key|
+|![image][ref-e]:getPiston(![image][ref-s],![image][ref-v])|![image][ref-n]|Returns the piston vector timing by a string key|
+|![image][ref-e]:getPistonAxis(![image][ref-n])|![image][ref-v]|Returns the shaft rotation axis by an integer key|
+|![image][ref-e]:getPistonAxis(![image][ref-s])|![image][ref-v]|Returns the shaft rotation axis by a string key|
+|![image][ref-e]:getPistonBase(![image][ref-n])|![image][ref-e]|Returns the engine base entity by an integer key|
+|![image][ref-e]:getPistonBase(![image][ref-s])|![image][ref-e]|Returns the engine base entity by a string key|
+|![image][ref-e]:getPistonMax(![image][ref-n])|![image][ref-n]|Returns the piston number highest point parameter by an integer key|
+|![image][ref-e]:getPistonMax(![image][ref-s])|![image][ref-n]|Returns the piston number highest point parameter by a string key|
+|![image][ref-e]:getPistonMaxX(![image][ref-n])|![image][ref-v]|Returns the piston vector highest point parameter by an integer key|
+|![image][ref-e]:getPistonMaxX(![image][ref-s])|![image][ref-v]|Returns the piston vector highest point parameter by a string key|
+|![image][ref-e]:getPistonMin(![image][ref-n])|![image][ref-n]|Returns the piston number lowest point parameter by an integer key|
+|![image][ref-e]:getPistonMin(![image][ref-s])|![image][ref-n]|Returns the piston number lowest point parameter by a string key|
+|![image][ref-e]:getPistonMinX(![image][ref-n])|![image][ref-v]|Returns the piston vector lowest point parameter by an integer key|
+|![image][ref-e]:getPistonMinX(![image][ref-s])|![image][ref-v]|Returns the piston vector lowest point parameter by a string key|
+|![image][ref-e]:getPistonTopRoll(![image][ref-v])|![image][ref-v]|Returns the crankshaft roll direction vector relative to the engine base|
+|![image][ref-e]:isPistonRamp(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by an integer key|
+|![image][ref-e]:isPistonRamp(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) mode by a string key|
+|![image][ref-e]:isPistonSign(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
+|![image][ref-e]:isPistonSign(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
+|![image][ref-e]:isPistonSignX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in cross-product [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by an integer key|
+|![image][ref-e]:isPistonSignX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in cross-product [`sign`](https://en.wikipedia.org/wiki/Sign_function) mode by a string key|
+|![image][ref-e]:isPistonWave(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by an integer key|
+|![image][ref-e]:isPistonWave(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`wave`](https://en.wikipedia.org/wiki/Sine) mode by a string key|
+|![image][ref-e]:isPistonWaveX(![image][ref-n])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) wave mode by an integer key|
+|![image][ref-e]:isPistonWaveX(![image][ref-s])|![image][ref-n]|Returns a flag if the piston is in [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) wave mode by a string key|
+|![image][ref-e]:putPistonAxis(![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-r])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-v])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonAxis(![image][ref-xv2])|![image][ref-e]|Stores the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:putPistonBase(![image][ref-e])|![image][ref-e]|Stores the base prop entity used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:remPiston(![image][ref-n])|![image][ref-e]|Removes the piston by an integer key|
+|![image][ref-e]:remPiston(![image][ref-s])|![image][ref-e]|Removes the piston by a string key|
+|![image][ref-e]:resPistonAxis(![image][ref-xxx])|![image][ref-e]|Clears the base prop local axis vector used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:resPistonBase(![image][ref-xxx])|![image][ref-e]|Clears the base prop entity used with the piston [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) functions|
+|![image][ref-e]:setPistonRamp(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonRamp(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`triangular`](https://en.wikipedia.org/wiki/Triangle_wave) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonSign(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonSign(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`sign`](https://en.wikipedia.org/wiki/Sign_function) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
+|![image][ref-e]:setPistonSignX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a cross-product timed piston with [`sign`](https://en.wikipedia.org/wiki/Sign_function) output by a string key and highest point local vector|
+|![image][ref-e]:setPistonWave(![image][ref-n],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by an integer key and highest point angle in degrees|
+|![image][ref-e]:setPistonWave(![image][ref-s],![image][ref-n])|![image][ref-e]|Creates a [`wave`](https://en.wikipedia.org/wiki/Sine) timed piston by a string key and highest point angle in degrees|
+|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-n],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by an integer key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by a string key and highest point local vector|
+|![image][ref-e]:setPistonWaveX(![image][ref-s],![image][ref-v],![image][ref-v],![image][ref-e])|![image][ref-e]|Creates a [`cross-product`](https://en.wikipedia.org/wiki/Cross_product) timed piston with wave output by a string key and highest point local vector|
 
 |Icon|Description|
 |---|---|
@@ -99,10 +100,3 @@ For every table, there is a wrapper function that reads the desired data you wan
 [ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xsc.png
 [ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xxx.png
 
-[ref-e2-data]: https://github.com/wiremod/wire/wiki/Expression-2#Datatypes
-[ref-ta-tool]: https://github.com/dvdvideo1234/TrackAssemblyTool
-[ref-gmod]: https://en.wikipedia.org/wiki/Garry%27s_Mod
-[ref-exp2]: https://github.com/wiremod/wire/wiki/Expression-2
-[ref-convar]: https://developer.valvesoftware.com/wiki/ConVar
-[ref-weld]: https://gmod.fandom.com/wiki/Weld_Tool
-[ref-no-collide]: https://gmod.fandom.com/wiki/No_Collide
