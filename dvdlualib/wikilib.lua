@@ -648,7 +648,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
             end
 
             local sR = n:gsub(wikiBraketsIN, ""); if(bMsp) then sR = "`"..sR.."`" end
-
+            
             if(obj:find(sV)) then
               wikilib.printRow({sR.."("..wikilib.concatType(API, vars)
                     ..")", wikilib.concatType(API, ret), DSC[n]})

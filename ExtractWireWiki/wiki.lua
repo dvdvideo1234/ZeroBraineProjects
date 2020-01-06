@@ -4,7 +4,7 @@ local sProject = "ExtractWireWiki"
 local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
 common.addLibrary(sBase, sProject, "dvdlualib")
 
-local sEXP = "piston_timing"
+local sEXP = "stcontrol"
 
 local wikilib = require("wikilib")
 

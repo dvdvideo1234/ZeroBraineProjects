@@ -49,7 +49,7 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
       end
-local function isVector(a) return (getmetatable(a) == mtVector) end
+local function isVector(v) return (getmetatable(v) == mtVector) end
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
   self.x, self.y, self.z = 0, 0, 0
@@ -67,9 +67,14 @@ function Vector(x,y,z)
   function self:Sub(v) self.x, self.y, self.z = (self.x-v.x), (self.y-v.y), (self.z-v.z); return self end
   function self:GetSub(...) local v = Vector(self); v:Sub(...); return v end
   function self:Unpack() return self.x, self.y, self.z end
-  function self:Set(x,y,z)
-    if(getmetatable(x) == mtVector) then self.x, self.y, self.z = x.x, x.y, x.z;
-    else self.x, self.y, self.z = tonumber(x) or 0, tonumber(y) or 0, tonumber(z) or 0; end
+  function self:Set(v)
+    if(getmetatable(v) == mtVector) then
+      self.x, self.y, self.z = v.x, v.y, v.z
+    else
+      error("Cannot set copy from "..type(v).." to vector!")
+    end; return self    
+  end
+  function self:Rotate()
   end
   function self:Cross(v)
     local x = self.y * v.z - self.z * v.y
@@ -106,7 +111,7 @@ function Vector(x,y,z)
     end
     return math.atan2(self:Determinant(vec, nrm:GetNormalized()), self:Dot(vec))
   end
-
+  
   --[[
    * This function traces both lines and if they are not parallel
    * calculates their point of intersection. Every ray is
@@ -222,13 +227,13 @@ function math.Round( num, idp )
 end
 
 function CreateConVar(a, b, c, d)
-  local self = {}; __convar[a] = b
+  local self = {}; __convar[a] = self
   local nam, val, flg, dsc = a, b, c, d
+  function self:SetData(dat) val = tostring(dat or ""):rep(1); return self end
   function self:GetString() return tostring(val) end
-  function self:SetString(s) val = tostring(s):rep(1) end
-  function self:GetNumber() return tonumber(val) end
-  function self:GetBool()   return tobool(val) end
-  function self:GetInt()   return math.floor(tonumber(val) or 0) end
+  function self:GetNumber() return (tonumber(val) or 0) end
+  function self:GetBool() return tobool(tonumber(val) or 0) end
+  function self:GetInt() return math.floor(tonumber(val) or 0) end
   function self:GetName() return tostring(nam) end
   return self
 end
@@ -405,10 +410,9 @@ ents = {}
 local mtEntity = {__type = "Entity"}
       mtEntity.__tostring = function(oE) return ("ENT{"..oE:EntIndex().."}{"..oE:GetClass().."}") end
       mtEntity.__index = mtEntity
-local function isVector(a) return (getmetatable(a) == mtVector) end
-function ents.Create()
+function ents.Create(cla)
   local self = {}; setmetatable(self, mtEntity)
-  local mcla = "prop_physics"
+  local mcla = tostring(cla or "prop_physics")
   local mid = (#__entity + 1)
   local mpos = Vector(0,0,0)
   local mang = Angle(0,0,0)
@@ -419,9 +423,9 @@ function ents.Create()
   function self:SetClass(vC) mcla = vC end
   function self:EntIndex() return mid end
   function self:GetPos() return mpos end
-  function self:SetPos(vP) mpos = vP end
+  function self:SetPos(vP) mpos:Set(vP) end
   function self:GetAngles() return mang end
-  function self:SetAngles(vA) mang = vA end
+  function self:SetAngles(vA) mang:Set(vA) end
   function self:IsValid() return true end
   function self:IsPlayer() return false end
   function self:IsVehicle() return false end

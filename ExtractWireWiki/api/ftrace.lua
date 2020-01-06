@@ -14,11 +14,11 @@ local API = {
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13}},
     {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={20,5,13}}
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={25,5,13}}
   },
   FILE = {
     exts = "ftrace",
-    base = "E:/Documents/Lua-Projs/SVN/wire-extras",
+    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2", -- ControlSystemsE2, wire-extras
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_ftrace",
@@ -60,7 +60,14 @@ local API = {
     dsc = "E2Helper.Descriptions"
   },
   REFLN = {
+    {"ref_class_oop","https://en.wikipedia.org/wiki/Class_(computer_programming)"},
     {"ref_example", "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"},
+    {"ref_trace" , "https://wiki.garrysmod.com/page/Structures/TraceResult"},
+    {"ref_class_con", "https://en.wikipedia.org/wiki/Constructor_(object-oriented_programming)"},
+    {"ref_entity", "https://wiki.garrysmod.com/page/Global/Entity"},
+    {"ref_orient", "https://en.wikipedia.org/wiki/Orientation_(geometry)"},
+    {"ref_vec_norm","https://en.wikipedia.org/wiki/Euclidean_vector#Length"},
+    {"ref_lua", "https://en.wikipedia.org/wiki/Lua_(programming_language)"}
   }
 }
 
@@ -83,6 +90,15 @@ local function getConvar()
 end
 
 API.TEXT = function() return ([===[
+### What does this extension include?
+Tracers with hit and ray configuration. The difference with wire rangers
+is that this is a [dedicated class][ref_class_oop] being initialized once and used as many
+times as it is needed, not creating an instance on every E2 tick and later
+wipe that instance out. It can extract every aspect of [the trace result structure][ref_trace] returned and
+it can be sampled locally ( `origin` and `direction` relative to `entity` or `pos`/`dir`/`ang` )
+or globally ( `entity` is not available and `pos`/`dir`/`ang` are treated world-space data ).
+Also, it has better performance than the regular wire rangers.
+
 ### What is this thing designed for?
 The `%s` class consists of fast performing traces object-oriented
 instance that is designed to be `@persist`and initialized in expression
@@ -95,11 +111,13 @@ and you can use it as many times as you need, without creating a new one.
 ```
 
 ### How to create an instance then?
-You can create a local trace object by attaching it to a base entity. When sampled
-locally, it will use this attachment entity to orient its direction and length in pure Lua.
-You can also call the class constructor without an entity to make it world-space based.
-Remember that negating the trace length will result in negating the trace direction.
-That is used because the trace length must always be positive so the direction is reversed instead.
+You can create a trace object by calling one of the dedicated creators `new%s` below
+whenever you prefer to attach it to an entity or you prefer not to use the feature.
+When sampled locally, it will use the [attachment entity][ref_entity] to [orient its direction][ref_orient]
+and [length][ref_vec_norm] in [pure Lua][ref_lua]. You can also call the [class constructor][ref_class_con]
+without an [entity][ref_entity] to make it world-space based. Remember that negating the trace length will
+result in negating the trace direction. That is used because the trace length must always be positive so
+the direction is reversed instead.
 
 ### Do you have an example by any chance?
 The internal type of the class is `%s` and internal expression type `%s`, so to create 
@@ -107,7 +125,7 @@ a tracer instance you can take a [look at the example][ref_example].
 
 ### Can you show me the methods of the class?
 The description of the API is provided in the table below.
-]===]):format(API.NAME, API.TYPE.OBJ, API.FILE.exts)
+]===]):format(API.NAME, API.NAME, API.TYPE.OBJ, API.FILE.exts)
 end
 
 return API
