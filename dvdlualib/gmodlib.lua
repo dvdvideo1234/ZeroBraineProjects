@@ -229,7 +229,13 @@ end
 function CreateConVar(a, b, c, d)
   local self = {}; __convar[a] = self
   local nam, val, flg, dsc = a, b, c, d
-  function self:SetData(dat) val = tostring(dat or ""):rep(1); return self end
+  function self:SetData(dat)
+    local new = tostring(dat or ""):rep(1)
+    local tab = (cvars.__data[nam] or {})
+    for k, v in pairs(tab) do
+      v(nam, val, new)
+    end; val = new; return self
+  end
   function self:GetString() return tostring(val) end
   function self:GetNumber() return (tonumber(val) or 0) end
   function self:GetBool() return tobool(tonumber(val) or 0) end
@@ -355,10 +361,20 @@ bit  = {}
 function bit.bor() end
 
 --------------------------------------------------------------------------------------------------------------------------------
-cvars = {}
+cvars = {__data={}}
 
-function cvars.RemoveChangeCallback() end
-function cvars.AddChangeCallback() end
+function cvars.RemoveChangeCallback(sVar, sKey)
+  cvars.__data[sVar] = nil
+end
+
+function cvars.AddChangeCallback(sVar, fFoo, sKey)
+  local tVar = cvars.__data[sVar]
+  if(not tVar) then
+    cvars.__data[sVar] = {}
+    tVar = cvars.__data[sVar]
+  end
+  tVar[sKey] = fFoo -- sVar, vOld, vNew
+end
 
 --------------------------------------------------------------------------------------------------------------------------------
 file = {}

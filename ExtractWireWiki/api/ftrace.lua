@@ -67,13 +67,22 @@ local API = {
     {"ref_entity", "https://wiki.garrysmod.com/page/Global/Entity"},
     {"ref_orient", "https://en.wikipedia.org/wiki/Orientation_(geometry)"},
     {"ref_vec_norm","https://en.wikipedia.org/wiki/Euclidean_vector#Length"},
-    {"ref_lua", "https://en.wikipedia.org/wiki/Lua_(programming_language)"}
+    {"ref_lua", "https://en.wikipedia.org/wiki/Lua_(programming_language)"},
+    {"ref_exp2", "https://github.com/wiremod/wire/wiki/Expression-2"},
+    {"ref_ray", "https://en.wikipedia.org/wiki/Line_(geometry)#Ray"},
+    {"ref_wranger","https://github.com/wiremod/wire/wiki/Expression-2#built-in-ranger"},
+    {"ref_oopinst","https://en.wikipedia.org/wiki/Instance_(computer_science)"},
+    {"ref_perfe2","https://github.com/wiremod/wire/wiki/Expression-2#performance"},
+    {"ref_localcrd","https://en.wikipedia.org/wiki/Local_coordinates"},
+    {"ref_position","https://en.wikipedia.org/wiki/Position_(geometry)"},
+    {"ref_timere2", "https://github.com/wiremod/wire/wiki/Expression-2#timer"},
+    {"ref_awaree2","https://github.com/wiremod/wire/wiki/Expression-2#self-aware"}
   }
 }
 
 local tConvar = {
-  {"skip", "Contains trace generator blacklisted methods ( ex. `GetSkin`/`GetModel`/`IsVehicle` )"},
-  {"only", "Contains trace generator whitelisted methods ( ex. `GetSkin`/`GetModel`/`IsVehicle` )"},
+  {"skip", "Contains trace generator blacklisted methods ( ex. GetSkin/GetModel/IsVehicle )"},
+  {"only", "Contains trace generator whitelisted methods ( ex. GetSkin/GetModel/IsVehicle )"},
   {"dprn", "Stores the default status output messages streaming destination"},
   {"enst", "Contains flag that enables status output messages"}
 }
@@ -91,13 +100,13 @@ end
 
 API.TEXT = function() return ([===[
 ### What does this extension include?
-Tracers with hit and ray configuration. The difference with wire rangers
+Tracers with [hit][ref_trace] and [ray][ref_ray] configuration. The difference with [wire rangers][ref_wranger]
 is that this is a [dedicated class][ref_class_oop] being initialized once and used as many
-times as it is needed, not creating an instance on every E2 tick and later
-wipe that instance out. It can extract every aspect of [the trace result structure][ref_trace] returned and
-it can be sampled locally ( `origin` and `direction` relative to `entity` or `pos`/`dir`/`ang` )
-or globally ( `entity` is not available and `pos`/`dir`/`ang` are treated world-space data ).
-Also, it has better performance than the regular wire rangers.
+times as it is needed, not creating an [instance][ref_oopinst] on every [E2][ref_exp2] [tick][ref_timere2] and later
+wipe that [instance][ref_oopinst] out. It can extract every aspect of the [trace result structure][ref_trace] returned and
+it can be sampled [locally][ref_localcrd] ( [`origin`][ref_position] and [`direction`][ref_orient] relative to
+[`entity`][ref_entity] or `pos`/`dir`/`ang` ) or globally ( [`entity`][ref_entity] is not available and `pos`/`dir`/`ang`
+are treated world-space data ). Also, it has better [performance][ref_perfe2] than the [regular wire rangers][ref_wranger].
 
 ### What is this thing designed for?
 The `%s` class consists of fast performing traces object-oriented

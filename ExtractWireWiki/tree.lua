@@ -19,7 +19,7 @@ if(fO and API) then io.output(fO)
   wikilib.folderFlag("size", true)
   wikilib.folderFlag("urls", true)
   wikilib.folderFlag("namr", true)
-  wikilib.folderFlag("ufbr", true)
+  -- wikilib.folderFlag("ufbr", true)
   -- Tell the api to use file URL
   wikilib.folderReplaceURL(sD, API.FILE.repo, API.FILE.blob)
   -- Tell the read application we are using UTF-8 by writing a BOM

@@ -2,21 +2,27 @@
  My custom flash tracer tracer type ( Based on wire rangers )
 ****************************************************************************** ]]--
 
-local next = next
-local Angle = Angle
-local Vector = Vector
-local tostring = tostring
-local tonumber = tonumber
-local LocalToWorld = LocalToWorld
-local WorldToLocal = WorldToLocal
-local bitBor = bit.bor
-local mathAbs = math.abs
-local mathSqrt = math.sqrt
-local mathClamp = math.Clamp
-local tableRemove = table.remove
-local tableInsert = table.insert
-local utilTraceLine = util.TraceLine
-local utilGetSurfacePropName = util.GetSurfacePropName
+local next          = next
+local type          = type
+local pairs         = pairs
+local error         = error
+local Angle         = Angle
+local Vector        = Vector
+local istable       = istable
+local tostring      = tostring
+local tonumber      = tonumber
+local CreateConVar  = CreateConVar
+local LocalToWorld  = LocalToWorld
+local WorldToLocal  = WorldToLocal
+local bitBor        = bit and bit.bor
+local mathAbs       = math and math.abs
+local mathSqrt      = math and math.sqrt
+local mathClamp     = math and math.Clamp
+local tableEmpty    = table and table.Empty
+local tableRemove   = table and table.remove
+local tableInsert   = table and table.insert
+local utilTraceLine = util and util.TraceLine
+local utilGetSurfacePropName = util and util.GetSurfacePropName
 
 -- Register the type up here before the extension registration so that the ftrace still works
 registerType("ftrace", "xft", nil,
@@ -40,6 +46,8 @@ local gnIndependentUsed = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONL
 -- Server tells the client what value to use
 local gnServerControled = bitBor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY, FCVAR_REPLICATED)
 
+local gsVarName   = "" -- This stores current variable name
+local gsCbcHash   = "_call" -- This keeps suffix realted to the file
 local gvTransform = Vector() -- Temporary vector for transformation calculation
 local gaTransform = Angle() -- Temporary angle for transformation calculation
 local gsZeroStr   = "" -- Empty string to use instead of creating one everywhere
@@ -82,7 +90,7 @@ end
 
 local function getNorm(tV)
   local nN = 0; if(not tV) then return nN end
-  if(tonumber(tV)) then return math.abs(tV) end
+  if(tonumber(tV)) then return mathAbs(tV) end
   for ID = 1, 3 do local nV = tonumber(tV[ID]) or 0
     nN = nN + nV^2 end; return mathSqrt(nN)
 end
@@ -108,8 +116,6 @@ local function convArrayKeys(tA)
 end
 
 --[[ **************************** CALLBACKS **************************** ]]
-local gsVarName = "" -- This stores current variable name
-local gsCbcHash = "_call" -- This keeps suffix realted to the file
 
 gsVarName = varMethSkip:GetName()
 cvars.RemoveChangeCallback(gsVarName, gsVarName..gsCbcHash)
@@ -198,14 +204,14 @@ local function newHitFilter(oFTrc, oSelf, sM)
   if(not oFTrc) then return 0 end -- Check for available method
   if(sM:sub(1,3) ~= "Get" and sM:sub(1,2) ~= "Is" and sM ~= gsZeroStr) then
     return logStatus("Method <"..sM.."> disabled", oSelf, nil, 0) end
+  local tHit = oFTrc.mHit; if(tHit.ID[sM]) then -- Check for available method
+    return logStatus("Method <"..sM.."> exists", oSelf, nil, 0) end
+  if(not oSelf.entity[sM]) then -- Check for available method
+    return logStatus("Method <"..sM.."> mismatch", oSelf, nil, 0) end
   local tO = gtMethList.ONLY; if(tO and next(tO) and not tO[sM]) then
     return logStatus("Method <"..sM.."> use only", oSelf, nil, 0) end
   local tS = gtMethList.SKIP; if(tS and next(tS) and tS[sM]) then
     return logStatus("Method <"..sM.."> use skip", oSelf, nil, 0) end
-  if(not oSelf.entity[sM]) then -- Check for available method
-    return logStatus("Method <"..sM.."> mismatch", oSelf, nil, 0) end
-  local tHit = oFTrc.mHit; if(tHit.ID[sM]) then -- Check for available method
-    return logStatus("Method <"..sM.."> exists", oSelf, nil, 0) end
   tHit.Size = (tHit.Size + 1); tHit[tHit.Size] = {CALL = sM}
   tHit.ID[sM] = tHit.Size; return (tHit.Size)
 end
@@ -395,3 +401,4 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 function getSet() return gtStoreOOP end
+function getMethList() return gtMethList end

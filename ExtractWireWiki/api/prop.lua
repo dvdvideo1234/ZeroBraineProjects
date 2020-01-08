@@ -94,6 +94,6 @@ and much more. The data types are general for the [E2][ref-exp2] chip and you ca
 
 ### Expression 2 API
 All the function descriptions are available in the table below:
-]===]):format(link1, link2) end
+]===]):format() end
 
 return API

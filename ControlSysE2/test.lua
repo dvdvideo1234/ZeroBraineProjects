@@ -9,6 +9,7 @@ E2Lib = {RegisterExtension = function(...) print(...) end}
 HUD_PRINTTALK = 50
 
 require("dvdlualib/gmodlib")
+local common = require("dvdlualib/common")
 require("dvdlualib/e2_"..api)
 
 local ATTACH = ents.Create() -- ENT{1}{prop_physics}
@@ -27,10 +28,16 @@ local a = newItem(oSelf, ATTACH, Vector(0,0,0), Vector(0,0,1), -25)
       a:addEntHitSkip(ATTACH):addEntHitSkip(ents.Create("alabala")):addEntHitOnly(ents.Create("gaga"))
       
 GetConVar("wire_expression2_"..api.."_enst"):SetData(1)
+GetConVar("wire_expression2_"..api.."_only"):SetData("IsVehicle/GetModel")
+
 
 a:smpLocal()
 
+a:addHitOnly("GetModel1", "test1")
+a:addHitOnly("GetModel" , "test1")
+a:addHitOnly("IsVehicle", "test1")
+a:addHitOnly("IsPlayer", "test1")
+
 a:dumpItem("TALK", "test")
 
-dump(a:getChip():EntIndex())
-
+common.logTable(getMethList())
