@@ -1,4 +1,4 @@
-local common = require("../dvdlualib/common")
+local common = require("common")
 require("../dvdlualib/gmodlib")
 
 local cvX, cvY, cvZ -- Vector Component indexes
@@ -257,19 +257,18 @@ function GetSign(nVal)
 end
 
 -- Gets the date according to the specified format
-function GetDate(vD)
-  return osDate(GetOpVar("DATE_FORMAT"), vD)
+function GetDate(vD, fD)
+  return osDate(fD or GetOpVar("DATE_FORMAT"), vD)
 end
 
--- Gets the date according to the specified format
-function GetTime(vT)
-  return osDate(GetOpVar("TIME_FORMAT"), vT)
+-- Gets the time according to the specified format
+function GetTime(vT, fT)
+  return osDate(fT or GetOpVar("TIME_FORMAT"), vT)
 end
 
--- Gets the date according to the specified format
-function GetDateTime(vDT)
-  return (osDate(GetOpVar("DATE_FORMAT"), vDT)
-   .." "..osDate(GetOpVar("TIME_FORMAT"), vDT))
+-- Gets the date and time according to the specified format
+function GetDateTime(vDT, fDT)
+  return GetDate(vDT, fDT).." "..GetTime(vDT, fDT)
 end
 
 -- Strips a string from quotes
@@ -295,22 +294,24 @@ end
 
 local function GetLogID()
   local nNum, fMax = GetOpVar("LOG_CURLOGS"), GetOpVar("LOG_FORMLID")
-  if(not (nNum and nMax)) then return "" end; return fMax:format(nNum)
+  if(not (nNum and fMax)) then return "" end; return fMax:format(nNum)
 end
 
 local function Log(vMsg, bCon)
   local iMax = GetOpVar("LOG_MAXLOGS")
   if(iMax <= 0) then return end
+  local sMsg = tostring(vMsg)
   local iCur = GetOpVar("LOG_CURLOGS") + 1
-  local sData = tostring(vMsg); SetOpVar("LOG_CURLOGS",iCur)
   if(IsFlag("en_logging_file") and not bCon) then
     local lbNam = GetOpVar("NAME_LIBRARY")
-    local fName = GetOpVar("LOG_FILENAMЕ")
-    if(iCur > iMax) then iCur = 0; fileDelete(fName) end
-    fileAppend(fName,GetLogID().." ["..GetDate().."] "..sData.."\n")
+    local fName = GetOpVar("LOG_FILENAME")
+    if(iCur > iMax) then SetOpVar("LOG_CURLOGS", 1)
+      fileDelete(fName) else SetOpVar("LOG_CURLOGS", iCur) end
+    fileAppend(fName,GetLogID().." ["..GetDateTime().."] "..sMsg.."\n")
   else -- The current has values 1..nMaxLogs(0)
-    if(iCur > iMax) then iCur = 0 end
-    print(GetLogID().." ["..GetDate().."] "..sData)
+    if(iCur > iMax) then SetOpVar("LOG_CURLOGS", 1)
+    else SetOpVar("LOG_CURLOGS", iCur) end
+    print(GetLogID().." ["..GetDateTime().."] "..sMsg)
   end
 end
 
@@ -418,7 +419,7 @@ end
  * according to the given border name. Basically
  * custom version of a clamp with vararg border limits
 ]]
-local function BorderValue(nsVal, vKey)
+function BorderValue(nsVal, vKey)
   if(not IsHere(vKey)) then return nsVal end
   if(not (IsString(nsVal) or IsNumber(nsVal))) then
     LogInstance("Value not comparable "..GetReport(nsVal)); return nsVal end
@@ -571,10 +572,11 @@ function InitBase(sName,sPurpose)
   SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_INS","exp"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("MISS_NOMD","X")      -- No model
   SetOpVar("MISS_NOID","N")      -- No ID selected
   SetOpVar("MISS_NOAV","N/A")    -- Not Available
-  SetOpVar("MISS_NOMD","X")      -- No model
   SetOpVar("MISS_NOTP","TYPE")   -- No track type
+  SetOpVar("MISS_NOBS","0/0")    -- No Bodygroup skin
   SetOpVar("MISS_NOSQL","NULL")  -- No SQL value
   SetOpVar("MISS_NOTR","Oops, missing ?") -- No translation found
   SetOpVar("FORM_CONCMD", "%s %s")
@@ -1729,7 +1731,7 @@ function GetTransformOA(sModel,sKey)
 end
 
 function RegisterPOA(stPiece, ivID, sP, sO, sA)
-  if(not stPiece) then
+  local sNull = GetOpVar("MISS_NOSQL"); if(not stPiece) then
     LogInstance("Cache record invalid"); return nil end
   local iID = tonumber(ivID); if(not IsHere(iID)) then
     LogInstance("Offset ID mismatch "..GetReport(ivID)); return nil end
@@ -1821,13 +1823,19 @@ function Sort(tTable, tCols)
 end
 
 ------------- VARIABLE INTERFACES --------------
-
+--[[
+ * Returns a string term whrever it is is missing or disabled
+ * If these conditions are not met the function returns missing token
+ * sBas > The string to check whenever it is disabled or missing
+ * vDef > The default value to return when base is not string
+ * vDsb > The disable value to return when the base is disabled string
+]]
 function GetTerm(sBas, vDef, vDsb)
-  local sM, sS = GetOpVar("MISS_NOAV"), GetOpVar("MISS_NOSQL")
+  local sMiss = GetOpVar("MISS_NOAV")
   if(IsString(sBas)) then local sD = GetOpVar("OPSYM_DISABLE")
-    if(sBas:sub(1,1) == sD) then return tostring(vDsb or sM)
+    if(sBas:sub(1,1) == sD) then return tostring(vDsb or sMiss)
     elseif(not (IsNull(sBas) or IsBlank(sBas))) then return sBas end
-  end; if(IsString(vDef)) then return vDef end; return sM
+  end; if(IsString(vDef)) then return vDef end; return sMiss
 end
 
 function ModelToNameRule(sRule, gCut, gSub, gApp)
@@ -1861,10 +1869,10 @@ function GetCategory(oTyp,fCat)
       tCat[sTyp].Txt = fCat; tTyp = (tCat and tCat[sTyp] or nil)
       tCat[sTyp].Cmp = CompileString("return ("..fCat..")", sTyp)
       local suc, out = pcall(tCat[sTyp].Cmp); if(not suc) then
-        LogInstance("Compilation failed <"..fCat.."> ["..sTyp.."]", ssLog); return nil end
+        LogInstance("Compilation failed "..GetReport(fCat), ssLog); return nil end
       tCat[sTyp].Cmp = out; tTyp = tCat[sTyp]
       return sTyp, (tTyp and tTyp.Txt), (tTyp and tTyp.Cmp)
-    else LogInstance("Avoided "..GetReport(fCat).." ["..sTyp.."]", ssLog) end
+    else LogInstance("Skip code "..GetReport(fCat), ssLog) end
   end
 end
 
@@ -2717,10 +2725,10 @@ function ExportCategory(vEq, tData, sPref)
   if(SERVER) then LogInstance("Working on server"); return true end
   local nEq   = (tonumber(vEq) or 0); if(nEq <= 0) then
     LogInstance("Wrong equality <"..tostring(vEq)..">"); return false end
-  local fPref = tostring(sPref or GetInstPref()); if(IsBlank(sPref)) then
+  local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
     LogInstance("("..fPref..") Prefix empty"); return false end
   if(IsFlag("en_dsv_datalock")) then
-    LogInstance("("..sPref..") User disabled"); return true end
+    LogInstance("("..fPref..") User disabled"); return true end
   local fName, sFunc = GetOpVar("DIRPATH_BAS"), "ExportCategory"
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
   fName = fName..GetOpVar("DIRPATH_DSV")
@@ -2730,7 +2738,7 @@ function ExportCategory(vEq, tData, sPref)
   if(not F) then LogInstance("("..fPref..") fileOpen("..fName..") failed from"); return false end
   local sEq, nLen, sMoDB = ("="):rep(nEq), (nEq+2), GetOpVar("MODE_DATABASE")
   local tCat = (IsTable(tData) and tData or GetOpVar("TABLE_CATEGORIES"))
-  F:Write("# "..sFunc..":("..tostring(nEq).."@"..fPref..") "..GetDate().." [ "..sMoDB.." ]\n")
+  F:Write("# "..sFunc..":("..tostring(nEq).."@"..fPref..") "..GetDateTime().." [ "..sMoDB.." ]\n")
   for cat, rec in pairs(tCat) do
     if(IsString(rec.Txt)) then
       local exp = "["..sEq.."["..cat..sEq..rec.Txt:Trim().."]"..sEq.."]"
@@ -2798,8 +2806,10 @@ function ExportDSV(sTable, sPref, sDelim)
   local defTab = makTab:GetDefinition(); if(not IsHere(defTab)) then
     LogInstance("("..fPref..") Missing table definition",sTable); return nil end
   local fName, fPref = GetOpVar("DIRPATH_BAS"), tostring(sPref or GetInstPref())
+  if(IsBlank(fPref)) then
+    LogInstance("("..fPref..") Prefix empty"); return false end
   if(IsFlag("en_dsv_datalock")) then
-    LogInstance("("..sPref..") User disabled"); return true end
+    LogInstance("("..fPref..") User disabled"); return true end
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
   fName = fName..GetOpVar("DIRPATH_DSV")
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
@@ -2810,7 +2820,7 @@ function ExportDSV(sTable, sPref, sDelim)
   local fsLog = GetOpVar("FORM_LOGSOURCE") -- read the log source format
   local ssLog = "*"..fsLog:format(defTab.Nick,sFunc,"%s")
   local sMoDB, symOff = GetOpVar("MODE_DATABASE"), GetOpVar("OPSYM_DISABLE")
-  F:Write("#1 "..sFunc..":("..fPref.."@"..sTable..") "..GetDate().." [ "..sMoDB.." ]\n")
+  F:Write("#1 "..sFunc..":("..fPref.."@"..sTable..") "..GetDateTime().." [ "..sMoDB.." ]\n")
   F:Write("#2 "..sTable..":("..makTab:GetColumnList(sDelim)..")\n")
   if(sMoDB == "SQL") then
     local Q = makTab:Select():Order(unpack(defTab.Query[sFunc])):Get()
@@ -2887,10 +2897,12 @@ end
  * sDelim > What delimiter is the server using
 ]]--
 function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
-  local fPref = tostring(sPref or GetInstPref()); if(not IsString(sTable)) then
+  local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
+    LogInstance("("..fPref..") Prefix empty"); return false end
+  if(not IsString(sTable)) then
     LogInstance("("..fPref..") Table mismatch "..GetReport(sTable)); return false end
   if(IsFlag("en_dsv_datalock")) then
-    LogInstance("("..sPref..") User disabled"); return true end
+    LogInstance("("..fPref..") User disabled"); return true end
   local makTab = GetBuilderNick(sTable); if(not IsHere(makTab)) then
     LogInstance("("..fPref.."@"..sTable..") Missing table builder"); return false end
   local defTab, iD = makTab:GetDefinition(), makTab:GetColumnID("LINEID")
@@ -2955,7 +2967,7 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
     LogInstance("("..fPref.."@"..sTable..") Sorting failed"); return false end
   local O = fileOpen(fName, "wb" ,"DATA"); if(not O) then
     LogInstance("("..fPref.."@"..sTable..") Write fileOpen("..fName..") failed"); return false end
-  O:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDate().." [ "..sMoDB.." ]\n")
+  O:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDateTime().." [ "..sMoDB.." ]\n")
   O:Write("# "..sTable..":("..makTab:GetColumnList(sDelim)..")\n")
   for iKey = 1, tSort.Size do local key = tSort[iKey].Val
     local vK = makTab:Match(key,1,true,"\"",true); if(not IsHere(vK)) then
@@ -2974,10 +2986,12 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
 end
 
 function TranslateDSV(sTable, sPref, sDelim)
-  local fPref = tostring(sPref or GetInstPref()); if(not IsString(sTable)) then
+  local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
+    LogInstance("("..fPref..") Prefix empty"); return false end
+  if(not IsString(sTable)) then
     LogInstance("("..fPref..") Table mismatch "..GetReport(sTable)); return false end
   if(IsFlag("en_dsv_datalock")) then
-    LogInstance("("..sPref..") User disabled"); return true end
+    LogInstance("("..fPref..") User disabled"); return true end
   local makTab = GetBuilderNick(sTable); if(not IsHere(makTab)) then
     LogInstance("("..fPref..") Missing table builder",sTable); return false end
   local defTab, sFunc, sMoDB = makTab:GetDefinition(), "TranslateDSV", GetOpVar("MODE_DATABASE")
@@ -2991,7 +3005,7 @@ function TranslateDSV(sTable, sPref, sDelim)
     LogInstance("("..fPref..") fileOpen("..sNdsv..") failed",sTable); return false end
   local I = fileOpen(sNins, "wb", "DATA"); if(not I) then
     LogInstance("("..fPref..") fileOpen("..sNins..") failed",sTable); return false end
-  I:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDate().." [ "..sMoDB.." ]\n")
+  I:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDateTime().." [ "..sMoDB.." ]\n")
   I:Write("# "..sTable..":("..makTab:GetColumnList(sDelim)..")\n")
   local sLine, isEOF, symOff = "", false, GetOpVar("OPSYM_DISABLE")
   local sFr, sBk = sTable:upper()..":Record({", "})\n"
@@ -3021,12 +3035,12 @@ end
  * bSkip  > Skip addition for the DSV prefix if exists
 ]]--
 function RegisterDSV(sProg, sPref, sDelim, bSkip)
-  local sPref = tostring(sPref or GetInstPref()); if(IsBlank(sPref)) then
-    LogInstance("("..sPref..") Prefix empty"); return false end
+  local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
+    LogInstance("("..fPref..") Prefix empty"); return false end
   if(IsFlag("en_dsv_datalock")) then
-    LogInstance("("..sPref..") User disabled"); return true end
+    LogInstance("("..fPref..") User disabled"); return true end
   if(CLIENT and gameSinglePlayer()) then
-    LogInstance("("..sPref..") Single client"); return true end
+    LogInstance("("..fPref..") Single client"); return true end
   local sBas = GetOpVar("DIRPATH_BAS")
   if(not fileExists(sBas,"DATA")) then fileCreateDir(sBas) end
   local lbNam, sMiss  = GetOpVar("NAME_LIBRARY"), GetOpVar("MISS_NOAV")
@@ -3035,7 +3049,7 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
     local symOff = GetOpVar("OPSYM_DISABLE")
     local fPool, isEOF, isAct = {}, false, true
     local F, sLine = fileOpen(fName, "rb" ,"DATA"), ""
-    if(not F) then LogInstance("("..sPref..") fileOpen("..fName..") read failed"); return false end
+    if(not F) then LogInstance("("..fPref..") fileOpen("..fName..") read failed"); return false end
     while(not isEOF) do sLine, isEOF = GetStringFile(F)
       if(not IsBlank(sLine)) then
         if(sLine:sub(1,1) == symOff) then
@@ -3047,16 +3061,16 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
         inf.Size = inf.Size + 1; inf[inf.Size] = {src, isAct}
       end
     end; F:Close()
-    if(fPool[sPref]) then local inf = fPool[sPref]
+    if(fPool[fPref]) then local inf = fPool[fPref]
       for ID = 1, inf.Size do local tab = inf[ID]
-        LogInstance("("..sPref..") "..(tab[2] and "On " or "Off").." <"..tab[1]..">") end
-      LogInstance("("..sPref..") Skip <"..sProg..">"); return true
+        LogInstance("("..fPref..") "..(tab[2] and "On " or "Off").." <"..tab[1]..">") end
+      LogInstance("("..fPref..") Skip <"..sProg..">"); return true
     end
   end
   local F = fileOpen(fName, "ab" ,"DATA"); if(not F) then
-    LogInstance("("..sPref..") fileOpen("..fName..") append failed"); return false end
-  F:Write(sPref..sDelim..tostring(sProg or sMiss).."\n"); F:Flush(); F:Close()
-  LogInstance("("..sPref..") Register"); return true
+    LogInstance("("..fPref..") fileOpen("..fName..") append failed"); return false end
+  F:Write(fPref..sDelim..tostring(sProg or sMiss).."\n"); F:Flush(); F:Close()
+  LogInstance("("..fPref..") Register"); return true
 end
 
 --[[
@@ -3989,7 +4003,7 @@ end
 
 local function GetCatmullRomCurveTangent(cS, cE, nT, nA)
   local vD = Vector(); vD:Set(cE); vD:Sub(cS)
-  return ((vD:Length()^(tonumber(nA) or 0.5))+nT)
+  return ((vD:Length() ^ (tonumber(nA) or 0.5)) + nT)
 end
 
 local function GetCatmullRomCurveSegment(vP0, vP1, vP2, vP3, nN, nA)
@@ -4016,9 +4030,9 @@ function GetCatmullRomCurve(tV, nT, nA) if(not IsTable(tV)) then
     LogInstance("Curve samples mismatch "..GetReport(nT)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices are needed"); return nil end
   if(nA and not IsNumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
-  local vM, iC, tC = GetOpVar("EPSILON_ZERO"), 1, {}
-  local cS = Vector(); cS:Set(tV[ 1]); cS:Sub(tV[2])   ; cS:Normalize(); cS:Mul(vM); cS:Add(tV[1])
-  local cE = Vector(); cE:Set(tV[nV]); cE:Sub(tV[nV-1]); cE:Normalize(); cE:Mul(vM); cE:Add(tV[nV])
+  local vM, tC, iC, cS, cE = GetOpVar("EPSILON_ZERO"), {}, 1, Vector(), Vector()
+  cS:Set(tV[ 1]); cS:Sub(tV[2])   ; cS:Normalize(); cS:Mul(vM); cS:Add(tV[1])
+  cE:Set(tV[nV]); cE:Sub(tV[nV-1]); cE:Normalize(); cE:Mul(vM); cE:Add(tV[nV])
   tableInsert(tV, 1, cS); tableInsert(tV, cE); nV = (nV + 2);
   for iD = 1, (nV-3) do
     local cA, cB, cC, cD = tV[iD], tV[iD+1], tV[iD+2], tV[iD+3]
@@ -4026,8 +4040,6 @@ function GetCatmullRomCurve(tV, nT, nA) if(not IsTable(tV)) then
     for iK = 1, (nT+1) do tC[iC] = tS[iK]; iC = (iC + 1) end
   end; tC[iC] = Vector(); tC[iC]:Set(tV[nV-1]); return tC
 end
-
-
 
 function GetTable(k) return (k and libQTable[k] or libQTable) end
 function GetCache(k) return (k and libCache[k] or libCache) end

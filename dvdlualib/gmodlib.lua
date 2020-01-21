@@ -1,4 +1,4 @@
-local common = require("dvdlualib/common")
+local common = require("common")
 
 local language = {__data = {}}
 local logStatus = print
@@ -13,6 +13,10 @@ local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 
 function tobool(any)
   if(__tobool[tostring(any)]) then return false end return true
+end
+
+function Color(r,g,b,a)
+  return {r=r,g=g,b=b,a=a}
 end
 
 local type = function(any)
@@ -241,6 +245,7 @@ function CreateConVar(a, b, c, d)
   function self:GetBool() return tobool(tonumber(val) or 0) end
   function self:GetInt() return math.floor(tonumber(val) or 0) end
   function self:GetName() return tostring(nam) end
+  function self:GetFloat() return (tonumber(val) or 0) end
   return self
 end
 
@@ -355,6 +360,9 @@ function util.TraceLine(dt)
   return {}
 end
 
+function util.AddNetworkString()
+end
+
 --------------------------------------------------------------------------------------------------------------------------------
 bit  = {}
 
@@ -419,6 +427,24 @@ end
 
 function file.CreateDir(sPath)
   return os.execute("mkdir "..sPath)
+end
+
+function file.Find(sName, sPath, sSort)
+  local sSrt, sArg = tostring(sSort or ""), ""
+  local sCol = (sSort and sSrt:sub(1,4) or nil)
+  local sMod = (sSort and sSrt:sub(5,-1) or nil)
+  if(sMod) then sMod = ((sMod == "desc") and "-" or "") end
+  if(sCol == "date" or sCol == "name") then
+    sArg = " /O:"..sMod..sCol:sub(1,1):upper()
+  end; return common.fileFind(sName, sArg)
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+properties = {__data= {}}
+
+function properties.Add(sN, tD)
+  properties.__data[sN] = tD
+  return tD
 end
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -491,6 +517,10 @@ end
 
 function net.ReadEntity()
   return netRead()
+end
+
+function net.Receive()
+  return true
 end
 
 --------------------------------------------------------------------------------------------------------------------------------
