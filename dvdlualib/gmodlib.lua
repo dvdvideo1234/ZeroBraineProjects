@@ -528,3 +528,12 @@ sql = {}
 
 function sql.TableExists(anyTable) return true end
 function sql.Query(sQ) return {} end
+
+--------------------------------------------------------------------------------------------------------------------------------
+game = {__single = true}
+
+function game.SinglePlayer(vS)
+  if(vS ~= nil) then game.__single = common.toBool(vS) end
+  return game.__single
+end
+
