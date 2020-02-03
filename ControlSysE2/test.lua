@@ -30,14 +30,12 @@ local a = newItem(oSelf, ATTACH, Vector(0,0,0), Vector(0,0,1), -25)
 GetConVar("wire_expression2_"..api.."_enst"):SetData(1)
 GetConVar("wire_expression2_"..api.."_only"):SetData("IsVehicle/GetModel")
 
+a:dumpItem("TALK", "test")
 
-a:smpLocal()
-
-a:addHitOnly("GetModel1", "test1")
-a:addHitOnly("GetModel" , "test1")
-a:addHitOnly("IsVehicle", "test1")
-a:addHitOnly("IsPlayer", "test1")
+a:rayAim(6,6,6)
 
 a:dumpItem("TALK", "test")
 
-common.logTable(getMethList())
+local h = 14.433756729741
+print(Vector(h,h,h):Length())
+

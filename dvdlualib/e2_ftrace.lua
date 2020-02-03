@@ -395,6 +395,15 @@ function newItem(oSelf, vEnt, vPos, vDir, nLen)
     if(not isValid(vE)) then return nil end; return vE
   end
   
+  function oFTrc:rayAim(nX, nY, nZ)
+    local this, self = self, oSelf
+    if(not this) then return nil end
+    local vD = Vector(nX, nY, nZ)
+    vD:Sub(this.mPos); vD:Normalize()
+    vD:Mul(this.mLen); this.mDir:Set(vD)
+    return this
+  end
+  
   return oFTrc
 end
 

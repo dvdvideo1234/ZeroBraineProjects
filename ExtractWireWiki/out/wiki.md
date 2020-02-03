@@ -116,16 +116,19 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`isHitWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash trace [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `HitWorld` flag|
 |![image][ref-xft]:`isIgnoreWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash trace trace `IgnoreWorld` flag|
 |![image][ref-xft]:`isStartSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash trace [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `StartSolid` flag|
+|![image][ref-xft]:`rayAim`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Aims the flash trace ray at a given position using three numbers|
+|![image][ref-xft]:`rayAim`(![image][ref-v])|![image][ref-xft]|Aims the flash trace ray at a given position using a vector|
 |![image][ref-xft]:`rayDiv`(![image][ref-n])|![image][ref-xft]|Contracts the flash trace ray with a number|
 |![image][ref-xft]:`rayDiv`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Contracts the flash trace ray each component individually using three numbers|
 |![image][ref-xft]:`rayDiv`(![image][ref-v])|![image][ref-xft]|Contracts the flash trace ray each component individually using a vector|
+|![image][ref-xft]:`rayMove`(![image][ref-xxx])|![image][ref-xft]|Moves the flash trace ray with its own direction and magnitude|
+|![image][ref-xft]:`rayMove`(![image][ref-n])|![image][ref-xft]|Moves the flash trace ray with its own direction and magnitude length|
+|![image][ref-xft]:`rayMove`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Moves the flash trace ray with displacement as three numbers|
+|![image][ref-xft]:`rayMove`(![image][ref-v])|![image][ref-xft]|Moves the flash trace ray with displacement vector|
+|![image][ref-xft]:`rayMove`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Moves the flash trace ray with direction vector, magnitude length|
 |![image][ref-xft]:`rayMul`(![image][ref-n])|![image][ref-xft]|Expands the flash trace ray with a number|
 |![image][ref-xft]:`rayMul`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Expands the flash trace ray each component individually using three numbers|
 |![image][ref-xft]:`rayMul`(![image][ref-v])|![image][ref-xft]|Expands the flash trace ray each component individually using a vector|
-|![image][ref-xft]:`rayNudge`(![image][ref-xxx])|![image][ref-xft]|Nudges the flash trace ray with its own direction and magnitude|
-|![image][ref-xft]:`rayNudge`(![image][ref-n])|![image][ref-xft]|Nudges the flash trace ray with its own direction and magnitude length|
-|![image][ref-xft]:`rayNudge`(![image][ref-v])|![image][ref-xft]|Nudges the flash trace ray with displacement vector|
-|![image][ref-xft]:`rayNudge`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Nudges the flash trace ray with direction vector, magnitude length|
 |![image][ref-xft]:`remBase`(![image][ref-xxx])|![image][ref-xft]|Removes the base attachment entity of the flash trace|
 |![image][ref-xft]:`remEntHit`(![image][ref-xxx])|![image][ref-xft]|Removes all the entities from the flash trace internal hit list|
 |![image][ref-xft]:`remEntHitOnly`(![image][ref-xxx])|![image][ref-xft]|Removes all the entities from the flash trace internal only hit list|
@@ -168,29 +171,6 @@ The description of the API is provided in the table below.
 |![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash trace relative to the entity by origin position, direction vector from up, length distance|
 |![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash trace local to the entity by origin position, direction vector, length distance from direction vector|
 |![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash trace local to the entity by origin position, direction vector, length distance|
-
-|Icon|Description|
-|---|---|
-|![image][ref-a]|[`Angle`](https://en.wikipedia.org/wiki/Euler_angles) class|
-|![image][ref-b]|[`Bone`](https://github.com/wiremod/wire/wiki/Expression-2#Bone) class|
-|![image][ref-c]|[`Complex`](https://en.wikipedia.org/wiki/Complex_number) number|
-|![image][ref-e]|[`Entity`](https://en.wikipedia.org/wiki/Entity) class|
-|![image][ref-xm2]|[`Matrix`](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 2x2|
-|![image][ref-m]|[`Matrix`](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 3x3|
-|![image][ref-xm4]|[`Matrix`](https://en.wikipedia.org/wiki/Matrix_(mathematics)) 4x4|
-|![image][ref-n]|[`Number`](https://en.wikipedia.org/wiki/Number)|
-|![image][ref-q]|[`Quaternion`](https://en.wikipedia.org/wiki/Quaternion)|
-|![image][ref-r]|[`Array`](https://en.wikipedia.org/wiki/Array_data_structure)|
-|![image][ref-s]|[`String`](https://en.wikipedia.org/wiki/String_(computer_science)) class|
-|![image][ref-t]|[`Table`](https://github.com/wiremod/wire/wiki/Expression-2#Table)|
-|![image][ref-xv2]|[`Vector`](https://en.wikipedia.org/wiki/Euclidean_vector) 2D class|
-|![image][ref-v]|[`Vector`](https://en.wikipedia.org/wiki/Euclidean_vector) 3D class|
-|![image][ref-xv4]|[`Vactor`](https://en.wikipedia.org/wiki/4D_vector) 4D class|
-|![image][ref-xrd]|[`Ranger data`](https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger) class|
-|![image][ref-xwl]|[`Wire link`](https://github.com/wiremod/wire/wiki/Expression-2#Wirelink) class|
-|![image][ref-xft]|[`Flash tracer`](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer) class|
-|![image][ref-xsc]|[`State controller`](https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl) class|
-|![image][ref-xxx]|[`Void`](https://en.wikipedia.org/wiki/Void_type) data type|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
