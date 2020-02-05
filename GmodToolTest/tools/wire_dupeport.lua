@@ -4,69 +4,31 @@ TOOL.Command    = nil
 TOOL.ConfigName = ""
 TOOL.Tab        = "Wire"
 
+local gsSourc = "wire_dupeport"
+local gsLimit = gsSourc.."s"
+local gsClass = "gmod_"..gsSourc
 local gsModel = "models/jaanus/wiretool/wiretool_speed.mdl"
 
 if ( CLIENT ) then
-	language.Add( "Tool.wire_dupeport.name", "Adv. Dupe. Teleporter Tool (Wire)" )
-	language.Add( "Tool.wire_dupeport.desc", "Spawns an Adv. Dupe. Teleporter for use with the wire system." )
-	language.Add( "Tool.wire_dupeport.0", "Primary: Create/Update Adv. Dupe. Teleporter" )
-	language.Add( "sboxlimit_wire_dupeports", "You've hit Adv. Dupe. Teleporters limit!" )
-	language.Add( "undone_wiredupeport", "Undone Wire Adv. Dupe. Teleporter" )
+	language.Add( "Tool."..gsSourc..".name", "Adv. Dupe. Teleporter Tool (Wire)" )
+	language.Add( "Tool."..gsSourc..".desc", "Spawns an Adv. Dupe. Teleporter for use with the wire system." )
+	language.Add( "Tool."..gsSourc..".0", "Primary: Create/Update Adv. Dupe. Teleporter" )
+	language.Add( "Cleanup_"..gsLimit, "Wire Adv. Dupe. Teleporters" )
+	language.Add( "Cleaned_"..gsLimit, "Cleaned up Wire Adv. Dupe. Teleporters" )
+	language.Add( "SBoxLimit_"..gsLimit, "You've hit Adv. Dupe. Teleporters limit!" )
+	language.Add( "Undone_"..gsSourc, "Undone Wire Adv. Dupe. Teleporter" )
 end
 
 if ( SERVER ) then
-	CreateConVar( "sbox_maxwire_dupeports", 10 )
-end
 
-cleanup.Register( "wire_dupeports" )
-
-function TOOL:LeftClick( trace )
-	if trace.Entity && trace.Entity:IsPlayer() then return false end
-	if ( CLIENT ) then return true end
-
-	local ply = self:GetOwner()
-
-	-- If we shot a wire_dupeport do nothing
-	if ( trace.Entity:IsValid() &&
-			 trace.Entity.pl == ply &&
-			 trace.Entity:GetClass() == "gmod_wire_dupeport" ) then
-			 trace.Entity:Setup()
-		return true
-	end
-
-	if ( !self:GetSWEP():CheckLimit( "wire_dupeports" ) ) then return false end
-
-	local Ang = trace.HitNormal:Angle()
-	Ang.pitch = Ang.pitch + 90
-
-	local wire_dupeport = MakeWireDupePort( ply, Ang, trace.HitPos )
-	if ( !wire_dupeport ) then return false end
-	if ( !wire_dupeport:IsValid() ) then return false end
-
-	local min = wire_dupeport:OBBMins()
-	wire_dupeport:SetPos( trace.HitPos - trace.HitNormal * min.z )
-
-	local weld = WireLib.Weld(wire_dupeport, trace.Entity, trace.PhysicsBone, true)
-
-	undo.Create( "WireDupePort" )
-		undo.AddEntity( wire_dupeport )
-		undo.AddEntity( weld )
-		undo.SetPlayer( ply )
-	undo.Finish()
-
-	ply:AddCleanup( "wire_dupeports", wire_dupeport )
-
-	return true
-end
-
-if ( SERVER ) then
+	CreateConVar( "sbox_max"..gsLimit, 10 )
 
 	function MakeWireDupePort( ply, Ang, Pos)
 		if ( ply:IsAdmin() || ply:IsSuperAdmin() ) then
 
-			if ( !ply:CheckLimit( "wire_dupeports" ) ) then return false end
+			if ( !ply:CheckLimit( gsLimit ) ) then return false end
 
-			local wire_dupeport = ents.Create( "gmod_wire_dupeport" )
+			local wire_dupeport = ents.Create( gsClass )
 			if ( !wire_dupeport:IsValid() ) then return false end
 
 			wire_dupeport:SetModel( Model( gsModel ) )
@@ -86,7 +48,7 @@ if ( SERVER ) then
 				wire_dupeport.SpawnSteamID = ply:SteamID()
 			end
 
-			ply:AddCount( "wire_dupeports", wire_dupeport )
+			ply:AddCount( gsLimit, wire_dupeport )
 
 			return wire_dupeport
 		else
@@ -95,8 +57,49 @@ if ( SERVER ) then
 		end
 	end
 
-	duplicator.RegisterEntityClass( "gmod_wire_dupeport", MakeWireDupePort, "Ang", "Pos" )
+	duplicator.RegisterEntityClass( gsClass, MakeWireDupePort, "Ang", "Pos" )
 
+end
+
+cleanup.Register( gsLimit )
+
+function TOOL:LeftClick( trace )
+	if trace.Entity && trace.Entity:IsPlayer() then return false end
+	if ( CLIENT ) then return true end
+
+	local ply = self:GetOwner()
+
+	-- If we shot a wire_dupeport do nothing
+	if ( trace.Entity:IsValid() &&
+			 trace.Entity.pl == ply &&
+			 trace.Entity:GetClass() == gsClass ) then
+			 trace.Entity:Setup()
+		return true
+	end
+
+	if ( !self:GetSWEP():CheckLimit( gsLimit ) ) then return false end
+
+	local Ang = trace.HitNormal:Angle()
+	Ang.pitch = Ang.pitch + 90
+
+	local wire_dupeport = MakeWireDupePort( ply, Ang, trace.HitPos )
+	if ( !wire_dupeport ) then return false end
+	if ( !wire_dupeport:IsValid() ) then return false end
+
+	local min = wire_dupeport:OBBMins()
+	wire_dupeport:SetPos( trace.HitPos - trace.HitNormal * min.z )
+
+	local weld = WireLib.Weld(wire_dupeport, trace.Entity, trace.PhysicsBone, true)
+
+	undo.Create( "WireDupePort" )
+		undo.AddEntity( wire_dupeport )
+		undo.AddEntity( weld )
+		undo.SetPlayer( ply )
+	undo.Finish()
+
+	ply:AddCleanup( gsLimit, wire_dupeport )
+
+	return true
 end
 
 function TOOL:UpdateGhostWireDupePort( ent, player )
@@ -108,7 +111,7 @@ function TOOL:UpdateGhostWireDupePort( ent, player )
 
 	if ( trace.Entity &&
 		   trace.Entity:IsValid() &&
-		 ( trace.Entity:GetClass() == "gmod_wire_dupeport" ||
+		 ( trace.Entity:GetClass() == gsClass ||
 		 	 trace.Entity:IsPlayer() ) ) then
 		ent:SetNoDraw( true )
 		return
@@ -136,5 +139,8 @@ function TOOL:Think()
 end
 
 function TOOL.BuildCPanel(panel)
-	panel:AddControl("Header", { Text = "#Tool.wire_dupeport.name", Description = "#Tool.wire_dupeport.desc" })
+	panel:AddControl("Header", {
+		Text        = "#Tool."..gsSourc..".name",
+		Description = "#Tool."..gsSourc..".desc"
+	})
 end
