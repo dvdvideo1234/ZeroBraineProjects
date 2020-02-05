@@ -606,7 +606,11 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     end
     local ccat = ((csiz - clen) / 2)
     local fcat, bcat = math.floor(ccat), math.ceil(ccat)
+    local ocnt = tPool.cent; ocnt = (ocnt and ocnt[ID] or nil)
     tH[ID] = ("-"):rep(common.getClamp((csiz or clen), 3))
+    if(ocnt) then
+      print(ocnt)
+    end
     tC[ID] = wikiSpace:rep(fcat)..scol:gsub("%s+",wikiSpace)..wikiSpace:rep(bcat)
   end; table.sort(tPool); tPool.data = {}
   wikilib.printRow(tC); wikilib.printRow(tH)
