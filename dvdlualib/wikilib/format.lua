@@ -17,6 +17,8 @@ local wikiFormat = {
   __wds = "E2Helper.Descriptions[\"%s\"] = \"%s\"\n",
   __url = "%s://%s",
   __sss = "[%s%s%s]",
+  __hsr = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/buttons/%s.png",
+  __hmg = "<img src=\"%s\" width=\"%s\" height=\"%s\"/>",
   tsp = "/",
   asp = ",",
   msp = ":",

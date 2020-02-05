@@ -118,6 +118,9 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`isStartSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash trace [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `StartSolid` flag|
 |![image][ref-xft]:`rayAim`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Aims the flash trace ray at a given position using three numbers|
 |![image][ref-xft]:`rayAim`(![image][ref-v])|![image][ref-xft]|Aims the flash trace ray at a given position using a vector|
+|![image][ref-xft]:`rayAmend`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Amends the flash trace ray direction using three numbers|
+|![image][ref-xft]:`rayAmend`(![image][ref-v])|![image][ref-xft]|Amends the flash trace ray direction using a vector|
+|![image][ref-xft]:`rayAmend`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Amends the flash trace ray direction using vector and magnitude|
 |![image][ref-xft]:`rayDiv`(![image][ref-n])|![image][ref-xft]|Contracts the flash trace ray with a number|
 |![image][ref-xft]:`rayDiv`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Contracts the flash trace ray each component individually using three numbers|
 |![image][ref-xft]:`rayDiv`(![image][ref-v])|![image][ref-xft]|Contracts the flash trace ray each component individually using a vector|

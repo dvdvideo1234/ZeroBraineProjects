@@ -60,6 +60,14 @@ local function toLocal(...)
   return (wikiFormat.__loc:format(...))
 end
 
+local function toImgSrcHTML(...)
+  return (wikiFormat.__hsr:format(...))
+end
+
+local function toImgHTML(...)
+  return (wikiFormat.__hmg:format(...))
+end
+
 local function toLinkURL(...)
   return (wikiFormat.__lnk:format(...))
 end
@@ -666,6 +674,36 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   end
   io.write("\n")
 end
+
+function wikilib.parseKeyCombination(sS, vT, nW, nH)
+  local sTF, sTB, sO, iD = "", "", "", 1
+  local sW = tostring(nW and common.getClamp(tonumber(nW) or 0, 0) or "")
+  local sH = tostring(nH and common.getClamp(tonumber(nH) or 0, 0) or "")
+  if(common.isString(vT)) then
+    sTF, sTB = vT, vT
+  elseif(common.isTable(vT)) then
+    sTF, sTB = vT[1], vT[2]
+  else
+    wikilib.common.logStatus("wikilib.parseKeyCombination: Token invalid <"..tostring(vT).."> !")
+    if(bErr) then error("wikilib.parseKeyCombination: Token invalid <"..tostring(vT).."> !") end
+  end
+  local bO, eO = sS:find(sTF, iD, true) -- Open token
+  local bC, eC = sS:find(sTB, iD, true) -- Close token
+  while(bO and eO and bC and eC) do
+    sO = sO..sS:sub(iD, bO - 1)
+    local tT = common.stringExplode(sS:sub(eO + 1, bC - 1),"+")
+    for iK = 1, #tT do local vS = common.stringTrim(tT[iK])
+      vS = toImgHTML(toImgSrcHTML(vS:lower()), sW, sH)
+      tT[iK] = vS
+    end
+    sO = sO..table.concat(tT, "+")
+    iD = eC + 1
+    bO, eO = sS:find(sTF, iD, true)
+    bC, eC = sS:find(sTB, iD, true)
+  end
+  return sO..sS:sub(iD, -1)
+end
+
 
 function wikilib.folderReplaceURL(sF, ...)
   local sF, sU = wikilib.common.normFolder(tostring(sF or "")), ""
