@@ -11,9 +11,9 @@ local API = {
     mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={20,5,13}},
-    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={20,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={20,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13},algn={"<","|","<"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={20,5,13},algn={"<","|","<"}}
   },
   FILE = {
     exts = "stcontrol",
@@ -43,7 +43,9 @@ local API = {
   REFLN = {
     {"ref_example", "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_stcontrol.txt"},
     {"ref_tusofia", "https://tu-sofia.bg/"},
+    {"ref_exponent", "https://en.wikipedia.org/wiki/Exponentiation"},
     {"ref_relay", "https://en.wikipedia.org/wiki/Relay"},
+    {"ref_realnum", "https://en.wikipedia.org/wiki/Real_number"},
     {"ref_pid", "https://en.wikipedia.org/wiki/PID_controller"},
     {"ref_aero_sys", "https://en.wikipedia.org/wiki/Propeller_(aeronautics)"},
     {"ref_quad_eq", "https://en.wikipedia.org/wiki/Quadratic_equation"},
@@ -80,12 +82,14 @@ dynamic [sampling time][ref_samp_time]. They are used generally for every kind o
 [automatic control][ref_auto_con] that is needed in Wiremod. Supports a bunch of general
 [tuning methods][ref_contr_tune], I studied at [the university][ref_tusofia] and can be
 initialized as a [relay][ref_relay], linear or power controller. The error `E` with power
-`P` can be zero, positive or negative number. When zero, the output is calculated as [relay][ref_relay],
+`P` can be [any real number][ref_realnum]. When zero, the output is calculated as [relay][ref_relay],
 when equal to `1`, we have the [classic PID controller][ref_pid] when the power
-is `2` the error has [quadratic relation][ref_quad_eq] `E^2`, `3`, for [cubic][ref_cubic_eq]
+is `2` the error has [quadratic relation][ref_quad_eq] `E^2`, `3`, for [cubic][ref_cubic_eq] `E^3`
 and so on needed for [aero-propeller][ref_aero_sys] systems. Negative powers will be treated as error
-[square root][ref_root] ( `1/E^P` when p = `2` ). The user can put even fractional powers `P` to each term. It
-has a lot of possibilities. The only limits is your imagination.
+[square root][ref_root] `E^(-2) = 1/E^2`. The user can apply even fractional powers `P` on each term.
+The [fractional powers][ref_exponent] can be treated as the numerator is taken as the power and the
+denominator as a root. However, there is no difference in which operation will be applied first
+as you have `E^(2/5) = sqr5(E^2) = sqr5(E)^2`. It has a lot of possibilities. The only limits is your imagination.
 
 ### What is this thing designed for?
 The `%s` class consists of fast performing controller object-oriented

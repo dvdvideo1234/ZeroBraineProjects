@@ -12,9 +12,9 @@ local API = {
     prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13}},
-    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13},cent={nil,"::",nil}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={25,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13},algn={"<","|","<"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={25,5,13},algn={"<","|","<"}}
   },
   FILE = {
     exts = "ftrace",

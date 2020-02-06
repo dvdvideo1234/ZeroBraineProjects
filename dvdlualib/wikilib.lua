@@ -606,10 +606,16 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     end
     local ccat = ((csiz - clen) / 2)
     local fcat, bcat = math.floor(ccat), math.ceil(ccat)
-    local ocnt = tPool.cent; ocnt = (ocnt and ocnt[ID] or nil)
+    local algn = tPool.algn; algn = (algn and algn[ID] or nil)
     tH[ID] = ("-"):rep(common.getClamp((csiz or clen), 3))
-    if(ocnt) then
-      print(ocnt)
+    if(algn) then
+      if    (algn:sub(1,1) == "<") then tH[ID] = ":"..tH[ID]:sub(2,-1)
+      elseif(algn:sub(1,1) == ">") then tH[ID] = tH[ID]:sub(1,-2)..":"
+      elseif(algn:sub(1,1) == "|") then tH[ID] = ":"..tH[ID]:sub(2,-2)..":"
+      else
+        wikilib.common.logStatus("wikilib.printDescriptionTable: Alignment invalid <"..algn.."> !")
+        if(bErr) then error("wikilib.printDescriptionTable: Alignment invalid <"..algn.."> !") end
+      end
     end
     tC[ID] = wikiSpace:rep(fcat)..scol:gsub("%s+",wikiSpace)..wikiSpace:rep(bcat)
   end; table.sort(tPool); tPool.data = {}
