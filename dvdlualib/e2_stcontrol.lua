@@ -144,37 +144,56 @@ local function getType(oStCon)
 end
 
 local function dumpItem(oStCon, oSelf, sNam, sPos)
-	local sP = tostring(sPos or gsDefPrint)
-	local nP = gtPrintName[sP] -- Print location setup
-	if(not nP) then return oStCon end
-	logStatus("["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."] Data:", oSelf, nP)
-	logStatus(" Human: ["..tostring(oStCon.mbMan).."] {V="..tostring(oStCon.mvMan)..", B="..tostring(oStCon.mBias).."}", oSelf, nP)
-	logStatus(" Gains: {P="..tostring(oStCon.mkP)..", I="..tostring(oStCon.mkI)..", D="..tostring(oStCon.mkD).."}", oSelf, nP)
-	logStatus(" Power: {P="..tostring(oStCon.mpP)..", I="..tostring(oStCon.mpI)..", D="..tostring(oStCon.mpD).."}", oSelf, nP)
-	logStatus(" Limit: {D="..tostring(oStCon.mSatD)..", U="..tostring(oStCon.mSatU).."}", oSelf, nP)
-	logStatus(" Error: {O="..tostring(oStCon.mErrO)..", N="..tostring(oStCon.mErrN).."}", oSelf, nP)
-	logStatus(" Value: ["..tostring(oStCon.mvCon).."] {P="..tostring(oStCon.mvP)..", I="..tostring(oStCon.mvI)..", D=" ..tostring(oStCon.mvD).."}", oSelf, nP)
-	logStatus(" Flags: ["..tostring(oStCon.mbOn).."] {C="..tostring(oStCon.mbCmb)..", R=" ..tostring(oStCon.mbInv)..", I="..tostring(oStCon.meInt).."}", oSelf, nP)
-	return oStCon -- The dump method
+  local sP = tostring(sPos or gsDefPrint)
+  local nP = gtPrintName[sP] -- Print location setup
+  if(not nP) then return oStCon end
+  logStatus("Controller ["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."]:", oSelf, nP)
+  logStatus(" Manual mode enabled: ["..tostring(oStCon.mbMan).."]", oSelf, nP)
+  logStatus("  Value: "..tostring(oStCon.mvMan), oSelf, nP)
+  logStatus("   Bias: "..tostring(oStCon.mBias), oSelf, nP)
+  logStatus(" Gains for terms:", oSelf, nP)
+  logStatus("      P: "..tostring(oStCon.mkP), oSelf, nP)
+  logStatus("      I: "..tostring(oStCon.mkI), oSelf, nP)
+  logStatus("      D: "..tostring(oStCon.mkD), oSelf, nP)  
+  logStatus(" Powers for terms:", oSelf, nP)
+  logStatus("      P: "..tostring(oStCon.mpP), oSelf, nP)
+  logStatus("      I: "..tostring(oStCon.mpI), oSelf, nP)
+  logStatus("      D: "..tostring(oStCon.mpD), oSelf, nP)
+  logStatus(" Saturation limits:", oSelf, nP)
+  logStatus("     Up: "..tostring(oStCon.mSatU), oSelf, nP)
+  logStatus("   Down: "..tostring(oStCon.mSatD), oSelf, nP)
+  logStatus(" Error memory state:", oSelf, nP)
+  logStatus("    New: "..tostring(oStCon.mErrN), oSelf, nP)
+  logStatus("    Old: "..tostring(oStCon.mErrO), oSelf, nP)
+  logStatus(" Control state value: ["..tostring(oStCon.mvCon).."]", oSelf, nP)
+  logStatus("      P: "..tostring(oStCon.mvP), oSelf, nP)
+  logStatus("      I: "..tostring(oStCon.mvI), oSelf, nP)
+  logStatus("      D: "..tostring(oStCon.mvD), oSelf, nP)
+  logStatus(" Control enable flags: ["..tostring(oStCon.mbOn).."]", oSelf, nP)
+  logStatus("   BCmb: "..tostring(oStCon.mbCmb), oSelf, nP)
+  logStatus("   BInv: "..tostring(oStCon.mbInv), oSelf, nP)
+  logStatus("   EInt: "..tostring(oStCon.meInt), oSelf, nP)
+  logStatus("   EDif: "..tostring(oStCon.meDif), oSelf, nP)
+  return oStCon -- The dump method
 end
 
 function newItem(oSelf, nTo)
-	local eChip = oSelf.entity; if(not isValid(eChip)) then
-		return logStatus("Entity invalid", oSelf, nil, nil) end
-	local oStCon, sM = {}, gtMissName[3]; oStCon.mnTo = tonumber(nTo) -- Place to store the object
-	if(oStCon.mnTo and oStCon.mnTo <= 0) then
-		return logStatus("Delta mismatch ["..tostring(oStCon.mnTo).."]", oSelf, nil, nil) end
-	local sType = gsFormatPID:format(sM, sM, sM) -- Error state values
-	oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
-	oStCon.mErrO, oStCon.mErrN, oStCon.mType = 0, 0, {sType, gtMissName[2]:rep(3)}
-	oStCon.mvCon, oStCon.mTimB, oStCon.meInt = 0, 0, true -- Control value and integral enabled
-	oStCon.mBias, oStCon.mSatD, oStCon.mSatU = 0, nil, nil -- Saturation limits and settings
-	oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
-	oStCon.mkP, oStCon.mkI, oStCon.mkD = 0, 0, 0 -- P, I and D term gains
-	oStCon.mpP, oStCon.mpI, oStCon.mpD = 1, 1, 1 -- Raise the error to power of that much
-	oStCon.mbCmb, oStCon.mbInv, oStCon.mbOn, oStCon.mbMan = false, false, false, false
-	oStCon.mvMan, oStCon.mSet = 0, eChip -- Configure manual mode and store indexing
-	-- return oStCon -- Return the created controller object
+  local eChip = oSelf.entity; if(not isValid(eChip)) then
+    return logStatus("Entity invalid", oSelf, nil, nil) end
+  local oStCon, sM = {}, gtMissName[3]; oStCon.mnTo = tonumber(nTo) -- Place to store the object
+  if(oStCon.mnTo and oStCon.mnTo <= 0) then
+    return logStatus("Delta mismatch ["..tostring(oStCon.mnTo).."]", oSelf, nil, nil) end
+  local sType = gsFormatPID:format(sM, sM, sM) -- Error state values
+  oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
+  oStCon.mErrO, oStCon.mErrN, oStCon.mType = 0, 0, {sType, gtMissName[2]:rep(3)}
+  oStCon.mvCon, oStCon.mTimB, oStCon.meInt, oStCon.meDif = 0, 0, true, true -- Control value and integral enabled
+  oStCon.mBias, oStCon.mSatD, oStCon.mSatU = 0, nil, nil -- Saturation limits and settings
+  oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
+  oStCon.mkP, oStCon.mkI, oStCon.mkD = 0, 0, 0 -- P, I and D term gains
+  oStCon.mpP, oStCon.mpI, oStCon.mpD = 1, 1, 1 -- Raise the error to power of that much
+  oStCon.mbCmb, oStCon.mbInv, oStCon.mbOn, oStCon.mbMan = false, false, false, false
+  oStCon.mvMan, oStCon.mSet = 0, eChip -- Configure manual mode and store indexing
+
   
   function oStCon:dumpItem(nT, sN)
     local this, self = self, oSelf

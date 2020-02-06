@@ -100,7 +100,8 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`getWindupU`(![image][ref-xxx])|![image][ref-n]|Returns state control windup upper bound|
 |![image][ref-xsc]:`isActive`(![image][ref-xxx])|![image][ref-n]|Checks state control activated working flag|
 |![image][ref-xsc]:`isCombined`(![image][ref-xxx])|![image][ref-n]|Checks state control combined flag spreading proportional term gain across others|
-|![image][ref-xsc]:`isIntegrating`(![image][ref-xxx])|![image][ref-n]|Checks integral enabled flag|
+|![image][ref-xsc]:`isDerivative`(![image][ref-xxx])|![image][ref-n]|Checks derivative enabled flag|
+|![image][ref-xsc]:`isIntegral`(![image][ref-xxx])|![image][ref-n]|Checks integral enabled flag|
 |![image][ref-xsc]:`isInverted`(![image][ref-xxx])|![image][ref-n]|Checks state control inverted feedback flag of the reference and set-point|
 |![image][ref-xsc]:`isManual`(![image][ref-xxx])|![image][ref-n]|Checks state control manual control flag|
 |![image][ref-xsc]:`remGain`(![image][ref-xxx])|![image][ref-xsc]|Removes state control proportional term gain, integral term gain and derivative term gain|
@@ -133,7 +134,8 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`setGainPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state control proportional term gain and integral term gain|
 |![image][ref-xsc]:`setIsActive`(![image][ref-n])|![image][ref-xsc]|Updates state control activated working flag|
 |![image][ref-xsc]:`setIsCombined`(![image][ref-n])|![image][ref-xsc]|Updates combined flag spreading proportional term gain across others|
-|![image][ref-xsc]:`setIsIntegrating`(![image][ref-n])|![image][ref-xsc]|Updates integral enabled flag|
+|![image][ref-xsc]:`setIsDerivative`(![image][ref-n])|![image][ref-xsc]|Updates derivative enabled flag|
+|![image][ref-xsc]:`setIsIntegral`(![image][ref-n])|![image][ref-xsc]|Updates integral enabled flag|
 |![image][ref-xsc]:`setIsInverted`(![image][ref-n])|![image][ref-xsc]|Updates state control inverted feedback flag of the reference and set-point|
 |![image][ref-xsc]:`setIsManual`(![image][ref-n])|![image][ref-xsc]|Updates state control manual control signal value|
 |![image][ref-xsc]:`setManual`(![image][ref-n])|![image][ref-xsc]|Updates state control manual control value|

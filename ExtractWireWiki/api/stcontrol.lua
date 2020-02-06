@@ -17,7 +17,7 @@ local API = {
   },
   FILE = {
     exts = "stcontrol",
-    base = "E:/Documents/Lua-Projs/SVN/wire-extras",
+    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_stcontrol",
