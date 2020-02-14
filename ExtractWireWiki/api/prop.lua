@@ -12,9 +12,9 @@ local API = {
     prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13}},
-    {name="APPLY",cols={"Prop core method", "Out", "Description"},size={46,5,13}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Prop core method", "Out", "Description"},size={46,5,13},algn={"<","|","<"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13},algn={"<","|","<"}}
   },
   FILE = {
     exts = "prop",                             -- Extension source file

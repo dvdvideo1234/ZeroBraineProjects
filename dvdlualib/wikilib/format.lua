@@ -19,6 +19,7 @@ local wikiFormat = {
   __sss = "[%s%s%s]",
   __hsr = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/buttons/%s.png",
   __hmg = "<img src=\"%s\" width=\"%s\" height=\"%s\"/>",
+  __bnr = "https://via.placeholder.com/%dx%d.png/%02x%02x%02x/%02x%02x%02x?text=%s",
   tsp = "/",
   asp = ",",
   msp = ":",

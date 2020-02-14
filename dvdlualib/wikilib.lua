@@ -26,9 +26,10 @@ local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true, ["%u+%u+"]=true}
 local wikiDiver = {[","]=true, [")"]=true, ["("] = true, ["."] = true}
 -- Stores the new line abbreviature in MD
 local wikiNewLN = "  "
-
 -- Stores the symbol for line divider and the repetition count
 local wikiLineDiv = {"-", 120}
+-- Stores placeholder background and freground image colors
+local wikiColorPH = {{0,0,0}, {0,0,0}}
 
 local function isQuote(sS)
   local bLet = wikilib.common.stringHasLetter(sS)
@@ -66,6 +67,10 @@ end
 
 local function toImgHTML(...)
   return (wikiFormat.__hmg:format(...))
+end
+
+local function toImgBanner(...)
+  return (wikiFormat.__bnr:format(...))
 end
 
 local function toLinkURL(...)
@@ -683,6 +688,41 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     end
   end
   io.write("\n")
+end
+
+function wikilib.setPlaceHolderColor(bR, bG, bB, tR, tG, tB)
+  if(wikilib.common.isTable(bR)) then
+    for iD = 1, 3 do wikiColorPH[1][iD] = (tonumber(bR[iD]) or 0) end
+    if(wikilib.common.isTable(bG)) then
+      for iD = 1, 3 do wikiColorPH[2][iD] = (tonumber(bG[iD]) or 0) end
+    else
+      wikiColorPH[2][1] = (tonumber(bG) or 0)
+      wikiColorPH[2][2] = (tonumber(bB) or 0)
+      wikiColorPH[2][3] = (tonumber(tR) or 0)
+    end
+  else
+    wikiColorPH[1][1] = (tonumber(bR) or 0)
+    wikiColorPH[1][2] = (tonumber(bG) or 0)
+    wikiColorPH[1][3] = (tonumber(bB) or 0)
+    if(wikilib.common.isTable(tR)) then
+      for iD = 1, 3 do wikiColorPH[2][iD] = (tonumber(tR[iD]) or 0) end
+    else
+      wikiColorPH[2][1] = (tonumber(tR) or 0)
+      wikiColorPH[2][2] = (tonumber(tG) or 0)
+      wikiColorPH[2][3] = (tonumber(tB) or 0)
+    end
+  end
+end
+
+-- https://placeholder.com/#How_To_Use_Our_Placeholders
+function wikilib.getBanner(vT, vW, vH)
+  local sT = tostring(vT or "")
+        sT = (wikilib.common.isDryString(sT) and "+" or sT)
+  local nW = wikilib.common.getClamp(tonumber(vW) or 1 , 1)
+  local nH = wikilib.common.getClamp(tonumber(vH) or nW, 1)
+  local bR, bG, bB = unpack(wikiColorPH[1])
+  local tR, tG, tB = unpack(wikiColorPH[2])
+  return toImgBanner(nW, nH, bR, bG, bB, tR, tG, tB, sT)
 end
 
 function wikilib.parseKeyCombination(sS, vT, nW, nH)

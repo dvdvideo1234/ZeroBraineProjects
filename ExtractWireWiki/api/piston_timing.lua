@@ -8,12 +8,13 @@ local API = {
     quot = true,  -- (TRUE) Place backticks on words containing control symbols or all-upper
     qref = true,  -- (TRUE) Quote the string in the link reference
     prep = true,  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
-    wdsc = false  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    mosp = true,  -- (TRUE) Enables monospace font for the function names
+    wdsc = true  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13}},
-    {name="APPLY",cols={"Entity extensions", "Out", "Description"},size={46,5,13}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Entity extensions", "Out", "Description"},size={46,5,13},algn={"<","|","<"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13},algn={"<","|","<"}}
   },
   FILE = {
     exts = "wire_e2_piston_timing",
@@ -78,6 +79,7 @@ DSC["setPistonAxis(e:xv2)"]   = sBasp:format("Stores", "axis local vector", "a 2
 DSC["getPistonAxis(e:)"]      = sBasp:format("Returns", "axis local vector", "x as number")
 DSC["resPistonAxis(e:)"]      = sBasp:format("Clears", "axis local vector", "no arguments")
 DSC["setPistonBase(e:e)"]     = sBasp:format("Stores", "entity", "an entity")
+DSC["setPistonBase(e:)"]      = sBasp:format("Stores", "entity", "no arguments")
 DSC["getPistonBase(e:)"]      = sBasp:format("Returns", "entity", "no arguments")
 DSC["resPistonBase(e:)"]      = sBasp:format("Clears", "entity", "no arguments")
 DSC["clrPiston(e:)"]          = "Clears the pistons from the E2 chip"
@@ -133,10 +135,11 @@ DSC["setPistonMark(e:nnn)"]   = sBasp:format("Stores", "general rotation mark lo
 DSC["setPistonMark(e:r)"]     = sBasp:format("Stores", "general rotation mark local vector", "array")
 DSC["setPistonMark(e:v)"]     = sBasp:format("Stores", "general rotation mark local vector", "vector")
 DSC["setPistonMark(e:xv2)"]   = sBasp:format("Stores", "general rotation mark local vector", "2D vector")
-DSC["getMark(e:)"]            = sMark:format("Returns", "general mark and base")
-DSC["getMark(e:e)"]           = sMark:format("Returns", "general base")
-DSC["getMark(e:v)"]           = sMark:format("Returns", "general mark")
-DSC["getMark(e:ve)"]          = sMark:format("Returns", "no arguments")
+DSC["cnvPistonMark(e:)"]      = sMark:format("Converts", "general mark and base")
+DSC["cnvPistonMark(e:e)"]     = sMark:format("Converts", "general mark and local base")
+DSC["cnvPistonMark(e:v)"]     = sMark:format("Converts", "local mark and general base")
+DSC["cnvPistonMark(e:nnn)"]   = sMark:format("Converts", "local x, y, z mark and general base")
+DSC["cnvPistonMark(e:ve)"]    = sMark:format("Converts", "local mark and local base")
 
 ]===]
 
