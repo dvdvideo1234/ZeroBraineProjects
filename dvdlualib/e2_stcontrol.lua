@@ -152,28 +152,29 @@ local function dumpItem(oStCon, oSelf, sNam, sPos)
   logStatus("  Value: "..tostring(oStCon.mvMan), oSelf, nP)
   logStatus("   Bias: "..tostring(oStCon.mBias), oSelf, nP)
   logStatus(" Gains for terms:", oSelf, nP)
-  logStatus("      P: "..tostring(oStCon.mkP), oSelf, nP)
-  logStatus("      I: "..tostring(oStCon.mkI), oSelf, nP)
-  logStatus("      D: "..tostring(oStCon.mkD), oSelf, nP)  
-  logStatus(" Powers for terms:", oSelf, nP)
-  logStatus("      P: "..tostring(oStCon.mpP), oSelf, nP)
-  logStatus("      I: "..tostring(oStCon.mpI), oSelf, nP)
-  logStatus("      D: "..tostring(oStCon.mpD), oSelf, nP)
+  for iD = 1, #gtComponent do local sC = gtComponent[iD]
+    logStatus("      "..sC..": "..tostring(oStCon["mk"..sC]), oSelf, nP) end
+  logStatus(" Power for terms:", oSelf, nP)
+  for iD = 1, #gtComponent do local sC = gtComponent[iD]
+    logStatus("      "..sC..": "..tostring(oStCon["mp"..sC]), oSelf, nP) end
+  logStatus(" Control state value: ["..tostring(oStCon.mvCon).."]", oSelf, nP)
+  for iD = 1, #gtComponent do local sC = gtComponent[iD]
+    logStatus("      "..sC..": "..tostring(oStCon["mv"..sC]), oSelf, nP) end
   logStatus(" Saturation limits:", oSelf, nP)
-  logStatus("     Up: "..tostring(oStCon.mSatU), oSelf, nP)
-  logStatus("   Down: "..tostring(oStCon.mSatD), oSelf, nP)
+  logStatus("    Max: "..tostring(oStCon.mSatU), oSelf, nP)
+  logStatus("    Min: "..tostring(oStCon.mSatD), oSelf, nP)
+  logStatus(" Time memory state:", oSelf, nP)
+  logStatus("    New: "..tostring(oStCon.mTimN), oSelf, nP)
+  logStatus("   Past: "..tostring(oStCon.mTimO), oSelf, nP)
   logStatus(" Error memory state:", oSelf, nP)
   logStatus("    New: "..tostring(oStCon.mErrN), oSelf, nP)
-  logStatus("    Old: "..tostring(oStCon.mErrO), oSelf, nP)
-  logStatus(" Control state value: ["..tostring(oStCon.mvCon).."]", oSelf, nP)
-  logStatus("      P: "..tostring(oStCon.mvP), oSelf, nP)
-  logStatus("      I: "..tostring(oStCon.mvI), oSelf, nP)
-  logStatus("      D: "..tostring(oStCon.mvD), oSelf, nP)
-  logStatus(" Control enable flags: ["..tostring(oStCon.mbOn).."]", oSelf, nP)
+  logStatus("   Past: "..tostring(oStCon.mErrO), oSelf, nP)
+  logStatus(" Control enable flag: ["..tostring(oStCon.mbOn).."]", oSelf, nP)
   logStatus("   BCmb: "..tostring(oStCon.mbCmb), oSelf, nP)
   logStatus("   BInv: "..tostring(oStCon.mbInv), oSelf, nP)
   logStatus("   EInt: "..tostring(oStCon.meInt), oSelf, nP)
   logStatus("   EDif: "..tostring(oStCon.meDif), oSelf, nP)
+  logStatus("   EZcx: "..tostring(oStCon.meZcx), oSelf, nP)
   return oStCon -- The dump method
 end
 

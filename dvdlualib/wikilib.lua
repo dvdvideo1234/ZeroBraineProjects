@@ -363,14 +363,14 @@ function wikilib.readDescriptions(API)
         wikilib.common.logStatus("--------------------------------------------\n")
         wikilib.common.logStatus(sC)
         wikilib.common.logStatus("--------------------------------------------\n")
-        wikilib.common.logStatus("wikilib.readDescriptions[2]: Execution error: "..fC)
+        error("wikilib.readDescriptions[2]: Execution error: "..fC)
       end
     else
       wikilib.common.logStatus("wikilib.readDescriptions[1]: Compilation chunk:\n")
       wikilib.common.logStatus("--------------------------------------------\n")
       wikilib.common.logStatus(sC)
       wikilib.common.logStatus("--------------------------------------------\n")
-      wikilib.common.logStatus("wikilib.readDescriptions[1]: Execution error: "..fC)
+      error("wikilib.readDescriptions[1]: Execution error: "..fC)
     end
   else
     wikilib.common.logStatus("wikilib.readDescriptions: Compilation chunk:\n")
@@ -567,11 +567,16 @@ function wikilib.makeReturnValues(API)
 end
 
 function wikilib.printMatchedAPI(API, DSC, sNam)
-  local tK = wikiMList; table.sort(tK)
-  local sN = tostring(sNam or wikiDChunk.mch)
+  local tK, bF = wikiMList, false; table.sort(tK)
+  local sD = apiGetValue(API, "HDESC", "dsc")
+  local sN = tostring(sNam or (sD or wikiDChunk.mch))
+  local bErr = apiGetValue(API, "FLAG", "erro")
   for ID = 1, tK.__top do
-    if(not DSC[tK[ID]]) then
+    if(not DSC[tK[ID]]) then bF = true
       wikilib.common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
+  end
+  if(bErr and bF) then
+    error("wikilib.printMatchedAPI: Check markdown for missing description!")
   end
 end
 

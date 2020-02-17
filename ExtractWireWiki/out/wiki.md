@@ -96,6 +96,7 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`getMask`(![image][ref-xxx])|![image][ref-n]|Returns flash trace trace hit mask enums [`MASK`](https://wiki.garrysmod.com/page/Enums/MASK)|
 |![image][ref-xft]:`getMatType`(![image][ref-xxx])|![image][ref-n]|Returns the flash trace [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `MatType` material type number|
 |![image][ref-xft]:`getNormal`(![image][ref-xxx])|![image][ref-v]|Returns the flash trace [`trace-result`](https://wiki.garrysmod.com/page/Structures/TraceResult) `Normal` aim vector|
+|![image][ref-xft]:`getPlayer`(![image][ref-xxx])|![image][ref-e]|Returns the flash trace auto-assigned expression chip player|
 |![image][ref-xft]:`getPos`(![image][ref-xxx])|![image][ref-v]|Returns flash trace origin position|
 |![image][ref-xft]:`getPosLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash trace world origin position converted to base attachment entity local axis|
 |![image][ref-xft]:`getPosLocal`(![image][ref-e])|![image][ref-v]|Returns flash trace world origin position converted to entity local axis|
