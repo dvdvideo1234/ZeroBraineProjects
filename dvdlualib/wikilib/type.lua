@@ -1,28 +1,35 @@
+--[[
+  [1] -> Internal [wiremod addon](https://github.com/wiremod/wire) class or data type sent to `registerType` second argument
+  [2] -> [Wiremod](https://github.com/wiremod/wire) dedicated external data type names for using in `printTypeReference`
+  [3] -> Data type description to display with words in brackets converted to links
+  [4] -> The type that is used when writing an actual [expression 2](https://github.com/wiremod/wire/wiki/Expression-2) source for `[1]`
+  [5] -> General link description that is used for linking arguments in brackets `[]` in `[4]`
+]]--
 local wiki_type =
 {
   list = {
-    {"a"  , "Angle"        , "[Angle] class"           , "https://en.wikipedia.org/wiki/Euler_angles"},
-    {"b"  , "Bone"         , "[Bone] class"            , "https://github.com/wiremod/wire/wiki/Expression-2#Bone"},
-    {"c"  , "ComplexNumber", "[Complex] number"        , "https://en.wikipedia.org/wiki/Complex_number"},
-    {"e"  , "Entity"       , "[Entity] class"          , "https://en.wikipedia.org/wiki/Entity"},
-    {"xm2", "Matrix2"      , "[Matrix] 2x2"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"m"  , "Matrix"       , "[Matrix] 3x3"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"xm4", "Matrix4"      , "[Matrix] 4x4"            , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
-    {"n"  , "Number"       , "[Number]"                , "https://en.wikipedia.org/wiki/Number"},
-    {"q"  , "Quaternion"   , "[Quaternion]"            , "https://en.wikipedia.org/wiki/Quaternion"},
-    {"r"  , "Array"        , "[Array]"                 , "https://en.wikipedia.org/wiki/Array_data_structure"},
-    {"s"  , "String"       , "[String] class"          , "https://en.wikipedia.org/wiki/String_(computer_science)"},
-    {"t"  , "Table"        , "[Table]"                 , "https://github.com/wiremod/wire/wiki/Expression-2#Table"},
-    {"xv2", "Vector2"      , "[Vector] 2D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
-    {"v"  , "Vector"       , "[Vector] 3D class"       , "https://en.wikipedia.org/wiki/Euclidean_vector"},
-    {"xv4", "Vector4"      , "[Vactor] 4D class"       , "https://en.wikipedia.org/wiki/4D_vector"},
-    {"xrd", "RangerData"   , "[Ranger data] class"     , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
-    {"xwl", "WireLink"     , "[Wire link] class"       , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
-    {"xft", ""             , "[Flash tracer] class"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer"},
-    {"xsc", ""             , "[State controller] class", "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
-    {"xxx", ""             , "[Void] data type"        , "https://en.wikipedia.org/wiki/Void_type"}
+    {"a"  , "Angle"        , "[Angle] class"           , "angle"     , "https://en.wikipedia.org/wiki/Euler_angles"},
+    {"b"  , "Bone"         , "[Bone] class"            , "bone"      , "https://github.com/wiremod/wire/wiki/Expression-2#Bone"},
+    {"c"  , "ComplexNumber", "[Complex] number"        , "complex"   , "https://en.wikipedia.org/wiki/Complex_number"},
+    {"e"  , "Entity"       , "[Entity] class"          , "entity"    , "https://en.wikipedia.org/wiki/Entity"},
+    {"xm2", "Matrix2"      , "[Matrix] 2x2"            , "matrix2"   , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"m"  , "Matrix"       , "[Matrix] 3x3"            , "matrix"    , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"xm4", "Matrix4"      , "[Matrix] 4x4"            , "matrix4"   , "https://en.wikipedia.org/wiki/Matrix_(mathematics)"},
+    {"n"  , "Number"       , "[Number]"                , "number"    , "https://en.wikipedia.org/wiki/Number"},
+    {"q"  , "Quaternion"   , "[Quaternion]"            , "quaternion", "https://en.wikipedia.org/wiki/Quaternion"},
+    {"r"  , "Array"        , "[Array]"                 , "array"     , "https://en.wikipedia.org/wiki/Array_data_structure"},
+    {"s"  , "String"       , "[String] class"          , "string"    , "https://en.wikipedia.org/wiki/String_(computer_science)"},
+    {"t"  , "Table"        , "[Table]"                 , "table"     , "https://github.com/wiremod/wire/wiki/Expression-2#Table"},
+    {"xv2", "Vector2"      , "[Vector] 2D class"       , "vector2"   , "https://en.wikipedia.org/wiki/Euclidean_vector"},
+    {"v"  , "Vector"       , "[Vector] 3D class"       , "vector"    , "https://en.wikipedia.org/wiki/Euclidean_vector"},
+    {"xv4", "Vector4"      , "[Vactor] 4D class"       , "vector4"   , "https://en.wikipedia.org/wiki/4D_vector"},
+    {"xrd", "RangerData"   , "[Ranger data] class"     , "ranger"    , "https://github.com/wiremod/wire/wiki/Expression-2#BuiltIn_Ranger"},
+    {"xwl", "WireLink"     , "[Wire link] class"       , "wirelink"  , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
+    {"xft", ""             , "[Flash tracer] class"    , "ftrace"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer"},
+    {"xsc", ""             , "[State controller] class", "stcontrol" , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
+    {"xxx", ""             , "[Void] data type"        , "void"      , "https://en.wikipedia.org/wiki/Void_type"}
   },
-  idx = {
+  idx = { -- Used for finding data type description by its wire internal E2 type name
     ["angle"]      = 1,
     ["bone"]       = 2,
     ["complex"]    = 3,

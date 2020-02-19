@@ -6,8 +6,11 @@ common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
 
-local s = "When you press you turn blue: *{f1+f1+f1}*"
-local t = {"*{","}*"}
+local s1 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`IAE`) load rejection"
+local s2 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`ISE`) load rejection"
+local s3 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`ITAE`) load rejection"
+local p = "%s+%(`*I[AS]E`*%)%s+"
 
 
-print(wikilib.parseKeyCombination(s,t,20))
+
+print(s2:find(p))

@@ -7,7 +7,7 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = false, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    wdsc = false,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
@@ -29,14 +29,20 @@ local API = {
     FRM = "type-%s.png",
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
-
   REPLACE = {
     ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
     ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
-    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
+    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
+    ["Choen-Coon"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CC_tuning.png",
+    ["Ziegler-Nichols auto-oscillation"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png",
+    ["%(`*CHR`*%)%s+set%s+point%s+track"] = {["Chien-Hrones-Reswick"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_sp.png"},
+    ["%(`*IAE`*%)"]  = {["integral absolute error"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png"},
+    ["%(`*ISE`*%)"]  = {["integral square error"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png"},
+    ["%(`*ITAE`*%)"] = {["integral of time-weighted absolute error"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png"},
+    ["%(`*CHR`*%)%s+load%s+rejection"]    = {["Chien-Hrones-Reswick"] = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_dr.png"}
   },
   HDESC = {
-    top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",
+    top = "\nlocal E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}\n",
     bot = "return E2Helper.Descriptions",
     dsc = "E2Helper.Descriptions"
   },
@@ -74,6 +80,152 @@ local function getConvar()
     iC = iC + 1
   end; return sC
 end
+
+API.DSCHUNK = [===[
+
+local DSC = E2Helper.Descriptions
+
+local sObjNm = "state controller"
+
+local tActon = {"Creates", "Dumps", "Returns", "Checks", "Removes", "Resets", Processes, "Updates", "Tunes"}
+local fRtMak = "%s "..sObjNm.." object with %s sampling time"
+local fDump1 = "%s "..sObjNm.." to the chat area by %s identifier"
+local fDump2 = "%s "..sObjNm.." by %s identifier in the specified area by first argument"
+local fGnRet = "%s "..sObjNm.." %s"
+local fCTerm = "%s "..sObjNm.." %s automated control term signal"
+local fError = "%s "..sObjNm.." process %s %s"
+local fRtAll = "%s "..sObjNm.." proportional, integral and derivative term %s"
+local fRtCpy = "%s "..sObjNm.." object copy %s"
+local fRtTrm = "%s "..sObjNm.." automated control term %s"
+local fRtEl1 = "%s "..sObjNm.." %s term %s"
+local fRtEl2 = "%s "..sObjNm.." %s and %s term %s"
+local fRtPDy = "%s "..sObjNm.." dynamic process %s"
+local fRtPSt = "%s "..sObjNm.." static process %s"
+local fInPar = "%s "..sObjNm.." automated internal parameters"
+local fTuneM = "%s the "..sObjNm.." using the method %s"
+
+DSC["dumpItem(xsc:n)"]        = fDump1:format(tActon[2], "number")
+DSC["dumpItem(xsc:s)"]        = fDump1:format(tActon[2], "string")
+DSC["dumpItem(xsc:sn)"]       = fDump2:format(tActon[2], "number")
+DSC["dumpItem(xsc:ss)"]       = fDump2:format(tActon[2], "string")
+DSC["getBias(xsc:)"]          = fGnRet:format(tActon[3], "output signal bias")
+DSC["getControl(xsc:)"]       = fGnRet:format(tActon[3], "automated control output signal value")
+DSC["getControlTerm(xsc:)"]   = fRtTrm:format(tActon[3], "signals as vector or array")
+DSC["getControlTermD(xsc:)"]  = fCTerm:format(tActon[3], "derivative")
+DSC["getControlTermI(xsc:)"]  = fCTerm:format(tActon[3], "integral")
+DSC["getControlTermP(xsc:)"]  = fCTerm:format(tActon[3], "proportional")
+DSC["getCopy(xsc:)"]          = fRtCpy:format(tActon[3], "instance")
+DSC["getCopy(xsc:n)"]         = fRtCpy:format(tActon[3], "instance with static sampling time")
+DSC["getErrorDelta(xsc:)"]    = fError:format(tActon[3], "error", "delta")
+DSC["getErrorNow(xsc:)"]      = fError:format(tActon[3], "current", "error")
+DSC["getErrorPast(xsc:)"]     = fError:format(tActon[3], "passed", "error")
+DSC["getGain(xsc:)"]          = fRtAll:format(tActon[3], "gains")
+DSC["getGainD(xsc:)"]         = fRtEl1:format(tActon[3], "derivative", "gain")
+DSC["getGainI(xsc:)"]         = fRtEl1:format(tActon[3], "integral", "gain")
+DSC["getGainID(xsc:)"]        = fRtEl2:format(tActon[3], "integral", "derivative", "gain")
+DSC["getGainP(xsc:)"]         = fRtEl1:format(tActon[3], "proportional", "gain")
+DSC["getGainPD(xsc:)"]        = fRtEl2:format(tActon[3], "proportional", "derivative", "gain")
+DSC["getGainPI(xsc:)"]        = fRtEl2:format(tActon[3], "proportional", "integral", "gain")
+DSC["getManual(xsc:)"]        = fGnRet:format(tActon[3], "manual control signal value")
+DSC["getPower(xsc:)"]         = fRtAll:format(tActon[3], "power")
+DSC["getPowerD(xsc:)"]        = fRtEl1:format(tActon[3], "derivative", "power")
+DSC["getPowerI(xsc:)"]        = fRtEl1:format(tActon[3], "integral", "power")
+DSC["getPowerID(xsc:)"]       = fRtEl2:format(tActon[3], "integral", "derivative", "power")
+DSC["getPowerP(xsc:)"]        = fRtEl1:format(tActon[3], "proportional", "power")
+DSC["getPowerPD(xsc:)"]       = fRtEl2:format(tActon[3], "proportional", "derivative", "power")
+DSC["getPowerPI(xsc:)"]       = fRtEl2:format(tActon[3], "proportional", "integral", "power")
+DSC["getTimeBench(xsc:)"]     = fRtPDy:format(tActon[3], "benchmark time")
+DSC["getTimeDelta(xsc:)"]     = fRtPDy:format(tActon[3], "time delta")
+DSC["getTimeNow(xsc:)"]       = fRtPDy:format(tActon[3], "current time")
+DSC["getTimePast(xsc:)"]      = fRtPDy:format(tActon[3], "passed time")
+DSC["getTimeRatio(xsc:)"]     = fRtPDy:format(tActon[3], "time ratio") 
+DSC["getTimeSample(xsc:)"]    = fRtPSt:format(tActon[3], "time delta")
+DSC["getType(xsc:)"]          = fGnRet:format(tActon[3], "control type")
+DSC["getWindup(xsc:)"]        = fGnRet:format(tActon[3], "windup lower and upper bound")
+DSC["getWindupMax(xsc:)"]     = fGnRet:format(tActon[3], "windup upper bound")
+DSC["getWindupMin(xsc:)"]     = fGnRet:format(tActon[3], "windup lower bound")
+DSC["isActive(xsc:)"]         = fGnRet:format(tActon[4], "activated working flag")
+DSC["isCombined(xsc:)"]       = fGnRet:format(tActon[4], "combined flag spreading proportional term gain across others")
+DSC["isDerivative(xsc:)"]     = fGnRet:format(tActon[4], "derivative enabled flag")
+DSC["isIntegral(xsc:)"]       = fGnRet:format(tActon[4], "integral enabled flag")
+DSC["isInverted(xsc:)"]       = fGnRet:format(tActon[4], "inverted feedback flag of the reference and set-point")
+DSC["isManual(xsc:)"]         = fGnRet:format(tActon[4], "manual control signal flag")
+DSC["isZeroCross(xsc:)"]      = fGnRet:format(tActon[4], "integral zero crossing flag")
+DSC["newStControl()"]         = fRtMak:format(tActon[1], "dynamic")
+DSC["newStControl(n)"]        = fRtMak:format(tActon[1], "static")
+DSC["noStControl()"]          = fGnRet:format(tActon[3], "invalid object")
+DSC["remGain(xsc:)"]          = fRtAll:format(tActon[5], "gains")
+DSC["remGainD(xsc:)"]         = fRtEl1:format(tActon[5], "derivative", "gain")
+DSC["remGainI(xsc:)"]         = fRtEl1:format(tActon[5], "integral", "gain")
+DSC["remGainID(xsc:)"]        = fRtEl2:format(tActon[5], "integral", "derivative", "gain")
+DSC["remGainP(xsc:)"]         = fRtEl1:format(tActon[5], "proportional", "gain")
+DSC["remGainPD(xsc:)"]        = fRtEl2:format(tActon[5], "proportional", "derivative", "gain")
+DSC["remGainPI(xsc:)"]        = fRtEl2:format(tActon[5], "proportional", "integral", "gain")
+DSC["remTimeSample(xsc:)"]    = fRtPSt:format(tActon[5], "time delta")
+DSC["remWindup(xsc:)"]        = fGnRet:format(tActon[5], "windup lower and upper bound")
+DSC["remWindupMax(xsc:)"]     = fGnRet:format(tActon[5], "windup upper bound")
+DSC["remWindupMin(xsc:)"]     = fGnRet:format(tActon[5], "windup lower bound")
+DSC["resState(xsc:)"]         = fInPar:format(tActon[6])
+DSC["setBias(xsc:n)"]         = fGnRet:format(tActon[8], "output signal bias")
+DSC["setGain(xsc:nnn)"]       = fRtAll:format(tActon[8], "gains")
+DSC["setGain(xsc:r)"]         = fRtAll:format(tActon[8], "gains")
+DSC["setGain(xsc:v)"]         = fRtAll:format(tActon[8], "gains")
+DSC["setGainD(xsc:n)"]        = fRtEl1:format(tActon[8], "derivative", "gain")
+DSC["setGainI(xsc:n)"]        = fRtEl1:format(tActon[8], "integral", "gain")
+DSC["setGainID(xsc:nn)"]      = fRtEl2:format(tActon[8], "integral", "derivative", "gain")
+DSC["setGainID(xsc:r)"]       = DSC["setGainID(xsc:nn)"]
+DSC["setGainID(xsc:xv2)"]     = DSC["setGainID(xsc:nn)"]
+DSC["setGainP(xsc:n)"]        = fRtEl1:format(tActon[8], "proportional", "gain")
+DSC["setGainPD(xsc:nn)"]      = fRtEl2:format(tActon[8], "proportional", "derivative", "gain")
+DSC["setGainPD(xsc:r)"]       = DSC["setGainPD(xsc:nn)"]
+DSC["setGainPD(xsc:xv2)"]     = DSC["setGainPD(xsc:nn)"]
+DSC["setGainPI(xsc:nn)"]      = fRtEl2:format(tActon[8], "proportional", "integral", "gain")
+DSC["setGainPI(xsc:r)"]       = DSC["setGainPI(xsc:nn)"]
+DSC["setGainPI(xsc:xv2)"]     = DSC["setGainPI(xsc:nn)"]
+DSC["setIsActive(xsc:n)"]     = fGnRet:format(tActon[8], "activated working flag")
+DSC["setIsCombined(xsc:n)"]   = fGnRet:format(tActon[8], "combined flag spreading proportional term gain across others")
+DSC["setIsDerivative(xsc:n)"] = fGnRet:format(tActon[8], "derivative enabled flag")
+DSC["setIsIntegral(xsc:n)"]   = fGnRet:format(tActon[8], "integral enabled flag")
+DSC["setIsInverted(xsc:n)"]   = fGnRet:format(tActon[8], "inverted feedback flag of the reference and set-point")
+DSC["setIsManual(xsc:n)"]     = fGnRet:format(tActon[8], "manual control signal flag")
+DSC["setIsZeroCross(xsc:n)"]  = fGnRet:format(tActon[8], "integral zero crossing flag")
+DSC["setManual(xsc:n)"]       = fGnRet:format(tActon[8], "manual control signal value")
+DSC["setPower(xsc:nnn)"]      = fRtAll:format(tActon[8], "power")
+DSC["setPower(xsc:r)"]        = DSC["setPower(xsc:nnn)"]
+DSC["setPower(xsc:v)"]        = DSC["setPower(xsc:nnn)"]
+DSC["setPowerD(xsc:n)"]       = fRtEl1:format(tActon[8], "derivative", "power")
+DSC["setPowerI(xsc:n)"]       = fRtEl1:format(tActon[8], "integral", "power")
+DSC["setPowerID(xsc:nn)"]     = fRtEl2:format(tActon[8], "integral", "derivative", "power")
+DSC["setPowerID(xsc:r)"]      = DSC["setPowerID(xsc:nn)"]
+DSC["setPowerID(xsc:xv2)"]    = DSC["setPowerID(xsc:nn)"]
+DSC["setPowerP(xsc:n)"]       = fRtEl1:format(tActon[8], "proportional", "power")
+DSC["setPowerPD(xsc:nn)"]     = fRtEl2:format(tActon[8], "proportional", "derivative", "power")
+DSC["setPowerPD(xsc:r)"]      = DSC["setPowerPD(xsc:nn)"]
+DSC["setPowerPD(xsc:xv2)"]    = DSC["setPowerPD(xsc:nn)"]
+DSC["setPowerPI(xsc:nn)"]     = fRtEl2:format(tActon[8], "proportional", "integral", "power")
+DSC["setPowerPI(xsc:r)"]      = DSC["setPowerPI(xsc:nn)"]
+DSC["setPowerPI(xsc:xv2)"]    = DSC["setPowerPI(xsc:nn)"]
+DSC["setState(xsc:nn)"]       = fInPar:format(tActon[8])
+DSC["setTimeSample(xsc:n)"]   = fRtPSt:format(tActon[8], "time delta")
+DSC["setWindup(xsc:nn)"]      = fGnRet:format(tActon[8], "windup lower and upper bound")
+DSC["setWindup(xsc:r)"]       = DSC["setWindup(xsc:nn)"]
+DSC["setWindup(xsc:xv2)"]     = DSC["setWindup(xsc:nn)"]
+DSC["setWindupMax(xsc:n)"]    = fGnRet:format(tActon[8], "windup upper bound")
+DSC["setWindupMin(xsc:n)"]    = fGnRet:format(tActon[8], "windup lower bound")
+DSC["tuneAH(xsc:nnn)"]        = fTuneM:format(tActon[9], "(AH) Astrom-Hagglund")
+DSC["tuneAutoZN(xsc:nn)"]     = fTuneM:format(tActon[9], "(ZN) Ziegler-Nichols auto-oscillation")
+DSC["tuneAutoZN(xsc:nns)"]    = fTuneM:format(tActon[9], "(ZN) Ziegler-Nichols auto-oscillation extended by type: `classic`, `pessen`, `sovers`, `novers`")
+DSC["tuneIAE(xsc:nnn)"]       = fTuneM:format(tActon[9], "(IAE) Integral absolute error")
+DSC["tuneISE(xsc:nnn)"]       = fTuneM:format(tActon[9], "(ISE) Integral square error")
+DSC["tuneITAE(xsc:nnn)"]      = fTuneM:format(tActon[9], "(ITAE) Integral of time-weighted absolute error")
+DSC["tuneOverCHRLR(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Reswick load rejection 20% overshot")
+DSC["tuneOverCHRSP(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Reswick set point track 20% overshot")
+DSC["tuneProcCC(xsc:nnn)"]    = fTuneM:format(tActon[9], "(CC) Choen-Coon")
+DSC["tuneProcCHRLR(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Reswick load rejection")
+DSC["tuneProcCHRSP(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Reswick set point track")
+DSC["tuneProcZN(xsc:nnn)"]    = fTuneM:format(tActon[9], "(ZNM) Ziegler-Nichols plant process")
+
+]===]
 
 API.TEXT = function() return([===[
 ### What does this extension include?

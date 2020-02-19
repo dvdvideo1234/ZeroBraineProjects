@@ -85,21 +85,21 @@ local function logStatus(sMsg, oSelf, nPos, ...)
 	end; return ...
 end
 
-local function setGains(oStCon, oSelf, vP, vI, vD, bZ)
-	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
-	local nP, nI = (tonumber(vP) or 0), (tonumber(vI) or 0)
-	local nD, sT = (tonumber(vD) or 0), "" -- Store control type
-	if(vP and ((nP > 0) or (bZ and nP >= 0))) then oStCon.mkP = nP end
-	if(vI and ((nI > 0) or (bZ and nI >= 0))) then oStCon.mkI = (nI / 2)
-		if(oStCon.mbCmb) then oStCon.mkI = oStCon.mkI * oStCon.mkP end
-	end -- Available settings with non-zero coefficients
-	if(vD and ((nD > 0) or (bZ and nD >= 0))) then oStCon.mkD = nD
-		if(oStCon.mbCmb) then oStCon.mkD = oStCon.mkD * oStCon.mkP end
-	end -- Build control type
-	for key, val in pairs(gtComponent) do
-		if(oStCon["mk"..val] > 0) then sT = sT..val end end
-	if(sT:len() == 0) then sT = gtMissName[2]:rep(3) end -- Check for invalid control
-	oStCon.mType[2] = sT; return oStCon
+local function setGains(oStCon, vP, vI, vD, bZ)
+  if(not oStCon) then return nil end
+  local nP, nI = (tonumber(vP) or 0), (tonumber(vI) or 0)
+  local nD, sT = (tonumber(vD) or 0), "" -- Store control type
+  if(vP and ((nP > 0) or (bZ and nP >= 0))) then oStCon.mkP = nP end
+  if(vI and ((nI > 0) or (bZ and nI >= 0))) then oStCon.mkI = (nI / 2)
+    if(oStCon.mbCmb) then oStCon.mkI = oStCon.mkI * oStCon.mkP end
+  end -- Available settings with non-zero coefficients
+  if(vD and ((nD > 0) or (bZ and nD >= 0))) then oStCon.mkD = nD
+    if(oStCon.mbCmb) then oStCon.mkD = oStCon.mkD * oStCon.mkP end
+  end -- Build control type
+  for key, val in pairs(gtComponent) do
+    if(oStCon["mk"..val] > 0) then sT = sT..val end end
+  if(sT:len() == 0) then sT = gtMissName[2]:rep(3) end -- Check for invalid control
+  oStCon.mType[2] = sT; return oStCon
 end
 
 local function getCode(nN)
@@ -121,20 +121,20 @@ local function getCode(nN)
 	end; return gtMissName[1] -- [Invalid settings][N/A]
 end
 
-local function setPower(oStCon, oSelf, vP, vI, vD)
-	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
-	oStCon.mpP, oStCon.mpI, oStCon.mpD = (tonumber(vP) or 1), (tonumber(vI) or 1), (tonumber(vD) or 1)
-	oStCon.mType[1] = gsFormatPID:format(getCode(oStCon.mpP), getCode(oStCon.mpI), getCode(oStCon.mpD))
-	return oStCon
+local function setPower(oStCon, vP, vI, vD)
+  if(not oStCon) then return nil end
+  oStCon.mpP, oStCon.mpI, oStCon.mpD = (tonumber(vP) or 1), (tonumber(vI) or 1), (tonumber(vD) or 1)
+  oStCon.mType[1] = gsFormatPID:format(getCode(oStCon.mpP), getCode(oStCon.mpI), getCode(oStCon.mpD))
+  return oStCon
 end
 
-local function resState(oStCon, oSelf)
-	if(not oStCon) then return logStatus("Object missing", oSelf, nil, nil) end
-	oStCon.mErrO, oStCon.mErrN = 0, 0 -- Reset the error
-	oStCon.mvCon, oStCon.meInt = 0, true -- Control value and integral enabled
-	oStCon.mvP, oStCon.mvI, oStCon.mvD = 0, 0, 0 -- Term values
-	oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Update clock
-	return oStCon
+local function resState(oStCon)
+  if(not oStCon) then return nil end
+  oStCon.mErrO, oStCon.mErrN = 0, 0 -- Reset the error
+  oStCon.mvCon, oStCon.meInt, oStCon.meDif = 0, true, true -- Control value and integral enabled
+  oStCon.mvP, oStCon.mvI, oStCon.mvD, oStCon.meZcx = 0, 0, 0, false -- Term values
+  oStCon.mTimN = CurTime(); oStCon.mTimO = oStCon.mTimN; -- Update clock
+  return oStCon
 end
 
 local function getType(oStCon)
@@ -143,49 +143,91 @@ local function getType(oStCon)
 	end; return tableConcat(oStCon.mType, "-")
 end
 
-local function dumpItem(oStCon, oSelf, sNam, sPos)
+local function dumpItem(oStCon, sNam, sPos)
   local sP = tostring(sPos or gsDefPrint)
-  local nP = gtPrintName[sP] -- Print location setup
+  local nP, oChip = gtPrintName[sP], oStCon.mChip -- Print location setup
   if(not nP) then return oStCon end
-  logStatus("Controller ["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]["..tostring(oStCon.mTimN).."]:", oSelf, nP)
-  logStatus(" Manual mode enabled: ["..tostring(oStCon.mbMan).."]", oSelf, nP)
-  logStatus("  Value: "..tostring(oStCon.mvMan), oSelf, nP)
-  logStatus("   Bias: "..tostring(oStCon.mBias), oSelf, nP)
-  logStatus(" Gains for terms:", oSelf, nP)
+  logStatus("Controller ["..tostring(sNam).."]["..tostring(oStCon.mnTo or gtMissName[2]).."]["..getType(oStCon).."]:", oChip, nP)
+  logStatus(" Manual mode enabled: "..tostring(oStCon.mbMan), oChip, nP)
+  logStatus("  Value: "..tostring(oStCon.mvMan), oChip, nP)
+  logStatus("   Bias: "..tostring(oStCon.mBias), oChip, nP)
+  logStatus(" Gains for terms:", oChip, nP)
   for iD = 1, #gtComponent do local sC = gtComponent[iD]
-    logStatus("      "..sC..": "..tostring(oStCon["mk"..sC]), oSelf, nP) end
-  logStatus(" Power for terms:", oSelf, nP)
+    logStatus("      "..sC..": "..tostring(oStCon["mk"..sC]), oChip, nP) end
+  logStatus(" Power for terms:", oChip, nP)
   for iD = 1, #gtComponent do local sC = gtComponent[iD]
-    logStatus("      "..sC..": "..tostring(oStCon["mp"..sC]), oSelf, nP) end
-  logStatus(" Control state value: ["..tostring(oStCon.mvCon).."]", oSelf, nP)
+    logStatus("      "..sC..": "..tostring(oStCon["mp"..sC]), oChip, nP) end
+  logStatus(" Control state value: "..tostring(oStCon.mvCon), oChip, nP)
   for iD = 1, #gtComponent do local sC = gtComponent[iD]
-    logStatus("      "..sC..": "..tostring(oStCon["mv"..sC]), oSelf, nP) end
-  logStatus(" Saturation limits:", oSelf, nP)
-  logStatus("    Max: "..tostring(oStCon.mSatU), oSelf, nP)
-  logStatus("    Min: "..tostring(oStCon.mSatD), oSelf, nP)
-  logStatus(" Time memory state:", oSelf, nP)
-  logStatus("    New: "..tostring(oStCon.mTimN), oSelf, nP)
-  logStatus("   Past: "..tostring(oStCon.mTimO), oSelf, nP)
-  logStatus(" Error memory state:", oSelf, nP)
-  logStatus("    New: "..tostring(oStCon.mErrN), oSelf, nP)
-  logStatus("   Past: "..tostring(oStCon.mErrO), oSelf, nP)
-  logStatus(" Control enable flag: ["..tostring(oStCon.mbOn).."]", oSelf, nP)
-  logStatus("   BCmb: "..tostring(oStCon.mbCmb), oSelf, nP)
-  logStatus("   BInv: "..tostring(oStCon.mbInv), oSelf, nP)
-  logStatus("   EInt: "..tostring(oStCon.meInt), oSelf, nP)
-  logStatus("   EDif: "..tostring(oStCon.meDif), oSelf, nP)
-  logStatus("   EZcx: "..tostring(oStCon.meZcx), oSelf, nP)
+    logStatus("      "..sC..": "..tostring(oStCon["mv"..sC]), oChip, nP) end
+  logStatus(" Saturation limits:", oChip, nP)
+  logStatus("    Max: "..tostring(oStCon.mSatU), oChip, nP)
+  logStatus("    Min: "..tostring(oStCon.mSatD), oChip, nP)
+  logStatus(" Time memory state:", oChip, nP)
+  logStatus("    Now: "..tostring(oStCon.mTimN), oChip, nP)
+  logStatus("   Past: "..tostring(oStCon.mTimO), oChip, nP)
+  logStatus(" Error memory state:", oChip, nP)
+  logStatus("    Now: "..tostring(oStCon.mErrN), oChip, nP)
+  logStatus("   Past: "..tostring(oStCon.mErrO), oChip, nP)
+  logStatus(" Control enable flag: "..tostring(oStCon.mbOn), oChip, nP)
+  logStatus("   BCmb: "..tostring(oStCon.mbCmb), oChip, nP)
+  logStatus("   BInv: "..tostring(oStCon.mbInv), oChip, nP)
+  logStatus("   EInt: "..tostring(oStCon.meInt), oChip, nP)
+  logStatus("   EDif: "..tostring(oStCon.meDif), oChip, nP)
+  logStatus("   EZcx: "..tostring(oStCon.meZcx), oChip, nP)
   return oStCon -- The dump method
 end
 
-function newItem(oSelf, nTo)
-  local eChip = oSelf.entity; if(not isValid(eChip)) then
-    return logStatus("Entity invalid", oSelf, nil, nil) end
+
+local function conProcess(oStCon, nRef, nOut)
+  if(oStCon.mbOn) then
+    if(oStCon.mbMan) then
+      oStCon.mvCon = (oStCon.mvMan + oStCon.mBias); return oStCon
+    end -- If manual mode is enabled add bias and go to the output
+    local errNw = (oStCon.mbInv and (nOut - nRef) or (nRef - nOut))
+    oStCon.mErrO = oStCon.mErrN; oStCon.mErrN = errNw
+    oStCon.mTimO = oStCon.mTimN; oStCon.mTimN = CurTime()
+    local timDt = (oStCon.mnTo and oStCon.mnTo or (oStCon.mTimN - oStCon.mTimO))
+    -- Does not get affected by the time and just multiplies. Not approximated
+    if(oStCon.mkP > 0) then
+      oStCon.mvP = getValue(oStCon.mkP, errNw, oStCon.mpP)
+    end
+    -- Direct approximation with error sampling average for calculating the integral term
+    if((oStCon.mkI > 0) and oStCon.meInt and (timDt > 0)) then
+      if(oStCon.meZcx and (getSign(errNw) ~= getSign(oStCon.mErrO))) then
+        oStCon.mvI = 0 -- Reset on zero for avoid having the same value in the other direction
+      else -- If the flag is not set and an error delta is present calculate the integral area
+        local arInt = (errNw + oStCon.mErrO) * timDt -- Integral error area
+        oStCon.mvI = getValue(oStCon.mkI * timDt, arInt, oStCon.mpI) + oStCon.mvI
+      end
+    end
+    -- Direct approximation for calculating the derivative term
+    if((oStCon.mkD > 0) and (errNw ~= oStCon.mErrO) and oStCon.meDif and (timDt > 0)) then
+      local arDif = (errNw - oStCon.mErrO) / timDt -- Error derivative slope dE/dT
+      oStCon.mvD = getValue(oStCon.mkD * timDt, arDif, oStCon.mpD)
+    else -- Reset the derivative as there is no slope to be used
+      oStCon.mvD = 0
+    end
+    oStCon.mvCon = oStCon.mvP + oStCon.mvI + oStCon.mvD -- Calculate the control signal
+    if(oStCon.mSatD and oStCon.mvCon < oStCon.mSatD) then -- Saturate lower limit
+      oStCon.mvCon, oStCon.meInt = oStCon.mSatD, false -- Integral is disabled
+    elseif(oStCon.mSatU and oStCon.mvCon > oStCon.mSatU) then -- Saturate upper limit
+      oStCon.mvCon, oStCon.meInt = oStCon.mSatU, false -- Integral is disabled
+    else oStCon.meInt = true end -- Saturation enables the integrator in determined bounds
+    oStCon.mvCon = (oStCon.mvCon + oStCon.mBias) -- Apply the saturated signal bias
+    oStCon.mTimB = (CurTime() - oStCon.mTimN) -- Benchmark the process
+  else return resState(oStCon) end; return oStCon
+end
+
+
+function newItem(oChip, nTo)
+  local eChip = oChip.entity; if(not isValid(eChip)) then
+    return logStatus("Entity invalid", oChip, nil, nil) end
   local oStCon, sM = {}, gtMissName[3]; oStCon.mnTo = tonumber(nTo) -- Place to store the object
   if(oStCon.mnTo and oStCon.mnTo <= 0) then
-    return logStatus("Delta mismatch ["..tostring(oStCon.mnTo).."]", oSelf, nil, nil) end
+    return logStatus("Delta mismatch ["..tostring(oStCon.mnTo).."]", oChip, nil, nil) end
   local sType = gsFormatPID:format(sM, sM, sM) -- Error state values
-  oStCon.mTimN = getTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
+  oStCon.mTimN = CurTime(); oStCon.mTimO = oStCon.mTimN; -- Reset clock
   oStCon.mErrO, oStCon.mErrN, oStCon.mType = 0, 0, {sType, gtMissName[2]:rep(3)}
   oStCon.mvCon, oStCon.mTimB, oStCon.meInt, oStCon.meDif = 0, 0, true, true -- Control value and integral enabled
   oStCon.mBias, oStCon.mSatD, oStCon.mSatU = 0, nil, nil -- Saturation limits and settings
@@ -193,17 +235,26 @@ function newItem(oSelf, nTo)
   oStCon.mkP, oStCon.mkI, oStCon.mkD = 0, 0, 0 -- P, I and D term gains
   oStCon.mpP, oStCon.mpI, oStCon.mpD = 1, 1, 1 -- Raise the error to power of that much
   oStCon.mbCmb, oStCon.mbInv, oStCon.mbOn, oStCon.mbMan = false, false, false, false
-  oStCon.mvMan, oStCon.mSet = 0, eChip -- Configure manual mode and store indexing
+  oStCon.mvMan, oStCon.mChip, oStCon.meZcx = 0, oChip, false -- Configure manual mode and store indexing
 
   
   function oStCon:dumpItem(nT, sN)
-    local this, self = self, oSelf
-    return dumpItem(this, self, sN, nT)
+    return dumpItem(oStCon, sN, nT)
   end
 
+  function oStCon:setGain(nP, nI, nD)
+    return setGains(oStCon, nP, nI, nD)
+  end
 
-  
-  
+  function oStCon:getPower()
+    if(not oStCon) then return {0,0,0} end
+    return {oStCon.mpP, oStCon.mpI, oStCon.mpD}
+  end
+    
+  function oStCon:setPower(nP, nI, nD)
+    return setPower(oStCon, nP, nI, nD)
+  end
+    
   return oStCon
 end
 

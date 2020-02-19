@@ -14,6 +14,8 @@ require("dvdlualib/e2_"..api)
 
 local ATTACH = ents.Create() -- ENT{1}{prop_physics}
 
+GetConVar("wire_expression2_"..api.."_enst"):SetData(1)
+
 local com = require("common")
 local set = {
   [getmetatable(Vector())] = tostring,
@@ -25,8 +27,8 @@ oSelf.entity:SetPos(Vector(100,100,100))
 ATTACH:SetPos(Vector(500,500,500))
 
 local a = newItem(oSelf)
-      
-GetConVar("wire_expression2_"..api.."_enst"):SetData(1)
+      a:setGain(1,2,3):setPower(0,0,0)
+
 
 a:dumpItem("TALK", "test")
 

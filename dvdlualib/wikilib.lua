@@ -239,8 +239,8 @@ function wikilib.replaceToken(sT, tR, bR, bQ)
   local sD, sO = tostring(sT or ""), tostring(sT or "")
   if(tR and wikilib.common.isTable(tR)) then
     for k, v in pairs(tR) do
-      if(k:sub(1,1) ~= "#") then
-        local nF, nB = sD:find(k, 1, true)
+      if(k:sub(1,1) ~= "#") then local nF, nB
+        nF, nB = sD:find(k, 1, true)
         if(nF and nB) then
           nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
           local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
@@ -252,6 +252,10 @@ function wikilib.replaceToken(sT, tR, bR, bQ)
             sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
           elseif(cB == ",") then
             sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+          end
+        else nF, nB = sD:find(k)
+          if(nF and nB and wikilib.common.isTable(v)) then
+            sO = wikilib.replaceToken(sD, v, bR, bQ)
           end
         end
       end
@@ -342,7 +346,7 @@ function wikilib.readDescriptions(API)
   if(API.DSCHUNK) then wikilib.common.logStatus("Description: API > "..type(API.DSCHUNK))
     if(wikilib.common.isString(API.DSCHUNK)) then
       sC = (cT..sI..API.DSCHUNK..sI..cB)
-    elseif(wikilib.common.isFunction(API.DSCHUNK)) then
+    elseif(wikilib.common.isFunction(API.DSCHUNK)) then wikilib.common.logStatus("Description: API > "..type(API.DSCHUNK))
       local bS, sC = pcall(API.DSCHUNK)
       if(bS) then sC = (cT..sI..sC..sI..cB)
       else wikilib.common.logStatus("wikilib.readDescriptions: API chink unsuccessful: "..type(API.DSCHUNK)) end
@@ -352,7 +356,7 @@ function wikilib.readDescriptions(API)
           sN = sN.."cl_"..sE2:lower()..".lua"
     local fR = io.open(sN, "rb"); if(not fR) then
       return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end    
-    wikilib.common.logStatus("Description: "..sN)
+    wikilib.common.logStatus("Description: FILE > "..sN)
     sC = (cT..sI..fR:read("*all")..sI..cB)
   end
   local fC, oE = load(sC)
@@ -448,7 +452,6 @@ function wikilib.readReturnValues(API)
       local tT = wikilib.common.stringExplode(sT, ":")
       tT[1] = wikilib.common.stringTrim(tostring(tT[1]))
       tT[2] = wikilib.common.stringTrim(tostring(tT[2]))
-      print("wikilib.readReturnValues", tT[1], tT[2])
       wikiMatch[tT[1]] = tT[2]
     end
     sL = fR:read("*line")
@@ -533,7 +536,8 @@ function wikilib.makeReturnValues(API)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
         sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
-    return wikilib.common.logStatus("wikilib.makeReturnValues: No file <"..sN..">") end
+     wikilib.common.logStatus("wikilib.makeReturnValues: No file <"..sN..">!")
+     error("wikilib.makeReturnValues: No file <"..sN..">!") end
   local sL, tF, tK, sA, bA, bE = fR:read("*line"), wikiMatch, wikiMList, "", false, false
   local mP, mH, mF = wikiFormat.npt, wikiFormat.hsh, wikiFormat.fnd
   while(sL ~= nil) do
@@ -582,12 +586,17 @@ end
 
 function wikilib.printTypeTable(API)
   local tT = wikiType.list
-  wikilib.printRow({"Icon", "Description"})
-  wikilib.printRow({"---", "---"})
+  wikilib.printRow({"Icon", "Internal", "External", "Description"})
+  wikilib.printRow({":---:", ":---:", ":---:", "---"})
   local sQ = apiGetValue(API, "FLAG", "qref") and "`" or ""
-  for ID = 1, #tT do local sL = tT[ID][4]
+  local bQ = apiGetValue(API, "FLAG", "quot")
+  for ID = 1, #tT do local sL = tT[ID][5]
     local sI = wikilib.common.stringTrim(tT[ID][1])
+    local sP = toInsert(toImage(toRefer(sI)))
+          sI = (bQ and "`"..sI.."`" or sI)
     local sD = wikilib.common.stringTrim(tT[ID][3])
+    local sT = wikilib.common.stringTrim(tT[ID][4])
+          sT = (bQ and "`"..sT.."`" or sT)
     if(sL and not wikilib.common.isDryString(sL)) then
       sL = wikilib.common.stringTrim(sL)
       local sR = sD:match("%[.+%]"); if(sR) then
@@ -595,7 +604,7 @@ function wikilib.printTypeTable(API)
         sD = sD:gsub(sR, sR:gsub("%[", "%["..sQ):gsub("%]", sQ.."%]").."%("..sL.."%)")
       end
     end
-    wikilib.printRow({toInsert(toImage(toRefer(sI))), sD})
+    wikilib.printRow({sP, sI, sT, sD})
   end; io.write("\n")
 end
 

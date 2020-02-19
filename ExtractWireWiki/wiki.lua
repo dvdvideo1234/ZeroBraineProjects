@@ -4,7 +4,7 @@ local sProject = "ExtractWireWiki"
 local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
 common.addLibrary(sBase, sProject, "dvdlualib")
 
-local sEXP = "ftrace"
+local sEXP = "stcontrol"
 
 local wikilib = require("wikilib")
 
@@ -34,7 +34,7 @@ if(f) then io.output(f)
           wikilib.printDescriptionTable(API, DSC, iD)
         end
       end
-     -- wikilib.printTypeTable(API)
+      -- wikilib.printTypeTable(API)
       wikilib.printTypeReference(API)
       wikilib.printLinkReferences(API)
       print(wikilib.insRefCountry("bg"))

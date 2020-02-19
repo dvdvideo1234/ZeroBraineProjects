@@ -9,7 +9,7 @@ local API = {
     qref = true,  -- (TRUE) Quote the string in the link reference
     prep = true,  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
     mosp = true,  -- (TRUE) Enables monospace font for the function names
-    wdsc = true  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    wdsc = true   -- (TRUE) Outputs the direct wire-based description in the markdown overhead
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13},algn={"<","|","<"}},
@@ -17,7 +17,7 @@ local API = {
     {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13},algn={"<","|","<"}}
   },
   FILE = {
-    exts = "wire_e2_piston_timing",
+    exts = "pistontiming",
     base = "E:/Documents/Lua-Projs/SVN/E2PistonTiming",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
