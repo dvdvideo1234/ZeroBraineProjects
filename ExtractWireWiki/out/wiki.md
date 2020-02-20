@@ -108,10 +108,10 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`remGain`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional, integral and derivative term gains|
 |![image][ref-xsc]:`remGainD`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller derivative term gain|
 |![image][ref-xsc]:`remGainI`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller integral term gain|
-|![image][ref-xsc]:`remGainID`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller integral and derivative term gain|
+|![image][ref-xsc]:`remGainID`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller integral and derivative term gains|
 |![image][ref-xsc]:`remGainP`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional term gain|
-|![image][ref-xsc]:`remGainPD`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and derivative term gain|
-|![image][ref-xsc]:`remGainPI`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and integral term gain|
+|![image][ref-xsc]:`remGainPD`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and derivative term gains|
+|![image][ref-xsc]:`remGainPI`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and integral term gains|
 |![image][ref-xsc]:`remTimeSample`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller static process time delta|
 |![image][ref-xsc]:`remWindup`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller windup lower and upper bound|
 |![image][ref-xsc]:`remWindupMax`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller windup upper bound|
@@ -123,16 +123,16 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`setGain`(![image][ref-v])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term gains|
 |![image][ref-xsc]:`setGainD`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative term gain|
 |![image][ref-xsc]:`setGainI`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral term gain|
-|![image][ref-xsc]:`setGainID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term gain|
-|![image][ref-xsc]:`setGainID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term gain|
-|![image][ref-xsc]:`setGainID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term gain|
+|![image][ref-xsc]:`setGainID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
+|![image][ref-xsc]:`setGainID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
+|![image][ref-xsc]:`setGainID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
 |![image][ref-xsc]:`setGainP`(![image][ref-n])|![image][ref-xsc]|Updates state controller proportional term gain|
-|![image][ref-xsc]:`setGainPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term gain|
-|![image][ref-xsc]:`setGainPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term gain|
-|![image][ref-xsc]:`setGainPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term gain|
-|![image][ref-xsc]:`setGainPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term gain|
-|![image][ref-xsc]:`setGainPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term gain|
-|![image][ref-xsc]:`setGainPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term gain|
+|![image][ref-xsc]:`setGainPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
 |![image][ref-xsc]:`setIsActive`(![image][ref-n])|![image][ref-xsc]|Updates state controller activated working flag|
 |![image][ref-xsc]:`setIsCombined`(![image][ref-n])|![image][ref-xsc]|Updates state controller combined flag spreading proportional term gain across others|
 |![image][ref-xsc]:`setIsDerivative`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative enabled flag|
@@ -141,21 +141,21 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`setIsManual`(![image][ref-n])|![image][ref-xsc]|Updates state controller manual control signal flag|
 |![image][ref-xsc]:`setIsZeroCross`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral zero crossing flag|
 |![image][ref-xsc]:`setManual`(![image][ref-n])|![image][ref-xsc]|Updates state controller manual control signal value|
-|![image][ref-xsc]:`setPower`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term power|
-|![image][ref-xsc]:`setPower`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term power|
-|![image][ref-xsc]:`setPower`(![image][ref-v])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term power|
+|![image][ref-xsc]:`setPower`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
+|![image][ref-xsc]:`setPower`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
+|![image][ref-xsc]:`setPower`(![image][ref-v])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
 |![image][ref-xsc]:`setPowerD`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative term power|
 |![image][ref-xsc]:`setPowerI`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral term power|
-|![image][ref-xsc]:`setPowerID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term power|
-|![image][ref-xsc]:`setPowerID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term power|
-|![image][ref-xsc]:`setPowerID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term power|
+|![image][ref-xsc]:`setPowerID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
+|![image][ref-xsc]:`setPowerID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
+|![image][ref-xsc]:`setPowerID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
 |![image][ref-xsc]:`setPowerP`(![image][ref-n])|![image][ref-xsc]|Updates state controller proportional term power|
-|![image][ref-xsc]:`setPowerPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term power|
-|![image][ref-xsc]:`setPowerPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term power|
-|![image][ref-xsc]:`setPowerPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term power|
-|![image][ref-xsc]:`setPowerPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term power|
-|![image][ref-xsc]:`setPowerPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term power|
-|![image][ref-xsc]:`setPowerPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term power|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
 |![image][ref-xsc]:`setState`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller automated internal parameters|
 |![image][ref-xsc]:`setTimeSample`(![image][ref-n])|![image][ref-xsc]|Updates state controller static process time delta|
 |![image][ref-xsc]:`setWindup`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller windup lower and upper bound|
@@ -163,18 +163,19 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`setWindup`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller windup lower and upper bound|
 |![image][ref-xsc]:`setWindupMax`(![image][ref-n])|![image][ref-xsc]|Updates state controller windup upper bound|
 |![image][ref-xsc]:`setWindupMin`(![image][ref-n])|![image][ref-xsc]|Updates state controller windup lower bound|
-|![image][ref-xsc]:`tuneAH`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`AH`) Astrom-Hagglund|
-|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`ZN`) [`Ziegler-Nichols auto-oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png)|
-|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-xsc]|Tunes the state controller using the method (`ZN`) [`Ziegler-Nichols auto-oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png) extended by type: `classic`, `pessen`, `sovers`, `novers`|
-|![image][ref-xsc]:`tuneIAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`IAE`) Integral absolute error|
-|![image][ref-xsc]:`tuneISE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`ISE`) Integral square error|
-|![image][ref-xsc]:`tuneITAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`ITAE`) Integral of time-weighted absolute error|
-|![image][ref-xsc]:`tuneOverCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`CHR`) Chien-Hrones-Reswick load rejection `20%` overshot|
-|![image][ref-xsc]:`tuneOverCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`CHR`) Chien-Hrones-Reswick set point track `20%` overshot|
-|![image][ref-xsc]:`tuneProcCC`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`CC`) [`Choen-Coon`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CC_tuning.png)|
-|![image][ref-xsc]:`tuneProcCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`CHR`) Chien-Hrones-Reswick load rejection|
-|![image][ref-xsc]:`tuneProcCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`CHR`) Chien-Hrones-Reswick set point track|
-|![image][ref-xsc]:`tuneProcZN`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes the state controller using the method (`ZNM`) Ziegler-Nichols plant process|
+|![image][ref-xsc]:`tuneAutoTL`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`TL`) [`Tyreus-Luyben`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/TL_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png)|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ZN`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png)|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-xsc]|Tunes state controller using the method (`ZN`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png) extended by type: `classic`, `pessen`, `sovers`, `novers`|
+|![image][ref-xsc]:`tuneIAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`IAE`) [`Integral absolute error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneISE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ISE`) [`Integral square error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneITAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ITAE`) [`Integral of time-weighted absolute error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneOverCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_dr.png) load rejection `20%` overshot|
+|![image][ref-xsc]:`tuneOverCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_sp.png) set point track `20%` overshot|
+|![image][ref-xsc]:`tuneProcAH`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`AH`) Astrom-Hagglund|
+|![image][ref-xsc]:`tuneProcCC`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CC`) [`Choen-Coon`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CC_tuning.png)|
+|![image][ref-xsc]:`tuneProcCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_dr.png) load rejection|
+|![image][ref-xsc]:`tuneProcCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_sp.png) set point track|
+|![image][ref-xsc]:`tuneProcZN`(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ZNM`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_proc_tunning.png) [`plant process`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/proc_curve.png)|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

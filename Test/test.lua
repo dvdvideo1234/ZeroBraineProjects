@@ -1,15 +1,19 @@
 package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local common = require("common")
+local sProject = "ExtractWireWiki"
+local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
+common.addLibrary(sBase, sProject, "dvdlualib")
 
-local com = require("common")
-local gmd = require("dvdlualib/gmodlib")
+local wikilib = require("wikilib")
 
-local gsClass = "gmod_wire_dupeport"
-local gsLimit = gsClass:gsub("gmod_","").."s"
+local AAA = {
+    ["COLLISION_GROUP"] = "11111111111",
+    ["Material_surface_properties"] = "2222222222",
+    ["MASK"] = "33333333",
+    ["%s+%(`*TEST`*%)%s+"] = {["Test"] = "4444"}
+}
 
-print(gsLimit)
+local BBB = "Test COLLISION_GROUP Material_surface_properties (TEST) MASK  "
 
-print((7^2)^(1/5))
-print((7^(1/5))^2)
-
-print(7^(2/5))
-print(7^(5/2))
+print(wikilib.replaceToken(BBB, AAA))
+  

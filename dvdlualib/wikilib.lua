@@ -234,33 +234,67 @@ function wikilib.isEncodedURL(sURL)
   return ((tostring(sURL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
 end
 
-function wikilib.replaceToken(sT, tR, bR, bQ)
-  local qR = wikilib.common.getPick(bQ, "`", "")
-  local sD, sO = tostring(sT or ""), tostring(sT or "")
-  if(tR and wikilib.common.isTable(tR)) then
-    for k, v in pairs(tR) do
-      if(k:sub(1,1) ~= "#") then local nF, nB
-        nF, nB = sD:find(k, 1, true)
-        if(nF and nB) then
-          nF, nB, sX = (nF-1), (nB+1), (bR and v:format(k) or v)
-          local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
-          if(cF..cB == "``") then
-            sO = sD:sub(1,nF-1)..toSSS(cF,k,cB).."("..sX..")"..sD:sub(nB+1,-1)
-          elseif(cF..cB == "  ") then
-            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
-          elseif(cF..cB == " ") then
-            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
-          elseif(cB == ",") then
-            sO = sD:sub(1,nF)..toSSS(qR,k,qR).."("..sX..")"..sD:sub(nB,-1)
+function wikilib.findTokenCloser(sT, tR, iD)
+  local mF, mB, mK, mV, mP
+  for k, v in pairs(tR) do
+    if(k:sub(1,1) ~= "#") then
+      local nF, nB = sT:find(k, iD, true)
+      if(nF and nB) then
+        if(not (mF and mB and mK)) then
+          mF, mB, mK, mV, mP = nF, nB, k, v, false
+        else
+          if(nF <= mF and mF >= iD) then
+            mF, mB, mK, mV, mP = nF, nB, k, v, false
           end
-        else nF, nB = sD:find(k)
-          if(nF and nB and wikilib.common.isTable(v)) then
-            sO = wikilib.replaceToken(sD, v, bR, bQ)
+        end
+      else nF, nB = sT:find(k, iD)
+        if(nF and nB) then
+          if(not (mF and mB and mK)) then
+            mF, mB, mK, mV, mP = nF, nB, k, v, true
+          else
+            if(nF <= mF and mF >= iD) then
+              mF, mB, mK, mV, mP = nF, nB, k, v, true
+            end
           end
         end
       end
     end
-  end; return sO
+  end; return mF, mB, mK, mV, mP
+end
+
+function wikilib.replaceToken(sT, tR, bR, bQ)
+  local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
+  local qR = wikilib.common.getPick(bQ, "`", "")
+  if(tR and wikilib.common.isTable(tR)) then
+    local mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
+    while(mF and mB) do 
+      if(wikilib.common.isTable(mV) and mP) then 
+        local vD, vL = wikilib.replaceToken(sD, mV, bR, bQ)
+        iD, sD = (mB + vL), vD
+      else local nF, nB = (mF-1), (mB+1)
+        local sX = (bR and mV:format(mK) or mV)
+        local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
+        if(cF..cB == "``") then
+          sN = sD:sub(1,nF-1)..toSSS(cF,mK,cB).."("..sX..")" -- Concatenate the link to the beginning
+          sD, iD = sN..sD:sub(nB+1,-1), sN:len() + 1 -- Concatenate the rest and search in there
+          dL = dL + sX:len() + 4 -- How many symbols are added in the conversion overall
+        elseif(cF..cB == "  ") then
+          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
+          dL = dL + sX:len() + 4 + (2 * qR:len())
+        elseif(cF..cB == " ") then
+          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
+          dL = dL + sX:len() + 4 + (2 * qR:len())
+        elseif(cB == ",") then
+          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
+          dL = dL + sX:len() + 4 + (2 * qR:len())
+        end
+      end
+      mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
+    end
+  end; return sD, dL
 end
 
 function wikilib.updateAPI(API, DSC)
@@ -334,7 +368,7 @@ function wikilib.readDescriptions(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
   local cT = apiGetValue(API,"HDESC", "top")
-        cT = "return function() "..(cT or wikiDChunk.top)
+        cT = "return function()\n"..(cT or wikiDChunk.top)
   local cB = apiGetValue(API,"HDESC", "bot")
         cB = (cB or wikiDChunk.bot).." end"
   local cD = apiGetValue(API,"HDESC", "dsc")
@@ -362,7 +396,15 @@ function wikilib.readDescriptions(API)
   local fC, oE = load(sC)
   if(fC) then local bS, fC = pcall(fC);
     if(bS) then bS, fC = pcall(fC);
-      if(bS) then return fC else
+      if(bS) then
+        if(wikilib.common.isDryTable(fC)) then
+          wikilib.common.logStatus("wikilib.readDescriptions[3]: Compilation chunk:\n")
+          wikilib.common.logStatus("--------------------------------------------\n")
+          wikilib.common.logStatus(sC)
+          wikilib.common.logStatus("--------------------------------------------\n")
+          error("wikilib.readDescriptions[3]: Description empty !")
+        end; return fC
+      else
         wikilib.common.logStatus("wikilib.readDescriptions[2]: Compilation chunk:\n")
         wikilib.common.logStatus("--------------------------------------------\n")
         wikilib.common.logStatus(sC)
