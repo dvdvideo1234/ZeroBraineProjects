@@ -41,7 +41,7 @@ local function toURL(dir, soc)
   return (wikiFormat.__url:format(tostring(soc or "https"), dir))
 end
 
-local function toSSS(...)
+local function toQSQ(...)
   return (wikiFormat.__sss:format(...))
 end
 
@@ -262,34 +262,43 @@ function wikilib.findTokenCloser(sT, tR, iD)
   end; return mF, mB, mK, mV, mP
 end
 
-function wikilib.replaceToken(sT, tR, bR, bQ)
+function wikilib.replaceToken(sT, tR, bR, bQ, tS)
   local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   local qR = wikilib.common.getPick(bQ, "`", "")
   if(tR and wikilib.common.isTable(tR)) then
     local mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
-    while(mF and mB) do 
-      if(wikilib.common.isTable(mV) and mP) then 
-        local vD, vL = wikilib.replaceToken(sD, mV, bR, bQ)
+    while(mF and mB) do
+      if(wikilib.common.isTable(mV)) then 
+        local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
+        local vD, vL = wikilib.replaceToken(sD, mV, bR, bQ, tV)
         iD, sD = (mB + vL), vD
       else local nF, nB = (mF-1), (mB+1)
         local sX = (bR and mV:format(mK) or mV)
         local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
         if(cF..cB == "``") then
-          sN = sD:sub(1,nF-1)..toSSS(cF,mK,cB).."("..sX..")" -- Concatenate the link to the beginning
+          sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB).."("..sX..")" -- Concatenate the link to the beginning
           sD, iD = sN..sD:sub(nB+1,-1), sN:len() + 1 -- Concatenate the rest and search in there
-          dL = dL + sX:len() + 4 -- How many symbols are added in the conversion overall
+          if(tS and mF < tS[1] and mB < tS[1]) then -- Check if the string found is on the front
+            dL = dL + sX:len() + 4 -- How many symbols are added in the conversion overall
+          end -- Update lenght only if the string is in front of the pattern with adjusted length
         elseif(cF..cB == "  ") then
-          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
-          dL = dL + sX:len() + 4 + (2 * qR:len())
+          if(tS and mF < tS[1] and mB < tS[1]) then
+            dL = dL + sX:len() + 4 + (2 * qR:len())
+          end
         elseif(cF..cB == " ") then
-          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
-          dL = dL + sX:len() + 4 + (2 * qR:len())
+          if(tS and mF < tS[1] and mB < tS[1]) then
+            dL = dL + sX:len() + 4 + (2 * qR:len())
+          end
         elseif(cB == ",") then
-          sN = sD:sub(1,nF)..toSSS(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
-          dL = dL + sX:len() + 4 + (2 * qR:len())
+          if(tS and mF < tS[1] and mB < tS[1]) then
+            dL = dL + sX:len() + 4 + (2 * qR:len())
+          end
         end
       end
       mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
