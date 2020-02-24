@@ -3,17 +3,13 @@ local common = require("common")
 local sProject = "ExtractWireWiki"
 local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
 common.addLibrary(sBase, sProject, "dvdlualib")
-
 local wikilib = require("wikilib")
 
-local AAA = {
-    ["COLLISION_GROUP"] = "11111111111",
-    ["Material_surface_properties"] = "2222222222",
-    ["MASK"] = "33333333",
-    ["%s+%(`*TEST`*%)%s+"] = {["Test"] = "4444"}
-}
+local a = {1, 2, 3}
 
-local BBB = "Test COLLISION_GROUP Material_surface_properties (TEST) MASK  "
+b = {}
+b.set = function(b, ...)
+  print(...)
+end
 
-print(wikilib.replaceToken(BBB, AAA))
-  
+b:set(unpack(a))
