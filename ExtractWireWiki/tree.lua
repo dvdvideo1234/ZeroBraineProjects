@@ -4,8 +4,8 @@ local sProject = "ExtractWireWiki"
 local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
 common.addLibrary(sBase, sProject, "dvdlualib")
 
-local sEXP = "ftrace"
-local sSVN = "ControlSystemsE2"
+local sEXP = "physprop_adv"
+local sSVN = "PhysPropertiesAdv"
 
 local wikilib = require("wikilib")
 local API     = require("api/"..sEXP)

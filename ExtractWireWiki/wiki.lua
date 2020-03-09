@@ -34,7 +34,7 @@ if(f) then io.output(f)
           wikilib.printDescriptionTable(API, DSC, iD)
         end
       end
-      -- wikilib.printTypeTable(API)
+     -- wikilib.printTypeTable(API)
       wikilib.printTypeReference(API)
       wikilib.printLinkReferences(API)
       print(wikilib.insRefCountry("bg"))

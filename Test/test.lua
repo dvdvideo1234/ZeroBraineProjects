@@ -5,11 +5,10 @@ local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraine
 common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
-local a = {1, 2, 3}
+local gsTool = "physprop_adv"
+local gsFLng = ("%s"..gsTool.."/lang/%s")
+local sT = "test"
 
-b = {}
-b.set = function(b, ...)
-  print(...)
-end
-
-b:set(unpack(a))
+print(gsFLng:format("", sT..".lua"))
+print("lua/"..gsFLng:format("", sT..".lua"))
+print(gsFLng:format("lua/", sT..".lua"))

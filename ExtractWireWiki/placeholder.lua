@@ -7,14 +7,16 @@ local wikilib = require("wikilib")
 
 local f = "https://placehold.it/%dx%d/%x%x%x/%x%x%x?text=%s"
 
-wikilib.setPlaceHolderColor({0,  0, 255}, {0 ,0, 0})
-print(wikilib.getBanner("A", 15))
 
+wikilib.setPlaceHolderColor({255,  0, 0}, {0 ,0, 0})
+print(wikilib.getBanner("RED", 15))
 wikilib.setPlaceHolderColor({0, 255, 0}, {0 ,0, 0})
-print(wikilib.getBanner("L", 15))
-
-wikilib.setPlaceHolderColor({0, 0, 255}, {0 ,0, 0})
-print(wikilib.getBanner("F", 15))
-
-wikilib.setPlaceHolderColor({255, 255, 0}, {0 ,0, 0})
-print(wikilib.getBanner("C", 15))
+print(wikilib.getBanner("GREEN", 15))
+wikilib.setPlaceHolderColor({0,  0, 255}, {0 ,0, 0})
+print(wikilib.getBanner("BLUE", 15))
+wikilib.setPlaceHolderColor({255,  255, 0}, {0 ,0, 0})
+print(wikilib.getBanner("YELLOW", 15))
+wikilib.setPlaceHolderColor({0, 255, 255}, {0 ,0, 0})
+print(wikilib.getBanner("CYAN", 15))
+wikilib.setPlaceHolderColor({255,  0, 255}, {0 ,0, 0})
+print(wikilib.getBanner("MAGEN", 15))

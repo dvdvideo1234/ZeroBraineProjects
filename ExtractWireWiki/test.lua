@@ -6,11 +6,9 @@ common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
 
-local s1 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`IAE`) load rejection"
-local s2 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`ISE`) load rejection"
-local s3 = "Pattern	Tunes the state control using the Chien-Hrones-Reswick method (`ITAE`) load rejection"
-local p = "%s+%(`*I[AS]E`*%)%s+"
+local s = "function setPistonMark(number nX, number nY, number nZ)"
+local p = "%s*%(.+%)$"
 
 
 
-print(s2:find(p))
+print(s:sub(s:find(p)))
