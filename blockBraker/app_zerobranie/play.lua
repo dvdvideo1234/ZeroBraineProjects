@@ -1,4 +1,4 @@
-require("lib/paths").regDir("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms","*.lua")
+require("lib/paths")
 
 local turtle   = require("turtle")
 local common   = require("common")
@@ -13,7 +13,7 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "cross"
+local gnCurLev = "test"
 local gnTick   = 0
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 

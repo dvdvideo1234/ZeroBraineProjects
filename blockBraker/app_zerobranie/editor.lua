@@ -1,4 +1,4 @@
-require("lib/paths").regDir("E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms","*.lua")
+require("lib/paths")
 
 -- Global libraries
 local turtle    = require("turtle"  )
