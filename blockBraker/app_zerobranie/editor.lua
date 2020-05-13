@@ -1,4 +1,4 @@
-require("lib/paths")
+require("lib/path")
 
 -- Global libraries
 local turtle    = require("turtle"  )

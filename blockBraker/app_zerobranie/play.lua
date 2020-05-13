@@ -1,4 +1,4 @@
-require("lib/paths")
+require("lib/path")
 
 local turtle   = require("turtle")
 local common   = require("common")
@@ -13,7 +13,7 @@ io.stdout:setvbuf("no")
 
 -- Changed during testing
 local gnOut    = 5
-local gnCurLev = "test"
+local gnCurLev = "cross"
 local gnTick   = 0
 local gtDebug  = {en = false, data = {lxy = "<>", rxy = "<>", key = "#"}}
 
