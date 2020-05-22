@@ -2,6 +2,7 @@ local wikiFolder = {}
       wikiFolder.__temp = os.getenv("TEMP")
       wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
       wikiFolder.__read = "*line"
+      wikiFolder.__snum = "^%s*Volume%s+Serial%s+Number%s+is%s+"
       wikiFolder.__drof = "^%s*Directory%s+of%s+"
       wikiFolder.__fdat = {"%s%s%s", 19} -- Directory content pattern matching and length
       wikiFolder.__idir = {".", "..", "<DIR>"}

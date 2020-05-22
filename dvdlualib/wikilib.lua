@@ -892,8 +892,13 @@ function wikilib.folderReadStructure(sP, iV)
     error("wikilib.folderReadStructure: Open error: "..oE)
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
-  while(sL) do sT = wikilib.common.stringTrim(sL)    
-    if(sL:find(wikiFolder.__drof)) then
+  while(sL) do sT = wikilib.common.stringTrim(sL)
+    if(sL:match(wikiFolder.__snum)) then
+      if(wikilib.common.isNil(iV)) then
+        local nS, nE = sL:find(wikiFolder.__snum)
+        tT.snum = wikilib.common.stringTrim(sL:sub(nE + 1, -1))
+      end
+    elseif(sL:find(wikiFolder.__drof)) then
       tT.base = sL:gsub("\\","/"):gsub(wikiFolder.__drof,"")
       tT.base = wikilib.common.stringTrim(tT.base)
       if(sU[1] ~= "" and sU[2] ~= "") then

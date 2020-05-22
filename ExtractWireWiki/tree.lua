@@ -50,8 +50,8 @@ if(fO) then io.output(fO)
   wikilib.writeBOM("UTF8")
   -- Read structure
   local tS = wikilib.folderReadStructure(sD)
- -- common.logString("Directory: ["..sD.."]\n")
- -- common.logTable(tS, "LOL")
+  -- common.logString("Directory: ["..sD.."]\n")
+  -- common.logTable(tS, "DIR")
   -- Write the tree
   if(tS and common.isTable(tS)) then
     wikilib.folderDrawTree(tS, 2, nil, nil, tDesc, sRepo, tSwap)
