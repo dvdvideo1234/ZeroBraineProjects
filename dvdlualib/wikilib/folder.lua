@@ -2,12 +2,12 @@ local wikiFolder = {}
       wikiFolder.__temp = os.getenv("TEMP")
       wikiFolder.__slsh = {["/"] = true, ["\\"] = true}
       wikiFolder.__read = "*line"
-      wikiFolder.__drof = "Directory of "
-      wikiFolder.__fdat = "%d%d%-%d%d%-%d%d%d%d%s+%d%d:%d%d"
+      wikiFolder.__drof = "^%s*Directory%s+of%s+"
+      wikiFolder.__fdat = {"%s%s%s", 19} -- Directory content pattern matching and length
       wikiFolder.__idir = {".", "..", "<DIR>"}
       wikiFolder.__pdir = {["."] = true, [".."] = true}
-      wikiFolder.__fcmd = "cd %s && dir > %s"
-      wikiFolder.__ranm = 60 -- Random string file name
+      wikiFolder.__fcmd = "cd /d %s && dir > %s"
+      wikiFolder.__ranm = 10 -- Random string file name
       wikiFolder.__syms = { -- https://en.wikipedia.org/wiki/Code_page_437
         {"└", "├", "─", "│", "┌"},
         {"╚", "╠", "═", "║", "╔"},

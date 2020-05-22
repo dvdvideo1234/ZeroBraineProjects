@@ -7,10 +7,7 @@ local sBase = common.normFolder(sInstDir.."ZeroBraineProjects")
 common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
-print(common.randomGetString(20))
+local s = "aaaa   bbbb"
 
-SERVER = true
+print(s:find("%s%s%s%s"))
 
-local sI = (SERVER and "SERVER" or (CLIENT and "CLIENT" or "NOINST"))
-
-print(sI, os.date("%y-%m-%d").." "..os.date("%H:%M:%S"))

@@ -268,7 +268,7 @@ function wikilib.replaceToken(sT, tR, bR, bQ, tS)
   if(tR and wikilib.common.isTable(tR)) then
     local mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
     while(mF and mB) do
-      if(wikilib.common.isTable(mV)) then 
+      if(wikilib.common.isTable(mV)) then
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
         local vD, vL = wikilib.replaceToken(sD, mV, bR, bQ, tV)
         iD, sD = (mB + vL), vD
@@ -325,7 +325,7 @@ function wikilib.updateAPI(API, DSC)
       for ID = 1, #tD do local sW = tD[ID]
         local cQ = sW:sub(1,1)..sW:sub(-1,-1)
         for k, v in pairs(wikiQuote) do
-          if((sW:match(k) and cQ ~= "``") or isQuote(sW)) then         
+          if((sW:match(k) and cQ ~= "``") or isQuote(sW)) then
             local sF, sB = sW:sub(1,1), sW:sub(-1,-1)
             if(wikiDiver[sF] or wikiDiver[sB]) then
               local nF, nB = 1, sW:len() -- Strip exclusion characters
@@ -398,7 +398,7 @@ function wikilib.readDescriptions(API)
     local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
           sN = sN.."cl_"..sE2:lower()..".lua"
     local fR = io.open(sN, "rb"); if(not fR) then
-      return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end    
+      return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
     wikilib.common.logStatus("Description: FILE > "..sN)
     sC = (cT..sI..fR:read("*all")..sI..cB)
   end
@@ -736,7 +736,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
             end
 
             local sR = n:gsub(wikiBraketsIN, ""); if(bMsp) then sR = "`"..sR.."`" end
-            
+
             if(obj:find(sV)) then
               wikilib.printRow({sR.."("..wikilib.concatType(API, vars)
                     ..")", wikilib.concatType(API, ret), DSC[n]})
@@ -881,47 +881,61 @@ end
 
 function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
-  local sU = wikiFolder.__furl
+  local sU, bC = wikiFolder.__furl, false
   local sR = wikilib.common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__temp..vT..".txt"
+  local tD = wikiFolder.__fdat -- Content descriptor
   os.execute(wikiFolder.__fcmd:format(sP, nT))
   local fD, oE = io.open(nT, "rb"); if(not fD) then
-    wikilib.common.logStatus("wikilib.folderReadStructure: Open error <"..nT..">", nil)
+    wikilib.common.logStatus("wikilib.folderReadStructure: Open error ["..nT.."]", nil)
     error("wikilib.folderReadStructure: Open error: "..oE)
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
-    while(sL) do sL = wikilib.common.stringTrim(sL)
-    if(sL:sub(1, 13) == wikiFolder.__drof) then
-      tT.base = sL:sub(14, -1):gsub("\\","/")
+  while(sL) do sT = wikilib.common.stringTrim(sL)    
+    if(sL:find(wikiFolder.__drof)) then
+      tT.base = sL:gsub("\\","/"):gsub(wikiFolder.__drof,"")
+      tT.base = wikilib.common.stringTrim(tT.base)
       if(sU[1] ~= "" and sU[2] ~= "") then
         local uS, uE = sP:find(sU[1], 1, true)
         if(uS and uE) then tT.link = sU[2]..sP:sub(uE+1, -1) end
       end
-    elseif(sL:sub(1, 17):match(wikiFolder.__fdat)) then
-      local sS = wikilib.common.stringTrim(sL:sub(18, 36))
-      local sN = wikilib.common.stringTrim(sL:sub(37, -1))
-      if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
-        if(tF.prnt and iT > 1) then
+    elseif(sL:sub(1,1) ~= " " and sL:match(tD[1])) then bC = true
+      local nS = sL:find(tD[1])
+      if(not wikilib.common.isNil(nS)) then
+        local nE = (nS + tD[2] - 1) -- The directory and size information end
+        local sS = wikilib.common.stringTrim(sL:sub(nS, nE))
+        local sN = wikilib.common.stringTrim(sL:sub(nE, -1))
+        if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
+          if(tF.prnt and iT > 1) then
+            if(not tT.cont) then tT.cont = {} end; iD = iD + 1
+            tT.cont[iD] = {size = sS, name = sN}
+          end
+        elseif(sN:sub(1,1) == ".") then
+          if(tF.hide) then
+            if(not tT.cont) then tT.cont = {} end; iD = iD + 1
+            tT.cont[iD] = {size = sS, name = sN}
+          end
+        else
           if(not tT.cont) then tT.cont = {} end; iD = iD + 1
           tT.cont[iD] = {size = sS, name = sN}
-        end
-      elseif(sN:sub(1,1) == ".") then
-        if(tF.hide) then
-          if(not tT.cont) then tT.cont = {} end; iD = iD + 1
-          tT.cont[iD] = {size = sS, name = sN}
+          local tP = tT.cont[iD]
+          if(not tP.root and tP.size == wikiFolder.__idir[3]) then
+            tP.root = wikilib.folderReadStructure(sP.."/"..tP.name, iT)
+          end
         end
       else
-        if(not tT.cont) then tT.cont = {} end; iD = iD + 1
-        tT.cont[iD] = {size = sS, name = sN}
-        local tP = tT.cont[iD]
-        if(not tP.root and tP.size == wikiFolder.__idir[3]) then
-          tP.root = wikilib.folderReadStructure(sP.."/"..tP.name, iT)
-        end
+        wikilib.common.logStatus("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", nil)
+        error("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]")
       end
     end
     sL = fD:read(wikiFolder.__read)
-  end; fD:close(); os.remove(nT) return tT
+  end; fD:close(); os.remove(nT)
+  if(not bC) then
+    wikilib.common.logStatus("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]", nil)
+    error("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]")
+  end
+  return tT
 end
 
 local function folderLinkItem(tR, vC, bB)
@@ -952,7 +966,7 @@ local function folderLinkItem(tR, vC, bB)
         end
       end
     else
-      sO = toLinkURL("`"..sO.."`", sR..sB)  
+      sO = toLinkURL("`"..sO.."`", sR..sB)
       if(vC.name == cD[1]) then
         sO = sO:gsub("/%"..cD[1].."%)$",")")
       elseif(vC.name == cD[2]) then
@@ -973,6 +987,13 @@ end
  * tQ > Word to link creation table
 ]]
 function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)
+  if(not wikilib.common.isTable(tP)) then
+    error("Print structure invalid {"..type(tP).."}["..tostring(tP).."]")
+  else
+    if(not wikilib.common.isTable(tP.cont)) then
+      error("Print structure content invalid {"..type(tP.cont).."}["..tostring(tP.cont).."]")
+    end
+  end
   local tS, tR = wikiFolder.__syms, wikiFolder.__refl
   local sG = wikilib.common.getPick(common.isString(sG), sG, nil)
   local tD = wikilib.common.getPick(common.isTable(tD), tD, nil)
