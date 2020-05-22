@@ -7,7 +7,7 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = false, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    wdsc = true, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
     prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
   },
@@ -18,7 +18,7 @@ local API = {
   },
   FILE = {
     exts = "ftrace",
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2", -- ControlSystemsE2, wire-extras
+    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/ControlSystemsE2", -- ControlSystemsE2, wire-extras
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_ftrace",
@@ -53,6 +53,10 @@ local API = {
     ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
     ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult",
     ["FTrace"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace",
+    ["bitmask"] = "https://en.wikipedia.org/wiki/Mask_(computing)",
+    ["SURF"] = "https://wiki.facepunch.com/gmod/Enums/SURF",
+    ["DISPSURF"] = "https://wiki.facepunch.com/gmod/Enums/DISPSURF",
+    ["CONTENTS"] = "https://wiki.facepunch.com/gmod/Enums/CONTENTS",
     ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
   },
   HDESC = {

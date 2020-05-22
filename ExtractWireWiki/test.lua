@@ -1,8 +1,5 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+require("directories")
 local common = require("common")
-local sProject = "ExtractWireWiki"
-local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
-common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
 

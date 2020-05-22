@@ -1,6 +1,7 @@
-require("../dvdlualib/gmodlib")
-require("../dvdlualib/asmlib")
-local common = require("../dvdlualib/common")
+require("directories")
+require("gmodlib")
+require("asmlib")
+local common = require("common")
 local asmlib = trackasmlib
 
 if(asmlib.InitBase("track","assembly")) then

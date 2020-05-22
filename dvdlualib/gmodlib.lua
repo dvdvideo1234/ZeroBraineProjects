@@ -504,7 +504,7 @@ function net.Start(sK)
   __nermsg.__now__key__ = sK
 end
 
-function net.Wrte(v)
+function net.Write(v)
   local k = __nermsg.__now__key__
   table.insert(__nermsg[k], v)
 end
@@ -516,7 +516,7 @@ function net.Read()
 end
 
 function net.ReadEntity()
-  return netRead()
+  return net.Read()
 end
 
 function net.Receive()

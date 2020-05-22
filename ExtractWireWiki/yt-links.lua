@@ -1,7 +1,6 @@
-local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE/"
-package.path = package.path..";"..sIDE.."myprograms/?.lua"
+require("directories")
 
-local wikilib = require("lib/wikilib")
+local wikilib = require("dvdlualib/wikilib")
 
 local bPreview = false
 local sTubePat = "https://www%.youtube%.com/watch%?v="

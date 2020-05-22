@@ -1,9 +1,10 @@
+require("directories")
 require("turtle")
 require("wx")
 -- require("ZeroBraineProjects/dvdlualib/common")
-local compl = require("ZeroBraineProjects/dvdlualib/complex")
-local fract = require("ZeroBraineProjects/dvdlualib/fractal")
-local clmap = require("ZeroBraineProjects/dvdlualib/colormap")
+local compl = require("complex")
+local fract = require("fractal")
+local clmap = require("colormap")
 
 -- z(0) = z,    z(n+1) = z(n)*z(n) + z,    n=0,1,2, ...    (1)
 
@@ -28,7 +29,7 @@ local brdcl = nil -- colr(0, 250, 100)
 local brdup = nil -- true
 
 --- Dinamic parameters and constants
-local cexp   = compl.New(math.exp(1))
+local cexp   = compl.getNew(math.exp(1))
 local w2, h2 = W/2, H/2
 local gr     = 1.681
 

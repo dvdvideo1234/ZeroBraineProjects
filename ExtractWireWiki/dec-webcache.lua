@@ -1,12 +1,5 @@
-local sIDE = "E:/Documents/Lua-Projs/ZeroBraineIDE"
-local fIDE = "/%s/?.lua"
-local tIDE = 
-{
-  "myprograms",
-  "ExtractWireWiki/lib"
-}; for k, v in ipairs(tIDE) do package.path = package.path..";"..sIDE..fIDE:format(v) end
-
-local wikilib = require("lib/wikilib")
+require("directories")
+local wikilib = require("wikilib")
 local common  = require("common")
 
 wikilib.setDecoderURL("UTF-8")

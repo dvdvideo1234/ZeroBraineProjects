@@ -62,7 +62,6 @@ local API = {
     dsc = "E2Helper.Descriptions"
   }
 }
-
 API.DSCHUNK = [===[
 
 local DSC = E2Helper.Descriptions

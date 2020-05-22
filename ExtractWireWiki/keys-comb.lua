@@ -1,11 +1,8 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local drpath = require("directories")
 local common = require("common")
-local sProject = "ExtractWireWiki"
-local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
-common.addLibrary(sBase, sProject, "dvdlualib")
 local wikilib = require("wikilib")
 
-local sOut = sBase..common.normFolder("ExtractWireWiki/out").."test.md"
+local sOut = drpath.getBase()..common.normFolder("/ZeroBraineProjects/ExtractWireWiki/out").."test.md"
 
 local s = "When you press you turn blue: *{k-f1+m-r+m-m+m-l}*"
 local t = {"*{","}*"}

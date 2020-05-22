@@ -1,4 +1,4 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+require("directories")
 local common = require("common")
 
 SERVER = true

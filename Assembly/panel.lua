@@ -1,7 +1,8 @@
-require("ZeroBraineProjects/dvdlualib/common")
-require("ZeroBraineProjects/dvdlualib/gmodlib")
-require("ZeroBraineProjects/dvdlualib/asmlib")
-require("ZeroBraineProjects/dvdlualib/dummy")
+require("directories")
+require("common")
+require("gmodlib")
+require("asmlib")
+require("dummy")
 
 local stringExplode = string.Explode
 local stringSub   =  string.sub

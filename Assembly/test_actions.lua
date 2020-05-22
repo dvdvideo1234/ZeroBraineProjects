@@ -1,6 +1,7 @@
-require("../dvdlualib/gmodlib")
-require("../dvdlualib/asmlib")
-local common = require("../dvdlualib/common")
+require("directories")
+require("gmodlib")
+require("asmlib")
+local common = require("common")
 local asmlib = trackasmlib
 
 asmlib.InitBase("track", "assembly")
@@ -14,9 +15,9 @@ asmlib.SetOpVar("DIRPATH_BAS", "Assembly/")
 asmlib.SetLogControl(1000,false)
 
 
-netStart("asdf")
+net.Start("asdf")
 
-function CLEAR_RELATION(nLen) local oPly = netReadEntity()
+function CLEAR_RELATION(nLen) local oPly = net.ReadEntity()
   asmlib.LogInstance("{"..tostring(nLen)..","..tostring(oPly).."}")
   if(not asmlib.IntersectRayClear(oPly, "relate")) then
     asmlib.LogInstance("Failed clearing ray"); return nil end

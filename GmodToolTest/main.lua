@@ -1,7 +1,8 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local szbIDE = "D:/LuaIDE"
+package.path = package.path..";"..szbIDE.."/myprograms/?.lua"
 
 local sEOL  = "\r\n"
-local sTool = "wire_dupeport"
+local sTool = "selfchanger"
 
 local fTool = "GmodToolTest/tools/%s.lua"
 local fGmod = "dvdlualib/gmodlib.lua"

@@ -3,11 +3,11 @@ local common = require("common")
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiType  = require("wikilib/type")
-local wikiFolder = require("wikilib/folder")
-local wikiFormat = require("wikilib/format")
-local wikiDChunk = require("wikilib/dscchnk")
-local wikiEncodeURL = require("wikilib/uenc")
+local wikiType  = require("dvdlualib/wikilib/type")
+local wikiFolder = require("dvdlualib/wikilib/folder")
+local wikiFormat = require("dvdlualib/wikilib/format")
+local wikiDChunk = require("dvdlualib/wikilib/dscchnk")
+local wikiEncodeURL = require("dvdlualib/wikilib/uenc")
 wikilib.common = common
 
 -- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
@@ -787,7 +787,7 @@ function wikilib.getBanner(vT, vW, vH)
   local nH = wikilib.common.getClamp(tonumber(vH) or nW, 1)
   local bR, bG, bB = unpack(wikiColorPH[1])
   local tR, tG, tB = unpack(wikiColorPH[2])
-  return toImgBanner(nW, nH, bR, bG, bB, tR, tG, tB, sT)
+  return toURL(toImgBanner(nW, nH, bR, bG, bB, tR, tG, tB, wikilib.getEncodeURL(sT)))
 end
 
 function wikilib.parseKeyCombination(sS, vT, nW, nH)
@@ -966,10 +966,10 @@ end
  * This prints out the recursive tree
  * tP > Structure to print
  * vA > The type of graph symbols to use
- * vR > Previous iretaration graph recursion depth ( omited )
- * sR > Previous iretaration graph recursion destination ( omited )
- * tD > API description list the thing is done for ( omited )
- * sG > The repo tree is generated for ( omited )
+ * vR > Previous iteration graph recursion depth ( omitted )
+ * sR > Previous iteration graph recursion destination ( omitted )
+ * tD > API description list the thing is done for ( omitted )
+ * sG > The repository tree is generated for ( omitted )
  * tQ > Word to link creation table
 ]]
 function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)

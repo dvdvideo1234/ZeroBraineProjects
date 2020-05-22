@@ -1,17 +1,17 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+require("directories")
+local drpath = require("directories")
 local common = require("common")
 local sProject = "ExtractWireWiki"
-local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
-common.addLibrary(sBase, sProject, "dvdlualib")
 
 local sEXP = "physprop_adv"
 local sSVN = "PhysPropertiesAdv"
+local dSVN = "E:/Documents/Lua-Projs/SVN/"..sSVN
 
 local wikilib = require("wikilib")
 local API     = require("api/"..sEXP)
 
 local sB = sBase..common.normFolder(sProject)
-local sD = common.normFolder("E:/Documents/Lua-Projs/SVN/"..sSVN)
+local sD = common.normFolder(dSVN)
 local fO, oE = io.open(sB.."out/tree.md", "wb")
 if(fO and API) then io.output(fO)
   -- Setup flags

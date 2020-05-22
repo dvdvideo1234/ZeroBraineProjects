@@ -1,4 +1,6 @@
-local com = require("dvdlualib/common")
+require("directories")
+
+local com = require("common")
 
 hF = {["Log"]=true,["LogInstance"]=true,[""]=true}
 

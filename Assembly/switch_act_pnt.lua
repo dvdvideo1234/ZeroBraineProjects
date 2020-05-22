@@ -1,5 +1,6 @@
-require("../dvdlualib/gmodlib")
-require("../dvdlualib/asmlib")
+require("directories")
+require("gmodlib")
+require("asmlib")
 local common = require("../dvdlualib/common")
 local asmlib = trackasmlib
 

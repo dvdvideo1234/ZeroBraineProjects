@@ -1,4 +1,4 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+require("directories")
 local common = require("common")
 
 SERVER = true
@@ -15,3 +15,7 @@ require("Assembly/data/pieces")
 local a = asmlib.CacheQueryPiece("models/sligwolf/rerailer/rerailer_1.mdl")
 
 common.logTable(a)
+
+local a = "Prop Cannon Projectile"
+
+print(a:lower():gsub("prop%s*cannon", "propcannon"):gsub(" ", "_"))

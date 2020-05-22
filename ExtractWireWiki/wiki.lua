@@ -1,19 +1,16 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local directories = require("directories")
 local common = require("common")
-local sProject = "ExtractWireWiki"
-local sBase = common.normFolder("E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects")
-common.addLibrary(sBase, sProject, "dvdlualib")
 
-local sEXP = "pistontiming"
+local sEXP = "ftrace"
 
 local wikilib = require("wikilib")
-
 local API = require("api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
+local sProj = "/ZeroBraineProjects/ExtractWireWiki"
 
 local YTK = "pl12yIDPm3M"
 
-local sB = sBase..common.normFolder(sProject)
+local sB = common.normFolder(directories.getBase()..sProj)
 local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then
