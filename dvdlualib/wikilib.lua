@@ -912,16 +912,16 @@ function wikilib.folderReadStructure(sP, iV)
         local sS = wikilib.common.stringTrim(sL:sub(nS, nE))
         local sN = wikilib.common.stringTrim(sL:sub(nE, -1))
         if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
-          if(tF.prnt and iT > 1) then
+          if(tF.prnt and iT > 1) then -- Parent/current directory
             if(not tT.cont) then tT.cont = {} end; iD = iD + 1
             tT.cont[iD] = {size = sS, name = sN}
           end
-        elseif(sN:sub(1,1) == ".") then
-          if(tF.hide) then
+        elseif(sN:sub(1,1) == "." and not wikiFolder.__pdir[sN]) then
+          if(tF.hide) then -- Hidden file or folder
             if(not tT.cont) then tT.cont = {} end; iD = iD + 1
             tT.cont[iD] = {size = sS, name = sN}
           end
-        else
+        else -- Everything else
           if(not tT.cont) then tT.cont = {} end; iD = iD + 1
           tT.cont[iD] = {size = sS, name = sN}
           local tP = tT.cont[iD]
@@ -950,8 +950,8 @@ local function folderLinkItem(tR, vC, bB)
     local cD = wikiFolder.__idir
     local sN = wikilib.common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
-    local sB = (bB and "" or wikilib.getEncodeURL(sO))
-    local sR = tostring(sR and toURL(sU) or tU[2])
+    local sB = (bB and "" or wikilib.getEncodeURL(sO))   
+    local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
     if(tF.ufbr) then local vP = sR..sB
       local tR = wikiFolder.__refl
@@ -959,7 +959,7 @@ local function folderLinkItem(tR, vC, bB)
       local sL = wikilib.common.stringGetFileName(vP)
       local vR = "ref-"..tR.Size.."-"..sL
       tR[tR.Size] = toLinkRef(vR, vP)
-      sO = toLinkRefSrc("`"..sO.."`", vR)
+      sO = toLinkRefSrc("`"..sO.."`", vR)           
       if(vC.name == cD[1]) then
         tR[tR.Size] = tR[tR.Size]:sub(1,-3)
       elseif(vC.name == cD[2]) then
@@ -985,13 +985,13 @@ end
  * This prints out the recursive tree
  * tP > Structure to print
  * vA > The type of graph symbols to use
+ * sG > The repository tree is generated for ( not mandatory )
+ * tD > API description list the thing is done for ( not mandatory ) )
+ * tQ > Word to link creation table ( not mandatory ) )
  * vR > Previous iteration graph recursion depth ( omitted )
  * sR > Previous iteration graph recursion destination ( omitted )
- * tD > API description list the thing is done for ( omitted )
- * sG > The repository tree is generated for ( omitted )
- * tQ > Word to link creation table
 ]]
-function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)
+function wikilib.folderDrawTree(tP, vA, sG, tD, tQ, vR, sR)
   if(not wikilib.common.isTable(tP)) then
     error("Print structure invalid {"..type(tP).."}["..tostring(tP).."]")
   else
@@ -1031,7 +1031,7 @@ function wikilib.folderDrawTree(tP, vA, vR, sR, tD, sG, tQ)
       if(tD and tD[vC.name]) then
         sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, iR+1, sR..sD, tD, sG, tQ)
+      wikilib.folderDrawTree(vC.root, iA, sG, tD, tQ, iR+1, sR..sD)
     else
       if(tD and tD[vC.name]) then
         sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end

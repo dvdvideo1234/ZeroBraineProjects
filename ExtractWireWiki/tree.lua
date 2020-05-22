@@ -54,7 +54,7 @@ if(fO) then io.output(fO)
   -- common.logTable(tS, "DIR")
   -- Write the tree
   if(tS and common.isTable(tS)) then
-    wikilib.folderDrawTree(tS, 2, nil, nil, tDesc, sRepo, tSwap)
+    wikilib.folderDrawTree(tS, 2, sRepo, tDesc, tSwap)
     wikilib.folderDrawTreeRef()
   else
     

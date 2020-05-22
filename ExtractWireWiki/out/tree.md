@@ -43,7 +43,7 @@
 
 
 [ref-1-PhysPropertiesAdv]: https://github.com/dvdvideo1234/PhysPropertiesAdv
-[ref-2-data]: github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data
+[ref-2-data]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data
 [ref-3-physprop%5Fadv]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/physprop%5Fadv
 [ref-4-materials]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/physprop%5Fadv/materials
 [ref-5-All%20Materials.txt]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/physprop%5Fadv/materials/All%20Materials.txt
@@ -72,8 +72,8 @@
 [ref-28-addon.txt]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/workshop/addon.txt
 [ref-29-description.txt]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/workshop/description.txt
 [ref-30-key.txt]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/data/workshop/key.txt
-[ref-31-license]: github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/license
-[ref-32-lua]: github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua
+[ref-31-license]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/license
+[ref-32-lua]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua
 [ref-33-physprop%5Fadv]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/physprop%5Fadv
 [ref-34-lang]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/physprop%5Fadv/lang
 [ref-35-bg.lua]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/physprop%5Fadv/lang/bg.lua
@@ -82,5 +82,5 @@
 [ref-38-gmod%5Ftool]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/weapons/gmod%5Ftool
 [ref-39-stools]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/weapons/gmod%5Ftool/stools
 [ref-40-physprop%5Fadv.lua]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/lua/weapons/gmod%5Ftool/stools/physprop%5Fadv.lua
-[ref-41-readme.md]: github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/readme.md
-[ref-42-workshop%5Fpublish.bat]: github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/workshop%5Fpublish.bat
+[ref-41-readme.md]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/readme.md
+[ref-42-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/PhysPropertiesAdv/blob/master/workshop%5Fpublish.bat
