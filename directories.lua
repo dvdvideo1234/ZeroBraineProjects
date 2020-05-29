@@ -19,15 +19,45 @@ local metaDirectories =
   }
 }
 
+local directories = {}
+
+--------------- HELPER FUNCTIONS ---------------
+
 local function tableClear(tT)
   if(not tT) then error("Table missing") end
   local sT = type(tT); if(sT ~= "table") then
     error("Type mismatch ["..sT.."]") end
   if(not next(tT)) then return tT end
   for k, v in pairs(tT) do tT[k] = nil end
+  return directories
 end
 
-local directories = {}
+local function tableRemove(tT, iD, sS)
+  local sS = tostring(sS or ""); sS = ((sS == "") and "N/A" or sS)
+  local iV, nT = math.floor(tonumber(iD) or 0), #tT
+  if((iV <= 0) or (iV > nT)) then io.write(("Available %s is:\n"):format(sS))
+    for iK = 1, nT do io.write("  ["..tostring(iK).."]["..tostring(tT[iK]).."]\n") end
+    error(("Invalid %s ID ["..iV.."]"):format())
+  end; table.remove(tT, iV); return directories
+end
+
+local function tableInsert(tT, iT, ...)
+  local tA, iK = {...}, 1
+  local iT = (tonumber(iT) or 0)
+  while(tA[iK]) do
+    local sV = tostring(tA[iK] or "")
+    if(iT > 0) then
+      table.insert(tT, iT, sV)
+    elseif(iT < 0) then
+      table.insert(tT, #tT - iT + 1, sV)
+    else
+      table.insert(tT, sV)
+    end
+    iK = iK + 1
+  end; return directories
+end
+
+--------------- LIBRARY METHODS ---------------
 
 function directories.getCount()
   return metaDirectories.iCount
@@ -37,42 +67,42 @@ function directories.getTPath()
   return metaDirectories.tPath
 end
 
+function directories.remTPathID(vP)
+  return tableRemove(directories.getTPath(), vP, "path")
+end
+
 function directories.addTPath(...)
-  local tPath = metaDirectories.tPath
-  local tA, iK = {...}, 1
-  while(tA[iK]) do
-    local sV = tostring(tA[iK] or "")
-    table.insert(metaDirectories.tPath, sV)
-    iK = iK + 1
-  end
+  return tableInsert(directories.getTPath(), 0, ...)
+end
+
+function directories.addTPathID(iD, ...)
+  return tableInsert(directories.getTPath(), iD, ...)
 end
 
 function directories.setTPath(...)
-  tableClear(metaDirectories.tPath)
-  directories.addTPath(...)
+  tableClear(directories.getTPath())
+  return directories.addTPath(...)
 end
 
 function directories.getTBase()
   return metaDirectories.tBase
 end
 
+function directories.remTBaseID(vB)
+  return tableRemove(directories.getTBase(), vB, "base")
+end
+
 function directories.addTBase(...)
-  local tBase = metaDirectories.tBase
-  local tA, iK = {...}, 1
-  while(tA[iK]) do
-    local sV = tostring(tA[iK] or "")
-    table.insert(metaDirectories.tBase, sV)
-    iK = iK + 1
-  end
+  return tableInsert(directories.getTBase(), 0, ...)
+end
+
+function directories.addTBaseID(iD, ...)
+  return tableInsert(directories.getTBase(), iD, ...)
 end
 
 function directories.setTBase(...)
-  tableClear(metaDirectories.tBase)
-  directories.addTBase(...)
-end
-
-function directories.getBase()
-  return metaDirectories.sBase, metaDirectories.iBase
+  tableClear(directories.getTBase())
+  return directories.addTBase(...)
 end
 
 function directories.getLast()
@@ -114,11 +144,15 @@ function directories.setBase(vB)
         metaDirectories[iCount] = sD
         package.path = package.path..";"..sD.."/?.lua"
       else
-        print("Provided directory has been skipped: ["..sD.."]")
+        print("Provided directory has been skipped: ["..iD.."]["..sD.."]")
       end
     end
   end
   return directories
+end
+
+function directories.getBase()
+  return metaDirectories.sBase, metaDirectories.iBase
 end
 
 return directories
