@@ -1,4 +1,4 @@
-require("directories")
+require("directories").setBase(1)
 require("turtle")
 require("wx")
 -- require("ZeroBraineProjects/dvdlualib/common")
@@ -68,37 +68,37 @@ Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 local S = fract.New("z-plane",W,H,-szRe,szRe,-szIm,szIm,brdcl,brdup)
       S:SetControlWX(wx)
    --    S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
-      S:Register("FUNCT","mandelbrot",
+      S:Register("FUNCTION","mandelbrot",
         function (Z, C, R) Z:Pow(2); Z:Add(C); R[1] = Z:getAngRad(); end )
-      S:Register("FUNCT","mandelbar",
+      S:Register("FUNCTION","mandelbar",
         function (Z, C, R) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
-      S:Register("FUNCT","julia1",
-        function (Z, C, R) Z:Pow(2); Z:Add(compl.Convert("-0.8+0.156i")) end )
-      S:Register("FUNCT","julia2",
+      S:Register("FUNCTION","julia1",
+        function (Z, C, R) Z:Pow(2); Z:Add(compl.getCnv("-0.8+0.156i")) end )
+      S:Register("FUNCTION","julia2",
         function (Z, C, R) Z:Set(cexp^(Z^3) - 0.621) end )
-      S:Register("FUNCT","julia3",
+      S:Register("FUNCTION","julia3",
         function (Z, C, R) Z:Set(cexp^Z) Z:Sub(0.65) end )
-      S:Register("FUNCT","julia4",
+      S:Register("FUNCTION","julia4",
         function (Z, C, R) Z:Pow(3) Z:Add(0.4)  end )
-      S:Register("FUNCT","julia5",
+      S:Register("FUNCTION","julia5",
         function (Z, C, R) Z:Set((Z^4) * cexp^Z + 0.41 )  end )
-      S:Register("FUNCT","julia6",
+      S:Register("FUNCTION","julia6",
         function (Z, C, R) Z:Set((Z^3) * cexp^Z + 0.33 )  end )
-      S:Register("PALET","default"   ,function (Z, C, i) return
+      S:Register("PALETTE","default"   ,function (Z, C, i) return
         (math.floor((64  * i) % maxCl)), (math.floor((128 * i) % maxCl)), (math.floor((192 * i) % maxCl)) end )
-      S:Register("PALET","rediter",
+      S:Register("PALETTE","rediter",
         function (Z, C, i) return math.floor((1-(i / iTer)) * maxCl), 0, 0 end )
-      S:Register("PALET","greenbl",
+      S:Register("PALETTE","greenbl",
         function (Z, C, i, x, y) local it = i / iTer; return math.floor(0), math.floor((1 - it) * maxCl), math.floor(it * maxCl) end)
-      S:Register("PALET","wikipedia",
+      S:Register("PALETTE","wikipedia",
         function (Z, C, i, x, y, R) return clmap.getColorMap("wikipedia",i) end)
-      S:Register("PALET","region",
+      S:Register("PALETTE","region",
         function (Z, C, i, x, y) return clmap.getColorRegion(i,iTer,10) end)
-      S:Register("PALET","hsl",
+      S:Register("PALETTE","hsl",
         function (Z, C, i, x, y) local it = i / iTer; return clmap.getColorHSL(it*360,it,it) end)
-      S:Register("PALET","hsv",
+      S:Register("PALETTE","hsv",
         function (Z, C, i, x, y) local it = i / iTer; return clmap.getColorHSV(it*360,1,1) end)
-      S:Register("PALET","wikipedia_r",function (Z, C, i, x, y, R)
+      S:Register("PALETTE","wikipedia_r",function (Z, C, i, x, y, R)
         return clmap.getColorMap("wikipedia",i * (R[1] and 1+math.floor(math.abs(R[1])) or 1)) end)
 
 S:Draw(sfrac,spale,iTer)

@@ -1,13 +1,23 @@
-local sInstDir = "D:/LuaIDE/"
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  "ZeroBraineProjects/dvdlualib",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/LuaIDE").setBase()
+local com = require("common")
 
-package.path = package.path..";"..sInstDir.."myprograms/?.lua"
-local common = require("common")
-local sProject = "ExtractWireWiki"
-local sBase = common.normFolder(sInstDir.."ZeroBraineProjects")
-common.addLibrary(sBase, sProject, "dvdlualib")
-local wikilib = require("wikilib")
+com.logTable(dir.retBase(), "BASE")
+com.logTable(dir.retPath(), "PATH")
+com.logTable(dir.getList(), "LIST")
 
-local s = "aaaa   bbbb"
 
-print(s:find("%s%s%s%s"))
+local cpx = require("complex")
 
+local a = cpx.getNew(4,5)
+local b = cpx.getNew(7,5)
+local c = cpx.getNew(1,9)
+
+print(a:getHarmMean(b,c))
+
+print(a,b,c)
