@@ -1,5 +1,5 @@
-local directories = require("directories")
-local common = require("common")
+local dir = require("directories").setBase(1)
+local com = require("common")
 
 local sEXP = "ftrace"
 
@@ -10,7 +10,7 @@ local sProj = "/ZeroBraineProjects/ExtractWireWiki"
 
 local YTK = "pl12yIDPm3M"
 
-local sB = common.normFolder(directories.getBase()..sProj)
+local sB = com.normFolder(dir.getBase()..sProj)
 local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then

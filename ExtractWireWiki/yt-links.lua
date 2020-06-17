@@ -1,11 +1,11 @@
-require("directories")
+require("directories").setBase(1)
 
 local wikilib = require("dvdlualib/wikilib")
 
-local bPreview = false
+local bPreview = true
 local sTubePat = "https://www%.youtube%.com/watch%?v="
 
-local f = io.open("in/you-links.txt")
+local f = assert(io.open("ExtractWireWiki/in/you-links.txt"))
 if(f) then
   local sRow, iRow = f:read("*line"), 0
   while(sRow) do iRow = iRow + 1
@@ -19,7 +19,7 @@ if(f) then
     tab = wikilib.common.stringExplode(sRow, "/")
     if(tab[2]) then
       if(bPreview) then
-        print(tab[1], tab[2].."  ")
+        print("aaa", tab[1], tab[2].."  ")
         for iD = 1, 3 do print(wikilib.insYoutubeVideo(tab[2], iD)) end
       else local sOut = wikilib.insYoutubeVideo(tab[2], tab[1])
         print(((iRow % 3) == 0) and sOut.."  " or sOut)

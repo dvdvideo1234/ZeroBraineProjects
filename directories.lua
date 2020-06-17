@@ -147,6 +147,9 @@ function directories.setBase(vB)
   local tBase = metaDirectories.tBase
   if(not (tBase and next(tBase))) then
     error("Directory base list missing") end
+  local sBase = tBase[iBase]
+  if(not (type(sBase) == "string" and sBase:len() > 0)) then
+    error("Directory base path missing") end  
   local iCount = 0 -- Stores the number of paths processed
   local tPath = metaDirectories.tPath
   metaDirectories.iCount = iCount
