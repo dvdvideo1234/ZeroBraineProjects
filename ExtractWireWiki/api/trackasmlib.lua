@@ -6,7 +6,8 @@ local API = {
     extr = false, -- (TRUE) Use the external wiremod types
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
-    qref = true   -- (TRUE) Quote the string in the link reference
+    qref = true,  -- (TRUE) Quote the string in the link reference
+    wdsc = true   -- (TRUE) Outputs the direct wire-based description in the markdown overhead
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={0,5,13}},
@@ -15,7 +16,7 @@ local API = {
   },
   FILE = {
     exts = "trackasmlib_wire",
-    base = "E:/Documents/Lua-Projs/SVN/TrackAssemblyTool_GIT_master/",
+    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/TrackAssemblyTool_GIT",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     repo = "github.com/dvdvideo1234/TrackAssemblyTool",

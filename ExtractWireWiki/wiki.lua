@@ -1,7 +1,7 @@
 local dir = require("directories").setBase(1)
 local com = require("common")
 
-local sEXP = "ftrace"
+local sEXP = "trackasmlib"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)

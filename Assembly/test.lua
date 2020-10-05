@@ -1,4 +1,4 @@
-require("directories")
+require("directories").setBase(1)
 local common = require("common")
 
 SERVER = true
@@ -7,15 +7,15 @@ CLIENT = true
 require("../dvdlualib/gmodlib")
 require("../dvdlualib/asmlib")
 asmlib = trackasmlib
-CreateConVar("gmod_language")
-require("Assembly/autorun/config")
-PIECES = asmlib.GetBuilderNick("PIECES")
-require("Assembly/data/pieces")
----------------------------------------------------------------------------------------
-local a = asmlib.CacheQueryPiece("models/sligwolf/rerailer/rerailer_1.mdl")
+asmlib.InitBase("track","assembly")
 
-common.logTable(a)
+local function IsValid(a) return a~=nil end 
 
-local a = "Prop Cannon Projectile"
+local ENT = {Inputs={test={Src=true}}}
+WireLib = {}
 
-print(a:lower():gsub("prop%s*cannon", "propcannon"):gsub(" ", "_"))
+local tP, sP = ENT["Inputs"], tostring("test")
+
+tP = (tP and tP[sP] or nil)
+
+print(tP, sP)
