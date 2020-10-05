@@ -1,5 +1,5 @@
 local API = {
-  NAME = "Joystick",
+  NAME = "joystick",
   FLAG = {
     icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
@@ -10,7 +10,7 @@ local API = {
     wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
     prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
-     nxtp = true   -- (TRUE) Uses the `number` datatype when one is not provided ( forced )
+    nxtp = true   -- (TRUE) Uses the `number` datatype when one is not provided ( forced )
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
@@ -38,11 +38,11 @@ local API = {
       ["cl_stcontrol.lua"] = "FTrace class API description",
       ["ftrace.lua"] = "StControl class API implementation",
       ["stcontrol.lua"] = "StControl class API implementation",
-      ["workshop_publish.bat"] = "Automatic workshop publisher for windows"
+      ["workshop_publish.bat"] = "Automatic workshop publisher for Windows"
     }
   },
   TYPE = {
-    OBJ = "xft",
+    OBJ = "e",
     FRM = "type-%s.png",
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
@@ -92,7 +92,7 @@ local API = {
 }
 
 API.DSCHUNK = [===[
-E2Helper.Descriptions["joystickAxisCount(e:n)"] = ""
+E2Helper.Descriptions["joystickAxisCount(e:n)"] = "TEST"
 ]===]
 
 

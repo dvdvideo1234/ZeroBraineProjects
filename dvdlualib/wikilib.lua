@@ -567,7 +567,6 @@ function wikilib.convApiE2Description(API, sE2)
       end -- Extract the function parameters
       for iD = 1, nN do
         sP = wikilib.common.stringTrim(tInfo.par[iD])
-        print(sE2, sP)
         if(sP ~= "void") then -- No parameter functions
           local nS, nE = sP:find("%s+")
           if(nS and nE) then
