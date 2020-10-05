@@ -7,9 +7,10 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
-    prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
+    prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
+     nxtp = true   -- (TRUE) Uses the `number` datatype when one is not provided ( forced )
   },
   POOL = {
     {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
@@ -91,17 +92,7 @@ local API = {
 }
 
 API.DSCHUNK = [===[
-E2Helper.Descriptions["joystickAxisCount(e:enum)"] = ""
-E2Helper.Descriptions["joystickAxisData(e:)"] = ""
-E2Helper.Descriptions["joystickButtonCount(e:enum)"] = ""
-E2Helper.Descriptions["joystickButtonData(e:)"] = ""
-E2Helper.Descriptions["joystickCount(e:)"] = ""
-E2Helper.Descriptions["joystickName(e:enum)"] = ""
-E2Helper.Descriptions["joystickPOVCount(e:enum)"] = ""
-E2Helper.Descriptions["joystickPOVData(e:)"] = ""
-E2Helper.Descriptions["joystickRefresh()"] = ""
-E2Helper.Descriptions["joystickSetActive(e:enum on)"] = ""
-E2Helper.Descriptions["joystickSetActive(enum on)"] = ""
+E2Helper.Descriptions["joystickAxisCount(e:n)"] = ""
 ]===]
 
 

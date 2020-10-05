@@ -26,7 +26,9 @@ local wikiFormat = {
   esp = "=",
   hsh = "#",
   fnd = "e2function",
-  npt = "%)%s-=%s-e2function"
+  npt = "%)%s-=%s-e2function",
+  vpt = "^%D[%w_]*$", -- Pattern to check name available for variable
+  fpt = "^%D[%w_]*$" -- Pattern to check name available for function
 }
 
 return wikiFormat

@@ -521,24 +521,28 @@ end
 
 -- e2function stcontrol stcontrol:setPower(number nP, number nI, number nD)
 function wikilib.convApiE2Description(API, sE2)
-  local iS, tD, sT = nil, nil
+  local iS, tD, sT, sR = nil, nil
   local sE = wikilib.common.stringTrim(sE2)
   local sM, sA = wikiFormat.msp, wikiFormat.asp
+  local pF, pV = wikiFormat.fpt, wikiFormat.vpt
   local bErr = apiGetValue(API, "FLAG", "erro")
+  local bNfr = apiGetValue(API, "FLAG", "nxtp")
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
     sE = wikilib.common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
-    local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS)))
+    sR = common.stringTrim(sE:sub(1, iS))
+    -- Remove the header and extract function return type
+    local tD = wikilib.convTypeE2Description(API, sR)
     if(not tD) then
-      wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
-      wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+      wikilib.common.logStatus("wikilib.convApiE2Description: Return type missing <"..sR.."> !")
+      wikilib.common.logStatus("wikilib.convApiE2Description: Return line <"..sE2.."> !")
       if(bErr) then
-        error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+        error("wikilib.convApiE2Description: Return type missing <"..sE2.."> !") end
     end; tInfo.ret = tD[1]
-    sE = wikilib.common.stringTrim(sE:sub(iS, -1))
-    iS = sE:find(sM, 1, true)
-    if(iS) then
-      local tD = wikilib.convTypeE2Description(API,common.stringTrim(sE:sub(1, iS-1)))
+    sE = wikilib.common.stringTrim(sE:sub(iS, -1)); iS = sE:find(sM, 1, true)  
+    if(iS) then -- Is this function a object method
+      local sT = common.stringTrim(sE:sub(1, iS-1))
+      local tD = wikilib.convTypeE2Description(API, sT)
       if(not tD) then
         wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
         wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
@@ -547,29 +551,67 @@ function wikilib.convApiE2Description(API, sE2)
       end; tInfo.obj = tD[1]
       sE = wikilib.common.stringTrim(sE:sub(iS+1, -1))
     end
-    iS = sE:find("(", 1, true)
-    tInfo.foo = wikilib.common.stringTrim(sE:sub(1, iS-1))
-    sE = wikilib.common.stringTrim(sE:match(wikiBraketsIN)):sub(2,-2)
-    tInfo.par = wikilib.common.stringExplode(sE, sA)
-    for ID = 1, #tInfo.par do
-      tInfo.par[ID] = wikilib.common.stringTrim(tInfo.par[ID])
-      iS = tInfo.par[ID]:find(" ", 1, true)
-      if(not iS) then break end
-      sT = tInfo.par[ID]:sub(1, iS-1)
-      local tD = wikilib.convTypeE2Description(API,sT)
-      if(not tD) then
-        wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
+    local nS, nE = sE:find(wikiBraketsIN)
+    if(nS and nE) then
+      tInfo.foo = wikilib.common.stringTrim(sE:sub(1, nS - 1))
+      if(not tInfo.foo:find(pF)) then
+        wikilib.common.logStatus("wikilib.convApiE2Description: Function name invalid <"..tInfo.foo.."> !")
         wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
         if(bErr) then
-          error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
-      end; tInfo.par[ID] = tD[1]
-    end; tInfo.com = tInfo.foo.."("
+          error("wikilib.convApiE2Description: Function name invalid <"..sE2.."> !") end
+      end -- Extract the function name and chech for valid name
+      tInfo.par = wikilib.common.stringExplode(sE:sub(nS + 1, nE - 1), sA)
+      local sT, sP = "", tInfo.par[1]
+      if(wikilib.common.isDryString(sP)) then
+        tInfo.par[1] = "void"; sP = tInfo.par[1]
+      end -- Extract the function parameters
+      for iD = 1, #tInfo.par do
+        sP = wikilib.common.stringTrim(tInfo.par[iD])
+        if(not sP:find(pV)) then -- Parameter name is crappy
+          wikilib.common.logStatus("wikilib.convApiE2Description: Parameter name invalid <"..sP.."> !")
+          wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+          if(bErr) then
+            error("wikilib.convApiE2Description: Parameter name invalid <"..sE2.."> !") end
+        end
+        if(sP ~= "void") then -- No parameter functions
+          local nS, nE = sP:find("%s+")
+          if(nS and nE) then
+            sT = sP:sub(1, nS - 1)
+            sP = sP:sub(nE + 1, -1)
+          else -- Thre is only a parameter name with no type
+            if(bNfr) then -- Type defaults to number when enabled
+              sT = "number"
+            else -- Generate error otherwise
+              wikilib.common.logStatus("wikilib.convApiE2Description: Force number flag `nxtp = true` !")
+              wikilib.common.logStatus("wikilib.convApiE2Description: Type auto-correct <"..sE2.."> !")
+              if(bErr) then
+                error("wikilib.convApiE2Description: Type auto-correct <"..sE2.."> !") end
+            end
+          end
+          local tD = wikilib.convTypeE2Description(API, sT)
+          if(not tD) then -- Then the type exists in the table and it is valid
+            wikilib.common.logStatus("wikilib.convApiE2Description: Parameter type missing <"..sT.."> !")
+            wikilib.common.logStatus("wikilib.convApiE2Description: API Parameter mismatch <"..sE2.."> !")
+            if(bErr) then
+              error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+          end
+          tInfo.par[iD] = tD[1] -- Extract the wiremod internal data type
+        else
+          tInfo.par[iD] = "" -- The void type is not inserted in description
+        end
+      end
+    else -- In case of the parameters have unbalanced bracket
+      wikilib.common.logStatus("wikilib.convApiE2Description: Brackets mssing <"..sE2.."> !")
+      if(bErr) then
+        error("wikilib.convApiE2Description: Brackets missing <"..sE2.."> !") end
+    end    
+    tInfo.com = tInfo.foo.."("
     if(tInfo.obj) then
       tInfo.com = tInfo.com..tInfo.obj..sM end
-    for ID = 1, #tInfo.par do
-      tInfo.com = tInfo.com..tInfo.par[ID]
+    for iD = 1, #tInfo.par do
+      tInfo.com = tInfo.com..tInfo.par[iD]
     end; tInfo.com = tInfo.com..")"; return tInfo
-  end; return nil
+  end; return nil -- Return nothing when the line does not define E2 function
 end
 
 function wikilib.isValidMatch(tM)
@@ -614,7 +656,7 @@ function wikilib.makeReturnValues(API)
               foo = foo:sub(mth+1, brk-1)
         local tP = tF[foo]; if(not tP) then
           tF[foo] = {__top = 0, __key = {}, __nam = foo}; tP = tF[foo] end
-        tP.__top = tP.__top + 1
+        tP.__top = tP.__top + 1        
         local tInfo = wikilib.convApiE2Description(API, sP)
         tP.__key[tInfo.com] = tP.__top; tP[tP.__top] = tInfo
         if(sO) then tP.__equ = wikilib.convApiE2Description(API, sO) end
