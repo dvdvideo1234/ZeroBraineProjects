@@ -561,18 +561,13 @@ function wikilib.convApiE2Description(API, sE2)
           error("wikilib.convApiE2Description: Function name invalid <"..sE2.."> !") end
       end -- Extract the function name and chech for valid name
       tInfo.par = wikilib.common.stringExplode(sE:sub(nS + 1, nE - 1), sA)
-      local sT, sP = "", tInfo.par[1]
+      local sT, sP, nN = "", tInfo.par[1], #tInfo.par
       if(wikilib.common.isDryString(sP)) then
         tInfo.par[1] = "void"; sP = tInfo.par[1]
       end -- Extract the function parameters
-      for iD = 1, #tInfo.par do
+      for iD = 1, nN do
         sP = wikilib.common.stringTrim(tInfo.par[iD])
-        if(not sP:find(pV)) then -- Parameter name is crappy
-          wikilib.common.logStatus("wikilib.convApiE2Description: Parameter name invalid <"..sP.."> !")
-          wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
-          if(bErr) then
-            error("wikilib.convApiE2Description: Parameter name invalid <"..sE2.."> !") end
-        end
+        print(sE2, sP)
         if(sP ~= "void") then -- No parameter functions
           local nS, nE = sP:find("%s+")
           if(nS and nE) then
@@ -588,6 +583,12 @@ function wikilib.convApiE2Description(API, sE2)
                 error("wikilib.convApiE2Description: Type auto-correct <"..sE2.."> !") end
             end
           end
+          if(not sP:find(pV)) then -- Parameter name is crappy
+            wikilib.common.logStatus("wikilib.convApiE2Description: Parameter name invalid <"..sP.."> !")
+            wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
+            if(bErr) then
+              error("wikilib.convApiE2Description: Parameter name invalid <"..sE2.."> !") end
+          end
           local tD = wikilib.convTypeE2Description(API, sT)
           if(not tD) then -- Then the type exists in the table and it is valid
             wikilib.common.logStatus("wikilib.convApiE2Description: Parameter type missing <"..sT.."> !")
@@ -596,8 +597,14 @@ function wikilib.convApiE2Description(API, sE2)
               error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
           end
           tInfo.par[iD] = tD[1] -- Extract the wiremod internal data type
-        else
+        else -- If the first parameter is void stop checking the others
           tInfo.par[iD] = "" -- The void type is not inserted in description
+          if(nN > 1) then
+            wikilib.common.logStatus("wikilib.convApiE2Description: Non single void <"..sT.."> !")
+            wikilib.common.logStatus("wikilib.convApiE2Description: API Parameter mismatch <"..sE2.."> !")
+            if(bErr) then
+              error("wikilib.convApiE2Description: Non single void <"..sE2.."> !") end
+          end
         end
       end
     else -- In case of the parameters have unbalanced bracket

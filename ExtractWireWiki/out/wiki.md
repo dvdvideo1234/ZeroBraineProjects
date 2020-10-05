@@ -2,13 +2,5 @@
 
 ------------------------------------------------------------------------------------------------------------------------
 
-E2Helper.Descriptions["joystickAxisData(e:)"] = ""
-E2Helper.Descriptions["joystickButtonCount(e:n)"] = ""
-E2Helper.Descriptions["joystickButtonData(e:)"] = ""
-E2Helper.Descriptions["joystickCount(e:)"] = ""
-E2Helper.Descriptions["joystickName(e:n)"] = ""
-E2Helper.Descriptions["joystickPOVCount(e:n)"] = ""
-E2Helper.Descriptions["joystickPOVData(e:)"] = ""
-E2Helper.Descriptions["joystickRefresh()"] = ""
-E2Helper.Descriptions["joystickSetActive(e:nn)"] = ""
-E2Helper.Descriptions["joystickSetActive(nn)"] = ""
+wikilib.convApiE2Description: Parameter name invalid <o%n> !
+wikilib.convApiE2Description: API mismatch <e2function void joystickSetActive(enum, o%n)> !
