@@ -403,8 +403,8 @@ function wikilib.readDescriptions(API)
     sC = (cT..sI..fR:read("*all")..sI..cB)
   end
   local fC, oE = load(sC)
-  if(fC) then local bS, fC = pcall(fC);
-    if(bS) then bS, fC = pcall(fC);
+  if(fC) then local bS, fC = pcall(fC)
+    if(bS) then bS, fC = pcall(fC)
       if(bS) then
         if(wikilib.common.isDryTable(fC)) then
           wikilib.common.logStatus("wikilib.readDescriptions[3]: Compilation chunk:\n")
@@ -412,6 +412,12 @@ function wikilib.readDescriptions(API)
           wikilib.common.logStatus(sC)
           wikilib.common.logStatus("--------------------------------------------\n")
           error("wikilib.readDescriptions[3]: Description empty !")
+        elseif(not fC) then
+          wikilib.common.logStatus("wikilib.readDescriptions[3]: Compilation chunk:\n")
+          wikilib.common.logStatus("--------------------------------------------\n")
+          wikilib.common.logStatus(sC)
+          wikilib.common.logStatus("--------------------------------------------\n")
+          error("wikilib.readDescriptions[3]: Description return value empty !")
         end; return fC
       else
         wikilib.common.logStatus("wikilib.readDescriptions[2]: Compilation chunk:\n")

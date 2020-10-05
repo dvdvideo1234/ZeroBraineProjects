@@ -1,61 +1,106 @@
-﻿### Description
-The [`Track assembly tool`][ref-ta-tool] [`Expression 2`][ref-exp2] API is used for a wrapper of the library functions, which handle the track piece
-snapping, so you can call them inside an [`E2`][ref-exp2] and thus create your own automatically generated layouts. This also can be
-used when you need to implement track switchers, where you just `snap` desired track piece to the track end you wish to use.
-You can then apply your desired properties, like `disable physgun` [`no-collide`][ref-no-collide] and [`weld`][ref-weld] to make
-sure the piece is not going anywhere and it is not generating server collisions.
- 
-### Data types
-This list is derived from the Wiremod types wiki [located here][ref-e2-data].
-Here are all the icons for the data types of this addon summarized in the table below:
+﻿E2Helper.Descriptions["joystickAxisCount(e:enum)"] = ""
+E2Helper.Descriptions["joystickAxisData(e:)"] = ""
+E2Helper.Descriptions["joystickButtonCount(e:enum)"] = ""
+E2Helper.Descriptions["joystickButtonData(e:)"] = ""
+E2Helper.Descriptions["joystickCount(e:)"] = ""
+E2Helper.Descriptions["joystickName(e:enum)"] = ""
+E2Helper.Descriptions["joystickPOVCount(e:enum)"] = ""
+E2Helper.Descriptions["joystickPOVData(e:)"] = ""
+E2Helper.Descriptions["joystickRefresh()"] = ""
+E2Helper.Descriptions["joystickSetActive(e:enum on)"] = ""
+E2Helper.Descriptions["joystickSetActive(enum on)"] = ""
 
-### API functions list
-For every table, there is a wrapper function that reads the desired data you want:
+------------------------------------------------------------------------------------------------------------------------
 
-|                            Class methods                             | Out | Description |
-|----------------------------------------------------------------------|-----|-------------|
-|![image][ref-e]:trackasmlibApplyPhysicalAnchor(![image][ref-e],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Anchors the track entity to a base entity with weld `0/1` and no-collide `0/1` no-collide-world `0/1` and force limit.|
-|![image][ref-e]:trackasmlibApplyPhysicalSettings(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-e]|Modifies track entity physical settings with phys-gun enabled, freeze, gravity toggle and surface material behavior|
-|![image][ref-e]:trackasmlibAttachAdditions(![image][ref-xxx])|![image][ref-n]|Attaches the track entity additions when available|
-|![image][ref-e]:trackasmlibAttachBodyGroups(![image][ref-s])|![image][ref-n]|Attaches track piece body-groups by providing selection code|
-|![image][ref-e]:trackasmlibGenActivePointDSV(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-s]|Exports the track entity as external database record|
-|![image][ref-e]:trackasmlibGenActivePointINS(![image][ref-e],![image][ref-s],![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-s]|Exports the track entity as internal database record|
-|![image][ref-e]:trackasmlibGetAdditionsCount(![image][ref-xxx])|![image][ref-n]|Returns record additions count by entity|
-|![image][ref-e]:trackasmlibGetAdditionsLine(![image][ref-n])|![image][ref-r]|Returns record additions line by entity|
-|![image][ref-e]:trackasmlibGetBodyGroups(![image][ref-xxx])|![image][ref-s]|Returns the track bodygoup selection list|
-|![image][ref-e]:trackasmlibGetName(![image][ref-xxx])|![image][ref-s]|Returns record name by entity|
-|![image][ref-e]:trackasmlibGetOffset(![image][ref-n],![image][ref-s])|![image][ref-r]|Returns record snap offsets by entity|
-|![image][ref-e]:trackasmlibGetPointsCount(![image][ref-xxx])|![image][ref-n]|Returns record points count by entity|
-|![image][ref-e]:trackasmlibGetSkin(![image][ref-xxx])|![image][ref-s]|Returns the track skin selection list|
-|![image][ref-e]:trackasmlibGetType(![image][ref-xxx])|![image][ref-s]|Returns record track type by entity|
-|![image][ref-e]:trackasmlibHasAdditions(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by entity|
-|![image][ref-e]:trackasmlibIsPiece(![image][ref-xxx])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a])|![image][ref-e]|Duplicates the given track using the new position and angle|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code, color and alpha as numbers by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha is `255` by entity|
-|![image][ref-e]:trackasmlibMakePiece(![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha as number by entity|
-|![image][ref-e]:trackasmlibSnapEntity(![image][ref-v],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track entity snap position and angle array by holder model, point `ID`, active radius, flatten, ignore type, position offset and angle offset|
+void joystickRefresh() = {}
+void joystickRefresh()[1] = "xxx"
+void joystickRefresh()[2] = ""
+void joystickRefresh()[3] = "[Void] data type"
+void joystickRefresh()[4] = "void"
+void joystickRefresh()[5] = "https://en.wikipedia.org/wiki/Void_type"
+void joystickSetActive(enum, on) = {}
+void joystickSetActive(enum, on)[1] = "xxx"
+void joystickSetActive(enum, on)[2] = ""
+void joystickSetActive(enum, on)[3] = "[Void] data type"
+void joystickSetActive(enum, on)[4] = "void"
+void joystickSetActive(enum, on)[5] = "https://en.wikipedia.org/wiki/Void_type"
+void entity:joystickSetActive(enum, on) = {}
+void entity:joystickSetActive(enum, on)[1] = "xxx"
+void entity:joystickSetActive(enum, on)[2] = ""
+void entity:joystickSetActive(enum, on)[3] = "[Void] data type"
+void entity:joystickSetActive(enum, on)[4] = "void"
+void entity:joystickSetActive(enum, on)[5] = "https://en.wikipedia.org/wiki/Void_type"
+number entity:joystickCount() = {}
+number entity:joystickCount()[1] = "n"
+number entity:joystickCount()[2] = "Number"
+number entity:joystickCount()[3] = "[Number]"
+number entity:joystickCount()[4] = "number"
+number entity:joystickCount()[5] = "https://en.wikipedia.org/wiki/Number"
+string entity:joystickName(enum) = {}
+string entity:joystickName(enum)[1] = "s"
+string entity:joystickName(enum)[2] = "String"
+string entity:joystickName(enum)[3] = "[String] class"
+string entity:joystickName(enum)[4] = "string"
+string entity:joystickName(enum)[5] = "https://en.wikipedia.org/wiki/String_(computer_science)"
+number entity:joystickAxisCount(enum) = {}
+number entity:joystickAxisCount(enum)[1] = "n"
+number entity:joystickAxisCount(enum)[2] = "Number"
+number entity:joystickAxisCount(enum)[3] = "[Number]"
+number entity:joystickAxisCount(enum)[4] = "number"
+number entity:joystickAxisCount(enum)[5] = "https://en.wikipedia.org/wiki/Number"
+number entity:joystickButtonCount(enum) = {}
+number entity:joystickButtonCount(enum)[1] = "n"
+number entity:joystickButtonCount(enum)[2] = "Number"
+number entity:joystickButtonCount(enum)[3] = "[Number]"
+number entity:joystickButtonCount(enum)[4] = "number"
+number entity:joystickButtonCount(enum)[5] = "https://en.wikipedia.org/wiki/Number"
+number entity:joystickPOVCount(enum) = {}
+number entity:joystickPOVCount(enum)[1] = "n"
+number entity:joystickPOVCount(enum)[2] = "Number"
+number entity:joystickPOVCount(enum)[3] = "[Number]"
+number entity:joystickPOVCount(enum)[4] = "number"
+number entity:joystickPOVCount(enum)[5] = "https://en.wikipedia.org/wiki/Number"
+array entity:joystickAxisData() = {}
+array entity:joystickAxisData()[1] = "r"
+array entity:joystickAxisData()[2] = "Array"
+array entity:joystickAxisData()[3] = "[Array]"
+array entity:joystickAxisData()[4] = "array"
+array entity:joystickAxisData()[5] = "https://en.wikipedia.org/wiki/Array_data_structure"
+array entity:joystickButtonData() = {}
+array entity:joystickButtonData()[1] = "r"
+array entity:joystickButtonData()[2] = "Array"
+array entity:joystickButtonData()[3] = "[Array]"
+array entity:joystickButtonData()[4] = "array"
+array entity:joystickButtonData()[5] = "https://en.wikipedia.org/wiki/Array_data_structure"
+array entity:joystickPOVData() = {}
+array entity:joystickPOVData()[1] = "r"
+array entity:joystickPOVData()[2] = "Array"
+array entity:joystickPOVData()[3] = "[Array]"
+array entity:joystickPOVData()[4] = "array"
+array entity:joystickPOVData()[5] = "https://en.wikipedia.org/wiki/Array_data_structure"
+### What does this extension include?
+Tracers with [hit][ref_trace] and [ray][ref_ray] configuration. The difference with [wire rangers][ref_wranger]
+is that this is a [dedicated class][ref_class_oop] being initialized once and used as many
+times as it is needed, not creating an [instance][ref_oopinst] on every [E2][ref_exp2] [tick][ref_timere2] and later
+wipe that [instance][ref_oopinst] out. It can extract every aspect of the [trace result structure][ref_trace] returned and
+it can be sampled [locally][ref_localcrd] ( [`origin`][ref_position] and [`direction`][ref_orient] relative to
+[`entity`][ref_entity] or `pos`/`dir`/`ang` ) or globally ( [`entity`][ref_entity] is not available and `pos`/`dir`/`ang`
+are treated world-space data ). Also, it has better [performance][ref_perfe2] than the [regular wire rangers][ref_wranger].
 
-|                          General functions                           | Out | Description |
-|----------------------------------------------------------------------|-----|-------------|
-|trackasmlibGetAdditionsCount(![image][ref-s])|![image][ref-n]|Returns record additions count by model|
-|trackasmlibGetAdditionsLine(![image][ref-s],![image][ref-n])|![image][ref-r]|Returns record additions line by model|
-|trackasmlibGetName(![image][ref-s])|![image][ref-s]|Returns record name by model|
-|trackasmlibGetOffset(![image][ref-s],![image][ref-n],![image][ref-s])|![image][ref-r]|Returns record snap offsets by model|
-|trackasmlibGetPointsCount(![image][ref-s])|![image][ref-n]|Returns record points count by model|
-|trackasmlibGetProperty(![image][ref-xxx])|![image][ref-r]|Returns the surface property types|
-|trackasmlibGetProperty(![image][ref-s])|![image][ref-r]|Returns the surface properties available for a given type|
-|trackasmlibGetType(![image][ref-s])|![image][ref-s]|Returns record track type by model|
-|trackasmlibHasAdditions(![image][ref-s])|![image][ref-n]|Returns `1` when the record has additions and `0` otherwise by model|
-|trackasmlibIsPiece(![image][ref-s])|![image][ref-n]|Returns `1` when the record is actual track and `0` otherwise by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s])|![image][ref-e]|Creates new track piece with position angle, mass and skin code by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color and aplha as numbers by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha is `255` by model|
-|trackasmlibMakePiece(![image][ref-s],![image][ref-v],![image][ref-a],![image][ref-n],![image][ref-s],![image][ref-v],![image][ref-n])|![image][ref-e]|Creates new track piece with position angle, mass, skin code and color as vector alpha by as number model|
-|trackasmlibSnapNormal(![image][ref-v],![image][ref-a],![image][ref-s],![image][ref-n],![image][ref-v],![image][ref-a])|![image][ref-r]|Returns track surface snap position and angle array by position, angle, model, point `ID`, position offset and angle offset|
+
+|    General functions    | Out | Description |
+|:------------------------|:---:|:------------|
+|![image][ref-e]:`joystickAxisCount`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m])|![image][ref-n]||
+|![image][ref-e]:`joystickAxisData`(![image][ref-xxx])|![image][ref-r]||
+|![image][ref-e]:`joystickButtonCount`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m])|![image][ref-n]||
+|![image][ref-e]:`joystickButtonData`(![image][ref-xxx])|![image][ref-r]||
+|![image][ref-e]:`joystickCount`(![image][ref-xxx])|![image][ref-n]||
+|![image][ref-e]:`joystickName`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m])|![image][ref-s]||
+|![image][ref-e]:`joystickPOVCount`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m])|![image][ref-n]||
+|![image][ref-e]:`joystickPOVData`(![image][ref-xxx])|![image][ref-r]||
+|`joystickRefresh`(![image][ref-xxx])|![image][ref-xxx]||
+|![image][ref-e]:`joystickSetActive`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m],![image][ref- ],![image][ref-o],![image][ref-n])|![image][ref-xxx]||
+|`joystickSetActive`(![image][ref-e],![image][ref-n],![image][ref-u],![image][ref-m],![image][ref- ],![image][ref-o],![image][ref-n])|![image][ref-xxx]||
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
@@ -78,10 +123,20 @@ For every table, there is a wrapper function that reads the desired data you wan
 [ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xsc.png
 [ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xxx.png
 
-[ref-e2-data]: https://github.com/wiremod/wire/wiki/Expression-2#Datatypes
-[ref-ta-tool]: https://github.com/dvdvideo1234/TrackAssemblyTool
-[ref-gmod]: https://en.wikipedia.org/wiki/Garry%27s_Mod
-[ref-exp2]: https://github.com/wiremod/wire/wiki/Expression-2
-[ref-convar]: https://developer.valvesoftware.com/wiki/ConVar
-[ref-weld]: https://gmod.fandom.com/wiki/Weld_Tool
-[ref-no-collide]: https://gmod.fandom.com/wiki/No_Collide
+[ref_class_oop]: https://en.wikipedia.org/wiki/Class_(computer_programming)
+[ref_example]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt
+[ref_trace]: https://wiki.garrysmod.com/page/Structures/TraceResult
+[ref_class_con]: https://en.wikipedia.org/wiki/Constructor_(object-oriented_programming)
+[ref_entity]: https://wiki.garrysmod.com/page/Global/Entity
+[ref_orient]: https://en.wikipedia.org/wiki/Orientation_(geometry)
+[ref_vec_norm]: https://en.wikipedia.org/wiki/Euclidean_vector#Length
+[ref_lua]: https://en.wikipedia.org/wiki/Lua_(programming_language)
+[ref_exp2]: https://github.com/wiremod/wire/wiki/Expression-2
+[ref_ray]: https://en.wikipedia.org/wiki/Line_(geometry)#Ray
+[ref_wranger]: https://github.com/wiremod/wire/wiki/Expression-2#built-in-ranger
+[ref_oopinst]: https://en.wikipedia.org/wiki/Instance_(computer_science)
+[ref_perfe2]: https://github.com/wiremod/wire/wiki/Expression-2#performance
+[ref_localcrd]: https://en.wikipedia.org/wiki/Local_coordinates
+[ref_position]: https://en.wikipedia.org/wiki/Position_(geometry)
+[ref_timere2]: https://github.com/wiremod/wire/wiki/Expression-2#timer
+[ref_awaree2]: https://github.com/wiremod/wire/wiki/Expression-2#self-aware
