@@ -4,8 +4,8 @@ local API = {
     icon = true,  -- (TRUE) Use icons for arguments
     erro = true,  -- (TRUE) Generate an error on dupe or no docs
     extr = false, -- (TRUE) Use the external wiremod types
-    remv = false, -- (TRUE) Replace void type with empty string
-    quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
+    remv = true,  -- (TRUE) Replace void type with empty string
+    quot = true,  -- (TRUE) Place backticks on words containing control symbolic links []
     qref = true,  -- (TRUE) Quote the string in the link reference
     wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
@@ -19,7 +19,7 @@ local API = {
   },
   FILE = {
     exts = "joystick",
-    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/Joystick", -- ControlSystemsE2, wire-extras
+    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/Joystick",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_joystick",
@@ -72,41 +72,39 @@ local API = {
   },
   REFLN = {
     {"ref_class_oop","https://en.wikipedia.org/wiki/Class_(computer_programming)"},
-    {"ref_example", "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"},
-    {"ref_trace" , "https://wiki.garrysmod.com/page/Structures/TraceResult"},
-    {"ref_class_con", "https://en.wikipedia.org/wiki/Constructor_(object-oriented_programming)"},
     {"ref_entity", "https://wiki.garrysmod.com/page/Global/Entity"},
-    {"ref_orient", "https://en.wikipedia.org/wiki/Orientation_(geometry)"},
-    {"ref_vec_norm","https://en.wikipedia.org/wiki/Euclidean_vector#Length"},
     {"ref_lua", "https://en.wikipedia.org/wiki/Lua_(programming_language)"},
     {"ref_exp2", "https://github.com/wiremod/wire/wiki/Expression-2"},
-    {"ref_ray", "https://en.wikipedia.org/wiki/Line_(geometry)#Ray"},
-    {"ref_wranger","https://github.com/wiremod/wire/wiki/Expression-2#built-in-ranger"},
-    {"ref_oopinst","https://en.wikipedia.org/wiki/Instance_(computer_science)"},
     {"ref_perfe2","https://github.com/wiremod/wire/wiki/Expression-2#performance"},
-    {"ref_localcrd","https://en.wikipedia.org/wiki/Local_coordinates"},
-    {"ref_position","https://en.wikipedia.org/wiki/Position_(geometry)"},
-    {"ref_timere2", "https://github.com/wiremod/wire/wiki/Expression-2#timer"},
-    {"ref_awaree2","https://github.com/wiremod/wire/wiki/Expression-2#self-aware"}
+    {"ref_joy", "https://en.wikipedia.org/wiki/Joystick"},
+    {"ref_wiremod", "https://wiremod.com/"}
   }
 }
 
 API.DSCHUNK = [===[
-E2Helper.Descriptions["joystickAxisCount(e:n)"] = "TEST"
+E2Helper.Descriptions["joystickAxisCount(e:n)"] = "Returns the player enumerator axes count"
+E2Helper.Descriptions["joystickAxisData(e:)"] = "Returns the player axes data array"
+E2Helper.Descriptions["joystickButtonCount(e:n)"] = "Returns the player enumerator buttons count"
+E2Helper.Descriptions["joystickButtonData(e:)"] = "Returns the player buttons data array"
+E2Helper.Descriptions["joystickCount(e:)"] = "Returns the player enumenators count"
+E2Helper.Descriptions["joystickName(e:n)"] = "Returns the player enumerator name"
+E2Helper.Descriptions["joystickPOVCount(e:n)"] = "Returns the player enumerator POV count"
+E2Helper.Descriptions["joystickPOVData(e:)"] = "Returns the player POV data array"
+E2Helper.Descriptions["joystickRefresh()"] = "Refreshes the player internal joystick state"
+E2Helper.Descriptions["joystickSetActive(e:nn)"] = "Toggles the player enumerator active stream state"
+E2Helper.Descriptions["joystickSetActive(nn)"] = "Toggles the E2 chip entity enumerator active stream state"
 ]===]
 
 
 API.TEXT = function() return ([===[
-### What does this extension include?
-Tracers with [hit][ref_trace] and [ray][ref_ray] configuration. The difference with [wire rangers][ref_wranger]
-is that this is a [dedicated class][ref_class_oop] being initialized once and used as many
-times as it is needed, not creating an [instance][ref_oopinst] on every [E2][ref_exp2] [tick][ref_timere2] and later
-wipe that [instance][ref_oopinst] out. It can extract every aspect of the [trace result structure][ref_trace] returned and
-it can be sampled [locally][ref_localcrd] ( [`origin`][ref_position] and [`direction`][ref_orient] relative to
-[`entity`][ref_entity] or `pos`/`dir`/`ang` ) or globally ( [`entity`][ref_entity] is not available and `pos`/`dir`/`ang`
-are treated world-space data ). Also, it has better [performance][ref_perfe2] than the [regular wire rangers][ref_wranger].
+### What does this extension do?
 
-]===]):format(API.NAME, API.NAME, API.TYPE.OBJ, API.FILE.exts)
+The [wiremod][ref_wiremod] [Lua][ref_lua] extension [`%s`][ref_joy] is designed to be used with [`Wire Expression2`][ref_exp2]
+in mind and implements general functions for manipulating given [player][ref_entity] [class][ref_class_oop] joystick
+state as well as retrieve control data and other information. Beware of the E2 [performance][ref_perfe2] though.
+
+### What is the [wiremod][ref_wiremod] [`Joystick`][ref_joy] API then?
+]===]):format(API.NAME)
 end
 
 return API
