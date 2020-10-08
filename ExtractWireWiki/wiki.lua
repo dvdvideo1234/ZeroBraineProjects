@@ -1,7 +1,15 @@
-local dir = require("directories").setBase(1)
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/LuaIDE").setBase(1)
+
 local com = require("common")
 
-local sEXP = "joystick"
+local sEXP = "pistontiming"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)
