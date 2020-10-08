@@ -3,20 +3,8 @@
 local metaDirectories =
 {
   iBase = 0,  -- The ID of the current IDE installation
-  tBase =
-  {
-    "D:/LuaIDE", -- Home machine
-    "C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE"
-  },
-  tPath =
-  {
-    "myprograms",
-    "ZeroBraineProjects",
-    "CorporateProjects",
-    "ZeroBraineProjects/dvdlualib",
-    -- When not located in general directory search in projects
-    "ZeroBraineProjects/ExtractWireWiki",
-  }
+  tBase = {}, -- Contains the ZBS install directories on different machines
+  tPath = {}  -- Contains different sub-paths included relative to the install path
 }
 
 local directories = {}
