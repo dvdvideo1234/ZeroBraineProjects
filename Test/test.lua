@@ -1,19 +1,27 @@
-local dir = require("directories").setBase(1)
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE").setBase(1)
+
 local com = require("common")
 local cpx = require("complex")
 local tableRemove = table and table.remove
 
-TOOL = {Mode = "wire_joystick"}
+local function foo(iC, ...)
+  local tA, tO = {...}, {Size = iC}
+  for iD = 1, iC do
+    tO[iD] = tA[iD]
+  end
+  return tO
+end
 
-local gsToolModeOP = TOOL.Mode
-local gsToolTabTOP = gsToolModeOP:match("%w+$"):gsub("^%l", string.upper)
-local gsToolPrefix = gsToolModeOP.."_"
-local gsToolLimits = gsToolModeOP:gsub("_multi", "").."s"
-local gsSentClasMK = "gmod_"..gsToolModeOP
+local tB = foo(4, 1,nil,3)
 
+for iD = 1, tB.Size do
+  print(iD, tB[iD])
+end
 
-print(gsToolTabTOP)
-print(gsToolModeOP)
-print(gsToolPrefix)
-print(gsToolLimits)
-print(gsSentClasMK)

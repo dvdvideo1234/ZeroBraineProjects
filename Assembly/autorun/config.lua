@@ -1287,7 +1287,7 @@ asmlib.CreateTable("PIECES",{
       local noTY  = asmlib.GetOpVar("MISS_NOTP")
       local noSQL = asmlib.GetOpVar("MISS_NOSQL")
       local trCls = asmlib.GetOpVar("TRACE_CLASS")
-      arLine[2] = asmlib.GetTerm(arLine[2], noTY, asmlib.GetCategory())
+      arLine[2] = asmlib.GetTerm(arLine[2], noTY, asmlib.Categorize())
       arLine[3] = asmlib.GetTerm(arLine[3], noMD, asmlib.ModelToName(arLine[1]))
       arLine[8] = asmlib.GetTerm(arLine[8], noSQL, noSQL)
       if(not (asmlib.IsNull(arLine[8]) or trCls[arLine[8]] or asmlib.IsBlank(arLine[8]))) then
@@ -1416,7 +1416,7 @@ asmlib.CreateTable("PHYSPROPERTIES",{
   Index = {{1},{2},{1,2}},
   Trigs = {
     Record = function(arLine)
-      arLine[1] = asmlib.GetTerm(arLine[1],"TYPE",asmlib.GetCategory()); return true
+      arLine[1] = asmlib.GetTerm(arLine[1],"TYPE",asmlib.Categorize()); return true
     end
   },
   Cache = {

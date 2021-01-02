@@ -459,7 +459,7 @@ function ents.Create(cla)
   local mpos = Vector(0,0,0)
   local mang = Angle(0,0,0)
   local mmodel = ""
-  local matach = {ID = {[1]={["test"]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}}, Nam = {["test"] = 1}}
+  local matach = {ID = {[1]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}, Nam = {["test"] = 1}}
   local mbdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
   function self:GetClass() return mcla end
   function self:SetClass(vC) mcla = vC end

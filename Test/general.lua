@@ -1,4 +1,12 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE").setBase(1)
+
 local common  = require('common')
 
 ErrorNoHalt = print
@@ -12,4 +20,4 @@ local function getPhrase(sK)
   end; return gtLang[sK]
 end
 
-print(getPhrase(1))
+print(table.concat({1,2,3,4,[10]=5}))

@@ -1,4 +1,4 @@
-  asmlib.GetCategory("SligWolf's Rerailers")
+  asmlib.Categorize("SligWolf's Rerailers")
   PIECES:Record({"models/props_phx/trains/sw_rerailer_1.mdl", "#", "Short Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
   PIECES:Record({"models/props_phx/trains/sw_rerailer_2.mdl", "#", "Middle Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
   PIECES:Record({"models/props_phx/trains/sw_rerailer_3.mdl", "#", "Long Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
@@ -8,7 +8,7 @@
   PIECES:Record({"models/sligwolf/rerailer/rerailer_2.mdl", "#", "Middle Double", 2, "-1882.106, 0, 3.031", "-2367.072, 0, -5.412", "0,-180,0"})
   PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Short Double", 1, "-221.409, 0, 3.031", "219.412, 0, -5.411"})
   PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Short Double", 2, "-1103.05, 0, 0.009", "-1543.871, 0, -5.411", "0,-180,0"})
-  asmlib.GetCategory("SligWolf's Minitrains",[[function(m)
+  asmlib.Categorize("SligWolf's Minitrains",[[function(m)
     local function conv(x) return " "..x:sub(2,2):upper() end
     local r = m:gsub("models/minitrains/",""):gsub("_","/")
     local s = r:find("/") or r:find("%.")
@@ -161,7 +161,7 @@
   PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y6"})
   PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 2, "", "-110.40305,13.45934,1", "0,157.5,0", "gmod_sw_minitrain_switch_y6"})
   PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y6"})
-  asmlib.GetCategory("PHX Monorail")
+  asmlib.Categorize("PHX Monorail")
   PIECES:Record({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 1, "", "229.885559,0.23999,13.87915"})
   PIECES:Record({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 2, "", "-228.885254,0.239726,13.87915", "0,-180,0"})
   PIECES:Record({"models/props_phx/trains/monorail2.mdl", "#", "Straight Middle", 1, "", "0.239726,-462.635468,13.879296", "0,-90,0"})
@@ -174,7 +174,7 @@
   PIECES:Record({"models/props_phx/trains/monorail_curve2.mdl", "#", "Turn 45", 2, "", "-428.018524,-428.362335,13.881714", "0,135,0"})
   PIECES:Record({"models/props_phx/trains/monorail_curve.mdl", "#", "Turn 90", 1, "", "-0.030518,-605.638184,13.880554"})
   PIECES:Record({"models/props_phx/trains/monorail_curve.mdl", "#", "Turn 90", 2, "", "-605.380859,-0.307583,13.881714", "0,90,0"})
-  asmlib.GetCategory("PHX Metal")
+  asmlib.Categorize("PHX Metal")
   asmlib.ModelToNameRule("SET",nil,{"track_","straight_"},nil)
   PIECES:Record({"models/props_phx/trains/track_32.mdl" , "#", "#", 1, "-0.327,-61.529,8.714", " 15.755127,0.001953,9.215"})
   PIECES:Record({"models/props_phx/trains/track_32.mdl" , "#", "#", 2, "-0.327, 61.529,8.714", "-16.239746,0.000244,9.215", "0,-180,0"})
@@ -192,7 +192,7 @@
   PIECES:Record({"models/props_phx/trains/track_2048.mdl", "#", "#", 2, "", "-1024.242676,-0.109433,9.215", "0,180,0"})
   PIECES:Record({"models/props_phx/trains/track_4096.mdl", "#", "#", 1, "", " 2047.755249, 0.001923,9.215"})
   PIECES:Record({"models/props_phx/trains/track_4096.mdl", "#", "#", 2, "", "-2048.240479,-0.225247,9.215", "0,-180,0"})
-  asmlib.GetCategory("PHX Regular")
+  asmlib.Categorize("PHX Regular")
   asmlib.ModelToNameRule("SET",{1,6})
   PIECES:Record({"models/props_phx/trains/tracks/track_single.mdl", "#", "#", 1, "-0.327,-61.529,8.714", " 15.451782, 1.5e-005,12.548828"})
   PIECES:Record({"models/props_phx/trains/tracks/track_single.mdl", "#", "#", 2, "-0.327, 61.529,8.714", "-16.094971,-1.0e-006,12.548828", "0,-180,0"})
@@ -235,7 +235,7 @@
   PIECES:Record({"models/props_phx/trains/tracks/track_switch2.mdl", "#", "Switch Left [X]", 1, "", " 829.880005,  -0.001465, 11.218994"})
   PIECES:Record({"models/props_phx/trains/tracks/track_switch2.mdl", "#", "Switch Left [X]", 2, "", "-370.037262,  -0.000456, 11.218994", "0,-180,0"})
   PIECES:Record({"models/props_phx/trains/tracks/track_switch2.mdl", "#", "Switch Left [X]", 3, "", "-158.311356,-338.111572, 11.218994", "0,-135,0"})
-  asmlib.GetCategory("SProps",[[function(m)
+  asmlib.Categorize("SProps",[[function(m)
     local r = m:gsub("models/sprops/trans/train/",""):gsub("_","/")
     if(r:find("track/")) then r = r:gsub("track/","") end;
     local s = r:sub(1,1); if(s == "s") then return {"Straight"}
@@ -267,3 +267,5 @@
   PIECES:Record({"models/sprops/trans/train/track_t90_01.mdl", "#", "#", 1, "", "0,0,7.624"})
   PIECES:Record({"models/sprops/trans/train/track_t90_01.mdl", "#", "#", 2, "", "-825,825,7.624", "0,90,0"})
   PIECES:Record({"models/sprops/trans/train/rerailer.mdl",     "#", "#", 1, "-1088.178,0,19.886", "-1280.383,0,7.618", "0,180,0"})
+
+  asmlib.LogInstance("Data insertion finished!")
