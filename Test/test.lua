@@ -11,17 +11,9 @@ local com = require("common")
 local cpx = require("complex")
 local tableRemove = table and table.remove
 
-local function foo(iC, ...)
-  local tA, tO = {...}, {Size = iC}
-  for iD = 1, iC do
-    tO[iD] = tA[iD]
-  end
-  return tO
-end
+local t = {1, 2, 3}
 
-local tB = foo(4, 1,nil,3)
-
-for iD = 1, tB.Size do
-  print(iD, tB[iD])
-end
-
+table.insert(t, 1 , 33)
+com.logTable(t, "T1")
+table.remove(t, 1)
+com.logTable(t, "T2")

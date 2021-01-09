@@ -8,7 +8,7 @@ local drpath = require("directories")
       drpath.addBase("D:/LuaIDE").setBase(1)
 local com = require("common")
 
-print(com.randomGetString(30))
+print(com.randomGetString(35))
 
 
 

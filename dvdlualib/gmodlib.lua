@@ -537,3 +537,11 @@ function game.SinglePlayer(vS)
   return game.__single
 end
 
+--------------------------------------------------------------------------------------------------------------------------------
+surface = {__fonts = {}}
+
+function surface.CreateFont(sK, tD)
+  if(not sK) then return nil end
+  surface.__fonts[sK] = tD
+end
+
