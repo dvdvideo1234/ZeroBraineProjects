@@ -37,7 +37,7 @@ local wikiFolder = {}
         qref = false  -- (TRUE) Quote the string in the link reference
       }
       wikiFolder.__refl = {Size = 0}
-      wikiFolder.__mems = {"", "k", "m", "t"} -- File zire amout round
-      wikiFolder.__memi = 3                   -- File zire amout round ID
+      wikiFolder.__mems = {"", "k", "m", "t"} -- File size amount round
+      wikiFolder.__memi = 3                   -- File size amount round ID
       
 return wikiFolder

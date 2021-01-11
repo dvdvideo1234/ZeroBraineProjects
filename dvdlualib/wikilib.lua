@@ -951,7 +951,7 @@ function wikilib.folderReadStructure(sP, iV)
       if(wikilib.common.isNil(iV)) then
         local nS, nE = sL:find(wikiFolder.__snum)
         tT.snum = wikilib.common.stringTrim(sL:sub(nE + 1, -1))
-      end
+      end   
     elseif(sL:find(wikiFolder.__drof)) then
       tT.base = sL:gsub("\\","/"):gsub(wikiFolder.__drof,"")
       tT.base = wikilib.common.stringTrim(tT.base)
@@ -964,6 +964,9 @@ function wikilib.folderReadStructure(sP, iV)
       if(not wikilib.common.isNil(nS)) then
         local nE = (nS + tD[2] - 1) -- The directory and size information end
         local sS = wikilib.common.stringTrim(sL:sub(nS, nE))
+        if(sS ~= "<DIR>" and sS:sub(1,1):find("%d") and sS:sub(-1,-1):find("%d")) then -- sS
+          sS = wikilib.common.stringTrim(sS:gsub("%D+", " "))
+        end -- Make sure to normalize the byte separators for the file size
         local sN = wikilib.common.stringTrim(sL:sub(nE, -1))
         if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
           if(tF.prnt and iT > 1) then -- Parent/current directory

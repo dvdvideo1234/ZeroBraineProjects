@@ -5,14 +5,15 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE").setBase(1)
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
       
 local common = require("common")
 local wikilib = require("wikilib")
 
-local sDirs = "K:/gstp"
-local sName = "gstp"
-local sUser = "mbqwertyaaa"
+local sDirs = "C:/Users/ddobromirov/Documents/Lua-Projs/SVN/TrackAssemblyTool"
+local sName = "TrackAssemblyTool"
+local sUser = "dvdvideo1234"
 local sRepo = "github.com/"..sUser.."/"..sName
 local sBlob = "blob/master"
 
