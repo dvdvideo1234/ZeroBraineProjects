@@ -262,6 +262,12 @@ function wikilib.findTokenCloser(sT, tR, iD)
   end; return mF, mB, mK, mV, mP
 end
 
+--[[
+ * sT > The sting to be tokenized
+ * tR > Replace token table
+ * bR > 
+ * bQ > Flag for quoted string in replacement
+]]
 function wikilib.replaceToken(sT, tR, bR, bQ, tS)
   local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   local qR = wikilib.common.getPick(bQ, "`", "")
@@ -1038,17 +1044,35 @@ local function folderLinkItem(tR, vC, bB)
   end; return sO
 end
 
+function wikilib.folderSettings(tSet)
+  if(wikilib.common.isTable(tSet)) then
+    local tDsc = wikilib.common.getPick(wikilib.common.isTable(tSet.Desc)
+      and not wikilib.common.isDryTable(tSet.Desc), tSet.Desc, nil)
+    local tWln = wikilib.common.getPick(wikilib.common.isTable(tSet.Swap)
+      and not wikilib.common.isDryTable(tSet.Swap), tSet.Swap, nil)
+    local tSkp = wikilib.common.getPick(wikilib.common.isTable(tSet.Skip)
+      and not wikilib.common.isDryTable(tSet.Skip), tSet.Skip, nil)
+    local tOny = wikilib.common.getPick(wikilib.common.isTable(tSet.Only)
+      and not wikilib.common.isDryTable(tSet.Only), tSet.Only, nil)
+    wikilib.common.tableClear(tSet)
+    tSet.Desc = tDsc
+    tSet.Swap = tWln
+    tSet.Skip = tSkp
+    tSet.Only = tOny
+    return tSet
+  end; return nil
+end
+
 --[[
  * This prints out the recursive tree
- * tP > Structure to print
- * vA > The type of graph symbols to use
- * sG > The repository tree is generated for ( not mandatory )
- * tD > API description list the thing is done for ( not mandatory ) )
- * tQ > Word to link creation table ( not mandatory ) )
- * vR > Previous iteration graph recursion depth ( omitted )
- * sR > Previous iteration graph recursion destination ( omitted )
+ * tP   > Structure to print
+ * vA   > The type of graph symbols to use
+ * sG   > The repository tree is generated for ( not mandatory )
+ * tSet > API description list the thing is done for ( not mandatory ) )
+ * vR   > Previous iteration graph recursion depth ( omitted )
+ * sR   > Previous iteration graph recursion destination ( omitted )
 ]]
-function wikilib.folderDrawTree(tP, vA, sG, tD, tQ, vR, sR)
+function wikilib.folderDrawTree(tP, vA, sG, tSet, vR, sR)
   if(not wikilib.common.isTable(tP)) then
     error("Print structure invalid {"..type(tP).."}["..tostring(tP).."]")
   else
@@ -1058,7 +1082,7 @@ function wikilib.folderDrawTree(tP, vA, sG, tD, tQ, vR, sR)
   end
   local tS, tR = wikiFolder.__syms, wikiFolder.__refl
   local sG = wikilib.common.getPick(common.isString(sG), sG, nil)
-  local tD = wikilib.common.getPick(common.isTable(tD), tD, nil)
+  local tSet = wikilib.folderSettings(tSet)
   local iA = wikilib.common.getClamp(tonumber(vA) or 1, 1, #tS)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
@@ -1085,13 +1109,13 @@ function wikilib.folderDrawTree(tP, vA, sG, tD, tQ, vR, sR)
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
-      if(tD and tD[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end
+      if(tSet.Desc and tSet.Desc[vC.name]) then
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, sG, tD, tQ, iR+1, sR..sD)
+      wikilib.folderDrawTree(vC.root, iA, sG, tSet, iR+1, sR..sD)
     else
-      if(tD and tD[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tD[vC.name], tQ, tF.prep, tF.qref)) end
+      if(tSet.Desc and tSet.Desc[vC.name]) then
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")

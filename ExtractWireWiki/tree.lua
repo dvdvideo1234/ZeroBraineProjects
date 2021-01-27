@@ -18,35 +18,40 @@ local sRepo = "github.com/"..sUser.."/"..sName
 local sBlob = "blob/master"
 
 -- Files description
-local tDesc =
+local tSettings = 
 {
-  ["lang"] = "Languages and translations",
-  ["advdupe2"] = "Extension testing duplications",
-  ["pictures"] = "Contains addon pictures",
-  ["workshop"] = "Workshop related stuff",
-  ["lua"] = "Contains all GLua sub-addons files",
-  ["bin"] = "Keeps all binary modules as `*.dll` or `*.s` files",
-  ["workshop_publish.bat"] = "Automatic workshop publisher for windows",
-  ["addons"] = "Merge this internal folder with your game addons folder",
-  ["gmod_wire_expression2"] = "Contains all the wire expression 2 extensions",
-  ["weapons"] = "Contains all the dedicated tool objects information"
-}
-
--- Direct word replacement inside the tree
-local tSwap =
-{
-  ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
-  ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
-  ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
-  ["trace-line"] = "https://wiki.garrysmod.com/page/util/TraceLine",
-  ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
-  ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult",
-  ["FTrace"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace",
-  ["bitmask"] = "https://en.wikipedia.org/wiki/Mask_(computing)",
-  ["SURF"] = "https://wiki.facepunch.com/gmod/Enums/SURF",
-  ["DISPSURF"] = "https://wiki.facepunch.com/gmod/Enums/DISPSURF",
-  ["CONTENTS"] = "https://wiki.facepunch.com/gmod/Enums/CONTENTS",
-  ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
+  Desc =
+  {
+    ["lang"] = "Languages and translations",
+    ["advdupe2"] = "Extension testing duplications",
+    ["pictures"] = "Contains addon pictures",
+    ["workshop"] = "Workshop related stuff",
+    ["lua"] = "Contains all GLua sub-addons files",
+    ["bin"] = "Keeps all binary modules as `*.dll` or `*.s` files",
+    ["workshop_publish.bat"] = "Automatic workshop publisher for windows",
+    ["addons"] = "Merge this internal folder with your game addons folder",
+    ["gmod_wire_expression2"] = "Contains all the wire expression 2 extensions",
+    ["weapons"] = "Contains all the dedicated MASK tool objects information MASK"
+  },
+  Swap =
+  {
+    ["MASK"] = "https://wiki.garrysmod.com/page/Enums/MASK",
+    ["COLLISION_GROUP"] = "https://wiki.garrysmod.com/page/Enums/COLLISION_GROUP",
+    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
+    ["trace-line"] = "https://wiki.garrysmod.com/page/util/TraceLine",
+    ["trace-strict"] = "https://wiki.garrysmod.com/page/Structures/Trace",
+    ["trace-result"] = "https://wiki.garrysmod.com/page/Structures/TraceResult",
+    ["FTrace"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace",
+    ["bitmask"] = "https://en.wikipedia.org/wiki/Mask_(computing)",
+    ["SURF"] = "https://wiki.facepunch.com/gmod/Enums/SURF",
+    ["DISPSURF"] = "https://wiki.facepunch.com/gmod/Enums/DISPSURF",
+    ["CONTENTS"] = "https://wiki.facepunch.com/gmod/Enums/CONTENTS",
+    ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
+  },
+  Skip = {
+  },
+  Only = {
+  }
 }
 
 local sPRJ = "/ZeroBraineProjects/ExtractWireWiki"
@@ -59,6 +64,7 @@ if(fO) then io.output(fO)
   wikilib.folderFlag("urls", true)
   wikilib.folderFlag("namr", true)
   wikilib.folderFlag("ufbr", true)
+  -- wikilib.folderFlag("qref", true)
   -- Tell the api to use file URL
   wikilib.folderReplaceURL(sDirs, sRepo, sBlob)
   -- Tell the read application we are using UTF-8 by writing a BOM
@@ -69,12 +75,11 @@ if(fO) then io.output(fO)
   -- common.logTable(tS, "DIR")
   -- Write the tree
   if(tS and common.isTable(tS)) then
-    wikilib.folderDrawTree(tS, 2, sRepo, tDesc, tSwap)
+    wikilib.folderDrawTree(tS, 2, sRepo, tSettings)
     wikilib.folderDrawTreeRef()
   else
-    
+    error("Table error: "..sDirs)    
   end
 else
-  print("API:", API)
   error("Output error: "..oE)
 end

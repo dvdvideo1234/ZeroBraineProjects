@@ -90,7 +90,7 @@
 `╠═══`[`license`][ref-90-license] [34kB]  
 `╠═══`[`lua`][ref-91-lua] --> Contains all GLua sub-addons files  
 `║   ╠═══`[`autorun`][ref-92-autorun]  
-`║   ║   ╠═══`[`trackassembly_init.lua`][ref-93-trackassembly%5Finit.lua] [375kB]  
+`║   ║   ╠═══`[`trackassembly_init.lua`][ref-93-trackassembly%5Finit.lua] [376kB]  
 `║   ║   ╚═══`[`z_autorun_[shinji85_s_rails].lua`][ref-94-z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua] [24kB]  
 `║   ╠═══`[`entities`][ref-95-entities]  
 `║   ║   ╚═══`[`gmod_wire_expression2`][ref-96-gmod%5Fwire%5Fexpression2] --> Contains all the wire expression 2 extensions  
@@ -100,16 +100,16 @@
 `║   ║               ╚═══`[`trackasmlib_wire.lua`][ref-100-trackasmlib%5Fwire.lua] [6kB]  
 `║   ╠═══`[`trackassembly`][ref-101-trackassembly]  
 `║   ║   ╠═══`[`lang`][ref-102-lang] --> Languages and translations  
-`║   ║   ║   ╠═══`[`bg.lua`][ref-103-bg.lua] [24kB]  
+`║   ║   ║   ╠═══`[`bg.lua`][ref-103-bg.lua] [27kB]  
 `║   ║   ║   ╠═══`[`en.lua`][ref-104-en.lua] [8kB]  
 `║   ║   ║   ╠═══`[`fr.lua`][ref-105-fr.lua] [20kB]  
 `║   ║   ║   ╠═══`[`ja.lua`][ref-106-ja.lua] [9kB]  
 `║   ║   ║   ╚═══`[`ru.lua`][ref-107-ru.lua] [2kB]  
 `║   ║   ╚═══`[`trackasmlib.lua`][ref-108-trackasmlib.lua] [243kB]  
-`║   ╚═══`[`weapons`][ref-109-weapons] --> Contains all the dedicated tool objects information  
+`║   ╚═══`[`weapons`][ref-109-weapons] --> Contains all the dedicated [MASK](https://wiki.garrysmod.com/page/Enums/MASK) tool objects information [MASK](https://wiki.garrysmod.com/page/Enums/MASK)  
 `║       ╚═══`[`gmod_tool`][ref-110-gmod%5Ftool]  
 `║           ╚═══`[`stools`][ref-111-stools]  
-`║               ╚═══`[`trackassembly.lua`][ref-112-trackassembly.lua] [35kB]  
+`║               ╚═══`[`trackassembly.lua`][ref-112-trackassembly.lua] [36kB]  
 `╠═══`[`readme.md`][ref-113-readme.md] [35kB]  
 `╚═══`[`workshop_publish.bat`][ref-114-workshop%5Fpublish.bat] [2kB] --> Automatic workshop publisher for windows  
 
