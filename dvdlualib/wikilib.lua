@@ -265,10 +265,11 @@ end
 --[[
  * sT > The sting to be tokenized
  * tR > Replace token table
- * bR > 
+ * bF > When the linkk has to be formatted with the key
  * bQ > Flag for quoted string in replacement
+ * tS > Set of parameters for found token
 ]]
-function wikilib.replaceToken(sT, tR, bR, bQ, tS)
+function wikilib.replaceToken(sT, tR, bF, bQ, tS)
   local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   local qR = wikilib.common.getPick(bQ, "`", "")
   if(tR and wikilib.common.isTable(tR)) then
@@ -276,10 +277,10 @@ function wikilib.replaceToken(sT, tR, bR, bQ, tS)
     while(mF and mB) do
       if(wikilib.common.isTable(mV)) then
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
-        local vD, vL = wikilib.replaceToken(sD, mV, bR, bQ, tV)
+        local vD, vL = wikilib.replaceToken(sD, mV, bF, bQ, tV)
         iD, sD = (mB + vL), vD
       else local nF, nB = (mF-1), (mB+1)
-        local sX = (bR and mV:format(mK) or mV)
+        local sX = (bF and mV:format(mK) or mV)
         local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
         if(cF..cB == "``") then
           sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB).."("..sX..")" -- Concatenate the link to the beginning
@@ -1017,20 +1018,20 @@ local function folderLinkItem(tR, vC, bB)
     local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
     if(tF.ufbr) then local vP = sR..sB
-      local tR = wikiFolder.__refl
-            tR.Size = tR.Size + 1
+      local tE = wikiFolder.__refl
+            tE.Size = tE.Size + 1
       local sL = wikilib.common.stringGetFileName(vP)
-      local vR = "ref-"..tR.Size.."-"..sL
-      tR[tR.Size] = toLinkRef(vR, vP)
+      local vR = "ref-"..tE.Size.."-"..sL
+      tE[tE.Size] = toLinkRef(vR, vP)
       sO = toLinkRefSrc("`"..sO.."`", vR)           
       if(vC.name == cD[1]) then
-        tR[tR.Size] = tR[tR.Size]:sub(1,-3)
+        tE[tE.Size] = tE[tE.Size]:sub(1,-3)
       elseif(vC.name == cD[2]) then
         local vR = wikilib.common.stringTrim(sR, "/")
               vR = wikilib.common.stringGetFileName(vR)
-        local nB, nE = tR[tR.Size]:find(vR.."/"..sB, 1, true)
+        local nB, nE = tE[tE.Size]:find(vR.."/"..sB, 1, true)
         if(nB and nE) then
-          tR[tR.Size] = tR[tR.Size]:sub(1, nB-2)
+          tE[tE.Size] = tE[tE.Size]:sub(1, nB-2)
         end
       end
     else
@@ -1044,7 +1045,13 @@ local function folderLinkItem(tR, vC, bB)
   end; return sO
 end
 
-function wikilib.folderSettings(tSet)
+--[[
+ * Updates the tree print settings to the correct format
+ * tSet > Description list the thing is done for
+ * tPth > Descriptor of the path stricure
+ * Returns boolean success
+]]
+function wikilib.folderSettings(tSet, tPth)
   if(wikilib.common.isTable(tSet)) then
     local tDsc = wikilib.common.getPick(wikilib.common.isTable(tSet.Desc)
       and not wikilib.common.isDryTable(tSet.Desc), tSet.Desc, nil)
@@ -1055,72 +1062,137 @@ function wikilib.folderSettings(tSet)
     local tOny = wikilib.common.getPick(wikilib.common.isTable(tSet.Only)
       and not wikilib.common.isDryTable(tSet.Only), tSet.Only, nil)
     wikilib.common.tableClear(tSet)
+    tSet.Base = tPth.base
     tSet.Desc = tDsc
     tSet.Swap = tWln
-    tSet.Skip = tSkp
-    tSet.Only = tOny
-    return tSet
-  end; return nil
+    if(tSkp) then
+      tSet.Skip = tSkp; tSet.Skip.__top = #tSet.Skip end
+    if(tOny) then  
+      tSet.Only = tOny; tSet.Only.__top = #tSet.Only end
+    return true
+  end; return false
+end
+
+--[[
+ * Updates the tree path abd removes the filtered nodes 
+ * tPth > Folder structure to process
+ * tO   > Table of only ones entries ( patterns )
+ * tS   > Table of skipped entries ( patterns )
+ * Returns boolean success
+]]
+local function folderOnlySkip(tPth, tSet)
+  local tCon = tPth.cont
+  local tSor = wikilib.common.sortTable(tCon, {"name"}, true), 1
+  if(tSet) then
+    local iD, tS, tO = 1, tSet.Skip, tSet.Only
+    while(iD <= tSor.__top) do
+      local vCon, bRem = tCon[iD], false
+      if(not vCon.root) then
+        local sP = wikilib.common.normFolder(tPth.base)
+              sP = sP..vCon.name
+        local nS, nE = sP:find(tSet.Base, 1, true)
+              sP = sP:sub(nE + 1, -1)
+        if(wikilib.common.isTable(tO) and not
+           wikilib.common.isDryTable(tO)) then
+          for iO = 1, tO.__top do -- Check only. Not found
+            if(not sP:find(tO[iO])) then -- Not within only
+              table.remove(tPth.cont, iD)
+              table.remove(tSor     , iD)
+              tSor.__top = tSor.__top - 1
+              bRem = true
+            end
+          end
+        end
+        if(wikilib.common.isTable(tS) and not
+           wikilib.common.isDryTable(tS)) then
+          for iS = 1, tS.__top do -- Check only. Not found
+            if(sP:find(tS[iS])) then -- Delete skipped
+              table.remove(tPth.cont, iD)
+              table.remove(tSor     , iD)
+              tSor.__top = tSor.__top - 1
+              bRem = true
+            end
+          end
+        end
+      end
+      
+      if(not bRem) then iD = iD + 1 end
+    end
+    tSor = wikilib.common.sortTable(tPth.cont, {"name"}, true)
+  end
+  
+  -- common.logTable(tPth.cont, "CONT")
+  -- common.logTable(tSor, "SORT")
+  
+  
+  return tSor
 end
 
 --[[
  * This prints out the recursive tree
- * tP   > Structure to print
- * vA   > The type of graph symbols to use
- * sG   > The repository tree is generated for ( not mandatory )
+ * tPth > Structure to print
+ * tSym > Syms set to use for drawing by a given ID
+ * sGen > The repository tree is generated for ( not mandatory )
  * tSet > API description list the thing is done for ( not mandatory ) )
  * vR   > Previous iteration graph recursion depth ( omitted )
  * sR   > Previous iteration graph recursion destination ( omitted )
 ]]
-function wikilib.folderDrawTree(tP, vA, sG, tSet, vR, sR)
-  if(not wikilib.common.isTable(tP)) then
-    error("Print structure invalid {"..type(tP).."}["..tostring(tP).."]")
+local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
+  if(not wikilib.common.isTable(tPth)) then
+    error("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]")
   else
-    if(not wikilib.common.isTable(tP.cont)) then
-      error("Print structure content invalid {"..type(tP.cont).."}["..tostring(tP.cont).."]")
+    if(not wikilib.common.isTable(tPth.cont)) then
+      error("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]")
     end
   end
-  local tS, tR = wikiFolder.__syms, wikiFolder.__refl
-  local sG = wikilib.common.getPick(common.isString(sG), sG, nil)
-  local tSet = wikilib.folderSettings(tSet)
-  local iA = wikilib.common.getClamp(tonumber(vA) or 1, 1, #tS)
-  local sR, tF = tostring(sR or ""), wikiFolder.__flag
+  local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
+  local sR, tF, iI = tostring(sR or ""), wikiFolder.__flag, wikiFolder.__dept
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
-  local nS, nE = tP.base:find(wikiFolder.__drem); tS = tS[iA]
-  local iI, tC = wikiFolder.__dept, wikilib.common.sortTable(tP.cont, {"name"}, true)
-  if(iR == 0) then
-    local sN = tP.base:sub(nE+1, -1)
-    local sB = tostring(tS[5] or "/")
-    if(tF.namr and sG) then
-      local sT = wikilib.common.stringTrim(sG, "/")
-      local sM = sT:match("/%w+$")
-      if(not wikilib.common.isNil(sM)) then sN = sM:sub(2,-1)
-        local sN = folderLinkItem({link=sG}, {name=sN}, tF.namr)
-        io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
-      else
-        io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
-      end
-    else
-      io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
-    end
-  end
-  for iD = 1, tC.__top do local vC, sL = tP.cont[tC[iD].__key], ""
+  local tSor = folderOnlySkip(tPth, tSet); if(not tSor) then
+    error("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]") end   
+  for iD = 1, tSor.__top do local vC, sL = tPth.cont[tSor[iD].__key], ""
     if(vC.root) then local dC = wikiSpace
-      local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
-      local sD = (tC[iD+1] and tS[4] or dC)..dC:rep(iI)
+      local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
+      local sD = (tSor[iD+1] and tSym[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       if(tSet.Desc and tSet.Desc[vC.name]) then
         sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
-      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
-      wikilib.folderDrawTree(vC.root, iA, sG, tSet, iR+1, sR..sD)
+      io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
+      folderDrawTreeRecurse(vC.root, tSym, sG, tSet, iR+1, sR..sD)
     else
       if(tSet.Desc and tSet.Desc[vC.name]) then
         sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
-      local sX = (tC[iD+1] and tS[2] or tS[1])..tS[3]:rep(iI)
-      io.write("`"..sR..sX.."`"..folderLinkItem(tP, vC)..sS..sL..wikiNewLN); io.write("\n")
+      local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
+      io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
     end
   end
+end
+
+function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
+  local tS = wikiFolder.__syms
+  local iA = wikilib.common.getClamp(tonumber(vIdx) or 1, 1, #tS); tS = tS[iA]
+  local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
+  local nS, nE = tPth.base:find(wikiFolder.__drem)
+  local sR, tF = tostring(sR or ""), wikiFolder.__flag
+  local vR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
+  if(not wikilib.folderSettings(tSet, tPth)) then
+    error("Settings invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]") end   
+  local sN = tPth.base:sub(nE + 1, -1)
+  local sB = tostring(tS[5] or "/")
+  if(tF.namr and sG) then
+    local sT = wikilib.common.stringTrim(sG, "/")
+    local sM = sT:match("/%w+$")
+    if(not wikilib.common.isNil(sM)) then sN = sM:sub(2,-1)
+      local sN = folderLinkItem({link=sG}, {name=sN}, tF.namr)
+      io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+    else
+      io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+    end
+  else
+    io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+  end
+  folderDrawTreeRecurse(tPth, tS, sGen, tSet, vR, sR)
 end
 
 function wikilib.folderDrawTreeRef()

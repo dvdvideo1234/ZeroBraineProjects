@@ -1,4 +1,5 @@
-﻿`╔`[`TrackAssemblyTool`][ref-1-TrackAssemblyTool]  
+﻿Directory: [C:/Users/ddobromirov/Documents/Lua-Projs/SVN/TrackAssemblyTool]
+`╔`[`TrackAssemblyTool`][ref-1-TrackAssemblyTool]  
 `╠═══`[`data`][ref-2-data]  
 `║   ╠═══`[`advdupe2`][ref-3-advdupe2] --> Extension testing duplications  
 `║   ║   ╚═══`[`wire_extension_test.txt`][ref-4-wire%5Fextension%5Ftest.txt] [2kB]  
@@ -100,18 +101,13 @@
 `║   ║               ╚═══`[`trackasmlib_wire.lua`][ref-100-trackasmlib%5Fwire.lua] [6kB]  
 `║   ╠═══`[`trackassembly`][ref-101-trackassembly]  
 `║   ║   ╠═══`[`lang`][ref-102-lang] --> Languages and translations  
-`║   ║   ║   ╠═══`[`bg.lua`][ref-103-bg.lua] [27kB]  
-`║   ║   ║   ╠═══`[`en.lua`][ref-104-en.lua] [8kB]  
-`║   ║   ║   ╠═══`[`fr.lua`][ref-105-fr.lua] [20kB]  
-`║   ║   ║   ╠═══`[`ja.lua`][ref-106-ja.lua] [9kB]  
-`║   ║   ║   ╚═══`[`ru.lua`][ref-107-ru.lua] [2kB]  
-`║   ║   ╚═══`[`trackasmlib.lua`][ref-108-trackasmlib.lua] [243kB]  
-`║   ╚═══`[`weapons`][ref-109-weapons] --> Contains all the dedicated [MASK](https://wiki.garrysmod.com/page/Enums/MASK) tool objects information [MASK](https://wiki.garrysmod.com/page/Enums/MASK)  
-`║       ╚═══`[`gmod_tool`][ref-110-gmod%5Ftool]  
-`║           ╚═══`[`stools`][ref-111-stools]  
-`║               ╚═══`[`trackassembly.lua`][ref-112-trackassembly.lua] [36kB]  
-`╠═══`[`readme.md`][ref-113-readme.md] [35kB]  
-`╚═══`[`workshop_publish.bat`][ref-114-workshop%5Fpublish.bat] [2kB] --> Automatic workshop publisher for windows  
+`║   ║   ╚═══`[`trackasmlib.lua`][ref-103-trackasmlib.lua] [243kB]  
+`║   ╚═══`[`weapons`][ref-104-weapons] --> Contains all the dedicated [MASK](https://wiki.garrysmod.com/page/Enums/MASK) tool objects information [MASK](https://wiki.garrysmod.com/page/Enums/MASK)  
+`║       ╚═══`[`gmod_tool`][ref-105-gmod%5Ftool]  
+`║           ╚═══`[`stools`][ref-106-stools]  
+`║               ╚═══`[`trackassembly.lua`][ref-107-trackassembly.lua] [36kB]  
+`╠═══`[`readme.md`][ref-108-readme.md] [35kB]  
+`╚═══`[`workshop_publish.bat`][ref-109-workshop%5Fpublish.bat] [2kB] --> Automatic workshop publisher for windows  
 
 
 [ref-1-TrackAssemblyTool]: https://github.com/dvdvideo1234/TrackAssemblyTool
@@ -216,15 +212,10 @@
 [ref-100-trackasmlib%5Fwire.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/trackasmlib%5Fwire.lua
 [ref-101-trackassembly]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly
 [ref-102-lang]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang
-[ref-103-bg.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/bg.lua
-[ref-104-en.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/en.lua
-[ref-105-fr.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/fr.lua
-[ref-106-ja.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/ja.lua
-[ref-107-ru.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang/ru.lua
-[ref-108-trackasmlib.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua
-[ref-109-weapons]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons
-[ref-110-gmod%5Ftool]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool
-[ref-111-stools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools
-[ref-112-trackassembly.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools/trackassembly.lua
-[ref-113-readme.md]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md
-[ref-114-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/workshop%5Fpublish.bat
+[ref-103-trackasmlib.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua
+[ref-104-weapons]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons
+[ref-105-gmod%5Ftool]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool
+[ref-106-stools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools
+[ref-107-trackassembly.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools/trackassembly.lua
+[ref-108-readme.md]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md
+[ref-109-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/workshop%5Fpublish.bat

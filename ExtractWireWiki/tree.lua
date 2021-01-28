@@ -49,8 +49,10 @@ local tSettings =
     ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
   },
   Skip = {
+    "/lang"
   },
   Only = {
+    
   }
 }
 
@@ -65,18 +67,21 @@ if(fO) then io.output(fO)
   wikilib.folderFlag("namr", true)
   wikilib.folderFlag("ufbr", true)
   -- wikilib.folderFlag("qref", true)
+  wikilib.folderFlag("hide", false)
   -- Tell the api to use file URL
   wikilib.folderReplaceURL(sDirs, sRepo, sBlob)
   -- Tell the read application we are using UTF-8 by writing a BOM
   wikilib.writeBOM("UTF8")
   -- Read structure
   local tS = wikilib.folderReadStructure(sDirs)
-  -- common.logString("Directory: ["..sDirs.."]\n")
-  -- common.logTable(tS, "DIR")
+  common.logString("Directory: ["..sDirs.."]\n")
+  -- common.logTable(tS, "IN")
   -- Write the tree
   if(tS and common.isTable(tS)) then
     wikilib.folderDrawTree(tS, 2, sRepo, tSettings)
     wikilib.folderDrawTreeRef()
+    
+    -- common.logTable(tS, "OUT")
   else
     error("Table error: "..sDirs)    
   end
