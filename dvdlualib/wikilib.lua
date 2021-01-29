@@ -1,4 +1,4 @@
-local common = require("common")
+﻿local common = require("common")
 
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs

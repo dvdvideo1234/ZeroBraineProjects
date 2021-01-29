@@ -22,7 +22,7 @@ local tSettings =
 {
   Desc =
   {
-    ["Prefabs"] = "Getting a MASK to work",
+    ["Prefabs"] = "Getting a MASK to work MASK",
     ["lang"] = "Languages and translations",
     ["advdupe2"] = "Extension testing duplications",
     ["pictures"] = "Contains addon pictures",
@@ -75,7 +75,7 @@ if(fO) then io.output(fO)
   wikilib.writeBOM("UTF8")
   -- Read structure
   local tS = wikilib.folderReadStructure(sDirs)
-  common.logString("Directory: ["..sDirs.."]\n")
+  common.logString("Directory: ["..sDirs.."]\n\n")
   -- common.logTable(tS, "IN")
   -- Write the tree
   if(tS and common.isTable(tS)) then
@@ -86,6 +86,9 @@ if(fO) then io.output(fO)
   else
     error("Table error: "..sDirs)    
   end
+  io.close(fO)
 else
   error("Output error: "..oE)
 end
+
+print(tonumber("0x".."00A0"))
