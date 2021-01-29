@@ -6,14 +6,14 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
       
 local common = require("common")
 local wikilib = require("wikilib")
 
-local sDirs = "C:/Users/ddobromirov/Documents/Lua-Projs/SVN/TrackAssemblyTool"
-local sName = "TrackAssemblyTool"
-local sUser = "dvdvideo1234"
+local sDirs = "K:/gstp"
+local sName = "gstp"
+local sUser = "mbqwertyaaa"
 local sRepo = "github.com/"..sUser.."/"..sName
 local sBlob = "blob/master"
 
@@ -22,6 +22,7 @@ local tSettings =
 {
   Desc =
   {
+    ["Prefabs"] = "Getting a MASK to work",
     ["lang"] = "Languages and translations",
     ["advdupe2"] = "Extension testing duplications",
     ["pictures"] = "Contains addon pictures",
@@ -52,7 +53,7 @@ local tSettings =
     "/lang"
   },
   Only = {
-    
+    "%.mdl$"
   }
 }
 

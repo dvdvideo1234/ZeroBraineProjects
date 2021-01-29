@@ -36,7 +36,6 @@ local wikiFolder = {}
         prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
         qref = false  -- (TRUE) Quote the string in the link reference
       }
-      wikiFolder.__refl = {Size = 0}
       wikiFolder.__mems = {"", "k", "m", "t"} -- File size amount round
       wikiFolder.__memi = 3                   -- File size amount round ID
       

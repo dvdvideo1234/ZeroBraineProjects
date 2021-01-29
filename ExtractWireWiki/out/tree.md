@@ -1,221 +1,808 @@
-﻿Directory: [C:/Users/ddobromirov/Documents/Lua-Projs/SVN/TrackAssemblyTool]
-`╔`[`TrackAssemblyTool`][ref-1-TrackAssemblyTool]  
-`╠═══`[`data`][ref-2-data]  
-`║   ╠═══`[`advdupe2`][ref-3-advdupe2] --> Extension testing duplications  
-`║   ║   ╚═══`[`wire_extension_test.txt`][ref-4-wire%5Fextension%5Ftest.txt] [2kB]  
-`║   ╠═══`[`expression2`][ref-5-expression2]  
-`║   ║   ╠═══`[`TA_Active_point_scanner.txt`][ref-6-TA%5FActive%5Fpoint%5Fscanner.txt] [2kB]  
-`║   ║   ╠═══`[`TA_Exporter_Generator.txt`][ref-7-TA%5FExporter%5FGenerator.txt] [2kB]  
-`║   ║   ╠═══`[`TA_ExtensionTest.txt`][ref-8-TA%5FExtensionTest.txt] [2kB]  
-`║   ║   ╠═══`[`TA_Scan_Export_Generator.txt`][ref-9-TA%5FScan%5FExport%5FGenerator.txt] [6kB]  
-`║   ║   ╠═══`[`TA_Scan_Generator.txt`][ref-10-TA%5FScan%5FGenerator.txt] [7kB]  
-`║   ║   ╠═══`[`TA_curve_rotator.txt`][ref-11-TA%5Fcurve%5Frotator.txt] [58B]  
-`║   ║   ╚═══`[`Test_Rail_Angler.txt`][ref-12-Test%5FRail%5FAngler.txt] [923B]  
-`║   ╚═══`[`trackassembly`][ref-13-trackassembly]  
-`║       ╠═══`[`dsv`][ref-14-dsv]  
-`║       ║   ╠═══`[`PlarailTRACKASSEMBLY_CATEGORY.txt`][ref-15-PlarailTRACKASSEMBLY%5FCATEGORY.txt] [55B]  
-`║       ║   ╠═══`[`PlarailTRACKASSEMBLY_PIECES.txt`][ref-16-PlarailTRACKASSEMBLY%5FPIECES.txt] [3kB]  
-`║       ║   ╠═══`[`Ron_s_2ft_track_packTRACKASSEMBLY_CATEGORY.txt`][ref-17-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [513B]  
-`║       ║   ╠═══`[`Ron_s_2ft_track_packTRACKASSEMBLY_PIECES.txt`][ref-18-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [3kB]  
-`║       ║   ╠═══`[`Ron_s_G_Scale_Track_packTRACKASSEMBLY_CATEGORY.txt`][ref-19-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [353B]  
-`║       ║   ╠═══`[`Ron_s_G_Scale_Track_packTRACKASSEMBLY_PIECES.txt`][ref-20-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [5kB]  
-`║       ║   ╠═══`[`Test_s_track_packTRACKASSEMBLY_CATEGORY.txt`][ref-21-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [505B]  
-`║       ║   ╠═══`[`Test_s_track_packTRACKASSEMBLY_PIECES.txt`][ref-22-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [694B]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_ADDITIONS.txt`][ref-23-cl%5FTRACKASSEMBLY%5FADDITIONS.txt] [105B]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_CATEGORY.txt`][ref-24-cl%5FTRACKASSEMBLY%5FCATEGORY.txt] [7kB]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-25-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [4kB]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PIECES.txt`][ref-26-cl%5FTRACKASSEMBLY%5FPIECES.txt] [294kB]  
-`║       ║   ╠═══`[`shinji85_s_railstrackassembly_additions.txt`][ref-27-shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt] [13B]  
-`║       ║   ╠═══`[`shinji85_s_railstrackassembly_category.txt`][ref-28-shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt] [534B]  
-`║       ║   ╠═══`[`shinji85_s_railstrackassembly_pieces.txt`][ref-29-shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt] [7kB]  
-`║       ║   ╠═══`[`sv_TRACKASSEMBLY_ADDITIONS.txt`][ref-30-sv%5FTRACKASSEMBLY%5FADDITIONS.txt] [206B]  
-`║       ║   ╠═══`[`sv_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-31-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [5kB]  
-`║       ║   ╚═══`[`sv_TRACKASSEMBLY_PIECES.txt`][ref-32-sv%5FTRACKASSEMBLY%5FPIECES.txt] [433kB]  
-`║       ╠═══`[`exp`][ref-33-exp]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_ADDITIONS.txt`][ref-34-cl%5FTRACKASSEMBLY%5FADDITIONS.txt] [952B]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-35-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [6kB]  
-`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PIECES.txt`][ref-36-cl%5FTRACKASSEMBLY%5FPIECES.txt] [342kB]  
-`║       ║   ╠═══`[`sv_TRACKASSEMBLY_ADDITIONS.txt`][ref-37-sv%5FTRACKASSEMBLY%5FADDITIONS.txt] [952B]  
-`║       ║   ╠═══`[`sv_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-38-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [6kB]  
-`║       ║   ╠═══`[`sv_TRACKASSEMBLY_PIECES.txt`][ref-39-sv%5FTRACKASSEMBLY%5FPIECES.txt] [342kB]  
-`║       ║   ╚═══`[`z_autorun_[anyone_s_horrible_trackpack].txt`][ref-40-z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt] [21kB]  
-`║       ╠═══`[`set`][ref-41-set]  
-`║       ║   ╠═══`[`trackasmlib_dsv.txt`][ref-42-trackasmlib%5Fdsv.txt] [18B]  
-`║       ║   ╠═══`[`trackasmlib_slskip.txt`][ref-43-trackasmlib%5Fslskip.txt] [623B]  
-`║       ║   ╠═══`[`z_autorun_[trackassembly].txt`][ref-44-z%5Fautorun%5F%5Btrackassembly%5D.txt] [8kB]  
-`║       ║   ╚═══`[`z_autoset_[trackassembly].txt`][ref-45-z%5Fautoset%5F%5Btrackassembly%5D.txt] [23kB]  
-`║       ╠═══`[`tools`][ref-46-tools]  
-`║       ║   ╠═══`[`discontinued`][ref-47-discontinued]  
-`║       ║   ║   ╠═══`[`author-converted`][ref-48-author%2Dconverted]  
-`║       ║   ║   ║   ╚═══`[`Shinji85's Rails.txt`][ref-49-Shinji85%27s%20Rails.txt] [7kB]  
-`║       ║   ║   ╠═══`[`owner-discontinued`][ref-50-owner%2Ddiscontinued]  
-`║       ║   ║   ║   ╠═══`[`Ron's 2ft track pack.txt`][ref-51-Ron%27s%202ft%20track%20pack.txt] [2kB]  
-`║       ║   ║   ║   ╠═══`[`Ron's 56 gauge rails.txt`][ref-52-Ron%27s%2056%20gauge%20rails.txt] [48kB]  
-`║       ║   ║   ║   ╚═══`[`SligWolf's minitrains.txt`][ref-53-SligWolf%27s%20minitrains.txt] [892B]  
-`║       ║   ║   ╚═══`[`owner-maintained`][ref-54-owner%2Dmaintained]  
-`║       ║   ║       ╠═══`[`Anyone's Horrible Trackpack.lua`][ref-55-Anyone%27s%20Horrible%20Trackpack.lua] [3kB]  
-`║       ║   ║       ╚═══`[`Ron's 2ft track pack.lua`][ref-56-Ron%27s%202ft%20track%20pack.lua] [61kB]  
-`║       ║   ╠═══`[`hooks`][ref-57-hooks]  
-`║       ║   ║   ╠═══`[`pre-commit.bat`][ref-58-pre%2Dcommit.bat] [327B]  
-`║       ║   ║   ╚═══`[`pre-commit.lua`][ref-59-pre%2Dcommit.lua] [2kB]  
-`║       ║   ╠═══`[`peaces_manager`][ref-60-peaces%5Fmanager]  
-`║       ║   ║   ╠═══`[`common.h`][ref-61-common.h] [4kB]  
-`║       ║   ║   ╠═══`[`emd.bat`][ref-62-emd.bat] [3kB]  
-`║       ║   ║   ╠═══`[`main.cpp`][ref-63-main.cpp] [2B]  
-`║       ║   ║   ╠═══`[`main.h`][ref-64-main.h] [277B]  
-`║       ║   ║   ╠═══`[`models_ignored.txt`][ref-65-models%5Fignored.txt] [255kB]  
-`║       ║   ║   ╠═══`[`peaces_manager.cbp`][ref-66-peaces%5Fmanager.cbp] [988B]  
-`║       ║   ║   ╠═══`[`string_stack.h`][ref-67-string%5Fstack.h] [4kB]  
-`║       ║   ║   ╠═══`[`struct_entry.h`][ref-68-struct%5Fentry.h] [6kB]  
-`║       ║   ║   ╚═══`[`struct_match.h`][ref-69-struct%5Fmatch.h] [5kB]  
-`║       ║   ╠═══`[`pictures`][ref-70-pictures] --> Contains addon pictures  
-`║       ║   ║   ╠═══`[`BOM.jpg`][ref-71-BOM.jpg] [43kB]  
-`║       ║   ║   ╠═══`[`UTF-8.jpg`][ref-72-UTF%2D8.jpg] [208kB]  
-`║       ║   ║   ╠═══`[`dsv_manager.jpg`][ref-73-dsv%5Fmanager.jpg] [61kB]  
-`║       ║   ║   ╠═══`[`frequent_pieces.jpg`][ref-74-frequent%5Fpieces.jpg] [94kB]  
-`║       ║   ║   ╠═══`[`icon.jpg`][ref-75-icon.jpg] [67kB]  
-`║       ║   ║   ╠═══`[`pointassist.jpg`][ref-76-pointassist.jpg] [41kB]  
-`║       ║   ║   ╠═══`[`rollercoaster_assist.jpg`][ref-77-rollercoaster%5Fassist.jpg] [290kB]  
-`║       ║   ║   ╠═══`[`screenshot.jpg`][ref-78-screenshot.jpg] [296kB]  
-`║       ║   ║   ╠═══`[`snapadvaiser.jpg`][ref-79-snapadvaiser.jpg] [47kB]  
-`║       ║   ║   ╠═══`[`surfsnap.jpg`][ref-80-surfsnap.jpg] [328kB]  
-`║       ║   ║   ╚═══`[`track_addon.jpg`][ref-81-track%5Faddon.jpg] [71kB]  
-`║       ║   ╠═══`[`todo.txt`][ref-82-todo.txt] [0B]  
-`║       ║   ╚═══`[`workshop`][ref-83-workshop] --> Workshop related stuff  
-`║       ║       ╠═══`[`addon.json`][ref-84-addon.json] [315B]  
-`║       ║       ╠═══`[`addon.txt`][ref-85-addon.txt] [124B]  
-`║       ║       ╠═══`[`description.txt`][ref-86-description.txt] [5kB]  
-`║       ║       ╚═══`[`key.txt`][ref-87-key.txt] [49B]  
-`║       ╠═══`[`trackasmlib_db.txt`][ref-88-trackasmlib%5Fdb.txt] [32kB]  
-`║       ╚═══`[`trackasmlib_log.txt`][ref-89-trackasmlib%5Flog.txt] [60kB]  
-`╠═══`[`license`][ref-90-license] [34kB]  
-`╠═══`[`lua`][ref-91-lua] --> Contains all GLua sub-addons files  
-`║   ╠═══`[`autorun`][ref-92-autorun]  
-`║   ║   ╠═══`[`trackassembly_init.lua`][ref-93-trackassembly%5Finit.lua] [376kB]  
-`║   ║   ╚═══`[`z_autorun_[shinji85_s_rails].lua`][ref-94-z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua] [24kB]  
-`║   ╠═══`[`entities`][ref-95-entities]  
-`║   ║   ╚═══`[`gmod_wire_expression2`][ref-96-gmod%5Fwire%5Fexpression2] --> Contains all the wire expression 2 extensions  
-`║   ║       ╚═══`[`core`][ref-97-core]  
-`║   ║           ╚═══`[`custom`][ref-98-custom]  
-`║   ║               ╠═══`[`cl_trackasmlib_wire.lua`][ref-99-cl%5Ftrackasmlib%5Fwire.lua] [4kB]  
-`║   ║               ╚═══`[`trackasmlib_wire.lua`][ref-100-trackasmlib%5Fwire.lua] [6kB]  
-`║   ╠═══`[`trackassembly`][ref-101-trackassembly]  
-`║   ║   ╠═══`[`lang`][ref-102-lang] --> Languages and translations  
-`║   ║   ╚═══`[`trackasmlib.lua`][ref-103-trackasmlib.lua] [243kB]  
-`║   ╚═══`[`weapons`][ref-104-weapons] --> Contains all the dedicated [MASK](https://wiki.garrysmod.com/page/Enums/MASK) tool objects information [MASK](https://wiki.garrysmod.com/page/Enums/MASK)  
-`║       ╚═══`[`gmod_tool`][ref-105-gmod%5Ftool]  
-`║           ╚═══`[`stools`][ref-106-stools]  
-`║               ╚═══`[`trackassembly.lua`][ref-107-trackassembly.lua] [36kB]  
-`╠═══`[`readme.md`][ref-108-readme.md] [35kB]  
-`╚═══`[`workshop_publish.bat`][ref-109-workshop%5Fpublish.bat] [2kB] --> Automatic workshop publisher for windows  
+﻿Directory: [K:/gstp]
+`╔`[`gstp`][ref-1-gstp]  
+`╠═══`[`Prefabs`][ref-3-Prefabs] --> Getting a [MASK][ref-2-MASK] to work  
+`║   ╠═══`[`gstp`][ref-4-gstp]  
+`║   ╠═══`[`gstpr512`][ref-5-gstpr512]  
+`║   ╚═══`[`gstpr576`][ref-6-gstpr576]  
+`╠═══`[`maps`][ref-7-maps]  
+`╠═══`[`materials`][ref-8-materials]  
+`║   ╚═══`[`models`][ref-9-models]  
+`║       ╚═══`[`gstp`][ref-10-gstp]  
+`╠═══`[`models`][ref-11-models]  
+`║   ╚═══`[`gstp`][ref-12-gstp]  
+`║       ╠═══`[`cu`][ref-13-cu]  
+`║       ║   ╠═══`[`r1024`][ref-14-r1024]  
+`║       ║   ║   ╠═══`[`0090.mdl`][ref-15-0090.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0014.mdl`][ref-16-l0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0024.mdl`][ref-17-l0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0044.mdl`][ref-18-l0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1424.mdl`][ref-19-l1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1444.mdl`][ref-20-l1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l2444.mdl`][ref-21-l2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0014.mdl`][ref-22-r0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0024.mdl`][ref-23-r0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0044.mdl`][ref-24-r0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1424.mdl`][ref-25-r1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1444.mdl`][ref-26-r1444.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`r2444.mdl`][ref-27-r2444.mdl] [2kB]  
+`║       ║   ╠═══`[`r1088`][ref-28-r1088]  
+`║       ║   ║   ╠═══`[`0090.mdl`][ref-29-0090.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0014.mdl`][ref-30-l0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0024.mdl`][ref-31-l0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0044.mdl`][ref-32-l0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1424.mdl`][ref-33-l1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1444.mdl`][ref-34-l1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l2444.mdl`][ref-35-l2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0014.mdl`][ref-36-r0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0024.mdl`][ref-37-r0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0044.mdl`][ref-38-r0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1424.mdl`][ref-39-r1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1444.mdl`][ref-40-r1444.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`r2444.mdl`][ref-41-r2444.mdl] [2kB]  
+`║       ║   ╠═══`[`r1536`][ref-42-r1536]  
+`║       ║   ║   ╠═══`[`0090.mdl`][ref-43-0090.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0014.mdl`][ref-44-l0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0024.mdl`][ref-45-l0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0044.mdl`][ref-46-l0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1424.mdl`][ref-47-l1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1444.mdl`][ref-48-l1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l2444.mdl`][ref-49-l2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0014.mdl`][ref-50-r0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0024.mdl`][ref-51-r0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0044.mdl`][ref-52-r0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1424.mdl`][ref-53-r1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1444.mdl`][ref-54-r1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r2444.mdl`][ref-55-r2444.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`r_r.mdl`][ref-56-r%5Fr.mdl] [2kB]  
+`║       ║   ╠═══`[`r1600`][ref-57-r1600]  
+`║       ║   ║   ╠═══`[`0090.mdl`][ref-58-0090.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0014.mdl`][ref-59-l0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0024.mdl`][ref-60-l0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0044.mdl`][ref-61-l0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1424.mdl`][ref-62-l1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1444.mdl`][ref-63-l1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l2444.mdl`][ref-64-l2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0014.mdl`][ref-65-r0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0024.mdl`][ref-66-r0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0044.mdl`][ref-67-r0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1424.mdl`][ref-68-r1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1444.mdl`][ref-69-r1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r2444.mdl`][ref-70-r2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r_r.mdl`][ref-71-r%5Fr.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`r_rx.mdl`][ref-72-r%5Frx.mdl] [2kB]  
+`║       ║   ╠═══`[`r512`][ref-73-r512]  
+`║       ║   ║   ╠═══`[`0090.mdl`][ref-74-0090.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0014.mdl`][ref-75-l0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0024.mdl`][ref-76-l0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l0044.mdl`][ref-77-l0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1424.mdl`][ref-78-l1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l1444.mdl`][ref-79-l1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`l2444.mdl`][ref-80-l2444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`ls.mdl`][ref-81-ls.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0014.mdl`][ref-82-r0014.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0024.mdl`][ref-83-r0024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r0044.mdl`][ref-84-r0044.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1424.mdl`][ref-85-r1424.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r1444.mdl`][ref-86-r1444.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`r2444.mdl`][ref-87-r2444.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`rs.mdl`][ref-88-rs.mdl] [2kB]  
+`║       ║   ╚═══`[`r576`][ref-89-r576]  
+`║       ║       ╠═══`[`0090.mdl`][ref-90-0090.mdl] [2kB]  
+`║       ║       ╠═══`[`l0014.mdl`][ref-91-l0014.mdl] [2kB]  
+`║       ║       ╠═══`[`l0024.mdl`][ref-92-l0024.mdl] [2kB]  
+`║       ║       ╠═══`[`l0044.mdl`][ref-93-l0044.mdl] [2kB]  
+`║       ║       ╠═══`[`l1424.mdl`][ref-94-l1424.mdl] [2kB]  
+`║       ║       ╠═══`[`l1444.mdl`][ref-95-l1444.mdl] [2kB]  
+`║       ║       ╠═══`[`l2444.mdl`][ref-96-l2444.mdl] [2kB]  
+`║       ║       ╠═══`[`ls.mdl`][ref-97-ls.mdl] [2kB]  
+`║       ║       ╠═══`[`r0014.mdl`][ref-98-r0014.mdl] [2kB]  
+`║       ║       ╠═══`[`r0024.mdl`][ref-99-r0024.mdl] [2kB]  
+`║       ║       ╠═══`[`r0044.mdl`][ref-100-r0044.mdl] [2kB]  
+`║       ║       ╠═══`[`r1424.mdl`][ref-101-r1424.mdl] [2kB]  
+`║       ║       ╠═══`[`r1444.mdl`][ref-102-r1444.mdl] [2kB]  
+`║       ║       ╠═══`[`r2444.mdl`][ref-103-r2444.mdl] [2kB]  
+`║       ║       ╚═══`[`rs.mdl`][ref-104-rs.mdl] [2kB]  
+`║       ╠═══`[`gr`][ref-105-gr]  
+`║       ║   ╠═══`[`04`][ref-106-04]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-107-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-108-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-109-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-110-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-111-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64`][ref-112-64]  
+`║       ║   ║   ║   ╚═══`[`64.mdl`][ref-113-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`64.mdl`][ref-114-64.mdl] [2kB]  
+`║       ║   ╠═══`[`44`][ref-115-44]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-116-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-117-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-118-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-119-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-120-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64`][ref-121-64]  
+`║       ║   ║   ║   ╚═══`[`64.mdl`][ref-122-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`64.mdl`][ref-123-64.mdl] [2kB]  
+`║       ║   ╠═══`[`l14`][ref-124-l14]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-125-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-126-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-127-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-128-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-129-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64`][ref-130-64]  
+`║       ║   ║   ║   ╚═══`[`64.mdl`][ref-131-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`64.mdl`][ref-132-64.mdl] [2kB]  
+`║       ║   ╠═══`[`l24`][ref-133-l24]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-134-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-135-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-136-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-137-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-138-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64`][ref-139-64]  
+`║       ║   ║   ║   ╚═══`[`64.mdl`][ref-140-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`64.mdl`][ref-141-64.mdl] [2kB]  
+`║       ║   ╠═══`[`r14`][ref-142-r14]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-143-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-144-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-145-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-146-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-147-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64`][ref-148-64]  
+`║       ║   ║   ║   ╚═══`[`64.mdl`][ref-149-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`64.mdl`][ref-150-64.mdl] [2kB]  
+`║       ║   ╚═══`[`r24`][ref-151-r24]  
+`║       ║       ╠═══`[`1024.mdl`][ref-152-1024.mdl] [2kB]  
+`║       ║       ╠═══`[`128.mdl`][ref-153-128.mdl] [2kB]  
+`║       ║       ╠═══`[`256.mdl`][ref-154-256.mdl] [2kB]  
+`║       ║       ╠═══`[`32.mdl`][ref-155-32.mdl] [2kB]  
+`║       ║       ╠═══`[`512.mdl`][ref-156-512.mdl] [2kB]  
+`║       ║       ╠═══`[`64`][ref-157-64]  
+`║       ║       ║   ╚═══`[`64.mdl`][ref-158-64.mdl] [2kB]  
+`║       ║       ╚═══`[`64.mdl`][ref-159-64.mdl] [2kB]  
+`║       ╠═══`[`mi`][ref-160-mi]  
+`║       ║   ╠═══`[`04`][ref-161-04]  
+`║       ║   ║   ╠═══`[`drawbridge.mdl`][ref-162-drawbridge.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`drawbridgebase.mdl`][ref-163-drawbridgebase.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`rsg_1024.mdl`][ref-164-rsg%5F1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`sleeper.mdl`][ref-165-sleeper.mdl] [944B]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-166-sleeperh.mdl] [944B]  
+`║       ║   ║   ╠═══`[`swl.mdl`][ref-167-swl.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`swr.mdl`][ref-168-swr.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`trackend.mdl`][ref-169-trackend.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`x90x.mdl`][ref-170-x90x.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`x90y.mdl`][ref-171-x90y.mdl] [2kB]  
+`║       ║   ╠═══`[`04_trigger.mdl`][ref-172-04%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`44`][ref-173-44]  
+`║       ║   ║   ╠═══`[`sleeper.mdl`][ref-174-sleeper.mdl] [944B]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-175-sleeperh.mdl] [944B]  
+`║       ║   ║   ╚═══`[`trackend.mdl`][ref-176-trackend.mdl] [2kB]  
+`║       ║   ╠═══`[`44_trigger.mdl`][ref-177-44%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`l14`][ref-178-l14]  
+`║       ║   ║   ╠═══`[`115.mdl`][ref-179-115.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-180-sleeperh.mdl] [948B]  
+`║       ║   ║   ╠═══`[`swl.mdl`][ref-181-swl.mdl] [940B]  
+`║       ║   ║   ╠═══`[`swr.mdl`][ref-182-swr.mdl] [940B]  
+`║       ║   ║   ╚═══`[`trackend.mdl`][ref-183-trackend.mdl] [2kB]  
+`║       ║   ╠═══`[`l14_trigger.mdl`][ref-184-l14%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`l24`][ref-185-l24]  
+`║       ║   ║   ╠═══`[`sleeper.mdl`][ref-186-sleeper.mdl] [944B]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-187-sleeperh.mdl] [948B]  
+`║       ║   ║   ╚═══`[`trackend.mdl`][ref-188-trackend.mdl] [2kB]  
+`║       ║   ╠═══`[`l24_trigger.mdl`][ref-189-l24%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`r14`][ref-190-r14]  
+`║       ║   ║   ╠═══`[`115.mdl`][ref-191-115.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-192-sleeperh.mdl] [948B]  
+`║       ║   ║   ╠═══`[`swl.mdl`][ref-193-swl.mdl] [940B]  
+`║       ║   ║   ╠═══`[`swr.mdl`][ref-194-swr.mdl] [940B]  
+`║       ║   ║   ╚═══`[`trackend.mdl`][ref-195-trackend.mdl] [2kB]  
+`║       ║   ╠═══`[`r14_trigger.mdl`][ref-196-r14%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`r24`][ref-197-r24]  
+`║       ║   ║   ╠═══`[`sleeper.mdl`][ref-198-sleeper.mdl] [944B]  
+`║       ║   ║   ╠═══`[`sleeperh.mdl`][ref-199-sleeperh.mdl] [948B]  
+`║       ║   ║   ╚═══`[`trackend.mdl`][ref-200-trackend.mdl] [2kB]  
+`║       ║   ╠═══`[`r24_trigger.mdl`][ref-201-r24%5Ftrigger.mdl] [876B]  
+`║       ║   ╠═══`[`slider.mdl`][ref-202-slider.mdl] [2kB]  
+`║       ║   ╠═══`[`slider_16.mdl`][ref-203-slider%5F16.mdl] [2kB]  
+`║       ║   ╠═══`[`slider_24.mdl`][ref-204-slider%5F24.mdl] [2kB]  
+`║       ║   ╠═══`[`slider_32.mdl`][ref-205-slider%5F32.mdl] [2kB]  
+`║       ║   ╚═══`[`slider_8.mdl`][ref-206-slider%5F8.mdl] [2kB]  
+`║       ╠═══`[`st`][ref-207-st]  
+`║       ║   ╠═══`[`04`][ref-208-04]  
+`║       ║   ║   ╠═══`[`1.mdl`][ref-209-1.mdl] [748B]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-210-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-211-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128_l1.mdl`][ref-212-128%5Fl1.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128_r1.mdl`][ref-213-128%5Fr1.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`16.mdl`][ref-214-16.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`16x2.mdl`][ref-215-16x2.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`2.mdl`][ref-216-2.mdl] [748B]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-217-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-218-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`4.mdl`][ref-219-4.mdl] [748B]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-220-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-221-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`8.mdl`][ref-222-8.mdl] [2kB]  
+`║       ║   ╠═══`[`44`][ref-223-44]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-224-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-225-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`16.mdl`][ref-226-16.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-227-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-228-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`4.mdl`][ref-229-4.mdl] [748B]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-230-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-231-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`8.mdl`][ref-232-8.mdl] [2kB]  
+`║       ║   ╠═══`[`l14`][ref-233-l14]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-234-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-235-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`16.mdl`][ref-236-16.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-237-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-238-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`4.mdl`][ref-239-4.mdl] [748B]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-240-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-241-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`8.mdl`][ref-242-8.mdl] [2kB]  
+`║       ║   ╠═══`[`l24`][ref-243-l24]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-244-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-245-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-246-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-247-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`4.mdl`][ref-248-4.mdl] [748B]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-249-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-250-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`8.mdl`][ref-251-8.mdl] [2kB]  
+`║       ║   ╠═══`[`r14`][ref-252-r14]  
+`║       ║   ║   ╠═══`[`1024.mdl`][ref-253-1024.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-254-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`16.mdl`][ref-255-16.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-256-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`32.mdl`][ref-257-32.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`4.mdl`][ref-258-4.mdl] [748B]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-259-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-260-64.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`8.mdl`][ref-261-8.mdl] [2kB]  
+`║       ║   ╚═══`[`r24`][ref-262-r24]  
+`║       ║       ╠═══`[`1024.mdl`][ref-263-1024.mdl] [2kB]  
+`║       ║       ╠═══`[`128.mdl`][ref-264-128.mdl] [2kB]  
+`║       ║       ╠═══`[`256.mdl`][ref-265-256.mdl] [2kB]  
+`║       ║       ╠═══`[`32.mdl`][ref-266-32.mdl] [2kB]  
+`║       ║       ╠═══`[`4.mdl`][ref-267-4.mdl] [748B]  
+`║       ║       ╠═══`[`512.mdl`][ref-268-512.mdl] [2kB]  
+`║       ║       ╠═══`[`64.mdl`][ref-269-64.mdl] [2kB]  
+`║       ║       ╚═══`[`8.mdl`][ref-270-8.mdl] [2kB]  
+`║       ╠═══`[`tr`][ref-271-tr]  
+`║       ║   ╠═══`[`04`][ref-272-04]  
+`║       ║   ║   ╠═══`[`128.mdl`][ref-273-128.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`256.mdl`][ref-274-256.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`512.mdl`][ref-275-512.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64.mdl`][ref-276-64.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`64_turntable_entrance.mdl`][ref-277-64%5Fturntable%5Fentrance.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`trackend.mdl`][ref-278-trackend.mdl] [2kB]  
+`║       ║   ║   ╠═══`[`trusstrack.mdl`][ref-279-trusstrack.mdl] [2kB]  
+`║       ║   ║   ╚═══`[`trusstransfer.mdl`][ref-280-trusstransfer.mdl] [2kB]  
+`║       ║   ╠═══`[`l14`][ref-281-l14]  
+`║       ║   ║   ╚═══`[`64_turntable_entrance.mdl`][ref-282-64%5Fturntable%5Fentrance.mdl] [2kB]  
+`║       ║   ╠═══`[`r14`][ref-283-r14]  
+`║       ║   ║   ╚═══`[`64_turntable_entrance.mdl`][ref-284-64%5Fturntable%5Fentrance.mdl] [2kB]  
+`║       ║   ╠═══`[`rail_table_382.mdl`][ref-285-rail%5Ftable%5F382.mdl] [760B]  
+`║       ║   ╠═══`[`rollingstock_table_512.mdl`][ref-286-rollingstock%5Ftable%5F512.mdl] [960B]  
+`║       ║   ╚═══`[`transfer_table_512.mdl`][ref-287-transfer%5Ftable%5F512.mdl] [3kB]  
+`║       ╚═══`[`tu`][ref-288-tu]  
+`║           ╠═══`[`r1536`][ref-289-r1536]  
+`║           ║   ╚═══`[`04`][ref-290-04]  
+`║           ║       ╚═══`[`j`][ref-291-j]  
+`║           ║           ╠═══`[`l_l.mdl`][ref-292-l%5Fl.mdl] [2kB]  
+`║           ║           ╠═══`[`l_r.mdl`][ref-293-l%5Fr.mdl] [2kB]  
+`║           ║           ╠═══`[`r_l.mdl`][ref-294-r%5Fl.mdl] [2kB]  
+`║           ║           ╚═══`[`r_r.mdl`][ref-295-r%5Fr.mdl] [2kB]  
+`║           ╠═══`[`r1600`][ref-296-r1600]  
+`║           ║   ╚═══`[`04`][ref-297-04]  
+`║           ║       ╠═══`[`dj`][ref-298-dj]  
+`║           ║       ║   ╠═══`[`l_lx.mdl`][ref-299-l%5Flx.mdl] [2kB]  
+`║           ║       ║   ╠═══`[`l_rx.mdl`][ref-300-l%5Frx.mdl] [2kB]  
+`║           ║       ║   ╠═══`[`r_lx.mdl`][ref-301-r%5Flx.mdl] [2kB]  
+`║           ║       ║   ╚═══`[`r_rx.mdl`][ref-302-r%5Frx.mdl] [2kB]  
+`║           ║       ╚═══`[`j`][ref-303-j]  
+`║           ║           ╠═══`[`l_l.mdl`][ref-304-l%5Fl.mdl] [2kB]  
+`║           ║           ╠═══`[`l_r.mdl`][ref-305-l%5Fr.mdl] [2kB]  
+`║           ║           ╠═══`[`r_l.mdl`][ref-306-r%5Fl.mdl] [2kB]  
+`║           ║           ╚═══`[`r_r.mdl`][ref-307-r%5Fr.mdl] [2kB]  
+`║           ╠═══`[`r512`][ref-308-r512]  
+`║           ║   ╠═══`[`04`][ref-309-04]  
+`║           ║   ║   ╚═══`[`j`][ref-310-j]  
+`║           ║   ║       ╠═══`[`l_l.mdl`][ref-311-l%5Fl.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`l_r.mdl`][ref-312-l%5Fr.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`r_l.mdl`][ref-313-r%5Fl.mdl] [2kB]  
+`║           ║   ║       ╚═══`[`r_r.mdl`][ref-314-r%5Fr.mdl] [2kB]  
+`║           ║   ╠═══`[`44`][ref-315-44]  
+`║           ║   ║   ╚═══`[`j`][ref-316-j]  
+`║           ║   ║       ╠═══`[`l_l.mdl`][ref-317-l%5Fl.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`l_r.mdl`][ref-318-l%5Fr.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`r_l.mdl`][ref-319-r%5Fl.mdl] [2kB]  
+`║           ║   ║       ╚═══`[`r_r.mdl`][ref-320-r%5Fr.mdl] [2kB]  
+`║           ║   ╠═══`[`l14`][ref-321-l14]  
+`║           ║   ║   ╚═══`[`j`][ref-322-j]  
+`║           ║   ║       ╠═══`[`l_l.mdl`][ref-323-l%5Fl.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`l_r.mdl`][ref-324-l%5Fr.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`r_l.mdl`][ref-325-r%5Fl.mdl] [2kB]  
+`║           ║   ║       ╚═══`[`r_r.mdl`][ref-326-r%5Fr.mdl] [2kB]  
+`║           ║   ╠═══`[`l24`][ref-327-l24]  
+`║           ║   ║   ╠═══`[`j`][ref-328-j]  
+`║           ║   ║   ║   ╠═══`[`l_l.mdl`][ref-329-l%5Fl.mdl] [2kB]  
+`║           ║   ║   ║   ╠═══`[`l_r.mdl`][ref-330-l%5Fr.mdl] [2kB]  
+`║           ║   ║   ║   ╠═══`[`r_l.mdl`][ref-331-r%5Fl.mdl] [2kB]  
+`║           ║   ║   ║   ╚═══`[`r_r.mdl`][ref-332-r%5Fr.mdl] [2kB]  
+`║           ║   ║   ╚═══`[`r`][ref-333-r]  
+`║           ║   ║       ╠═══`[`r_l.mdl`][ref-334-r%5Fl.mdl] [2kB]  
+`║           ║   ║       ╚═══`[`r_r.mdl`][ref-335-r%5Fr.mdl] [2kB]  
+`║           ║   ╠═══`[`r14`][ref-336-r14]  
+`║           ║   ║   ╚═══`[`j`][ref-337-j]  
+`║           ║   ║       ╠═══`[`l_l.mdl`][ref-338-l%5Fl.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`l_r.mdl`][ref-339-l%5Fr.mdl] [2kB]  
+`║           ║   ║       ╠═══`[`r_l.mdl`][ref-340-r%5Fl.mdl] [2kB]  
+`║           ║   ║       ╚═══`[`r_r.mdl`][ref-341-r%5Fr.mdl] [2kB]  
+`║           ║   ╚═══`[`r24`][ref-342-r24]  
+`║           ║       ╠═══`[`j`][ref-343-j]  
+`║           ║       ║   ╠═══`[`l_l.mdl`][ref-344-l%5Fl.mdl] [2kB]  
+`║           ║       ║   ╠═══`[`l_r.mdl`][ref-345-l%5Fr.mdl] [2kB]  
+`║           ║       ║   ╠═══`[`r_l.mdl`][ref-346-r%5Fl.mdl] [2kB]  
+`║           ║       ║   ╚═══`[`r_r.mdl`][ref-347-r%5Fr.mdl] [2kB]  
+`║           ║       ╚═══`[`r`][ref-348-r]  
+`║           ║           ╠═══`[`l_l.mdl`][ref-349-l%5Fl.mdl] [2kB]  
+`║           ║           ╚═══`[`l_r.mdl`][ref-350-l%5Fr.mdl] [2kB]  
+`║           ╚═══`[`r576`][ref-351-r576]  
+`║               ╠═══`[`04`][ref-352-04]  
+`║               ║   ╠═══`[`dj`][ref-353-dj]  
+`║               ║   ║   ╠═══`[`l_lx.mdl`][ref-354-l%5Flx.mdl] [2kB]  
+`║               ║   ║   ╠═══`[`l_rx.mdl`][ref-355-l%5Frx.mdl] [2kB]  
+`║               ║   ║   ╠═══`[`r_lx.mdl`][ref-356-r%5Flx.mdl] [2kB]  
+`║               ║   ║   ╚═══`[`r_rx.mdl`][ref-357-r%5Frx.mdl] [2kB]  
+`║               ║   ╠═══`[`j`][ref-358-j]  
+`║               ║   ║   ╠═══`[`l_l.mdl`][ref-359-l%5Fl.mdl] [2kB]  
+`║               ║   ║   ╠═══`[`l_r.mdl`][ref-360-l%5Fr.mdl] [2kB]  
+`║               ║   ║   ╠═══`[`r_l.mdl`][ref-361-r%5Fl.mdl] [2kB]  
+`║               ║   ║   ╚═══`[`r_r.mdl`][ref-362-r%5Fr.mdl] [2kB]  
+`║               ║   ╚═══`[`n`][ref-363-n]  
+`║               ║       ╠═══`[`l_l.mdl`][ref-364-l%5Fl.mdl] [2kB]  
+`║               ║       ╠═══`[`l_r.mdl`][ref-365-l%5Fr.mdl] [2kB]  
+`║               ║       ╠═══`[`r_l.mdl`][ref-366-r%5Fl.mdl] [2kB]  
+`║               ║       ╚═══`[`r_r.mdl`][ref-367-r%5Fr.mdl] [2kB]  
+`║               ╠═══`[`44`][ref-368-44]  
+`║               ║   ╚═══`[`j`][ref-369-j]  
+`║               ║       ╠═══`[`l_l.mdl`][ref-370-l%5Fl.mdl] [2kB]  
+`║               ║       ╠═══`[`l_r.mdl`][ref-371-l%5Fr.mdl] [2kB]  
+`║               ║       ╠═══`[`r_l.mdl`][ref-372-r%5Fl.mdl] [2kB]  
+`║               ║       ╚═══`[`r_r.mdl`][ref-373-r%5Fr.mdl] [2kB]  
+`║               ╠═══`[`l14`][ref-374-l14]  
+`║               ║   ╚═══`[`j`][ref-375-j]  
+`║               ║       ╠═══`[`l_l.mdl`][ref-376-l%5Fl.mdl] [2kB]  
+`║               ║       ╠═══`[`l_r.mdl`][ref-377-l%5Fr.mdl] [2kB]  
+`║               ║       ╠═══`[`r_l.mdl`][ref-378-r%5Fl.mdl] [2kB]  
+`║               ║       ╚═══`[`r_r.mdl`][ref-379-r%5Fr.mdl] [2kB]  
+`║               ╠═══`[`l24`][ref-380-l24]  
+`║               ║   ╠═══`[`j`][ref-381-j]  
+`║               ║   ║   ╠═══`[`l_l.mdl`][ref-382-l%5Fl.mdl] [2kB]  
+`║               ║   ║   ╠═══`[`r_l.mdl`][ref-383-r%5Fl.mdl] [2kB]  
+`║               ║   ║   ╚═══`[`r_r.mdl`][ref-384-r%5Fr.mdl] [2kB]  
+`║               ║   ╚═══`[`r`][ref-385-r]  
+`║               ║       ╠═══`[`r_l.mdl`][ref-386-r%5Fl.mdl] [2kB]  
+`║               ║       ╚═══`[`r_r.mdl`][ref-387-r%5Fr.mdl] [2kB]  
+`║               ╠═══`[`r14`][ref-388-r14]  
+`║               ║   ╚═══`[`j`][ref-389-j]  
+`║               ║       ╠═══`[`l_l.mdl`][ref-390-l%5Fl.mdl] [2kB]  
+`║               ║       ╠═══`[`l_r.mdl`][ref-391-l%5Fr.mdl] [2kB]  
+`║               ║       ╠═══`[`r_l.mdl`][ref-392-r%5Fl.mdl] [2kB]  
+`║               ║       ╚═══`[`r_r.mdl`][ref-393-r%5Fr.mdl] [2kB]  
+`║               ╚═══`[`r24`][ref-394-r24]  
+`║                   ╠═══`[`j`][ref-395-j]  
+`║                   ║   ╠═══`[`l_l.mdl`][ref-396-l%5Fl.mdl] [2kB]  
+`║                   ║   ╠═══`[`l_r.mdl`][ref-397-l%5Fr.mdl] [2kB]  
+`║                   ║   ╠═══`[`r_l.mdl`][ref-398-r%5Fl.mdl] [2kB]  
+`║                   ║   ╚═══`[`r_r.mdl`][ref-399-r%5Fr.mdl] [2kB]  
+`║                   ╚═══`[`r`][ref-400-r]  
+`║                       ╠═══`[`l_l.mdl`][ref-401-l%5Fl.mdl] [2kB]  
+`║                       ╚═══`[`l_r.mdl`][ref-402-l%5Fr.mdl] [2kB]  
+`╚═══`[`screenshots`][ref-403-screenshots]  
 
 
-[ref-1-TrackAssemblyTool]: https://github.com/dvdvideo1234/TrackAssemblyTool
-[ref-2-data]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data
-[ref-3-advdupe2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/advdupe2
-[ref-4-wire%5Fextension%5Ftest.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/advdupe2/wire%5Fextension%5Ftest.txt
-[ref-5-expression2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2
-[ref-6-TA%5FActive%5Fpoint%5Fscanner.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FActive%5Fpoint%5Fscanner.txt
-[ref-7-TA%5FExporter%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FExporter%5FGenerator.txt
-[ref-8-TA%5FExtensionTest.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FExtensionTest.txt
-[ref-9-TA%5FScan%5FExport%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FScan%5FExport%5FGenerator.txt
-[ref-10-TA%5FScan%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FScan%5FGenerator.txt
-[ref-11-TA%5Fcurve%5Frotator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5Fcurve%5Frotator.txt
-[ref-12-Test%5FRail%5FAngler.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/Test%5FRail%5FAngler.txt
-[ref-13-trackassembly]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly
-[ref-14-dsv]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv
-[ref-15-PlarailTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/PlarailTRACKASSEMBLY%5FCATEGORY.txt
-[ref-16-PlarailTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/PlarailTRACKASSEMBLY%5FPIECES.txt
-[ref-17-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
-[ref-18-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt
-[ref-19-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
-[ref-20-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt
-[ref-21-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
-[ref-22-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt
-[ref-23-cl%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/cl%5FTRACKASSEMBLY%5FADDITIONS.txt
-[ref-24-cl%5FTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/cl%5FTRACKASSEMBLY%5FCATEGORY.txt
-[ref-25-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
-[ref-26-cl%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/cl%5FTRACKASSEMBLY%5FPIECES.txt
-[ref-27-shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt
-[ref-28-shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt
-[ref-29-shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt
-[ref-30-sv%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/sv%5FTRACKASSEMBLY%5FADDITIONS.txt
-[ref-31-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
-[ref-32-sv%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/sv%5FTRACKASSEMBLY%5FPIECES.txt
-[ref-33-exp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp
-[ref-34-cl%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FADDITIONS.txt
-[ref-35-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
-[ref-36-cl%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FPIECES.txt
-[ref-37-sv%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FADDITIONS.txt
-[ref-38-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
-[ref-39-sv%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FPIECES.txt
-[ref-40-z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt
-[ref-41-set]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set
-[ref-42-trackasmlib%5Fdsv.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/trackasmlib%5Fdsv.txt
-[ref-43-trackasmlib%5Fslskip.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/trackasmlib%5Fslskip.txt
-[ref-44-z%5Fautorun%5F%5Btrackassembly%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/z%5Fautorun%5F%5Btrackassembly%5D.txt
-[ref-45-z%5Fautoset%5F%5Btrackassembly%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/z%5Fautoset%5F%5Btrackassembly%5D.txt
-[ref-46-tools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools
-[ref-47-discontinued]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued
-[ref-48-author%2Dconverted]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/author%2Dconverted
-[ref-49-Shinji85%27s%20Rails.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/author%2Dconverted/Shinji85%27s%20Rails.txt
-[ref-50-owner%2Ddiscontinued]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued
-[ref-51-Ron%27s%202ft%20track%20pack.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/Ron%27s%202ft%20track%20pack.txt
-[ref-52-Ron%27s%2056%20gauge%20rails.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/Ron%27s%2056%20gauge%20rails.txt
-[ref-53-SligWolf%27s%20minitrains.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/SligWolf%27s%20minitrains.txt
-[ref-54-owner%2Dmaintained]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained
-[ref-55-Anyone%27s%20Horrible%20Trackpack.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/Anyone%27s%20Horrible%20Trackpack.lua
-[ref-56-Ron%27s%202ft%20track%20pack.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/Ron%27s%202ft%20track%20pack.lua
-[ref-57-hooks]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks
-[ref-58-pre%2Dcommit.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks/pre%2Dcommit.bat
-[ref-59-pre%2Dcommit.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks/pre%2Dcommit.lua
-[ref-60-peaces%5Fmanager]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager
-[ref-61-common.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/common.h
-[ref-62-emd.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/emd.bat
-[ref-63-main.cpp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/main.cpp
-[ref-64-main.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/main.h
-[ref-65-models%5Fignored.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/models%5Fignored.txt
-[ref-66-peaces%5Fmanager.cbp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/peaces%5Fmanager.cbp
-[ref-67-string%5Fstack.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/string%5Fstack.h
-[ref-68-struct%5Fentry.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/struct%5Fentry.h
-[ref-69-struct%5Fmatch.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/struct%5Fmatch.h
-[ref-70-pictures]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures
-[ref-71-BOM.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/BOM.jpg
-[ref-72-UTF%2D8.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/UTF%2D8.jpg
-[ref-73-dsv%5Fmanager.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/dsv%5Fmanager.jpg
-[ref-74-frequent%5Fpieces.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/frequent%5Fpieces.jpg
-[ref-75-icon.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/icon.jpg
-[ref-76-pointassist.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/pointassist.jpg
-[ref-77-rollercoaster%5Fassist.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/rollercoaster%5Fassist.jpg
-[ref-78-screenshot.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/screenshot.jpg
-[ref-79-snapadvaiser.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/snapadvaiser.jpg
-[ref-80-surfsnap.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/surfsnap.jpg
-[ref-81-track%5Faddon.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/track%5Faddon.jpg
-[ref-82-todo.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/todo.txt
-[ref-83-workshop]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop
-[ref-84-addon.json]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/addon.json
-[ref-85-addon.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/addon.txt
-[ref-86-description.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/description.txt
-[ref-87-key.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/key.txt
-[ref-88-trackasmlib%5Fdb.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib%5Fdb.txt
-[ref-89-trackasmlib%5Flog.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib%5Flog.txt
-[ref-90-license]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/license
-[ref-91-lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua
-[ref-92-autorun]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun
-[ref-93-trackassembly%5Finit.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun/trackassembly%5Finit.lua
-[ref-94-z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun/z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua
-[ref-95-entities]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities
-[ref-96-gmod%5Fwire%5Fexpression2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2
-[ref-97-core]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core
-[ref-98-custom]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom
-[ref-99-cl%5Ftrackasmlib%5Fwire.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/cl%5Ftrackasmlib%5Fwire.lua
-[ref-100-trackasmlib%5Fwire.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/trackasmlib%5Fwire.lua
-[ref-101-trackassembly]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly
-[ref-102-lang]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/lang
-[ref-103-trackasmlib.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua
-[ref-104-weapons]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons
-[ref-105-gmod%5Ftool]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool
-[ref-106-stools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools
-[ref-107-trackassembly.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools/trackassembly.lua
-[ref-108-readme.md]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md
-[ref-109-workshop%5Fpublish.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/workshop%5Fpublish.bat
+[ref-1-gstp]: https://github.com/mbqwertyaaa/gstp
+[ref-2-MASK]: https://wiki.garrysmod.com/page/Enums/MASK
+[ref-3-Prefabs]: https://github.com/mbqwertyaaa/gstp/blob/master/Prefabs
+[ref-4-gstp]: https://github.com/mbqwertyaaa/gstp/blob/master/Prefabs/gstp
+[ref-5-gstpr512]: https://github.com/mbqwertyaaa/gstp/blob/master/Prefabs/gstpr512
+[ref-6-gstpr576]: https://github.com/mbqwertyaaa/gstp/blob/master/Prefabs/gstpr576
+[ref-7-maps]: https://github.com/mbqwertyaaa/gstp/blob/master/maps
+[ref-8-materials]: https://github.com/mbqwertyaaa/gstp/blob/master/materials
+[ref-9-models]: https://github.com/mbqwertyaaa/gstp/blob/master/materials/models
+[ref-10-gstp]: https://github.com/mbqwertyaaa/gstp/blob/master/materials/models/gstp
+[ref-11-models]: https://github.com/mbqwertyaaa/gstp/blob/master/models
+[ref-12-gstp]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp
+[ref-13-cu]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu
+[ref-14-r1024]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024
+[ref-15-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/0090.mdl
+[ref-16-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l0014.mdl
+[ref-17-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l0024.mdl
+[ref-18-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l0044.mdl
+[ref-19-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l1424.mdl
+[ref-20-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l1444.mdl
+[ref-21-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/l2444.mdl
+[ref-22-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r0014.mdl
+[ref-23-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r0024.mdl
+[ref-24-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r0044.mdl
+[ref-25-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r1424.mdl
+[ref-26-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r1444.mdl
+[ref-27-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1024/r2444.mdl
+[ref-28-r1088]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088
+[ref-29-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/0090.mdl
+[ref-30-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l0014.mdl
+[ref-31-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l0024.mdl
+[ref-32-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l0044.mdl
+[ref-33-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l1424.mdl
+[ref-34-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l1444.mdl
+[ref-35-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/l2444.mdl
+[ref-36-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r0014.mdl
+[ref-37-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r0024.mdl
+[ref-38-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r0044.mdl
+[ref-39-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r1424.mdl
+[ref-40-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r1444.mdl
+[ref-41-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1088/r2444.mdl
+[ref-42-r1536]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536
+[ref-43-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/0090.mdl
+[ref-44-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l0014.mdl
+[ref-45-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l0024.mdl
+[ref-46-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l0044.mdl
+[ref-47-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l1424.mdl
+[ref-48-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l1444.mdl
+[ref-49-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/l2444.mdl
+[ref-50-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r0014.mdl
+[ref-51-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r0024.mdl
+[ref-52-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r0044.mdl
+[ref-53-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r1424.mdl
+[ref-54-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r1444.mdl
+[ref-55-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r2444.mdl
+[ref-56-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1536/r%5Fr.mdl
+[ref-57-r1600]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600
+[ref-58-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/0090.mdl
+[ref-59-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l0014.mdl
+[ref-60-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l0024.mdl
+[ref-61-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l0044.mdl
+[ref-62-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l1424.mdl
+[ref-63-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l1444.mdl
+[ref-64-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/l2444.mdl
+[ref-65-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r0014.mdl
+[ref-66-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r0024.mdl
+[ref-67-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r0044.mdl
+[ref-68-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r1424.mdl
+[ref-69-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r1444.mdl
+[ref-70-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r2444.mdl
+[ref-71-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r%5Fr.mdl
+[ref-72-r%5Frx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r1600/r%5Frx.mdl
+[ref-73-r512]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512
+[ref-74-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/0090.mdl
+[ref-75-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l0014.mdl
+[ref-76-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l0024.mdl
+[ref-77-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l0044.mdl
+[ref-78-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l1424.mdl
+[ref-79-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l1444.mdl
+[ref-80-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/l2444.mdl
+[ref-81-ls.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/ls.mdl
+[ref-82-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r0014.mdl
+[ref-83-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r0024.mdl
+[ref-84-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r0044.mdl
+[ref-85-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r1424.mdl
+[ref-86-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r1444.mdl
+[ref-87-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/r2444.mdl
+[ref-88-rs.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r512/rs.mdl
+[ref-89-r576]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576
+[ref-90-0090.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/0090.mdl
+[ref-91-l0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l0014.mdl
+[ref-92-l0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l0024.mdl
+[ref-93-l0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l0044.mdl
+[ref-94-l1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l1424.mdl
+[ref-95-l1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l1444.mdl
+[ref-96-l2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/l2444.mdl
+[ref-97-ls.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/ls.mdl
+[ref-98-r0014.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r0014.mdl
+[ref-99-r0024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r0024.mdl
+[ref-100-r0044.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r0044.mdl
+[ref-101-r1424.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r1424.mdl
+[ref-102-r1444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r1444.mdl
+[ref-103-r2444.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/r2444.mdl
+[ref-104-rs.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/cu/r576/rs.mdl
+[ref-105-gr]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr
+[ref-106-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04
+[ref-107-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/1024.mdl
+[ref-108-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/128.mdl
+[ref-109-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/256.mdl
+[ref-110-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/32.mdl
+[ref-111-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/512.mdl
+[ref-112-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/64
+[ref-113-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/64/64.mdl
+[ref-114-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/04/64.mdl
+[ref-115-44]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44
+[ref-116-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/1024.mdl
+[ref-117-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/128.mdl
+[ref-118-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/256.mdl
+[ref-119-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/32.mdl
+[ref-120-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/512.mdl
+[ref-121-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/64
+[ref-122-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/64/64.mdl
+[ref-123-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/44/64.mdl
+[ref-124-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14
+[ref-125-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/1024.mdl
+[ref-126-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/128.mdl
+[ref-127-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/256.mdl
+[ref-128-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/32.mdl
+[ref-129-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/512.mdl
+[ref-130-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/64
+[ref-131-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/64/64.mdl
+[ref-132-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l14/64.mdl
+[ref-133-l24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24
+[ref-134-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/1024.mdl
+[ref-135-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/128.mdl
+[ref-136-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/256.mdl
+[ref-137-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/32.mdl
+[ref-138-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/512.mdl
+[ref-139-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/64
+[ref-140-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/64/64.mdl
+[ref-141-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/l24/64.mdl
+[ref-142-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14
+[ref-143-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/1024.mdl
+[ref-144-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/128.mdl
+[ref-145-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/256.mdl
+[ref-146-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/32.mdl
+[ref-147-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/512.mdl
+[ref-148-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/64
+[ref-149-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/64/64.mdl
+[ref-150-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r14/64.mdl
+[ref-151-r24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24
+[ref-152-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/1024.mdl
+[ref-153-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/128.mdl
+[ref-154-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/256.mdl
+[ref-155-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/32.mdl
+[ref-156-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/512.mdl
+[ref-157-64]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/64
+[ref-158-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/64/64.mdl
+[ref-159-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/gr/r24/64.mdl
+[ref-160-mi]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi
+[ref-161-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04
+[ref-162-drawbridge.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/drawbridge.mdl
+[ref-163-drawbridgebase.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/drawbridgebase.mdl
+[ref-164-rsg%5F1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/rsg%5F1024.mdl
+[ref-165-sleeper.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/sleeper.mdl
+[ref-166-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/sleeperh.mdl
+[ref-167-swl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/swl.mdl
+[ref-168-swr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/swr.mdl
+[ref-169-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/trackend.mdl
+[ref-170-x90x.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/x90x.mdl
+[ref-171-x90y.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04/x90y.mdl
+[ref-172-04%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/04%5Ftrigger.mdl
+[ref-173-44]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/44
+[ref-174-sleeper.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/44/sleeper.mdl
+[ref-175-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/44/sleeperh.mdl
+[ref-176-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/44/trackend.mdl
+[ref-177-44%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/44%5Ftrigger.mdl
+[ref-178-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14
+[ref-179-115.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14/115.mdl
+[ref-180-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14/sleeperh.mdl
+[ref-181-swl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14/swl.mdl
+[ref-182-swr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14/swr.mdl
+[ref-183-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14/trackend.mdl
+[ref-184-l14%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l14%5Ftrigger.mdl
+[ref-185-l24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l24
+[ref-186-sleeper.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l24/sleeper.mdl
+[ref-187-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l24/sleeperh.mdl
+[ref-188-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l24/trackend.mdl
+[ref-189-l24%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/l24%5Ftrigger.mdl
+[ref-190-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14
+[ref-191-115.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14/115.mdl
+[ref-192-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14/sleeperh.mdl
+[ref-193-swl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14/swl.mdl
+[ref-194-swr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14/swr.mdl
+[ref-195-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14/trackend.mdl
+[ref-196-r14%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r14%5Ftrigger.mdl
+[ref-197-r24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r24
+[ref-198-sleeper.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r24/sleeper.mdl
+[ref-199-sleeperh.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r24/sleeperh.mdl
+[ref-200-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r24/trackend.mdl
+[ref-201-r24%5Ftrigger.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/r24%5Ftrigger.mdl
+[ref-202-slider.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/slider.mdl
+[ref-203-slider%5F16.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/slider%5F16.mdl
+[ref-204-slider%5F24.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/slider%5F24.mdl
+[ref-205-slider%5F32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/slider%5F32.mdl
+[ref-206-slider%5F8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/mi/slider%5F8.mdl
+[ref-207-st]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st
+[ref-208-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04
+[ref-209-1.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/1.mdl
+[ref-210-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/1024.mdl
+[ref-211-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/128.mdl
+[ref-212-128%5Fl1.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/128%5Fl1.mdl
+[ref-213-128%5Fr1.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/128%5Fr1.mdl
+[ref-214-16.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/16.mdl
+[ref-215-16x2.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/16x2.mdl
+[ref-216-2.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/2.mdl
+[ref-217-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/256.mdl
+[ref-218-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/32.mdl
+[ref-219-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/4.mdl
+[ref-220-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/512.mdl
+[ref-221-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/64.mdl
+[ref-222-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/04/8.mdl
+[ref-223-44]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44
+[ref-224-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/1024.mdl
+[ref-225-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/128.mdl
+[ref-226-16.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/16.mdl
+[ref-227-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/256.mdl
+[ref-228-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/32.mdl
+[ref-229-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/4.mdl
+[ref-230-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/512.mdl
+[ref-231-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/64.mdl
+[ref-232-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/44/8.mdl
+[ref-233-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14
+[ref-234-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/1024.mdl
+[ref-235-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/128.mdl
+[ref-236-16.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/16.mdl
+[ref-237-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/256.mdl
+[ref-238-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/32.mdl
+[ref-239-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/4.mdl
+[ref-240-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/512.mdl
+[ref-241-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/64.mdl
+[ref-242-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l14/8.mdl
+[ref-243-l24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24
+[ref-244-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/1024.mdl
+[ref-245-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/128.mdl
+[ref-246-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/256.mdl
+[ref-247-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/32.mdl
+[ref-248-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/4.mdl
+[ref-249-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/512.mdl
+[ref-250-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/64.mdl
+[ref-251-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/l24/8.mdl
+[ref-252-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14
+[ref-253-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/1024.mdl
+[ref-254-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/128.mdl
+[ref-255-16.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/16.mdl
+[ref-256-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/256.mdl
+[ref-257-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/32.mdl
+[ref-258-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/4.mdl
+[ref-259-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/512.mdl
+[ref-260-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/64.mdl
+[ref-261-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r14/8.mdl
+[ref-262-r24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24
+[ref-263-1024.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/1024.mdl
+[ref-264-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/128.mdl
+[ref-265-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/256.mdl
+[ref-266-32.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/32.mdl
+[ref-267-4.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/4.mdl
+[ref-268-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/512.mdl
+[ref-269-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/64.mdl
+[ref-270-8.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/st/r24/8.mdl
+[ref-271-tr]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr
+[ref-272-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04
+[ref-273-128.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/128.mdl
+[ref-274-256.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/256.mdl
+[ref-275-512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/512.mdl
+[ref-276-64.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/64.mdl
+[ref-277-64%5Fturntable%5Fentrance.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/64%5Fturntable%5Fentrance.mdl
+[ref-278-trackend.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/trackend.mdl
+[ref-279-trusstrack.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/trusstrack.mdl
+[ref-280-trusstransfer.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/04/trusstransfer.mdl
+[ref-281-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/l14
+[ref-282-64%5Fturntable%5Fentrance.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/l14/64%5Fturntable%5Fentrance.mdl
+[ref-283-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/r14
+[ref-284-64%5Fturntable%5Fentrance.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/r14/64%5Fturntable%5Fentrance.mdl
+[ref-285-rail%5Ftable%5F382.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/rail%5Ftable%5F382.mdl
+[ref-286-rollingstock%5Ftable%5F512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/rollingstock%5Ftable%5F512.mdl
+[ref-287-transfer%5Ftable%5F512.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tr/transfer%5Ftable%5F512.mdl
+[ref-288-tu]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu
+[ref-289-r1536]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536
+[ref-290-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04
+[ref-291-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04/j
+[ref-292-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04/j/l%5Fl.mdl
+[ref-293-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04/j/l%5Fr.mdl
+[ref-294-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04/j/r%5Fl.mdl
+[ref-295-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1536/04/j/r%5Fr.mdl
+[ref-296-r1600]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600
+[ref-297-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04
+[ref-298-dj]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/dj
+[ref-299-l%5Flx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/dj/l%5Flx.mdl
+[ref-300-l%5Frx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/dj/l%5Frx.mdl
+[ref-301-r%5Flx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/dj/r%5Flx.mdl
+[ref-302-r%5Frx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/dj/r%5Frx.mdl
+[ref-303-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/j
+[ref-304-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/j/l%5Fl.mdl
+[ref-305-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/j/l%5Fr.mdl
+[ref-306-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/j/r%5Fl.mdl
+[ref-307-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r1600/04/j/r%5Fr.mdl
+[ref-308-r512]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512
+[ref-309-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04
+[ref-310-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04/j
+[ref-311-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04/j/l%5Fl.mdl
+[ref-312-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04/j/l%5Fr.mdl
+[ref-313-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04/j/r%5Fl.mdl
+[ref-314-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/04/j/r%5Fr.mdl
+[ref-315-44]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44
+[ref-316-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44/j
+[ref-317-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44/j/l%5Fl.mdl
+[ref-318-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44/j/l%5Fr.mdl
+[ref-319-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44/j/r%5Fl.mdl
+[ref-320-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/44/j/r%5Fr.mdl
+[ref-321-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14
+[ref-322-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14/j
+[ref-323-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14/j/l%5Fl.mdl
+[ref-324-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14/j/l%5Fr.mdl
+[ref-325-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14/j/r%5Fl.mdl
+[ref-326-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l14/j/r%5Fr.mdl
+[ref-327-l24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24
+[ref-328-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/j
+[ref-329-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/j/l%5Fl.mdl
+[ref-330-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/j/l%5Fr.mdl
+[ref-331-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/j/r%5Fl.mdl
+[ref-332-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/j/r%5Fr.mdl
+[ref-333-r]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/r
+[ref-334-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/r/r%5Fl.mdl
+[ref-335-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/l24/r/r%5Fr.mdl
+[ref-336-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14
+[ref-337-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14/j
+[ref-338-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14/j/l%5Fl.mdl
+[ref-339-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14/j/l%5Fr.mdl
+[ref-340-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14/j/r%5Fl.mdl
+[ref-341-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r14/j/r%5Fr.mdl
+[ref-342-r24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24
+[ref-343-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/j
+[ref-344-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/j/l%5Fl.mdl
+[ref-345-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/j/l%5Fr.mdl
+[ref-346-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/j/r%5Fl.mdl
+[ref-347-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/j/r%5Fr.mdl
+[ref-348-r]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/r
+[ref-349-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/r/l%5Fl.mdl
+[ref-350-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r512/r24/r/l%5Fr.mdl
+[ref-351-r576]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576
+[ref-352-04]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04
+[ref-353-dj]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/dj
+[ref-354-l%5Flx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/dj/l%5Flx.mdl
+[ref-355-l%5Frx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/dj/l%5Frx.mdl
+[ref-356-r%5Flx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/dj/r%5Flx.mdl
+[ref-357-r%5Frx.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/dj/r%5Frx.mdl
+[ref-358-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/j
+[ref-359-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/j/l%5Fl.mdl
+[ref-360-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/j/l%5Fr.mdl
+[ref-361-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/j/r%5Fl.mdl
+[ref-362-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/j/r%5Fr.mdl
+[ref-363-n]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/n
+[ref-364-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/n/l%5Fl.mdl
+[ref-365-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/n/l%5Fr.mdl
+[ref-366-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/n/r%5Fl.mdl
+[ref-367-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/04/n/r%5Fr.mdl
+[ref-368-44]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44
+[ref-369-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44/j
+[ref-370-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44/j/l%5Fl.mdl
+[ref-371-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44/j/l%5Fr.mdl
+[ref-372-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44/j/r%5Fl.mdl
+[ref-373-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/44/j/r%5Fr.mdl
+[ref-374-l14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14
+[ref-375-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14/j
+[ref-376-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14/j/l%5Fl.mdl
+[ref-377-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14/j/l%5Fr.mdl
+[ref-378-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14/j/r%5Fl.mdl
+[ref-379-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l14/j/r%5Fr.mdl
+[ref-380-l24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24
+[ref-381-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/j
+[ref-382-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/j/l%5Fl.mdl
+[ref-383-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/j/r%5Fl.mdl
+[ref-384-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/j/r%5Fr.mdl
+[ref-385-r]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/r
+[ref-386-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/r/r%5Fl.mdl
+[ref-387-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/l24/r/r%5Fr.mdl
+[ref-388-r14]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14
+[ref-389-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14/j
+[ref-390-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14/j/l%5Fl.mdl
+[ref-391-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14/j/l%5Fr.mdl
+[ref-392-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14/j/r%5Fl.mdl
+[ref-393-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r14/j/r%5Fr.mdl
+[ref-394-r24]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24
+[ref-395-j]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/j
+[ref-396-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/j/l%5Fl.mdl
+[ref-397-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/j/l%5Fr.mdl
+[ref-398-r%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/j/r%5Fl.mdl
+[ref-399-r%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/j/r%5Fr.mdl
+[ref-400-r]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/r
+[ref-401-l%5Fl.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/r/l%5Fl.mdl
+[ref-402-l%5Fr.mdl]: https://github.com/mbqwertyaaa/gstp/blob/master/models/gstp/tu/r576/r24/r/l%5Fr.mdl
+[ref-403-screenshots]: https://github.com/mbqwertyaaa/gstp/blob/master/screenshots

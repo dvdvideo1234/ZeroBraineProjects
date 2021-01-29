@@ -3,7 +3,8 @@ local common = require("common")
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiType  = require("dvdlualib/wikilib/type")
+local wikiRList = {Size = 0} -- Stores the markdown link referencies
+local wikiType   = require("dvdlualib/wikilib/type")
 local wikiFolder = require("dvdlualib/wikilib/folder")
 local wikiFormat = require("dvdlualib/wikilib/format")
 local wikiDChunk = require("dvdlualib/wikilib/dscchnk")
@@ -109,6 +110,14 @@ local function toTypeURL(...)
   return (wikiFormat.__typ:format(...))
 end
 
+local function toBracket(...)
+  return wikiFormat.__brk:format(...)
+end
+
+local function toReferID(...)
+  return (wikiFormat.__rid:format(...))
+end
+
 local function apiSortFinctionParam(a, b)
   if(table.concat(a.par) < table.concat(b.par)) then return true end
   return false
@@ -131,6 +140,10 @@ end
 function wikilib.insYoutubeVideo(sK, iD)
   local nD = tonumber(iD)
   return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0 ,3)) or 0), sK)
+end
+
+function wikilib.insReferID(iD, sNam, sURL)
+  return toLinkRef(toReferID(iD, sNam), sURL)
 end
 
 function wikilib.insImage(sURL)
@@ -265,11 +278,11 @@ end
 --[[
  * sT > The sting to be tokenized
  * tR > Replace token table
- * bF > When the linkk has to be formatted with the key
+ * bF > When the link has to be formatted with the key
  * bQ > Flag for quoted string in replacement
  * tS > Set of parameters for found token
 ]]
-function wikilib.replaceToken(sT, tR, bF, bQ, tS)
+function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
   local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   local qR = wikilib.common.getPick(bQ, "`", "")
   if(tR and wikilib.common.isTable(tR)) then
@@ -277,31 +290,37 @@ function wikilib.replaceToken(sT, tR, bF, bQ, tS)
     while(mF and mB) do
       if(wikilib.common.isTable(mV)) then
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
-        local vD, vL = wikilib.replaceToken(sD, mV, bF, bQ, tV)
+        local vD, vL = wikilib.replaceToken(sD, mV, bF, bQ, bR, tV)
         iD, sD = (mB + vL), vD
       else local nF, nB = (mF-1), (mB+1)
         local sX = (bF and mV:format(mK) or mV)
         local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
+        local fX = toBracket(sX)
+        if(bR) then wikiRList.Size = wikiRList.Size + 1
+          local sU = toReferID(wikiRList.Size, mK)
+          wikiRList[wikiRList.Size] = toLinkRef(sU, mV)
+          fX = toRef(sU)
+        end
         if(cF..cB == "``") then
-          sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB).."("..sX..")" -- Concatenate the link to the beginning
+          sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB)..fX -- Concatenate the link to the beginning
           sD, iD = sN..sD:sub(nB+1,-1), sN:len() + 1 -- Concatenate the rest and search in there
           if(tS and mF < tS[1] and mB < tS[1]) then -- Check if the string found is on the front
             dL = dL + sX:len() + 4 -- How many symbols are added in the conversion overall
           end -- Update lenght only if the string is in front of the pattern with adjusted length
         elseif(cF..cB == "  ") then
-          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
           end
         elseif(cF..cB == " ") then
-          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
           end
         elseif(cB == ",") then
-          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR).."("..sX..")"
+          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
@@ -317,8 +336,10 @@ function wikilib.updateAPI(API, DSC)
   local tA, tW
   local sO = apiGetValue(API,"TYPE", "OBJ")
   local wD = apiGetValue(API,"FLAG", "wdsc")
-  local bR = apiGetValue(API,"FLAG", "prep")
+  local bF = apiGetValue(API,"FLAG", "prep")
   local bQ = apiGetValue(API,"FLAG", "qref")
+  local bR = apiGetValue(API,"FLAG", "ufbr")
+  
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
   if(wD) then API.POOL.wdsc = {}
     tW = apiGetValue(API,"POOL", "wdsc")
@@ -360,7 +381,7 @@ function wikilib.updateAPI(API, DSC)
       tA = API.POOL[3] -- The functoion is a helper API
     end
     if(API.REPLACE) then local tR = API.REPLACE
-      DSC[api] = wikilib.replaceToken(DSC[api], tR, bR, bQ)
+      DSC[api] = wikilib.replaceToken(DSC[api], tR, bF, bQ, bR)
     end
     table.insert(tA, api)
   end
@@ -1011,34 +1032,33 @@ local function folderLinkItem(tR, vC, bB)
   local sR, tU = tR.link, wikiFolder.__furl
   local sO, tF = vC.name, wikiFolder.__flag
   if(tF.urls) then
-    local cD = wikiFolder.__idir
     local sN = wikilib.common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
     local sB = (bB and "" or wikilib.getEncodeURL(sO))   
     local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
-    if(tF.ufbr) then local vP = sR..sB
-      local tE = wikiFolder.__refl
-            tE.Size = tE.Size + 1
+    local tD, vP = wikiFolder.__idir, sR..sB
+    if(tF.ufbr) then -- wikilib.insReferID
+      wikiRList.Size = wikiRList.Size + 1
       local sL = wikilib.common.stringGetFileName(vP)
-      local vR = "ref-"..tE.Size.."-"..sL
-      tE[tE.Size] = toLinkRef(vR, vP)
-      sO = toLinkRefSrc("`"..sO.."`", vR)           
-      if(vC.name == cD[1]) then
-        tE[tE.Size] = tE[tE.Size]:sub(1,-3)
-      elseif(vC.name == cD[2]) then
+      local vR = toReferID(wikiRList.Size, sL)
+      wikiRList[wikiRList.Size] = toLinkRef(vR, vP)
+      sO = toLinkRefSrc("`"..sO.."`", vR)
+      if(vC.name == tD[1]) then
+        wikiRList[wikiRList.Size] = wikiRList[wikiRList.Size]:sub(1,-3)
+      elseif(vC.name == tD[2]) then
         local vR = wikilib.common.stringTrim(sR, "/")
               vR = wikilib.common.stringGetFileName(vR)
-        local nB, nE = tE[tE.Size]:find(vR.."/"..sB, 1, true)
+        local nB, nE = wikiRList[wikiRList.Size]:find(vR.."/"..sB, 1, true)
         if(nB and nE) then
-          tE[tE.Size] = tE[tE.Size]:sub(1, nB-2)
+          wikiRList[wikiRList.Size] = wikiRList[wikiRList.Size]:sub(1, nB-2)
         end
       end
     else
-      sO = toLinkURL("`"..sO.."`", sR..sB)
-      if(vC.name == cD[1]) then
-        sO = sO:gsub("/%"..cD[1].."%)$",")")
-      elseif(vC.name == cD[2]) then
+      sO = toLinkURL("`"..sO.."`", vP)
+      if(vC.name == tD[1]) then
+        sO = sO:gsub("/%"..tD[1].."%)$",")")
+      elseif(vC.name == tD[2]) then
         sO = sO:gsub("/%.%.%)",""):match("(.*[/\\])"):sub(1,-2)..")"
       end
     end
@@ -1156,12 +1176,12 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
       local sD = (tSor[iD+1] and tSym[4] or dC)..dC:rep(iI)
       local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref, tF.ufbr)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
       folderDrawTreeRecurse(vC.root, tSym, sG, tSet, iR+1, sR..sD)
     else
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref)) end
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref, tF.ufbr)) end
       local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
@@ -1196,9 +1216,11 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
 end
 
 function wikilib.folderDrawTreeRef()
-  local tR = wikiFolder.__refl
-  if(tR.Size and tR.Size > 0) then io.write("\n\n")
-    for iD = 1, tR.Size do io.write(tR[iD]); io.write("\n") end
+  if(wikiRList.Size and wikiRList.Size > 0) then
+    io.write("\n\n") -- Insert a new line
+    for iD = 1, wikiRList.Size do
+      io.write(wikiRList[iD]); io.write("\n")
+    end -- Write all the link references
   end
 end
 
