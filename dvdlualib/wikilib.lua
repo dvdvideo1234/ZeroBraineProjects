@@ -916,22 +916,26 @@ function wikilib.folderSetTemp(sT)
 end
 
 function wikilib.folderRoundSize(vS)
+  local tF = wikiFolder.__flag
   local tM, iM = wikiFolder.__mems, wikiFolder.__memi
   if(tonumber(vS)) then
     iM = wikilib.common.getClamp(math.floor(tonumber(nS) or 1), 1, #tM)
     return iM -- Return the parameter used
-  else local iD, sS = 1, tostring(vS); while(tM[iD]) do
+  else
+    local iD, sS = 1, tostring(vS); while(tM[iD]) do
     if(tM[iD] == vS) then iM = iD; return iD end end
     wikilib.common.logStatus("wikilib.folderRoundSize: Mismatch <"..vS.."> !")
-    if(bErr) then error("wikilib.folderRoundSize: Mismatch <"..vS.."> !") end
+    if(tF.erro) then error("wikilib.folderRoundSize: Mismatch <"..vS.."> !") end
   end
 end
 
 function wikilib.folderFlag(sF, bF)
   local tF, sF = wikiFolder.__flag, tostring(sF)
-  if(tF[sF] ~= nil) then tF[sF] = (bF and bF or false)
-  else wikilib.common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
-    if(bErr) then error("wikilib.folderFlag: Mismatch <"..sF.."> !") end
+  if(tF[sF] ~= nil) then
+    tF[sF] = (bF and bF or false)
+  else
+    wikilib.common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
+    if(tF.erro) then error("wikilib.folderFlag: Mismatch <"..sF.."> !") end
   end
 end
 
@@ -939,8 +943,11 @@ function wikilib.writeBOM(sF, vE)
   local sC, lE = tostring(sF or ""), wikilib.common.toBool(lE)
   local tU = wikiFolder.__ubom[sC]; if(not tU) then
     return error("wikilib.writeBOM: Missed ("..tostring(lE)..") <"..sC..">") end
-  if(not lE) then for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
-  else for iD = #tU, 1, -1 do io.write(string.char(tU[iD])) end end
+  if(not lE) then
+    for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
+  else
+    for iD = #tU, 1, -1 do io.write(string.char(tU[iD])) end
+  end
   return true
 end
 
@@ -968,10 +975,16 @@ function wikilib.folderReadStructure(sP, iV)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__temp..vT..".txt"
   local tD = wikiFolder.__fdat -- Content descriptor
-  os.execute(wikiFolder.__fcmd:format(sP, nT))
+  local sC = wikiFolder.__fcmd:format(sP, nT)
+  local nR = os.execute(sC); if(not nR) then
+    wikilib.common.logStatus("wikilib.folderReadStructure: Exec error ["..sC.."]", nil)
+    if(tF.erro) then
+      error("wikilib.folderReadStructure: Exec error: "..sC) end
+  end
   local fD, oE = io.open(nT, "rb"); if(not fD) then
     wikilib.common.logStatus("wikilib.folderReadStructure: Open error ["..nT.."]", nil)
-    error("wikilib.folderReadStructure: Open error: "..oE)
+    if(tF.erro) then
+      error("wikilib.folderReadStructure: Open error: "..oE) end
   end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
   while(sL) do sT = wikilib.common.stringTrim(sL)
@@ -1016,14 +1029,16 @@ function wikilib.folderReadStructure(sP, iV)
         end
       else
         wikilib.common.logStatus("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", nil)
-        error("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]")
+        if(tF.erro) then
+          error("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]") end
       end
     end
     sL = fD:read(wikiFolder.__read)
   end; fD:close(); os.remove(nT)
   if(not bC) then
     wikilib.common.logStatus("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]", nil)
-    error("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]")
+    if(tF.erro) then
+      error("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]") end
   end
   return tT
 end

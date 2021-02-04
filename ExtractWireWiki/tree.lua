@@ -6,16 +6,17 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
       
 local common = require("common")
 local wikilib = require("wikilib")
 
-local sDirs = "K:/gstp"
+local sSubs = "/models/gstp/cu"
+local sDirs = "C:/Users/ddobromirov/Documents/Lua-Projs/SVN/GSTP"..sSubs
 local sName = "gstp"
 local sUser = "mbqwertyaaa"
 local sRepo = "github.com/"..sUser.."/"..sName
-local sBlob = "blob/master"
+local sBlob = "blob/master"..sSubs
 
 -- Files description
 local tSettings = 
@@ -67,6 +68,7 @@ if(fO) then io.output(fO)
   wikilib.folderFlag("urls", true)
   wikilib.folderFlag("namr", true)
   wikilib.folderFlag("ufbr", true)
+  wikilib.folderFlag("erro", true)
   -- wikilib.folderFlag("qref", true)
   wikilib.folderFlag("hide", false)
   -- Tell the api to use file URL
@@ -90,5 +92,3 @@ if(fO) then io.output(fO)
 else
   error("Output error: "..oE)
 end
-
-print(tonumber("0x".."00A0"))
