@@ -903,11 +903,10 @@ end
 
 
 function wikilib.folderReplaceURL(sF, ...)
-  local sF, sU = wikilib.common.normFolder(tostring(sF or "")), ""
-  local tA = {...} if(tA and wikilib.common.isTable(tA[1])) then tA = tA[1] end
-  for key, val in ipairs(tA) do
-    sU = sU..common.normFolder(tostring(val or ""))
-  end
+  local tA, sU = {...}, ""
+  local sF = wikilib.common.normFolder(tostring(sF or ""))
+  if(wikilib.common.isTable(tA[1])) then tA = tA[1] end
+  for iD = 1, #tA do sU = sU..common.normFolder(tostring(tA[iD] or "")) end
   wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
 end
 
@@ -970,7 +969,7 @@ end
 
 function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
-  local sU, bC = wikiFolder.__furl, false
+  local tU, bC = wikiFolder.__furl, false
   local sR = wikilib.common.randomGetString(wikiFolder.__ranm)
   local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
   local nT = wikiFolder.__temp..vT..".txt"
@@ -996,9 +995,9 @@ function wikilib.folderReadStructure(sP, iV)
     elseif(sL:find(wikiFolder.__drof)) then
       tT.base = sL:gsub("\\","/"):gsub(wikiFolder.__drof,"")
       tT.base = wikilib.common.stringTrim(tT.base)
-      if(sU[1] ~= "" and sU[2] ~= "") then
-        local uS, uE = sP:find(sU[1], 1, true)
-        if(uS and uE) then tT.link = sU[2]..sP:sub(uE+1, -1) end
+      if(tU[1] ~= "" and tU[2] ~= "") then
+        local uS, uE = sP:find(tU[1], 1, true)
+        if(uS and uE) then tT.link = tU[2]..sP:sub(uE+1, -1) end
       end
     elseif(sL:sub(1,1) ~= " " and sL:match(tD[1])) then bC = true
       local nS = sL:find(tD[1])
@@ -1204,6 +1203,15 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   end
 end
 
+local function folderRemoveBLOB(sU)
+  local sM, nL = wikilib.common.stringTrim(sU, "/"), 0
+  local nS, nE = sM:find("/master$"); nL = sM:len()
+  if(nS and nE and nS > 0 and nE == nL) then sM = sM:sub(1, nS - 1) end
+  nS, nE = sM:find("/blob$"); nL = sM:len()
+  if(nS and nE and nS > 0 and nE == nL) then sM = sM:sub(1, nS - 1) end
+  return sM, sM:len()
+end
+
 function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
   local tS = wikiFolder.__syms
   local iA = wikilib.common.getClamp(tonumber(vIdx) or 1, 1, #tS); tS = tS[iA]
@@ -1216,11 +1224,19 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
   local sN = tPth.base:sub(nE + 1, -1)
   local sB = tostring(tS[5] or "/")
   if(tF.namr and sG) then
+    local tU = wikiFolder.__furl
     local sT = wikilib.common.stringTrim(sG, "/")
-    local sM = sT:match("/%w+$")
-    if(not wikilib.common.isNil(sM)) then sN = sM:sub(2,-1)
-      local sN = folderLinkItem({link=sG}, {name=sN}, tF.namr)
-      io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
+    local sM = wikilib.common.stringGetFileName(sT)
+    if(not wikilib.common.isDryString(sM)) then
+      if(tU[2] ~= "") then local nL = 0
+        sM = folderRemoveBLOB(tU[2])
+        sN = wikilib.common.stringGetFileName(sM)
+        sM = folderLinkItem({link=sM}, {name=sN}, tF.namr)
+        io.write("`"..sB..sR.."`"..sM..wikiNewLN); io.write("\n")
+      else
+        sM = folderLinkItem({link=sG}, {name=sM}, tF.namr)
+        io.write("`"..sB..sR.."`"..sM..wikiNewLN); io.write("\n")
+      end
     else
       io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
     end

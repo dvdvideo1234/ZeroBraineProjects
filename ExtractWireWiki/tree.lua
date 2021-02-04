@@ -51,7 +51,7 @@ local tSettings =
     ["StControl"] = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"
   },
   Skip = {
-    "/lang"
+   -- "%..*$"
   },
   Only = {
     "%.mdl$"
@@ -63,7 +63,7 @@ local sB = drpath.getBase()..common.normFolder(sPRJ)
 local fO, oE = io.open(sB.."out/tree.md", "wb")
 if(fO) then io.output(fO)
   -- Setup flags
-  -- wikilib.folderFlag("prnt", true)
+  wikilib.folderFlag("prnt", true)
   wikilib.folderFlag("size", true)
   wikilib.folderFlag("urls", true)
   wikilib.folderFlag("namr", true)
