@@ -5,11 +5,12 @@ local dir = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      dir.addBase("D:/LuaIDE").setBase(1)
+      dir.addBase("D:/LuaIDE")
+      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 
 local com = require("common")
 
-local sEXP = "pistontiming"
+local sEXP = "ftrace"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)
