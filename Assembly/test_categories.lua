@@ -12,18 +12,20 @@ local cpx = require("complex")
 local tableRemove = table and table.remove
 
 local new = function(m)
-    local n = m:gsub("models/anytracks/","")
-    local r = n:match("^%a+"); n = n:gsub("%.mdl","")
-          n = n:gsub(r, ""):sub(2, -1); return r, n
+  local r = m:gsub("models/sewerpack/sewertunnel",""):gsub("%.mdl$","")
+  return r
 end
     
-    
+local a, b, c
 
     
-local m = "models/anytracks/straight/hs_4096.mdl"
+local m = "models/sewerpack/sewertunnela.mdl"
 --local m = "models/bobsters_trains/rails/2ft/curves/curve_bank_90_left_2048.mdl"
 -- print("ggg", new(m))
 local to, nn = new(m)
+
+print "dsfsdfs"
+
 print("Name", nn)
 com.logTable(to, "NEW")
 

@@ -31,6 +31,10 @@ local wikiNewLN = "  "
 local wikiLineDiv = {"-", 120}
 -- Stores placeholder background and freground image colors
 local wikiColorPH = {{0,0,0}, {0,0,0}}
+-- Dividers when the script processes a cascade token
+local wikiDivTok = {[","]=true, [")"]=true, ["("] = true, ["."] = true, ["/"] = true}
+-- This holds break conditions for the loops that my be stuck during execution
+local wikiLoopTM = {Cnt = 10}
 
 local function isQuote(sS)
   local bLet = wikilib.common.stringHasLetter(sS)
@@ -131,6 +135,36 @@ local function apiGetValue(API, sTab, sKey, vDef)
   local tTab = API[sTab]
   local bTab = wikilib.common.isTable(tTab)
   return (bTab and tTab[sKey] or vDef)
+end
+
+function wikilib.newLoopTerm(sKey, vO, vN)
+  wikiLoopTM[sKey] = {vN, vO, wikiLoopTM.Cnt}
+end
+
+function wikilib.annLoopTerm(sKey)
+  wikiLoopTM[sKey] = nil
+end
+
+function wikilib.setLoopTerm(sKey, vN)
+  if(not sKey) then return end
+  local tT = wikiLoopTM[sKey]
+  tT[2] = tT[1] -- Pushes down
+  tT[1] = vN -- Recieve value
+  return tT
+end
+
+function wikilib.isLoopTerm(sKey, vN)
+  if(not sKey) then return end
+  local tT = wikilib.setLoopTerm(sKey, vN)
+  local cN, cO, cC = unpack(tT)
+  if(cN == cO) then -- No loop change
+    cC = cC - 1 -- Decrement thr try
+  else -- Reset counter when different
+    cC = wikiLoopTM.Cnt -- Reset
+  end; tT[3] = cC
+  if(cC <= 0) then
+    wikilib.annLoopTerm(sKey)
+  end; return (cC <= 0)
 end
 
 function wikilib.setFormat(sK, sS)
@@ -248,31 +282,55 @@ function wikilib.isEncodedURL(sURL)
 end
 
 function wikilib.findTokenCloser(sT, tR, iD)
+  local iM, tM = 0, {}
   local mF, mB, mK, mV, mP
   for k, v in pairs(tR) do
     if(k:sub(1,1) ~= "#") then
       local nF, nB = sT:find(k, iD, true)
       if(nF and nB) then
-        if(not (mF and mB and mK)) then
+        if(not (mF and mB and mK)) then  
           mF, mB, mK, mV, mP = nF, nB, k, v, false
+          iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
         else
           if(nF <= mF and mF >= iD) then
             mF, mB, mK, mV, mP = nF, nB, k, v, false
+            iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
           end
         end
       else nF, nB = sT:find(k, iD)
         if(nF and nB) then
           if(not (mF and mB and mK)) then
             mF, mB, mK, mV, mP = nF, nB, k, v, true
+            iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
           else
             if(nF <= mF and mF >= iD) then
               mF, mB, mK, mV, mP = nF, nB, k, v, true
+              iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
             end
           end
         end
       end
     end
-  end; return mF, mB, mK, mV, mP
+  end
+
+  if(iM > 1) then
+    -- Obtain the closest token for replace
+    table.sort(tM, function(a, b) return a[1] < b[1] end)
+    mF, mK = tM[1][1], 1
+    -- Wipe all the tokens from the list being ferther
+    while(tM[mK]) do local vM = tM[mK]
+      if(vM[1] > mF) then table.remove(tM, mK) else mK = mK + 1 end end
+    -- Obtain the record having the longest token found (greedy)
+    table.sort(tM, function(a, b)
+      local na = (a[2] - a[1] + 1)
+      local nb = (b[2] - b[1] + 1)
+      return na > nb
+    end); mB = tM[1]
+    return mB[1], mB[2], mB[3], mB[4], mB[5]
+  elseif(iM == 1) then local vM = tM[1]
+    return vM[1], vM[2], vM[3], vM[4], vM[5]
+  end
+  return nil
 end
 
 --[[
@@ -283,10 +341,12 @@ end
  * tS > Set of parameters for found token
 ]]
 function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
+  local sF = "wikilib.replaceToken"
   local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   local qR = wikilib.common.getPick(bQ, "`", "")
   if(tR and wikilib.common.isTable(tR)) then
     local mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
+    wikilib.newLoopTerm(sF, mF, iD)
     while(mF and mB) do
       if(wikilib.common.isTable(mV)) then
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
@@ -307,27 +367,30 @@ function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
           if(tS and mF < tS[1] and mB < tS[1]) then -- Check if the string found is on the front
             dL = dL + sX:len() + 4 -- How many symbols are added in the conversion overall
           end -- Update lenght only if the string is in front of the pattern with adjusted length
-        elseif(cF..cB == "  ") then
+        elseif(cF..cB == "  " or cF..cB == " ") then
           sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
           end
-        elseif(cF..cB == " ") then
+        elseif(wikiDivTok[cB] or wikiDivTok[cF]) then
           sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
           end
-        elseif(cB == ",") then
-          sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
-          sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
-          if(tS and mF < tS[1] and mB < tS[1]) then
-            dL = dL + sX:len() + 4 + (2 * qR:len())
-          end
+        elseif(cF:find("%w+") or cB:find("%w+")) then
+          iD = mB -- Skip searcing when token is found within a word
+        else
+          wikilib.common.logStatus(sF.."("..mK.."): Unmached case "..("<%s|%s>"):format(cF, cB))
         end
       end
       mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
+      if(wikilib.isLoopTerm(sF, mF)) then
+        local sM = sF.."(%s): Terminated <%d|%d> mismatch [%s]!"
+        wikilib.common.logStatus(sM:format(mK, mF, mB, sD))
+        error(sM:format(mK, mF, mB, sD))
+      end
     end
   end; return sD, dL
 end
@@ -1244,11 +1307,11 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
     io.write("`"..sB..sR.."`"..sN..wikiNewLN); io.write("\n")
   end
   folderDrawTreeRecurse(tPth, tS, sGen, tSet, vR, sR)
+  io.write("\n")
 end
 
-function wikilib.folderDrawTreeRef()
+function wikilib.printTokenReferences()
   if(wikiRList.Size and wikiRList.Size > 0) then
-    io.write("\n\n") -- Insert a new line
     for iD = 1, wikiRList.Size do
       io.write(wikiRList[iD]); io.write("\n")
     end -- Write all the link references

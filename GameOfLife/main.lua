@@ -1,12 +1,21 @@
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE").setBase(1)
+
+
 require("turtle")
 require("wx")
-require("ZeroBraineProjects/dvdlualib/common")
-local life = require("ZeroBraineProjects/dvdlualib/lifelib")
+local comm = require("common")
+local life = require("lifelib")
 
 io.stdout:setvbuf("no")
 
-logTable(life.getRuleBS("Bf3g7/S23"),"aaa")
-
+comm.logTable(life.getRuleBS("Bf3g7/S23"),"aaa")
 
 function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg).."\n"); return ...

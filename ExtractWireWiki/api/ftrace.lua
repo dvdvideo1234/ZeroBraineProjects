@@ -7,9 +7,10 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    -- wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
-    prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
+    ufbr = true,  -- (TRUE) Enables reference links generation  when processing tokens
+    prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
   },
   POOL = {
     {name="MAKE" ,cols={"Instance creator" , "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
@@ -46,8 +47,33 @@ local API = {
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
   REPLACE = {
+    ["position"]        = "https://en.wikipedia.org/wiki/Position_(geometry)",
+    ["positions"]       = "https://en.wikipedia.org/wiki/Position_(geometry)",
+    ["distance"]        = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["distances"]       = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["length"]          = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["lengths"]         = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["magnitude"]       = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["magnitudes"]      = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["number"]          = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["numbers"]         = "https://en.wikipedia.org/wiki/Euclidean_distance",
+    ["angle"]           = "https://en.wikipedia.org/wiki/Euler_angles",
+    ["angles"]          = "https://en.wikipedia.org/wiki/Euler_angles",
+    ["vector"]          = "https://en.wikipedia.org/wiki/Euclidean_vector",
+    ["vectors"]         = "https://en.wikipedia.org/wiki/Euclidean_vector",
+    ["direction"]       = "https://en.wikipedia.org/wiki/Unit_vector",
+    ["directions"]      = "https://en.wikipedia.org/wiki/Unit_vector",
+    ["array"]           = "https://en.wikipedia.org/wiki/Array_data_type",
+    ["arrays"]          = "https://en.wikipedia.org/wiki/Array_data_type",
+    ["function"]        = "https://en.wikipedia.org/wiki/Subroutine",
+    ["functions"]       = "https://en.wikipedia.org/wiki/Subroutine",
+    ["string"]          = "https://en.wikipedia.org/wiki/String_(computer_science)",
+    ["strings"]         = "https://en.wikipedia.org/wiki/String_(computer_science)",  
+    ["entity"]          = "https://wiki.facepunch.com/gmod/Entity",
+    ["entities"]        = "https://wiki.facepunch.com/gmod/Entity",
     ["MASK"]            = "https://wiki.facepunch.com/gmod/Enums/MASK",
     ["COLLISION_GROUP"] = "https://wiki.facepunch.com/gmod/Enums/COLLISION_GROUP",
+    ["trace"]           = "https://wiki.facepunch.com/gmod/util.TraceLine",
     ["trace-line"]      = "https://wiki.facepunch.com/gmod/util.TraceLine",
     ["trace-strict"]    = "https://wiki.facepunch.com/gmod/Structures/Trace",
     ["trace-result"]    = "https://wiki.facepunch.com/gmod/Structures/TraceResult",
@@ -57,7 +83,12 @@ local API = {
     ["FTrace"]          = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTrace",
     ["StControl"]       = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl",
     ["bitmask"]         = "https://en.wikipedia.org/wiki/Mask_(computing)",
-    ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
+    ["mask"]            = "https://en.wikipedia.org/wiki/Mask_(computing)",
+    ["masks"]           = "https://en.wikipedia.org/wiki/Mask_(computing)",
+    ["enum"]            = "https://en.wikipedia.org/wiki/Enumerated_type",
+    ["enums"]           = "https://en.wikipedia.org/wiki/Enumerated_type", 
+    ["surface"]         = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
+    ["surfaces"]        = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
   },
   HDESC = {
     top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",
@@ -74,7 +105,10 @@ local API = {
     {"ref_lua"      , "https://en.wikipedia.org/wiki/Lua_(programming_language)"},
     {"ref_oopinst"  , "https://en.wikipedia.org/wiki/Instance_(computer_science)"},
     {"ref_ray"      , "https://en.wikipedia.org/wiki/Line_(geometry)#Ray"},
-    {"ref_trace"    , "https://wiki.facepunch.com/gmod/Structures/TraceResult"},
+    {"ref-func"     , "https://en.wikipedia.org/wiki/Subroutine"},
+    {"ref-gmod"     , "https://wiki.facepunch.com/gmod/"},
+    {"ref_trace-dt" , "https://wiki.facepunch.com/gmod/Structures/Trace"},
+    {"ref_trace-rz" , "https://wiki.facepunch.com/gmod/Structures/TraceResult"},
     {"ref_entity"   , "https://wiki.facepunch.com/gmod/Entity"},
     {"ref_example"  , "https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_ftrace.txt"},
     {"ref_exp2"     , "https://github.com/wiremod/wire/wiki/Expression-2"},
@@ -105,10 +139,10 @@ end
 
 API.TEXT = function() return ([===[
 ### What does this extension include?
-Tracers with [hit][ref_trace] and [ray][ref_ray] configuration. The difference with [wire rangers][ref_wranger]
+Tracers with [hit][ref_trace-dt] and [ray][ref_ray] configuration. The difference with [wire rangers][ref_wranger]
 is that this is a [dedicated class][ref_class_oop] being initialized once and used as many
 times as it is needed, not creating an [instance][ref_oopinst] on every [E2][ref_exp2] [tick][ref_timere2] and later
-wipe that [instance][ref_oopinst] out. It can extract every aspect of the [trace result structure][ref_trace] returned and
+wipe that [instance][ref_oopinst] out. It can extract every aspect of the [trace result structure][ref_trace-rz] returned and
 it can be sampled [locally][ref_localcrd] ( [`origin`][ref_position] and [`direction`][ref_orient] relative to
 [`entity`][ref_entity] or `pos`/`dir`/`ang` ) or globally ( [`entity`][ref_entity] is not available and `pos`/`dir`/`ang`
 are treated world-space data ). Also, it has better [performance][ref_perfe2] than the [regular wire rangers][ref_wranger].
@@ -132,6 +166,18 @@ and [length][ref_vec_norm] in [pure Lua][ref_lua]. You can also call the [class 
 without an [entity][ref_entity] to make it world-space based. Remember that negating the trace length will
 result in negating the trace direction. That is used because the trace length must always be positive so
 the direction is reversed instead.
+
+### How can I configure the trace filter?
+There are currently three types of trace filters in [Garry's mod][ref-gmod] that you can put in the
+[`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getFilterMode` will return the
+current tracer filter operation mode. The filter configuration is `NIL` by default  
+ 1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace  
+    This filter mode is activated by utilizing the `setFilterEnt` method by `Ent` as `entity`
+ 2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace  
+    This filter mode is activated by utilizing the `setFilterEar` method by `Ear` as `entity array`
+ 3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available   
+    This filter mode is activated by utilizing the `setFilterFnc` method by `Fnc` as `function`
+ 4. User can also clear the filter entierly by utilizing the `remFilter` method
 
 ### Do you have an example by any chance?
 The internal type of the class is `%s` and internal expression type `%s`, so to create 

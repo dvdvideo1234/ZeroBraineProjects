@@ -6,17 +6,17 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
       
 local common = require("common")
 local wikilib = require("wikilib")
 
-local sSubs = "/models/gstp/cu"
-local sDirs = "C:/Users/ddobromirov/Documents/Lua-Projs/SVN/GSTP"..sSubs
+local sSubs = ""
+local sDirs = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/TrackAssemblyTool_GIT"
 local sName = "gstp"
 local sUser = "mbqwertyaaa"
 local sRepo = "github.com/"..sUser.."/"..sName
-local sBlob = "blob/master"..sSubs
+local sBlob = "blob/master"..sSubs; sDirs = sDirs..sSubs
 
 -- Files description
 local tSettings = 
@@ -82,7 +82,7 @@ if(fO) then io.output(fO)
   -- Write the tree
   if(tS and common.isTable(tS)) then
     wikilib.folderDrawTree(tS, 2, sRepo, tSettings)
-    wikilib.folderDrawTreeRef()
+    wikilib.printTokenReferences()
     
     -- common.logTable(tS, "OUT")
   else
