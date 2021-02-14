@@ -201,7 +201,7 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-268-trace] and updates the [`trace-result`][ref-269-trace-result] by [`position`][ref-270-position], [`entity`][ref-271-entity] [`angle`][ref-272-angle]|
 |![image][ref-xft]:`smpWorld`(![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-263-trace] and updates the [`trace-result`][ref-264-trace-result] by [`position`][ref-265-position] [`vector`][ref-266-vector] and [`entity`][ref-267-entity] forward|
 |![image][ref-xft]:`smpWorld`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-256-trace] and updates the [`trace-result`][ref-257-trace-result] by [`position`][ref-258-position], [`angle`][ref-259-angle]|
-|![image][ref-xft]:`updEarSZ`(![image][ref-xxx])|![image][ref-xft]|Performs flash [`trace`][ref-51-trace] [`entity`][ref-52-entity] [`array`][ref-53-array] list refresh|
+|![image][ref-xft]:`updEarSZ`(![image][ref-xxx])|![image][ref-xft]|Performs flash [`trace`][ref-51-trace] [`entity`][ref-52-entity] [`array`][ref-53-array] filter list refresh|
 
 |    General functions    | Out | Description |
 |:------------------------|:---:|:------------|

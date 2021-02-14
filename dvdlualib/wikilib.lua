@@ -435,12 +435,12 @@ function wikilib.updateAPI(API, DSC)
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
 
-    if(wikiMakeOOP[api:gsub(API.NAME..wikiBraketsIN, "")] -- newOOP()
-      or api:find(API.NAME..wikiBraketsIN) == 1) then     --    OOP()
-      tA = API.POOL[1] -- The function os an class creator
+    if(wikiMakeOOP[api:gsub(API.NAME..wikiBraketsIN, "")] -- newNAME()
+      or api:find(API.NAME..wikiBraketsIN) == 1) then     --    NAME()
+      tA = API.POOL[1] -- The function is class creator
     elseif(api:find(sO..":")) then
       tA = API.POOL[2] -- The finction is calss method
-    else -- Some other function not related with the class
+    else -- Some other helper function for the class
       tA = API.POOL[3] -- The functoion is a helper API
     end
     if(API.REPLACE) then local tR = API.REPLACE
