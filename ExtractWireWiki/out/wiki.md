@@ -51,168 +51,168 @@ The description of the API is provided in the table below.
 
 |        Instance creator        | Out | Description |
 |:-------------------------------|:---:|:------------|
-|`newFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by zero [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`newFTrace`(![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by zero [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`newFTrace`(![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`newFTrace`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`newFTrace`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by [`origin`][ref-6-origin] [`position`][ref-7-position], [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`newFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the world by [`origin`][ref-6-origin] [`position`][ref-7-position], [`direction`][ref-2-direction] [`vector`][ref-3-vector], [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|`noFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns invalid flash [`trace`][ref-1-trace] object|
+|`newFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer relative to the world by zero [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`newFTrace`(![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by zero [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`newFTrace`(![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the world by [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`newFTrace`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`newFTrace`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the world by [`origin`][ref-8-origin] [`position`][ref-9-position], [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`newFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by [`origin`][ref-8-origin] [`position`][ref-9-position], [`direction`][ref-3-direction] [`vector`][ref-4-vector], [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|`noFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns invalid flash tracer object|
 
 |           Class methods           | Out | Description |
 |:----------------------------------|:---:|:------------|
-|![image][ref-xft]:`dumpItem`(![image][ref-n])|![image][ref-xft]|Dumps the flash [`trace`][ref-1-trace] to the chat area by [`number`][ref-5-number] identifier|
-|![image][ref-xft]:`dumpItem`(![image][ref-s])|![image][ref-xft]|Dumps the flash [`trace`][ref-1-trace] to the chat area by [`string`][ref-17-string] identifier|
-|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Dumps the flash [`trace`][ref-1-trace] by [`number`][ref-5-number] identifier in the specified area by first argument|
-|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Dumps the flash [`trace`][ref-1-trace] by [`string`][ref-17-string] identifier in the specified area by first argument|
-|![image][ref-xft]:`getBase`(![image][ref-xxx])|![image][ref-e]|Returns the flash [`trace`][ref-1-trace] base attachment [`entity`][ref-4-entity] if available|
-|![image][ref-xft]:`getChip`(![image][ref-xxx])|![image][ref-e]|Returns the flash [`trace`][ref-1-trace] auto-assigned expression chip [`entity`][ref-4-entity]|
-|![image][ref-xft]:`getCollideGroup`(![image][ref-xxx])|![image][ref-n]|Returns flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] collision group [`enums`][ref-11-enums] [`COLLISION_GROUP`][ref-12-COLLISION_GROUP]|
-|![image][ref-xft]:`getCopy`(![image][ref-xxx])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object|
-|![image][ref-xft]:`getCopy`(![image][ref-e])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity]|
-|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity] and [`length`][ref-8-length]|
-|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity] and [`origin`][ref-6-origin]|
-|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity], [`origin`][ref-6-origin] and [`length`][ref-8-length]|
-|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity], [`origin`][ref-6-origin] and [`direction`][ref-2-direction]|
-|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`entity`][ref-4-entity], [`origin`][ref-6-origin], [`direction`][ref-2-direction] and [`length`][ref-8-length]|
-|![image][ref-xft]:`getCopy`(![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`length`][ref-8-length]|
-|![image][ref-xft]:`getCopy`(![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`origin`][ref-6-origin]|
-|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`origin`][ref-6-origin] and [`length`][ref-8-length]|
-|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`origin`][ref-6-origin] and [`direction`][ref-2-direction]|
-|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] copy instance of the current object with other [`origin`][ref-6-origin], [`direction`][ref-2-direction] and [`length`][ref-8-length]|
-|![image][ref-xft]:`getDir`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] [`direction`][ref-2-direction] [`vector`][ref-3-vector]|
-|![image][ref-xft]:`getDirLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to base attachment [`entity`][ref-4-entity] local axis|
-|![image][ref-xft]:`getDirLocal`(![image][ref-a])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to [`angle`][ref-15-angle] local axis|
-|![image][ref-xft]:`getDirLocal`(![image][ref-e])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to [`entity`][ref-4-entity] local axis|
-|![image][ref-xft]:`getDirWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to base attachment [`entity`][ref-4-entity] world axis|
-|![image][ref-xft]:`getDirWorld`(![image][ref-a])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to [`angle`][ref-15-angle] world axis|
-|![image][ref-xft]:`getDirWorld`(![image][ref-e])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`direction`][ref-2-direction] [`vector`][ref-3-vector] converted to [`entity`][ref-4-entity] world axis|
-|![image][ref-xft]:`getDisplaceFlags`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `DispFlags` [`DISPSURF`][ref-24-DISPSURF] [`bitmask`][ref-25-bitmask]|
-|![image][ref-xft]:`getEar`(![image][ref-xxx])|![image][ref-r]|Returns the configuration used by the [`entity`][ref-4-entity] [`array`][ref-14-array] filter|
-|![image][ref-xft]:`getEarID`(![image][ref-xxx])|![image][ref-r]|Returns the configuration used by the [`entity`][ref-4-entity] [`array`][ref-14-array] filter as `ID` indices|
-|![image][ref-xft]:`getEarSZ`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`entity`][ref-4-entity] filter [`array`][ref-14-array] size|
-|![image][ref-xft]:`getEntity`(![image][ref-xxx])|![image][ref-e]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `Entity` [`entity`][ref-4-entity]|
-|![image][ref-xft]:`getFilterMode`(![image][ref-xxx])|![image][ref-s]|Returns flash tracer filter working mode|
-|![image][ref-xft]:`getFraction`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `Fraction` in the interval `[0-1]` [`number`][ref-5-number]|
-|![image][ref-xft]:`getFractionLS`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `FractionLeftSolid` in the interval `[0-1]` [`number`][ref-5-number]|
-|![image][ref-xft]:`getFractionLen`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `Fraction` multiplied by its [`length`][ref-8-length] [`distance`][ref-9-distance] [`number`][ref-5-number]|
-|![image][ref-xft]:`getFractionLenLS`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `FractionLeftSolid` multiplied by its [`length`][ref-8-length] [`distance`][ref-9-distance] [`number`][ref-5-number]|
-|![image][ref-xft]:`getHitBox`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitBox` [`number`][ref-5-number]|
-|![image][ref-xft]:`getHitContents`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] hit [`surface`][ref-27-surface] `Contents` [`CONTENTS`][ref-28-CONTENTS] [`bitmask`][ref-25-bitmask]|
-|![image][ref-xft]:`getHitGroup`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitGroup` group `ID` [`number`][ref-5-number]|
-|![image][ref-xft]:`getHitNormal`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] [`surface`][ref-27-surface] `HitNormal` [`vector`][ref-3-vector]|
-|![image][ref-xft]:`getHitPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitPos` location [`vector`][ref-3-vector]|
-|![image][ref-xft]:`getHitTexture`(![image][ref-xxx])|![image][ref-s]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitTexture` [`string`][ref-17-string]|
-|![image][ref-xft]:`getLen`(![image][ref-xxx])|![image][ref-n]|Returns flash [`trace`][ref-1-trace] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-xft]:`getMask`(![image][ref-xxx])|![image][ref-n]|Returns flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] hit [`mask`][ref-18-mask] [`enums`][ref-11-enums] [`MASK`][ref-19-MASK]|
-|![image][ref-xft]:`getMatType`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `MatType` material type [`number`][ref-5-number]|
-|![image][ref-xft]:`getNormal`(![image][ref-xxx])|![image][ref-v]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `Normal` aim [`vector`][ref-3-vector]|
-|![image][ref-xft]:`getPhysicsBoneID`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `PhysicsBone` `ID` [`number`][ref-5-number]|
-|![image][ref-xft]:`getPlayer`(![image][ref-xxx])|![image][ref-e]|Returns the flash [`trace`][ref-1-trace] auto-assigned expression chip player|
-|![image][ref-xft]:`getPos`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] [`origin`][ref-6-origin] [`position`][ref-7-position]|
-|![image][ref-xft]:`getPosLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`origin`][ref-6-origin] [`position`][ref-7-position] converted to base attachment [`entity`][ref-4-entity] local axis|
-|![image][ref-xft]:`getPosLocal`(![image][ref-e])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`origin`][ref-6-origin] [`position`][ref-7-position] converted to [`entity`][ref-4-entity] local axis|
-|![image][ref-xft]:`getPosLocal`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] world [`origin`][ref-6-origin] [`position`][ref-7-position] converted to [`position`][ref-7-position]/[`angle`][ref-15-angle] local axis|
-|![image][ref-xft]:`getPosWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`origin`][ref-6-origin] [`position`][ref-7-position] converted to base attachment [`entity`][ref-4-entity] world axis|
-|![image][ref-xft]:`getPosWorld`(![image][ref-e])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`origin`][ref-6-origin] [`position`][ref-7-position] converted to [`entity`][ref-4-entity] world axis|
-|![image][ref-xft]:`getPosWorld`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] local [`origin`][ref-6-origin] [`position`][ref-7-position] converted to [`position`][ref-7-position]/[`angle`][ref-15-angle] world axis|
-|![image][ref-xft]:`getStart`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] start [`position`][ref-7-position] sent to [`trace-line`][ref-16-trace-line]|
-|![image][ref-xft]:`getStartPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `StartPos` [`vector`][ref-3-vector]|
-|![image][ref-xft]:`getStop`(![image][ref-xxx])|![image][ref-v]|Returns flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] stop [`position`][ref-7-position] sent to [`trace-line`][ref-16-trace-line]|
-|![image][ref-xft]:`getSurfPropsID`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `SurfaceProps` `ID` type [`number`][ref-5-number]|
-|![image][ref-xft]:`getSurfPropsName`(![image][ref-xxx])|![image][ref-s]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `SurfaceProps` `ID` type name [`string`][ref-17-string]|
-|![image][ref-xft]:`getSurfaceFlags`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `SurfaceFlags` [`SURF`][ref-26-SURF] [`bitmask`][ref-25-bitmask]|
-|![image][ref-xft]:`insEar`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] in the filter list|
-|![image][ref-xft]:`insEar`(![image][ref-r])|![image][ref-xft]|Inserts the [`entities`][ref-20-entities] from the [`array`][ref-14-array] in the filter list|
-|![image][ref-xft]:`insEar`(![image][ref-t])|![image][ref-xft]|Inserts the [`entities`][ref-20-entities] from the table in the filter list|
-|![image][ref-xft]:`insEarID`(![image][ref-n])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] `ID` in the filter list|
-|![image][ref-xft]:`insEarID`(![image][ref-r])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] `ID` from the [`array`][ref-14-array] in the filter list|
-|![image][ref-xft]:`insEarID`(![image][ref-t])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] `ID` from the table in the filter list|
-|![image][ref-xft]:`insFncOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Inserts the option to the flash [`trace`][ref-1-trace] internal hit only list|
-|![image][ref-xft]:`insFncOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Inserts the option to the flash [`trace`][ref-1-trace] internal hit only list|
-|![image][ref-xft]:`insFncOnlyEnt`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] to the flash [`trace`][ref-1-trace] internal only hit list|
-|![image][ref-xft]:`insFncSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Inserts the option to the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`insFncSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Inserts the option to the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`insFncSkipEnt`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-4-entity] to the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`isAllSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `AllSolid` flag|
-|![image][ref-xft]:`isHit`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `Hit` flag|
-|![image][ref-xft]:`isHitNoDraw`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitNoDraw` flag|
-|![image][ref-xft]:`isHitNonWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitNonWorld` flag|
-|![image][ref-xft]:`isHitSky`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitSky` flag|
-|![image][ref-xft]:`isHitWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `HitWorld` flag|
-|![image][ref-xft]:`isIgnoreWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] `IgnoreWorld` flag|
-|![image][ref-xft]:`isStartSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash [`trace`][ref-1-trace] [`trace-result`][ref-10-trace-result] `StartSolid` flag|
-|![image][ref-xft]:`rayAim`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Aims the flash [`trace`][ref-1-trace] ray at a given [`position`][ref-7-position] using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`rayAim`(![image][ref-v])|![image][ref-xft]|Aims the flash [`trace`][ref-1-trace] ray at a given [`position`][ref-7-position] using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`rayAmend`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Amends the flash [`trace`][ref-1-trace] ray [`direction`][ref-2-direction] using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`rayAmend`(![image][ref-v])|![image][ref-xft]|Amends the flash [`trace`][ref-1-trace] ray [`direction`][ref-2-direction] using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`rayAmend`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Amends the flash [`trace`][ref-1-trace] ray [`direction`][ref-2-direction] using [`vector`][ref-3-vector] and [`magnitude`][ref-21-magnitude]|
-|![image][ref-xft]:`rayDiv`(![image][ref-n])|![image][ref-xft]|Contracts the flash [`trace`][ref-1-trace] ray with a [`number`][ref-5-number]|
-|![image][ref-xft]:`rayDiv`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Contracts the flash [`trace`][ref-1-trace] ray each component individually using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`rayDiv`(![image][ref-v])|![image][ref-xft]|Contracts the flash [`trace`][ref-1-trace] ray each component individually using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`rayMove`(![image][ref-xxx])|![image][ref-xft]|Moves the flash [`trace`][ref-1-trace] ray with its own [`direction`][ref-2-direction] and [`magnitude`][ref-21-magnitude]|
-|![image][ref-xft]:`rayMove`(![image][ref-n])|![image][ref-xft]|Moves the flash [`trace`][ref-1-trace] ray with its own [`direction`][ref-2-direction] and [`magnitude`][ref-21-magnitude] [`length`][ref-8-length]|
-|![image][ref-xft]:`rayMove`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Moves the flash [`trace`][ref-1-trace] ray with displacement as three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`rayMove`(![image][ref-v])|![image][ref-xft]|Moves the flash [`trace`][ref-1-trace] ray with displacement [`vector`][ref-3-vector]|
-|![image][ref-xft]:`rayMove`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Moves the flash [`trace`][ref-1-trace] ray with [`direction`][ref-2-direction] [`vector`][ref-3-vector], [`magnitude`][ref-21-magnitude] [`length`][ref-8-length]|
-|![image][ref-xft]:`rayMul`(![image][ref-n])|![image][ref-xft]|Expands the flash [`trace`][ref-1-trace] ray with a [`number`][ref-5-number]|
-|![image][ref-xft]:`rayMul`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Expands the flash [`trace`][ref-1-trace] ray each component individually using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`rayMul`(![image][ref-v])|![image][ref-xft]|Expands the flash [`trace`][ref-1-trace] ray each component individually using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`remBase`(![image][ref-xxx])|![image][ref-xft]|Removes the base attachment [`entity`][ref-4-entity] of the flash [`trace`][ref-1-trace]|
-|![image][ref-xft]:`remEar`(![image][ref-xxx])|![image][ref-xft]|Removes all [`entities`][ref-20-entities] from the filter list|
-|![image][ref-xft]:`remEar`(![image][ref-e])|![image][ref-xft]|Removes the specified [`entity`][ref-4-entity] from the filter list|
-|![image][ref-xft]:`remEarID`(![image][ref-n])|![image][ref-xft]|Removes the specified [`entity`][ref-4-entity] by `ID` from the filter list|
-|![image][ref-xft]:`remEarN`(![image][ref-n])|![image][ref-xft]|Removes an [`entity`][ref-4-entity] using the specified sequential [`number`][ref-5-number]|
+|![image][ref-xft]:`dumpItem`(![image][ref-n])|![image][ref-xft]|Dumps the flash tracer to the chat area by [`number`][ref-7-number] identifier|
+|![image][ref-xft]:`dumpItem`(![image][ref-s])|![image][ref-xft]|Dumps the flash tracer to the chat area by [`string`][ref-24-string] identifier|
+|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Dumps the flash tracer by [`number`][ref-7-number] identifier in the specified area by first argument|
+|![image][ref-xft]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Dumps the flash tracer by [`string`][ref-24-string] identifier in the specified area by first argument|
+|![image][ref-xft]:`getBase`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer base attachment [`entity`][ref-5-entity] if available|
+|![image][ref-xft]:`getChip`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer auto assigned [`expression chip`][ref-31-expression chip] [`entity`][ref-5-entity]|
+|![image][ref-xft]:`getCollideGroup`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer [`trace`][ref-1-trace] collision group [`enums`][ref-15-enums] [`COLLISION_GROUP`][ref-16-COLLISION_GROUP]|
+|![image][ref-xft]:`getCopy`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object|
+|![image][ref-xft]:`getCopy`(![image][ref-e])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity]|
+|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity] and [`length`][ref-10-length]|
+|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity] and [`origin`][ref-8-origin]|
+|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity], [`origin`][ref-8-origin] and [`length`][ref-10-length]|
+|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity], [`origin`][ref-8-origin] and [`direction`][ref-3-direction]|
+|![image][ref-xft]:`getCopy`(![image][ref-e],![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`entity`][ref-5-entity], [`origin`][ref-8-origin], [`direction`][ref-3-direction] and [`length`][ref-10-length]|
+|![image][ref-xft]:`getCopy`(![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`length`][ref-10-length]|
+|![image][ref-xft]:`getCopy`(![image][ref-v])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`origin`][ref-8-origin]|
+|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`origin`][ref-8-origin] and [`length`][ref-10-length]|
+|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`origin`][ref-8-origin] and [`direction`][ref-3-direction]|
+|![image][ref-xft]:`getCopy`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer [`copy`][ref-18-copy] instance of the current object with other [`origin`][ref-8-origin], [`direction`][ref-3-direction] and [`length`][ref-10-length]|
+|![image][ref-xft]:`getDir`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`direction`][ref-3-direction] [`vector`][ref-4-vector]|
+|![image][ref-xft]:`getDirLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer world [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to base attachment [`entity`][ref-5-entity] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getDirLocal`(![image][ref-a])|![image][ref-v]|Returns flash tracer world [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to [`angle`][ref-21-angle] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getDirLocal`(![image][ref-e])|![image][ref-v]|Returns flash tracer world [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to [`entity`][ref-5-entity] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getDirWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to base attachment [`entity`][ref-5-entity] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getDirWorld`(![image][ref-a])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to [`angle`][ref-21-angle] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getDirWorld`(![image][ref-e])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`direction`][ref-3-direction] [`vector`][ref-4-vector] converted to [`entity`][ref-5-entity] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getDisplaceFlags`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `DispFlags` [`DISPSURF`][ref-32-DISPSURF] [`bitmask`][ref-33-bitmask]|
+|![image][ref-xft]:`getEar`(![image][ref-xxx])|![image][ref-r]|Returns the configuration used by the [`entity`][ref-5-entity] [`array`][ref-19-array] filter|
+|![image][ref-xft]:`getEarID`(![image][ref-xxx])|![image][ref-r]|Returns the configuration used by the [`entity`][ref-5-entity] [`array`][ref-19-array] filter as `ID` indices|
+|![image][ref-xft]:`getEarSZ`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`entity`][ref-5-entity] filter [`array`][ref-19-array] size|
+|![image][ref-xft]:`getEntity`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer [`trace result`][ref-12-trace result] `Entity` [`entity`][ref-5-entity]|
+|![image][ref-xft]:`getFilterMode`(![image][ref-xxx])|![image][ref-s]|Returns flash tracerr filter working mode|
+|![image][ref-xft]:`getFraction`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `Fraction` in the interval `[0-1]` [`number`][ref-7-number]|
+|![image][ref-xft]:`getFractionLS`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `FractionLeftSolid` in the interval `[0-1]` [`number`][ref-7-number]|
+|![image][ref-xft]:`getFractionLen`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `Fraction` multiplied by its [`length`][ref-10-length] [`distance`][ref-11-distance] [`number`][ref-7-number]|
+|![image][ref-xft]:`getFractionLenLS`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `FractionLeftSolid` multiplied by its [`length`][ref-10-length] [`distance`][ref-11-distance] [`number`][ref-7-number]|
+|![image][ref-xft]:`getHitBox`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitBox` [`number`][ref-7-number]|
+|![image][ref-xft]:`getHitContents`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] hit [`surface`][ref-35-surface] `Contents` [`CONTENTS`][ref-36-CONTENTS] [`bitmask`][ref-33-bitmask]|
+|![image][ref-xft]:`getHitGroup`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitGroup` group `ID` [`number`][ref-7-number]|
+|![image][ref-xft]:`getHitNormal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`trace result`][ref-12-trace result] [`surface`][ref-35-surface] `HitNormal` [`vector`][ref-4-vector]|
+|![image][ref-xft]:`getHitPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitPos` location [`vector`][ref-4-vector]|
+|![image][ref-xft]:`getHitTexture`(![image][ref-xxx])|![image][ref-s]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitTexture` [`string`][ref-24-string]|
+|![image][ref-xft]:`getLen`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-xft]:`getMask`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer [`trace`][ref-1-trace] hit [`mask`][ref-26-mask] [`enums`][ref-15-enums] [`MASK`][ref-27-MASK]|
+|![image][ref-xft]:`getMatType`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `MatType` material type [`number`][ref-7-number]|
+|![image][ref-xft]:`getNormal`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace result`][ref-12-trace result] `Normal` aim [`vector`][ref-4-vector]|
+|![image][ref-xft]:`getPhysicsBoneID`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `PhysicsBone` `ID` [`number`][ref-7-number]|
+|![image][ref-xft]:`getPlayer`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer auto assigned [`expression chip`][ref-31-expression chip] [`player`][ref-37-player]|
+|![image][ref-xft]:`getPos`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`origin`][ref-8-origin] [`position`][ref-9-position]|
+|![image][ref-xft]:`getPosLocal`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer world [`origin`][ref-8-origin] [`position`][ref-9-position] converted to base attachment [`entity`][ref-5-entity] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getPosLocal`(![image][ref-e])|![image][ref-v]|Returns flash tracer world [`origin`][ref-8-origin] [`position`][ref-9-position] converted to [`entity`][ref-5-entity] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getPosLocal`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash tracer world [`origin`][ref-8-origin] [`position`][ref-9-position] converted to [`position`][ref-9-position]/[`angle`][ref-21-angle] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`getPosWorld`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`origin`][ref-8-origin] [`position`][ref-9-position] converted to base attachment [`entity`][ref-5-entity] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getPosWorld`(![image][ref-e])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`origin`][ref-8-origin] [`position`][ref-9-position] converted to [`entity`][ref-5-entity] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getPosWorld`(![image][ref-v],![image][ref-a])|![image][ref-v]|Returns flash tracer [`local`][ref-2-local] [`origin`][ref-8-origin] [`position`][ref-9-position] converted to [`position`][ref-9-position]/[`angle`][ref-21-angle] world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`getStart`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`trace`][ref-1-trace] start [`position`][ref-9-position] sent to [`trace line`][ref-23-trace line]|
+|![image][ref-xft]:`getStartPos`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace result`][ref-12-trace result] `StartPos` [`vector`][ref-4-vector]|
+|![image][ref-xft]:`getStop`(![image][ref-xxx])|![image][ref-v]|Returns flash tracer [`trace`][ref-1-trace] stop [`position`][ref-9-position] sent to [`trace line`][ref-23-trace line]|
+|![image][ref-xft]:`getSurfPropsID`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `SurfaceProps` `ID` type [`number`][ref-7-number]|
+|![image][ref-xft]:`getSurfPropsName`(![image][ref-xxx])|![image][ref-s]|Returns the flash tracer [`trace result`][ref-12-trace result] `SurfaceProps` `ID` type name [`string`][ref-24-string]|
+|![image][ref-xft]:`getSurfaceFlags`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `SurfaceFlags` [`SURF`][ref-34-SURF] [`bitmask`][ref-33-bitmask]|
+|![image][ref-xft]:`insEar`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insEar`(![image][ref-r])|![image][ref-xft]|Inserts the [`entities`][ref-28-entities] from the [`array`][ref-19-array] in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insEar`(![image][ref-t])|![image][ref-xft]|Inserts the [`entities`][ref-28-entities] from the table in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insEarID`(![image][ref-n])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] `ID` in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insEarID`(![image][ref-r])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] `ID` from the [`array`][ref-19-array] in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insEarID`(![image][ref-t])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] `ID` from the table in the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Inserts an option to the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Inserts an option to the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncOnlyEnt`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] to the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Inserts an option to the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Inserts an option to the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`insFncSkipEnt`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-5-entity] to the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`isAllSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `AllSolid` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isHit`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `Hit` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isHitNoDraw`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitNoDraw` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isHitNonWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitNonWorld` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isHitSky`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitSky` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isHitWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `HitWorld` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isIgnoreWorld`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace`][ref-1-trace] `IgnoreWorld` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`isStartSolid`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-12-trace result] `StartSolid` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`rayAim`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Aims the flash tracer [`ray`][ref-25-ray] at a given [`position`][ref-9-position] using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`rayAim`(![image][ref-v])|![image][ref-xft]|Aims the flash tracer [`ray`][ref-25-ray] at a given [`position`][ref-9-position] using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`rayAmend`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Amends the flash tracer [`ray`][ref-25-ray] [`direction`][ref-3-direction] using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`rayAmend`(![image][ref-v])|![image][ref-xft]|Amends the flash tracer [`ray`][ref-25-ray] [`direction`][ref-3-direction] using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`rayAmend`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Amends the flash tracer [`ray`][ref-25-ray] [`direction`][ref-3-direction] using [`vector`][ref-4-vector] and [`magnitude`][ref-29-magnitude]|
+|![image][ref-xft]:`rayDiv`(![image][ref-n])|![image][ref-xft]|Contracts the flash tracer [`ray`][ref-25-ray] with a [`number`][ref-7-number]|
+|![image][ref-xft]:`rayDiv`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Contracts the flash tracer [`ray`][ref-25-ray] each component individually using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`rayDiv`(![image][ref-v])|![image][ref-xft]|Contracts the flash tracer [`ray`][ref-25-ray] each component individually using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`rayMove`(![image][ref-xxx])|![image][ref-xft]|Moves the flash tracer [`ray`][ref-25-ray] with its own [`direction`][ref-3-direction] and [`magnitude`][ref-29-magnitude]|
+|![image][ref-xft]:`rayMove`(![image][ref-n])|![image][ref-xft]|Moves the flash tracer [`ray`][ref-25-ray] with its own [`direction`][ref-3-direction] and [`magnitude`][ref-29-magnitude] [`length`][ref-10-length]|
+|![image][ref-xft]:`rayMove`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Moves the flash tracer [`ray`][ref-25-ray] with displacement as three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`rayMove`(![image][ref-v])|![image][ref-xft]|Moves the flash tracer [`ray`][ref-25-ray] with displacement [`vector`][ref-4-vector]|
+|![image][ref-xft]:`rayMove`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Moves the flash tracer [`ray`][ref-25-ray] with [`direction`][ref-3-direction] [`vector`][ref-4-vector], [`magnitude`][ref-29-magnitude] [`length`][ref-10-length]|
+|![image][ref-xft]:`rayMul`(![image][ref-n])|![image][ref-xft]|Expands the flash tracer [`ray`][ref-25-ray] with a [`number`][ref-7-number]|
+|![image][ref-xft]:`rayMul`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Expands the flash tracer [`ray`][ref-25-ray] each component individually using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`rayMul`(![image][ref-v])|![image][ref-xft]|Expands the flash tracer [`ray`][ref-25-ray] each component individually using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`remBase`(![image][ref-xxx])|![image][ref-xft]|Removes the base attachment [`entity`][ref-5-entity] of the flash tracer|
+|![image][ref-xft]:`remEar`(![image][ref-xxx])|![image][ref-xft]|Removes all [`entities`][ref-28-entities] from the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`remEar`(![image][ref-e])|![image][ref-xft]|Removes the specified [`entity`][ref-5-entity] from the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`remEarID`(![image][ref-n])|![image][ref-xft]|Removes the specified [`entity`][ref-5-entity] by `ID` from the filter [`list`][ref-20-list]|
+|![image][ref-xft]:`remEarN`(![image][ref-n])|![image][ref-xft]|Removes an [`entity`][ref-5-entity] using the specified sequential [`number`][ref-7-number]|
 |![image][ref-xft]:`remFilter`(![image][ref-xxx])|![image][ref-xft]|Removes the filter from the [`trace`][ref-1-trace] configuration|
-|![image][ref-xft]:`remFnc`(![image][ref-xxx])|![image][ref-xft]|Removes all the options from the flash [`trace`][ref-1-trace] internal hit preferences|
-|![image][ref-xft]:`remFnc`(![image][ref-s])|![image][ref-xft]|Removes the option from the flash [`trace`][ref-1-trace] internal hit preferences|
-|![image][ref-xft]:`remFncEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-20-entities] from the flash [`trace`][ref-1-trace] internal hit list|
-|![image][ref-xft]:`remFncOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the flash [`trace`][ref-1-trace] internal only hit list|
-|![image][ref-xft]:`remFncOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the flash [`trace`][ref-1-trace] internal only hit list|
-|![image][ref-xft]:`remFncOnlyEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-20-entities] from the flash [`trace`][ref-1-trace] internal only hit list|
-|![image][ref-xft]:`remFncOnlyEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-4-entity] from the flash [`trace`][ref-1-trace] internal only hit list|
-|![image][ref-xft]:`remFncSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`remFncSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`remFncSkipEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-20-entities] from the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`remFncSkipEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-4-entity] from the flash [`trace`][ref-1-trace] internal ignore hit list|
-|![image][ref-xft]:`setBase`(![image][ref-e])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] base attachment [`entity`][ref-4-entity]|
-|![image][ref-xft]:`setCollideGroup`(![image][ref-n])|![image][ref-xft]|Updates flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] collision group [`enums`][ref-11-enums] [`COLLISION_GROUP`][ref-12-COLLISION_GROUP]|
-|![image][ref-xft]:`setDir`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`direction`][ref-2-direction] using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`setDir`(![image][ref-r])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`direction`][ref-2-direction] using an [`array`][ref-14-array]|
-|![image][ref-xft]:`setDir`(![image][ref-v])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`direction`][ref-2-direction] using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`setFilterEar`(![image][ref-xxx])|![image][ref-xft]|Changes the filtering mode to [`entity`][ref-4-entity] [`array`][ref-14-array]|
-|![image][ref-xft]:`setFilterEnt`(![image][ref-e])|![image][ref-xft]|Changes the filtering mode to [`entity`][ref-4-entity] object|
-|![image][ref-xft]:`setFilterFnc`(![image][ref-xxx])|![image][ref-xft]|Changes the filtering mode to [`function`][ref-23-function] routine|
-|![image][ref-xft]:`setIsIgnoreWorld`(![image][ref-n])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] `IgnoreWorld` flag|
-|![image][ref-xft]:`setLen`(![image][ref-n])|![image][ref-xft]|Updates flash [`trace`][ref-1-trace] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-xft]:`setMask`(![image][ref-n])|![image][ref-xft]|Updates flash [`trace`][ref-1-trace] [`trace`][ref-1-trace] hit [`mask`][ref-18-mask] [`enums`][ref-11-enums] [`MASK`][ref-19-MASK]|
-|![image][ref-xft]:`setPos`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`origin`][ref-6-origin] [`position`][ref-7-position] using three [`numbers`][ref-13-numbers]|
-|![image][ref-xft]:`setPos`(![image][ref-r])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`origin`][ref-6-origin] [`position`][ref-7-position] using an [`array`][ref-14-array]|
-|![image][ref-xft]:`setPos`(![image][ref-v])|![image][ref-xft]|Updates the flash [`trace`][ref-1-trace] [`origin`][ref-6-origin] [`position`][ref-7-position] using a [`vector`][ref-3-vector]|
-|![image][ref-xft]:`smpLocal`(![image][ref-xxx])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by base attachment [`entity`][ref-4-entity] local axis|
-|![image][ref-xft]:`smpLocal`(![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by base [`position`][ref-7-position], [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpLocal`(![image][ref-e])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`entity`][ref-4-entity] [`position`][ref-7-position] and forward [`vectors`][ref-22-vectors]|
-|![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`entity`][ref-4-entity] [`position`][ref-7-position], [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position], [`entity`][ref-4-entity] [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpLocal`(![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position], base [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpLocal`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position], [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpWorld`(![image][ref-xxx])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by the world axis|
-|![image][ref-xft]:`smpWorld`(![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`entity`][ref-4-entity] [`position`][ref-7-position] and [`angle`][ref-15-angle] forward|
-|![image][ref-xft]:`smpWorld`(![image][ref-e])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`entity`][ref-4-entity] [`position`][ref-7-position] and forward [`vectors`][ref-22-vectors]|
-|![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`entity`][ref-4-entity] [`position`][ref-7-position], [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position], [`entity`][ref-4-entity] [`angle`][ref-15-angle]|
-|![image][ref-xft]:`smpWorld`(![image][ref-v])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position] [`vector`][ref-3-vector] and [`entity`][ref-4-entity] forward|
-|![image][ref-xft]:`smpWorld`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash [`trace`][ref-1-trace] and updates the [`trace-result`][ref-10-trace-result] by [`position`][ref-7-position], [`angle`][ref-15-angle]|
-|![image][ref-xft]:`updEarSZ`(![image][ref-xxx])|![image][ref-xft]|Performs flash [`trace`][ref-1-trace] [`entity`][ref-4-entity] [`array`][ref-14-array] filter list refresh|
+|![image][ref-xft]:`remFnc`(![image][ref-xxx])|![image][ref-xft]|Removes all the options from the [`function`][ref-14-function] flash tracer internal preferences|
+|![image][ref-xft]:`remFnc`(![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-14-function] flash tracer internal preferences|
+|![image][ref-xft]:`remFncEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-28-entities] from the [`function`][ref-14-function] flash tracer internal [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncOnlyEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-28-entities] from the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncOnlyEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-5-entity] from the [`function`][ref-14-function] flash tracer internal only [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncSkipEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-28-entities] from the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`remFncSkipEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-5-entity] from the [`function`][ref-14-function] flash tracer internal ignore [`list`][ref-20-list]|
+|![image][ref-xft]:`setBase`(![image][ref-e])|![image][ref-xft]|Updates the flash tracer base attachment [`entity`][ref-5-entity]|
+|![image][ref-xft]:`setCollideGroup`(![image][ref-n])|![image][ref-xft]|Updates flash tracer [`trace`][ref-1-trace] collision group [`enums`][ref-15-enums] [`COLLISION_GROUP`][ref-16-COLLISION_GROUP]|
+|![image][ref-xft]:`setDir`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Updates the flash tracer [`direction`][ref-3-direction] using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`setDir`(![image][ref-r])|![image][ref-xft]|Updates the flash tracer [`direction`][ref-3-direction] using an [`array`][ref-19-array]|
+|![image][ref-xft]:`setDir`(![image][ref-v])|![image][ref-xft]|Updates the flash tracer [`direction`][ref-3-direction] using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`setFilterEar`(![image][ref-xxx])|![image][ref-xft]|Changes the filtering mode to [`entity`][ref-5-entity] [`array`][ref-19-array]|
+|![image][ref-xft]:`setFilterEnt`(![image][ref-e])|![image][ref-xft]|Changes the filtering mode to [`entity`][ref-5-entity] object|
+|![image][ref-xft]:`setFilterFnc`(![image][ref-xxx])|![image][ref-xft]|Changes the filtering mode to [`function`][ref-14-function] routine|
+|![image][ref-xft]:`setIsIgnoreWorld`(![image][ref-n])|![image][ref-xft]|Updates the flash tracer [`trace`][ref-1-trace] `IgnoreWorld` [`flag`][ref-13-flag]|
+|![image][ref-xft]:`setLen`(![image][ref-n])|![image][ref-xft]|Updates flash tracer [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-xft]:`setMask`(![image][ref-n])|![image][ref-xft]|Updates flash tracer [`trace`][ref-1-trace] hit [`mask`][ref-26-mask] [`enums`][ref-15-enums] [`MASK`][ref-27-MASK]|
+|![image][ref-xft]:`setPos`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xft]|Updates the flash tracer [`origin`][ref-8-origin] [`position`][ref-9-position] using three [`numbers`][ref-17-numbers]|
+|![image][ref-xft]:`setPos`(![image][ref-r])|![image][ref-xft]|Updates the flash tracer [`origin`][ref-8-origin] [`position`][ref-9-position] using an [`array`][ref-19-array]|
+|![image][ref-xft]:`setPos`(![image][ref-v])|![image][ref-xft]|Updates the flash tracer [`origin`][ref-8-origin] [`position`][ref-9-position] using a [`vector`][ref-4-vector]|
+|![image][ref-xft]:`smpLocal`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by base attachment [`entity`][ref-5-entity] [`local axis`][ref-22-local axis]|
+|![image][ref-xft]:`smpLocal`(![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by base [`position`][ref-9-position], [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpLocal`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`entity`][ref-5-entity] [`position`][ref-9-position] and forward [`vectors`][ref-30-vectors]|
+|![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`entity`][ref-5-entity] [`position`][ref-9-position], [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position], [`entity`][ref-5-entity] [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpLocal`(![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position], base [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpLocal`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position], [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpWorld`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by the world [`axis`][ref-6-axis]|
+|![image][ref-xft]:`smpWorld`(![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`entity`][ref-5-entity] [`position`][ref-9-position] and [`angle`][ref-21-angle] forward|
+|![image][ref-xft]:`smpWorld`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`entity`][ref-5-entity] [`position`][ref-9-position] and forward [`vectors`][ref-30-vectors]|
+|![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`entity`][ref-5-entity] [`position`][ref-9-position], [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position], [`entity`][ref-5-entity] [`angle`][ref-21-angle]|
+|![image][ref-xft]:`smpWorld`(![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position] [`vector`][ref-4-vector] and [`entity`][ref-5-entity] forward|
+|![image][ref-xft]:`smpWorld`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-12-trace result] by [`position`][ref-9-position], [`angle`][ref-21-angle]|
+|![image][ref-xft]:`updEarSZ`(![image][ref-xxx])|![image][ref-xft]|Performs flash tracer [`entity`][ref-5-entity] [`array`][ref-19-array] filter [`list`][ref-20-list] refresh|
 
 |    General functions    | Out | Description |
 |:------------------------|:---:|:------------|
-|![image][ref-e]:`setFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by zero [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-e]:`setFTrace`(![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by zero [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-e]:`setFTrace`(![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by [`origin`][ref-6-origin] [`position`][ref-7-position], up [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by [`origin`][ref-6-origin] [`position`][ref-7-position], [`direction`][ref-2-direction] [`vector`][ref-3-vector] and [`direction`][ref-2-direction] [`length`][ref-8-length] [`distance`][ref-9-distance]|
-|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash [`trace`][ref-1-trace] relative to the [`entity`][ref-4-entity] by [`origin`][ref-6-origin] [`position`][ref-7-position], [`direction`][ref-2-direction] [`vector`][ref-3-vector], [`length`][ref-8-length] [`distance`][ref-9-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by zero [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by zero [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by [`origin`][ref-8-origin] [`position`][ref-9-position], up [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by [`origin`][ref-8-origin] [`position`][ref-9-position], [`direction`][ref-3-direction] [`vector`][ref-4-vector] and [`direction`][ref-3-direction] [`length`][ref-10-length] [`distance`][ref-11-distance]|
+|![image][ref-e]:`setFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the [`entity`][ref-5-entity] by [`origin`][ref-8-origin] [`position`][ref-9-position], [`direction`][ref-3-direction] [`vector`][ref-4-vector], [`length`][ref-10-length] [`distance`][ref-11-distance]|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
@@ -256,30 +256,39 @@ The description of the API is provided in the table below.
 [ref_timere2]: https://github.com/wiremod/wire/wiki/Expression-2#timer
 [ref_awaree2]: https://github.com/wiremod/wire/wiki/Expression-2#self-aware
 [ref-1-trace]: https://wiki.facepunch.com/gmod/util.TraceLine
-[ref-2-direction]: https://en.wikipedia.org/wiki/Unit_vector
-[ref-3-vector]: https://en.wikipedia.org/wiki/Euclidean_vector
-[ref-4-entity]: https://wiki.facepunch.com/gmod/Entity
-[ref-5-number]: https://en.wikipedia.org/wiki/Euclidean_distance
-[ref-6-origin]: https://en.wikipedia.org/wiki/Origin_(mathematics)
-[ref-7-position]: https://en.wikipedia.org/wiki/Position_(geometry)
-[ref-8-length]: https://en.wikipedia.org/wiki/Euclidean_distance
-[ref-9-distance]: https://en.wikipedia.org/wiki/Euclidean_distance
-[ref-10-trace-result]: https://wiki.facepunch.com/gmod/Structures/TraceResult
-[ref-11-enums]: https://en.wikipedia.org/wiki/Enumerated_type
-[ref-12-COLLISION_GROUP]: https://wiki.facepunch.com/gmod/Enums/COLLISION_GROUP
-[ref-13-numbers]: https://en.wikipedia.org/wiki/Euclidean_distance
-[ref-14-array]: https://en.wikipedia.org/wiki/Array_data_type
-[ref-15-angle]: https://en.wikipedia.org/wiki/Euler_angles
-[ref-16-trace-line]: https://wiki.facepunch.com/gmod/util.TraceLine
-[ref-17-string]: https://en.wikipedia.org/wiki/String_(computer_science)
-[ref-18-mask]: https://en.wikipedia.org/wiki/Mask_(computing)
-[ref-19-MASK]: https://wiki.facepunch.com/gmod/Enums/MASK
-[ref-20-entities]: https://wiki.facepunch.com/gmod/Entity
-[ref-21-magnitude]: https://en.wikipedia.org/wiki/Euclidean_distance
-[ref-22-vectors]: https://en.wikipedia.org/wiki/Euclidean_vector
-[ref-23-function]: https://en.wikipedia.org/wiki/Subroutine
-[ref-24-DISPSURF]: https://wiki.facepunch.com/gmod/Enums/DISPSURF
-[ref-25-bitmask]: https://en.wikipedia.org/wiki/Mask_(computing)
-[ref-26-SURF]: https://wiki.facepunch.com/gmod/Enums/SURF
-[ref-27-surface]: https://developer.valvesoftware.com/wiki/Material_surface_properties
-[ref-28-CONTENTS]: https://wiki.facepunch.com/gmod/Enums/CONTENTS
+[ref-2-local]: https://en.wikipedia.org/wiki/Local_coordinates
+[ref-3-direction]: https://en.wikipedia.org/wiki/Unit_vector
+[ref-4-vector]: https://en.wikipedia.org/wiki/Euclidean_vector
+[ref-5-entity]: https://wiki.facepunch.com/gmod/Entity
+[ref-6-axis]: https://en.wikipedia.org/wiki/Cartesian_coordinate_system
+[ref-7-number]: https://en.wikipedia.org/wiki/Euclidean_distance
+[ref-8-origin]: https://en.wikipedia.org/wiki/Origin_(mathematics)
+[ref-9-position]: https://en.wikipedia.org/wiki/Position_(geometry)
+[ref-10-length]: https://en.wikipedia.org/wiki/Euclidean_distance
+[ref-11-distance]: https://en.wikipedia.org/wiki/Euclidean_distance
+[ref-12-trace result]: https://wiki.facepunch.com/gmod/Structures/TraceResult
+[ref-13-flag]: https://en.wikipedia.org/wiki/Boolean_flag
+[ref-14-function]: https://en.wikipedia.org/wiki/Subroutine
+[ref-15-enums]: https://en.wikipedia.org/wiki/Enumerated_type
+[ref-16-COLLISION_GROUP]: https://wiki.facepunch.com/gmod/Enums/COLLISION_GROUP
+[ref-17-numbers]: https://en.wikipedia.org/wiki/Euclidean_distance
+[ref-18-copy]: https://en.wikipedia.org/wiki/Copying
+[ref-19-array]: https://en.wikipedia.org/wiki/Array_data_type
+[ref-20-list]: https://en.wikipedia.org/wiki/List_(abstract_data_type)
+[ref-21-angle]: https://en.wikipedia.org/wiki/Euler_angles
+[ref-22-local axis]: https://en.wikipedia.org/wiki/Local_coordinates
+[ref-23-trace line]: https://wiki.facepunch.com/gmod/util.TraceLine
+[ref-24-string]: https://en.wikipedia.org/wiki/String_(computer_science)
+[ref-25-ray]: https://en.wikipedia.org/wiki/Line_(geometry)#Ray
+[ref-26-mask]: https://en.wikipedia.org/wiki/Mask_(computing)
+[ref-27-MASK]: https://wiki.facepunch.com/gmod/Enums/MASK
+[ref-28-entities]: https://wiki.facepunch.com/gmod/Entity
+[ref-29-magnitude]: https://en.wikipedia.org/wiki/Euclidean_distance
+[ref-30-vectors]: https://en.wikipedia.org/wiki/Euclidean_vector
+[ref-31-expression chip]: https://github.com/wiremod/wire/wiki/Expression-2
+[ref-32-DISPSURF]: https://wiki.facepunch.com/gmod/Enums/DISPSURF
+[ref-33-bitmask]: https://en.wikipedia.org/wiki/Mask_(computing)
+[ref-34-SURF]: https://wiki.facepunch.com/gmod/Enums/SURF
+[ref-35-surface]: https://developer.valvesoftware.com/wiki/Material_surface_properties
+[ref-36-CONTENTS]: https://wiki.facepunch.com/gmod/Enums/CONTENTS
+[ref-37-player]: https://wiki.facepunch.com/gmod/Player

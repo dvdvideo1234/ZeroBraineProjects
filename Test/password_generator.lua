@@ -9,7 +9,7 @@ local drpath = require("directories")
       drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
 local com = require("common")
 
-print(com.randomGetString(40))
+print(com.randomGetString(20))
 
 
 
