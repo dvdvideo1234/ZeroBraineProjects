@@ -29,6 +29,7 @@ local wikiFolder = {}
         prnt = false, -- (TRUE) Show the parent directory in the tree
         hide = false, -- (TRUE) Show hidden directories
         size = false, -- (TRUE) Show file size
+        unqr = false, -- (TRUE) Use unique reference for every replaced token
         hash = false, -- (TRUE) Show directory hash address
         urls = false, -- (TRUE) Use URLs for the files /wikiFolder.__furl/
         namr = false, -- (TRUE) Use Repo name for the tree name root

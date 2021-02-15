@@ -25,9 +25,9 @@
 `    ║           ╚═══`[`custom`][ref-23-custom]  
 `    ╠═══`[`trackassembly`][ref-24-trackassembly]  
 `    ║   ╚═══`[`lang`][ref-25-lang] --> Languages and translations  
-`    ╚═══`[`weapons`][ref-28-weapons] --> Contains all the dedicated [MASK][ref-26-MASK] tool objects information [MASK][ref-27-MASK]  
-`        ╚═══`[`gmod_tool`][ref-29-gmod%5Ftool]  
-`            ╚═══`[`stools`][ref-30-stools]  
+`    ╚═══`[`weapons`][ref-27-weapons] --> Contains all the dedicated [MASK][ref-26-MASK] tool objects information [MASK][ref-26-MASK]  
+`        ╚═══`[`gmod_tool`][ref-28-gmod%5Ftool]  
+`            ╚═══`[`stools`][ref-29-stools]  
 
 [ref-1-gstp]: https://github.com/mbqwertyaaa/gstp
 [ref-2-data]: https://github.com/mbqwertyaaa/gstp/blob/master/data
@@ -55,7 +55,6 @@
 [ref-24-trackassembly]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/trackassembly
 [ref-25-lang]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/trackassembly/lang
 [ref-26-MASK]: https://wiki.garrysmod.com/page/Enums/MASK
-[ref-27-MASK]: https://wiki.garrysmod.com/page/Enums/MASK
-[ref-28-weapons]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons
-[ref-29-gmod%5Ftool]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons/gmod%5Ftool
-[ref-30-stools]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons/gmod%5Ftool/stools
+[ref-27-weapons]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons
+[ref-28-gmod%5Ftool]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons/gmod%5Ftool
+[ref-29-stools]: https://github.com/mbqwertyaaa/gstp/blob/master/lua/weapons/gmod%5Ftool/stools

@@ -1,9 +1,9 @@
-﻿local common = require("common")
+local common = require("common")
 
 local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
-local wikiRList = {Size = 0} -- Stores the markdown link referencies
+local wikiRList = {Size = 0, Meta = {}} -- Stores the markdown link
 local wikiType   = require("dvdlualib/wikilib/type")
 local wikiFolder = require("dvdlualib/wikilib/folder")
 local wikiFormat = require("dvdlualib/wikilib/format")
@@ -20,7 +20,7 @@ local wikiBraketsIN = "%(.-%)"
 -- What the instance creator might start with
 local wikiMakeOOP = {["new"]=true, ["no"]=true, ["make"]=true, ["create"]=true}
 -- https://stackoverflow.com/questions/17978720/invisible-characters-ascii
-local wikiSpace = " " -- Space character for drawing table column names
+local wikiSpace = string.char(0xC2)..string.char(0xA0) -- Space character for (``) quote
 -- A bunch of patterns when matched transform a word into MD quote
 local wikiQuote = {["%d"] = true, ["_"]=true, ["%l%u"]=true, ["%u+%u+"]=true}
 -- Characters to exclude from the word quoting
@@ -356,11 +356,7 @@ function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
         local sX = (bF and mV:format(mK) or mV)
         local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
         local fX = toBracket(sX)
-        if(bR) then wikiRList.Size = wikiRList.Size + 1
-          local sU = toReferID(wikiRList.Size, mK)
-          wikiRList[wikiRList.Size] = toLinkRef(sU, mV)
-          fX = toRef(sU)
-        end
+        if(bR) then fX = toRef(wikilib.getTokenReference(mK, mV)) end
         if(cF..cB == "``") then
           sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB)..fX -- Concatenate the link to the beginning
           sD, iD = sN..sD:sub(nB+1,-1), sN:len() + 1 -- Concatenate the rest and search in there
@@ -1116,10 +1112,9 @@ local function folderLinkItem(tR, vC, bB)
           sR = (bB and sR:sub(1,-2) or sR)
     local tD, vP = wikiFolder.__idir, sR..sB
     if(tF.ufbr) then -- wikilib.insReferID
-      wikiRList.Size = wikiRList.Size + 1
+      -- wikilib.getTokenReference(mK, mV)
       local sL = wikilib.common.stringGetFileName(vP)
-      local vR = toReferID(wikiRList.Size, sL)
-      wikiRList[wikiRList.Size] = toLinkRef(vR, vP)
+      local vR = wikilib.getTokenReference(sL, vP, tF.unqr)      
       sO = toLinkRefSrc("`"..sO.."`", vR)
       if(vC.name == tD[1]) then
         wikiRList[wikiRList.Size] = wikiRList[wikiRList.Size]:sub(1,-3)
@@ -1310,10 +1305,47 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
   io.write("\n")
 end
 
+--[[
+ * Registers a token to be converted to reference link
+ * vT > The token to be processed
+ * vU > URL to be regstered for this token
+ * bN > Always allocate new slot for the token
+]]
+function wikilib.getTokenReference(vT, vU, bN)
+  local sT, sU, iD = tostring(vT), tostring(vU)
+  if(bN) then
+    wikiRList.Size = wikiRList.Size + 1
+    iD = wikiRList.Size
+  else
+    if(not wikiRList.Meta[sT]) then
+      wikiRList.Size = wikiRList.Size + 1
+      wikiRList.Meta[sT] = {
+        Idx = wikiRList.Size,
+        URL = sU  -- Store URL
+      }
+    else
+      local tT = wikiRList.Meta[sT]
+      if(tT.URL ~= sU and not bN) then
+        local fE = "wikilib.getTokenReference(%s): Token present with different URL!"
+        wikilib.common.logStatus("< "..tT.URL , nil)
+        wikilib.common.logStatus("> "..sU     , nil)
+        wikilib.common.logStatus(fE:format(sT), nil)
+        error(fE:format(sT))
+      end
+    end
+    iD = wikiRList.Meta[sT].Idx
+  end
+  local sR = toReferID(iD, vT)
+  if(not wikiRList[iD]) then
+    wikiRList[iD] = toLinkRef(sR, sU)    
+  end
+  return sR
+end
+
 function wikilib.printTokenReferences()
   if(wikiRList.Size and wikiRList.Size > 0) then
     for iD = 1, wikiRList.Size do
-      io.write(wikiRList[iD]); io.write("\n")
+      io.write(wikiRList[iD]); io.write("\n")  
     end -- Write all the link references
   end
 end
