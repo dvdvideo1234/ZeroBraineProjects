@@ -131,6 +131,13 @@ local function sortMatch(tM)
   table.sort(tM, apiSortFinctionParam)
 end
 
+local function wikilibError(sM, bE)
+  local sF = tostring(debug.getinfo(2).name)
+  local sO = "wikilib."..sF..": "..sM
+  wikilib.common.logStatus(sO, nil)
+  if(bE) then error(sO) end
+end
+
 local function apiGetValue(API, sTab, sKey, vDef)
   local tTab = API[sTab]
   local bTab = wikilib.common.isTable(tTab)
@@ -227,10 +234,7 @@ end
 function wikilib.setDecoderURL(vE)
   local sE = tostring(vE or wikiEncodeURL.mod)
   if(wikiEncodeURL.enc[sE]) then wikiEncodeURL.mod = sE else
-    wikilib.common.logStatus("wikilib.setDecoderURL: Code mismatch <"..sE.."> !")
-    if(bErr) then
-      error("wikilib.setDecoderURL: Code mismatch <"..sE.."> !") end
-  end
+    wikilibError("Code mismatch <"..sE.."> !", bErr) end
 end
 
 function wikilib.urlSymbolize(sURL)
@@ -245,10 +249,7 @@ end
 function wikilib.getDecodeURL(sURL)
   local sK = tostring(wikiEncodeURL.mod)
   if(not wikiEncodeURL.enc[sK]) then
-    wikilib.common.logStatus("wikilib.getDecodeURL: Code missing <"..sK.."> !")
-    if(bErr) then
-      error("wikilib.getDecodeURL: Code missing <"..sK.."> !") end
-  end
+    wikilibError("Code missing <"..sK.."> !", bErr) end
   local nB, nE = 0, 0
   local cU = tostring(sURL or ""):rep(1)
   for key, val in pairs(wikiEncodeURL.dec[sK]) do
@@ -262,10 +263,7 @@ end
 function wikilib.getEncodeURL(sURL)
   local sK = tostring(wikiEncodeURL.mod)
   if(not wikiEncodeURL.enc[sK]) then
-    wikilib.common.logStatus("wikilib.getEncodeURL: Code missing <"..sK.."> !")
-    if(bErr) then
-      error("wikilib.getEncodeURL: Code missing <"..sK.."> !") end
-  end
+    wikilibError("Code missing <"..sK.."> !", bErr) end
   local cU, sO = tostring(sURL or ""):rep(1), ""
   local tU = wikilib.urlSymbolize(cU)
   for iD = 1, tU.Size do
@@ -384,8 +382,7 @@ function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
       mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
       if(wikilib.isLoopTerm(sF, mF)) then
         local sM = sF.."(%s): Terminated <%d|%d> mismatch [%s]!"
-        wikilib.common.logStatus(sM:format(mK, mF, mB, sD))
-        error(sM:format(mK, mF, mB, sD))
+        wikilibError(sM:format(mK, mF, mB, sD), true)
       end
     end
   end; return sD, dL
@@ -621,20 +618,16 @@ function wikilib.convApiE2Description(API, sE2)
     -- Remove the header and extract function return type
     local tD = wikilib.convTypeE2Description(API, sR)
     if(not tD) then
-      wikilib.common.logStatus("wikilib.convApiE2Description: Return type missing <"..sR.."> !")
       wikilib.common.logStatus("wikilib.convApiE2Description: Return line <"..sE2.."> !")
-      if(bErr) then
-        error("wikilib.convApiE2Description: Return type missing <"..sE2.."> !") end
+      wikilibError("Return type missing <"..sE2.."> !", bErr)
     end; tInfo.ret = tD[1]
     sE = wikilib.common.stringTrim(sE:sub(iS, -1)); iS = sE:find(sM, 1, true)  
     if(iS) then -- Is this function a object method
       local sT = common.stringTrim(sE:sub(1, iS-1))
       local tD = wikilib.convTypeE2Description(API, sT)
       if(not tD) then
-        wikilib.common.logStatus("wikilib.convApiE2Description: Type missing <"..sT.."> !")
         wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
-        if(bErr) then
-          error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+        wikilibError("Type missing <"..sT.."> !", bErr)
       end; tInfo.obj = tD[1]
       sE = wikilib.common.stringTrim(sE:sub(iS+1, -1))
     end
@@ -642,10 +635,8 @@ function wikilib.convApiE2Description(API, sE2)
     if(nS and nE) then
       tInfo.foo = wikilib.common.stringTrim(sE:sub(1, nS - 1))
       if(not tInfo.foo:find(pF)) then
-        wikilib.common.logStatus("wikilib.convApiE2Description: Function name invalid <"..tInfo.foo.."> !")
         wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
-        if(bErr) then
-          error("wikilib.convApiE2Description: Function name invalid <"..sE2.."> !") end
+        wikilibError("Function name invalid <"..tInfo.foo.."> !", bErr)
       end -- Extract the function name and chech for valid name
       tInfo.par = wikilib.common.stringExplode(sE:sub(nS + 1, nE - 1), sA)
       local sT, sP, nN = "", tInfo.par[1], #tInfo.par
@@ -664,39 +655,29 @@ function wikilib.convApiE2Description(API, sE2)
               sT = "number"
             else -- Generate error otherwise
               wikilib.common.logStatus("wikilib.convApiE2Description: Force number flag `nxtp = true` !")
-              wikilib.common.logStatus("wikilib.convApiE2Description: Type auto-correct <"..sE2.."> !")
-              if(bErr) then
-                error("wikilib.convApiE2Description: Type auto-correct <"..sE2.."> !") end
+              wikilibError("Type auto-correct <"..sE2.."> !", bErr)
             end
           end
           if(not sP:find(pV)) then -- Parameter name is crappy
-            wikilib.common.logStatus("wikilib.convApiE2Description: Parameter name invalid <"..sP.."> !")
             wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
-            if(bErr) then
-              error("wikilib.convApiE2Description: Parameter name invalid <"..sE2.."> !") end
+            wikilibError("Parameter name invalid <"..sP.."> !", bErr)
           end
           local tD = wikilib.convTypeE2Description(API, sT)
           if(not tD) then -- Then the type exists in the table and it is valid
-            wikilib.common.logStatus("wikilib.convApiE2Description: Parameter type missing <"..sT.."> !")
             wikilib.common.logStatus("wikilib.convApiE2Description: API Parameter mismatch <"..sE2.."> !")
-            if(bErr) then
-              error("wikilib.convApiE2Description: Type missing <"..sT.."> !") end
+            wikilibError("Parameter type missing <"..sT.."> !", bErr)
           end
           tInfo.par[iD] = tD[1] -- Extract the wiremod internal data type
         else -- If the first parameter is void stop checking the others
           tInfo.par[iD] = "" -- The void type is not inserted in description
           if(nN > 1) then
-            wikilib.common.logStatus("wikilib.convApiE2Description: Non single void <"..sT.."> !")
             wikilib.common.logStatus("wikilib.convApiE2Description: API Parameter mismatch <"..sE2.."> !")
-            if(bErr) then
-              error("wikilib.convApiE2Description: Non single void <"..sE2.."> !") end
+            wikilibError("Non single void <"..sT.."> !", bErr)
           end
         end
       end
     else -- In case of the parameters have unbalanced bracket
-      wikilib.common.logStatus("wikilib.convApiE2Description: Brackets mssing <"..sE2.."> !")
-      if(bErr) then
-        error("wikilib.convApiE2Description: Brackets missing <"..sE2.."> !") end
+      wikilibError("Brackets mssing <"..sE2.."> !", bErr)
     end    
     tInfo.com = tInfo.foo.."("
     if(tInfo.obj) then
@@ -728,8 +709,7 @@ function wikilib.makeReturnValues(API)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
         sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
-     wikilib.common.logStatus("wikilib.makeReturnValues: No file <"..sN..">!")
-     error("wikilib.makeReturnValues: No file <"..sN..">!") end
+    wikilibError("No file <"..sN..">!", true) end
   local sL, tF, tK, sA, bA, bE = fR:read("*line"), wikiMatch, wikiMList, "", false, false
   local mP, mH, mF = wikiFormat.npt, wikiFormat.hsh, wikiFormat.fnd
   while(sL ~= nil) do
@@ -771,9 +751,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
     if(not DSC[tK[ID]]) then bF = true
       wikilib.common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
   end
-  if(bErr and bF) then
-    error("wikilib.printMatchedAPI: Check markdown for missing description!")
-  end
+  if(bF) then wikilibError("No file <"..sN..">!", bErr) end
 end
 
 function wikilib.printTypeTable(API)
@@ -808,13 +786,8 @@ function wikilib.printDescriptionTable(API, DSC, iN)
   local tPool = apiGetValue(API, "POOL", iN); if(not tPool) then return end
   local nC, tC, tH = #tPool.cols, {}, {}
   for ID = 1, nC do local scol = tPool.cols[ID]
-    local csiz, clen = tPool.size[ID], scol:len()
-    if(csiz < clen) then
-      wikilib.common.logStatus("wikilib.printDescriptionTable: Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !")
-      wikilib.common.logStatus("wikilib.printDescriptionTable: Header mismatch <"..scol.."> ["..csiz.." < "..clen.."] !")
-      if(bErr) then
-        error("wikilib.printDescriptionTable: Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !") end
-    end
+    local csiz, clen = tPool.size[ID], scol:len(); if(csiz < clen) then
+      wikilibError("Header overflow <"..scol.."> ["..csiz.." < "..clen.."] !", bErr) end
     local ccat = ((csiz - clen) / 2)
     local fcat, bcat = math.floor(ccat), math.ceil(ccat)
     local algn = tPool.algn; algn = (algn and algn[ID] or nil)
@@ -823,10 +796,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
       if    (algn:sub(1,1) == "<") then tH[ID] = ":"..tH[ID]:sub(2,-1)
       elseif(algn:sub(1,1) == ">") then tH[ID] = tH[ID]:sub(1,-2)..":"
       elseif(algn:sub(1,1) == "|") then tH[ID] = ":"..tH[ID]:sub(2,-2)..":"
-      else
-        wikilib.common.logStatus("wikilib.printDescriptionTable: Alignment invalid <"..algn.."> !")
-        if(bErr) then error("wikilib.printDescriptionTable: Alignment invalid <"..algn.."> !") end
-      end
+      else wikilibError("Alignment invalid <"..algn.."> !", bErr) end
     end
     tC[ID] = wikiSpace:rep(fcat)..scol:gsub("%s+",wikiSpace)..wikiSpace:rep(bcat)
   end; table.sort(tPool); tPool.data = {}
@@ -853,18 +823,13 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     local iM = 0
     for rmk, rmv in pairs(wikiMatch) do
       if(n:find(rmk.."%(") and rmv.__top > 0) then iM = iM + 1
-        if(not wikilib.isValidMatch(rmv)) then if(bErr) then
-          error("wikilib.printDescriptionTable: Duplicated function <"..rmv.__nam.."> !") end
-        end
-
+        if(not wikilib.isValidMatch(rmv)) then
+          wikilibError("Duplicated function <"..rmv.__nam.."> !", bErr) end
         local ret = ""; sortMatch(rmv)
-
         for ID = 1, rmv.__top do local api = rmv[ID]; ret = api.ret
           if(not DSC[api.com]) then
-            wikilib.common.logStatus("wikilib.printDescriptionTable: Description missing <"..api.row.."> !")
-            wikilib.common.logStatus("wikilib.printDescriptionTable: API missing <"..api.com.."> !")
-            if(bErr) then
-              error("wikilib.printDescriptionTable: Description missing <"..api.com.."> !") end
+            wikilib.common.logStatus("wikilib.printDescriptionTable: API missing <"..api.row.."> !")
+            wikilibError("Description missing <"..api.com.."> !", bErr)
           end
 
           if(n == api.com) then
@@ -888,10 +853,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
           end
         end
       end
-    end; if(iM == 0) then
-      wikilib.common.logStatus("wikilib.printDescriptionTable: Description mismatch <"..n.."> !")
-      if(bErr) then error("wikilib.printDescriptionTable: Description mismatch <"..n.."> !") end
-    end
+    end; if(iM == 0) then wikilibError("Description mismatch <"..n.."> !", bErr) end
   end
   io.write("\n")
 end
@@ -939,10 +901,7 @@ function wikilib.parseKeyCombination(sS, vT, nW, nH)
     sTF, sTB = vT, vT
   elseif(common.isTable(vT)) then
     sTF, sTB = vT[1], vT[2]
-  else
-    wikilib.common.logStatus("wikilib.parseKeyCombination: Token invalid <"..tostring(vT).."> !")
-    if(bErr) then error("wikilib.parseKeyCombination: Token invalid <"..tostring(vT).."> !") end
-  end
+  else wikilibError("Token invalid <"..tostring(vT).."> !", bErr) end
   local bO, eO = sS:find(sTF, iD, true) -- Open token
   local bC, eC = sS:find(sTB, iD, true) -- Close token
   while(bO and eO and bC and eC) do
@@ -982,8 +941,7 @@ function wikilib.folderRoundSize(vS)
   else
     local iD, sS = 1, tostring(vS); while(tM[iD]) do
     if(tM[iD] == vS) then iM = iD; return iD end end
-    wikilib.common.logStatus("wikilib.folderRoundSize: Mismatch <"..vS.."> !")
-    if(tF.erro) then error("wikilib.folderRoundSize: Mismatch <"..vS.."> !") end
+    wikilibError("Mismatch <"..vS.."> !", tF.erro)
   end
 end
 
@@ -992,15 +950,14 @@ function wikilib.folderFlag(sF, bF)
   if(tF[sF] ~= nil) then
     tF[sF] = (bF and bF or false)
   else
-    wikilib.common.logStatus("wikilib.folderFlag: Mismatch <"..sF.."> !")
-    if(tF.erro) then error("wikilib.folderFlag: Mismatch <"..sF.."> !") end
+    wikilibError("Mismatch <"..sF.."> !", tF.erro)
   end
 end
 
 function wikilib.writeBOM(sF, vE)
   local sC, lE = tostring(sF or ""), wikilib.common.toBool(lE)
   local tU = wikiFolder.__ubom[sC]; if(not tU) then
-    return error("wikilib.writeBOM: Missed ("..tostring(lE)..") <"..sC..">") end
+    wikilibError("Missed ("..tostring(lE)..") <"..sC..">", tF.erro) end
   if(not lE) then
     for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
   else
@@ -1035,15 +992,9 @@ function wikilib.folderReadStructure(sP, iV)
   local tD = wikiFolder.__fdat -- Content descriptor
   local sC = wikiFolder.__fcmd:format(sP, nT)
   local nR = os.execute(sC); if(not nR) then
-    wikilib.common.logStatus("wikilib.folderReadStructure: Exec error ["..sC.."]", nil)
-    if(tF.erro) then
-      error("wikilib.folderReadStructure: Exec error: "..sC) end
-  end
+    wikilibError("Exec error ["..sC.."]", tF.erro) end
   local fD, oE = io.open(nT, "rb"); if(not fD) then
-    wikilib.common.logStatus("wikilib.folderReadStructure: Open error ["..nT.."]", nil)
-    if(tF.erro) then
-      error("wikilib.folderReadStructure: Open error: "..oE) end
-  end
+    wikilibError("Open error ["..nT.."]", tF.erro) end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
   while(sL) do sT = wikilib.common.stringTrim(sL)
     if(sL:match(wikiFolder.__snum)) then
@@ -1086,18 +1037,13 @@ function wikilib.folderReadStructure(sP, iV)
           end
         end
       else
-        wikilib.common.logStatus("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", nil)
-        if(tF.erro) then
-          error("wikilib.folderReadStructure: Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]") end
+        wikilibError("Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", tF.erro)
       end
     end
     sL = fD:read(wikiFolder.__read)
   end; fD:close(); os.remove(nT)
   if(not bC) then
-    wikilib.common.logStatus("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]", nil)
-    if(tF.erro) then
-      error("wikilib.folderReadStructure: Content missing ["..iT.."]["..sP.."]") end
-  end
+    wikilibError("Content missing ["..iT.."]["..sP.."]", tF.erro) end
   return tT
 end
 
@@ -1111,8 +1057,7 @@ local function folderLinkItem(tR, vC, bB)
     local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
     local tD, vP = wikiFolder.__idir, sR..sB
-    if(tF.ufbr) then -- wikilib.insReferID
-      -- wikilib.getTokenReference(mK, mV)
+    if(tF.ufbr) then
       local sL = wikilib.common.stringGetFileName(vP)
       local vR = wikilib.getTokenReference(sL, vP, tF.unqr)      
       sO = toLinkRefSrc("`"..sO.."`", vR)
@@ -1231,17 +1176,17 @@ end
 ]]
 local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   if(not wikilib.common.isTable(tPth)) then
-    error("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]")
+    wikilibError("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]", true)
   else
     if(not wikilib.common.isTable(tPth.cont)) then
-      error("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]")
+      wikilibError("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true)
     end
   end
   local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
   local sR, tF, iI = tostring(sR or ""), wikiFolder.__flag, wikiFolder.__dept
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   local tSor = folderOnlySkip(tPth, tSet); if(not tSor) then
-    error("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]") end   
+    wikilibError("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true) end   
   for iD = 1, tSor.__top do local vC, sL = tPth.cont[tSor[iD].__key], ""
     if(vC.root) then local dC = wikiSpace
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
@@ -1278,7 +1223,7 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
   local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local vR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   if(not wikilib.folderSettings(tSet, tPth)) then
-    error("Settings invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]") end   
+    wikilibError("Settings invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true) end
   local sN = tPth.base:sub(nE + 1, -1)
   local sB = tostring(tS[5] or "/")
   if(tF.namr and sG) then
@@ -1326,11 +1271,9 @@ function wikilib.getTokenReference(vT, vU, bN)
     else
       local tT = wikiRList.Meta[sT]
       if(tT.URL ~= sU and not bN) then
-        local fE = "wikilib.getTokenReference(%s): Token present with different URL!"
         wikilib.common.logStatus("< "..tT.URL , nil)
         wikilib.common.logStatus("> "..sU     , nil)
-        wikilib.common.logStatus(fE:format(sT), nil)
-        error(fE:format(sT))
+        wikilibError("Token ["..sT.."] present with different URL!", true)
       end
     end
     iD = wikiRList.Meta[sT].Idx
