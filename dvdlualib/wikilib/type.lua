@@ -5,7 +5,7 @@
   [4] -> The type that is used when writing an actual [expression 2](https://github.com/wiremod/wire/wiki/Expression-2) source for `[1]`
   [5] -> General link description that is used for linking arguments in brackets `[]` in `[4]`
 ]]--
-local wiki_type =
+local wikiType =
 {
   list = {
     {"a"  , "Angle"        , "[Angle] class"           , "angle"     , "https://en.wikipedia.org/wiki/Euler_angles"},
@@ -53,4 +53,4 @@ local wiki_type =
   }
 }
 
-return wiki_type
+return wikiType

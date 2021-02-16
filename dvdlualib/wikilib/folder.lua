@@ -25,19 +25,6 @@ local wikiFolder = {}
         ["UTF32"] = {0x00, 0x00, 0xFE, 0xFF} -- UTF32
       }
       wikiFolder.__furl = {"",""}
-      wikiFolder.__flag = {
-        prnt = false, -- (TRUE) Show the parent directory in the tree
-        hide = false, -- (TRUE) Show hidden directories
-        size = false, -- (TRUE) Show file size
-        unqr = false, -- (TRUE) Use unique reference for every replaced token
-        hash = false, -- (TRUE) Show directory hash address
-        urls = false, -- (TRUE) Use URLs for the files /wikiFolder.__furl/
-        namr = false, -- (TRUE) Use Repo name for the tree name root
-        ufbr = false, -- (TRUE) Use file bottom references instead of long links
-        prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting   
-        qref = false, -- (TRUE) Quote the string in the link reference
-        erro = false  -- (TRUE) Enables the error trigger for folder tree stuff
-      }
       wikiFolder.__mems = {"", "k", "m", "t"} -- File size amount round
       wikiFolder.__memi = 3                   -- File size amount round ID
       

@@ -4,6 +4,7 @@ local wikilib   = {} -- Reference to the library
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
 local wikiRList = {Size = 0, Meta = {}} -- Stores the markdown link
+local wikiFlags  = require("dvdlualib/wikilib/flag")
 local wikiType   = require("dvdlualib/wikilib/type")
 local wikiFolder = require("dvdlualib/wikilib/folder")
 local wikiFormat = require("dvdlualib/wikilib/format")
@@ -15,6 +16,8 @@ wikilib.common = common
 local wikiRefer = { ["is"] = "n",
   __this = {"dump", "res", "set", "upd", "smp", "add", "rem", "no", "new"}
 }
+-- What to write or output when something is missing
+local wikiNotHere = "N/A"
 -- Pattern for something in brackets including the brakets
 local wikiBraketsIN = "%(.-%)"
 -- What the instance creator might start with
@@ -142,6 +145,16 @@ local function apiGetValue(API, sTab, sKey, vDef)
   local tTab = API[sTab]
   local bTab = wikilib.common.isTable(tTab)
   return (bTab and tTab[sKey] or vDef)
+end
+
+function wikilib.isFlag(sF, bF)
+  local sF = tostring(sF or wikiNotHere); if(sF == wikiNotHere) then
+    wikilibError("Flag hash missing !", wikiFlags.erro) end
+  local cF = wikiFlags[sF]; if(not wikilib.common.isBool(cF)) then 
+    wikilibError("Flag ["..sF.."] type ["..type(cF).."] !", wikiFlags.erro) end
+  if(not wikilib.common.isNil(bF)) then
+    wikiFlags[sF] = wikilib.common.toBool(bF)
+  end; return wikiFlags[sF]
 end
 
 function wikilib.newLoopTerm(sKey, vO, vN)
@@ -933,24 +946,15 @@ function wikilib.folderSetTemp(sT)
 end
 
 function wikilib.folderRoundSize(vS)
-  local tF = wikiFolder.__flag
   local tM, iM = wikiFolder.__mems, wikiFolder.__memi
   if(tonumber(vS)) then
     iM = wikilib.common.getClamp(math.floor(tonumber(nS) or 1), 1, #tM)
     return iM -- Return the parameter used
   else
+    local bE = wikilib.isFlag("erro")
     local iD, sS = 1, tostring(vS); while(tM[iD]) do
     if(tM[iD] == vS) then iM = iD; return iD end end
-    wikilibError("Mismatch <"..vS.."> !", tF.erro)
-  end
-end
-
-function wikilib.folderFlag(sF, bF)
-  local tF, sF = wikiFolder.__flag, tostring(sF)
-  if(tF[sF] ~= nil) then
-    tF[sF] = (bF and bF or false)
-  else
-    wikilibError("Mismatch <"..sF.."> !", tF.erro)
+    wikilibError("Mismatch <"..vS.."> !", bE)
   end
 end
 
@@ -987,14 +991,17 @@ function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
   local tU, bC = wikiFolder.__furl, false
   local sR = wikilib.common.randomGetString(wikiFolder.__ranm)
-  local vT, tF = tostring(iT).."_"..sR, wikiFolder.__flag
+  local erro = wikilib.isFlag("erro") 
+  local prnt = wikilib.isFlag("prnt")
+  local hide = wikilib.isFlag("hide")
+  local vT = (tostring(iT or "").."_"..sR)
   local nT = wikiFolder.__temp..vT..".txt"
   local tD = wikiFolder.__fdat -- Content descriptor
   local sC = wikiFolder.__fcmd:format(sP, nT)
   local nR = os.execute(sC); if(not nR) then
-    wikilibError("Exec error ["..sC.."]", tF.erro) end
+    wikilibError("Exec error ["..sC.."]", erro) end
   local fD, oE = io.open(nT, "rb"); if(not fD) then
-    wikilibError("Open error ["..nT.."]", tF.erro) end
+    wikilibError("Open error ["..nT.."]", erro) end
   local tT, iD, sL = {hash = {iT, sR}}, 0, fD:read(wikiFolder.__read)
   while(sL) do sT = wikilib.common.stringTrim(sL)
     if(sL:match(wikiFolder.__snum)) then
@@ -1019,12 +1026,12 @@ function wikilib.folderReadStructure(sP, iV)
         end -- Make sure to normalize the byte separators for the file size
         local sN = wikilib.common.stringTrim(sL:sub(nE, -1))
         if(sS == wikiFolder.__idir[3] and wikiFolder.__pdir[sN]) then
-          if(tF.prnt and iT > 1) then -- Parent/current directory
+          if(prnt and iT > 1) then -- Parent/current directory
             if(not tT.cont) then tT.cont = {} end; iD = iD + 1
             tT.cont[iD] = {size = sS, name = sN}
           end
         elseif(sN:sub(1,1) == "." and not wikiFolder.__pdir[sN]) then
-          if(tF.hide) then -- Hidden file or folder
+          if(hide) then -- Hidden file or folder
             if(not tT.cont) then tT.cont = {} end; iD = iD + 1
             tT.cont[iD] = {size = sS, name = sN}
           end
@@ -1037,29 +1044,31 @@ function wikilib.folderReadStructure(sP, iV)
           end
         end
       else
-        wikilibError("Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", tF.erro)
+        wikilibError("Descriptor mismatch ["..iT.."]["..sL.."]["..sP.."]", erro)
       end
     end
     sL = fD:read(wikiFolder.__read)
   end; fD:close(); os.remove(nT)
   if(not bC) then
-    wikilibError("Content missing ["..iT.."]["..sP.."]", tF.erro) end
+    wikilibError("Content missing ["..iT.."]["..sP.."]", erro) end
   return tT
 end
 
 local function folderLinkItem(tR, vC, bB)
-  local sR, tU = tR.link, wikiFolder.__furl
-  local sO, tF = vC.name, wikiFolder.__flag
-  if(tF.urls) then
+  local sR, sO, tU = tR.link, vC.name, wikiFolder.__furl
+  local urls = wikilib.isFlag("urls")  
+  local ufbr = wikilib.isFlag("ufbr")
+  local unqr = wikilib.isFlag("unqr")  
+  if(urls) then
     local sN = wikilib.common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
     local sB = (bB and "" or wikilib.getEncodeURL(sO))   
     local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
     local tD, vP = wikiFolder.__idir, sR..sB
-    if(tF.ufbr) then
+    if(ufbr) then
       local sL = wikilib.common.stringGetFileName(vP)
-      local vR = wikilib.getTokenReference(sL, vP, tF.unqr)      
+      local vR = wikilib.getTokenReference(sL, vP, unqr)      
       sO = toLinkRefSrc("`"..sO.."`", vR)
       if(vC.name == tD[1]) then
         wikiRList[wikiRList.Size] = wikiRList[wikiRList.Size]:sub(1,-3)
@@ -1175,31 +1184,37 @@ end
  * sR   > Previous iteration graph recursion destination ( omitted )
 ]]
 local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
+  local erro = wikilib.isFlag("erro")
+  local hash = wikilib.isFlag("hash")
+  local size = wikilib.isFlag("size")
+  local prep = wikilib.isFlag("prep")
+  local qref = wikilib.isFlag("qref")
+  local ufbr = wikilib.isFlag("ufbr")
   if(not wikilib.common.isTable(tPth)) then
-    wikilibError("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]", true)
+    wikilibError("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]", erro)
   else
     if(not wikilib.common.isTable(tPth.cont)) then
-      wikilibError("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true)
+      wikilibError("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", erro)
     end
   end
   local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
-  local sR, tF, iI = tostring(sR or ""), wikiFolder.__flag, wikiFolder.__dept
+  local sR, iI = tostring(sR or ""), wikiFolder.__dept
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   local tSor = folderOnlySkip(tPth, tSet); if(not tSor) then
-    wikilibError("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true) end   
+    wikilibError("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", erro) end   
   for iD = 1, tSor.__top do local vC, sL = tPth.cont[tSor[iD].__key], ""
     if(vC.root) then local dC = wikiSpace
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
       local sD = (tSor[iD+1] and tSym[4] or dC)..dC:rep(iI)
-      local sS = (tF.hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
+      local sS = (hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref, tF.ufbr)) end
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, prep, qref, ufbr)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
       folderDrawTreeRecurse(vC.root, tSym, sG, tSet, iR+1, sR..sD)
     else
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, tF.prep, tF.qref, tF.ufbr)) end
-      local sS = ((tF.size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, prep, qref, ufbr)) end
+      local sS = ((size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
     end
@@ -1216,17 +1231,17 @@ local function folderRemoveBLOB(sU)
 end
 
 function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
-  local tS = wikiFolder.__syms
+  local namr = wikilib.isFlag("namr")
+  local tS, sR = wikiFolder.__syms, tostring(sR or "")
   local iA = wikilib.common.getClamp(tonumber(vIdx) or 1, 1, #tS); tS = tS[iA]
   local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
   local nS, nE = tPth.base:find(wikiFolder.__drem)
-  local sR, tF = tostring(sR or ""), wikiFolder.__flag
   local vR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   if(not wikilib.folderSettings(tSet, tPth)) then
     wikilibError("Settings invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", true) end
   local sN = tPth.base:sub(nE + 1, -1)
   local sB = tostring(tS[5] or "/")
-  if(tF.namr and sG) then
+  if(namr and sG) then
     local tU = wikiFolder.__furl
     local sT = wikilib.common.stringTrim(sG, "/")
     local sM = wikilib.common.stringGetFileName(sT)
@@ -1234,10 +1249,10 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
       if(tU[2] ~= "") then local nL = 0
         sM = folderRemoveBLOB(tU[2])
         sN = wikilib.common.stringGetFileName(sM)
-        sM = folderLinkItem({link=sM}, {name=sN}, tF.namr)
+        sM = folderLinkItem({link=sM}, {name=sN}, namr)
         io.write("`"..sB..sR.."`"..sM..wikiNewLN); io.write("\n")
       else
-        sM = folderLinkItem({link=sG}, {name=sM}, tF.namr)
+        sM = folderLinkItem({link=sG}, {name=sM}, namr)
         io.write("`"..sB..sR.."`"..sM..wikiNewLN); io.write("\n")
       end
     else
