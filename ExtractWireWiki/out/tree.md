@@ -25,7 +25,7 @@
 `    ║           ╚═══`[`custom`][ref-23-custom]  
 `    ╠═══`[`trackassembly`][ref-24-trackassembly]  
 `    ║   ╚═══`[`lang`][ref-25-lang] --> Languages and translations  
-`    ╚═══`[`weapons`][ref-27-weapons] --> Contains all the dedicated [MASK][ref-26-MASK] tool objects information [MASK][ref-26-MASK]  
+`    ╚═══`[`weapons`][ref-27-weapons] --> Contains all the dedicated [`MASK`][ref-26-MASK] tool objects information [`MASK`][ref-26-MASK]  
 `        ╚═══`[`gmod_tool`][ref-28-gmod%5Ftool]  
 `            ╚═══`[`stools`][ref-29-stools]  
 
