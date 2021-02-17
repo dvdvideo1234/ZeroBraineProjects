@@ -406,6 +406,7 @@ function wikilib.replaceToken(sT, tR, tS)
 end
 
 function wikilib.updateAPI(API, DSC)
+  local bQ = wikilib.isFlag("quot")
   local wD = wikilib.isFlag("wdsc")
   local sO, tA, tW = apiGetValue(API,"TYPE", "OBJ")  
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
@@ -417,7 +418,7 @@ function wikilib.updateAPI(API, DSC)
     if(wD) then
       table.insert(tW, toWireDSC(api, dsc))
     end
-    if(apiGetValue(API,"FLAG", "quot")) then
+    if(bQ) then
       local tD = wikilib.common.stringExplode(dsc, " ")
       for ID = 1, #tD do local sW = tD[ID]
         local cQ = sW:sub(1,1)..sW:sub(-1,-1)

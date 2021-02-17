@@ -24,9 +24,12 @@ local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then
     if(type(API.FLAG) == "table") then
+      wikilib.isFlag("erro", API.FLAG.erro)
       for k, v in pairs(API.FLAG) do
-        wikilib.isFlag(k, v)
+        if(k ~= "erro") then wikilib.isFlag(k, v) end
       end
+    else
+      wikilib.isFlag("erro", true)
     end
     wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
     if(DSC) then
