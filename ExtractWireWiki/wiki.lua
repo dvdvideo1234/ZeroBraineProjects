@@ -23,6 +23,11 @@ local sB = com.normFolder(dir.getBase()..sProj)
 local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then
+    if(type(API.FLAG) == "table") then
+      for k, v in pairs(API.FLAG) do
+        wikilib.isFlag(k, v)
+      end
+    end
     wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
     if(DSC) then
       wikilib.writeBOM("UTF8")

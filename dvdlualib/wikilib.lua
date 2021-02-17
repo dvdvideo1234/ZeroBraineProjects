@@ -126,9 +126,12 @@ local function toReferID(...)
 end
 
 local function apiSortFinctionParam(a, b)
-  if(table.concat(a.par) < table.concat(b.par)) then return true end
-  return false
+  return (table.concat(a.par) < table.concat(b.par))
 end
+
+local function getFunctionName(vS)
+  return "wikilib."..wikilib.common.stringGetFunction(vS, wikiNotHere)
+end  
 
 local function sortMatch(tM)
   table.sort(tM, apiSortFinctionParam)
@@ -347,21 +350,22 @@ end
 --[[
  * sT > The sting to be tokenized
  * tR > Replace token table
- * bF > When the link has to be formatted with the key
- * bQ > Flag for quoted string in replacement
  * tS > Set of parameters for found token
 ]]
-function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
-  local sF = "wikilib.replaceToken"
-  local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
+function wikilib.replaceToken(sT, tR, tS)
+  local sF = getFunctionName(1)
+  local bF = wikilib.isFlag("prep")
+  local bQ = wikilib.isFlag("qref")
+  local bR = wikilib.isFlag("ufbr")
   local qR = wikilib.common.getPick(bQ, "`", "")
+  local sD, sN, iD, dL = tostring(sT or ""), "", 1, 0
   if(tR and wikilib.common.isTable(tR)) then
     local mF, mB, mK, mV, mP = wikilib.findTokenCloser(sD, tR, iD)
     wikilib.newLoopTerm(sF, mF, iD)
     while(mF and mB) do
       if(wikilib.common.isTable(mV)) then
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
-        local vD, vL = wikilib.replaceToken(sD, mV, bF, bQ, bR, tV)
+        local vD, vL = wikilib.replaceToken(sD, mV, tV)
         iD, sD = (mB + vL), vD
       else local nF, nB = (mF-1), (mB+1)
         local sX = (bF and mV:format(mK) or mV)
@@ -402,16 +406,12 @@ function wikilib.replaceToken(sT, tR, bF, bQ, bR, tS)
 end
 
 function wikilib.updateAPI(API, DSC)
-  local tA, tW
-  local sO = apiGetValue(API,"TYPE", "OBJ")
-  local wD = apiGetValue(API,"FLAG", "wdsc")
-  local bF = apiGetValue(API,"FLAG", "prep")
-  local bQ = apiGetValue(API,"FLAG", "qref")
-  local bR = apiGetValue(API,"FLAG", "ufbr")
-  
+  local wD = wikilib.isFlag("wdsc")
+  local sO, tA, tW = apiGetValue(API,"TYPE", "OBJ")  
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
-  if(wD) then API.POOL.wdsc = {}
-    tW = apiGetValue(API,"POOL", "wdsc")
+  if(wD) then
+    API.POOL.WDESCR = {}
+    tW = API.POOL.WDESCR
   end
   for api, dsc in pairs(DSC) do
     if(wD) then
@@ -450,7 +450,7 @@ function wikilib.updateAPI(API, DSC)
       tA = API.POOL[3] -- The functoion is a helper API
     end
     if(API.REPLACE) then local tR = API.REPLACE
-      DSC[api] = wikilib.replaceToken(DSC[api], tR, bF, bQ, bR)
+      DSC[api] = wikilib.replaceToken(DSC[api], tR)
     end
     table.insert(tA, api)
   end
@@ -541,7 +541,7 @@ end
 
 function wikilib.printTypeReference(API, bExt)
   local tT, sL = wikiType.list, apiGetValue(API,"TYPE", "LNK")
-  local bE = apiGetValue(API,"FLAG", "extr") -- Use external wire types
+  local bE = wikilib.isFlag("extr") -- Use external wire types
   for ID = 1, #tT do local iDx = (bE and 2 or 1)
     if(tT[ID][iDx] ~= "") then
       local ref, typ = toRefer(tT[ID][1]), toType(tT[ID][iDx])
@@ -573,9 +573,9 @@ function wikilib.concatType(API, sT)
   local sS, sA = wikiFormat.tsp, wikiFormat.asp
   if(sV:sub(1,1) == sS) then sV = sV:sub(2,-1) end
   local sVo = wikilib.convTypeE2Description(API, "void")[1]
-  local bVo = apiGetValue(API,"FLAG", "remv")
+  local bVo = wikilib.isFlag("remv")
   if(bVo and sV == sVo) then return "" end
-  local bI = apiGetValue(API, "FLAG", "icon")
+  local bI = wikilib.isFlag("icon")
   if(bI) then
     local sL = apiGetValue(API,"TYPE", "LNK")
     local exp = wikilib.common.stringExplode(sV, sS)
@@ -622,8 +622,8 @@ function wikilib.convApiE2Description(API, sE2)
   local sE = wikilib.common.stringTrim(sE2)
   local sM, sA = wikiFormat.msp, wikiFormat.asp
   local pF, pV = wikiFormat.fpt, wikiFormat.vpt
-  local bErr = apiGetValue(API, "FLAG", "erro")
-  local bNfr = apiGetValue(API, "FLAG", "nxtp")
+  local bErr = wikilib.isFlag("erro")
+  local bNfr = wikilib.isFlag("nxtp")
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
     sE = wikilib.common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
@@ -759,7 +759,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
   local tK, bF = wikiMList, false; table.sort(tK)
   local sD = apiGetValue(API, "HDESC", "dsc")
   local sN = tostring(sNam or (sD or wikiDChunk.mch))
-  local bErr = apiGetValue(API, "FLAG", "erro")
+  local bErr = wikilib.isFlag("erro")
   for ID = 1, tK.__top do
     if(not DSC[tK[ID]]) then bF = true
       wikilib.common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
@@ -771,8 +771,8 @@ function wikilib.printTypeTable(API)
   local tT = wikiType.list
   wikilib.printRow({"Icon", "Internal", "External", "Description"})
   wikilib.printRow({":---:", ":---:", ":---:", "---"})
-  local sQ = apiGetValue(API, "FLAG", "qref") and "`" or ""
-  local bQ = apiGetValue(API, "FLAG", "quot")
+  local sQ = wikilib.isFlag("qref") and "`" or ""
+  local bQ = wikilib.isFlag("quot")
   for ID = 1, #tT do local sL = tT[ID][5]
     local sI = wikilib.common.stringTrim(tT[ID][1])
     local sP = toInsert(toImage(toRefer(sI)))
@@ -792,9 +792,9 @@ function wikilib.printTypeTable(API)
 end
 
 function wikilib.printDescriptionTable(API, DSC, iN)
-  local bMsp = apiGetValue(API, "FLAG", "mosp")
-  local bIco = apiGetValue(API, "FLAG", "icon")
-  local bErr = apiGetValue(API, "FLAG", "erro")
+  local bMsp = wikilib.isFlag("mosp")
+  local bIco = wikilib.isFlag("icon")
+  local bErr = wikilib.isFlag("erro")
   local sObj = apiGetValue(API, "TYPE", "OBJ")
   local tPool = apiGetValue(API, "POOL", iN); if(not tPool) then return end
   local nC, tC, tH = #tPool.cols, {}, {}
@@ -1187,9 +1187,6 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   local erro = wikilib.isFlag("erro")
   local hash = wikilib.isFlag("hash")
   local size = wikilib.isFlag("size")
-  local prep = wikilib.isFlag("prep")
-  local qref = wikilib.isFlag("qref")
-  local ufbr = wikilib.isFlag("ufbr")
   if(not wikilib.common.isTable(tPth)) then
     wikilibError("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]", erro)
   else
@@ -1208,12 +1205,12 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
       local sD = (tSor[iD+1] and tSym[4] or dC)..dC:rep(iI)
       local sS = (hash and (" ["..vC.root.hash[1].."]"..vC.root.hash[2]) or "")
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, prep, qref, ufbr)) end
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap)) end
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
       folderDrawTreeRecurse(vC.root, tSym, sG, tSet, iR+1, sR..sD)
     else
       if(tSet.Desc and tSet.Desc[vC.name]) then
-        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap, prep, qref, ufbr)) end
+        sL = (" --> "..wikilib.replaceToken(tSet.Desc[vC.name], tSet.Swap)) end
       local sS = ((size and vC.size ~= wikiFolder.__idir[3]) and wikilib.fileSize(vC.size) or "")
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
       io.write("`"..sR..sX.."`"..folderLinkItem(tPth, vC)..sS..sL..wikiNewLN); io.write("\n")
