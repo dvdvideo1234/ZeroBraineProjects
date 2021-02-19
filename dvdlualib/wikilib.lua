@@ -164,6 +164,17 @@ function wikilib.isFlag(vF, bF)
   end; return wikiFlags[sF] -- Return the intern library boolean value
 end
 
+function wikilib.setFlags(tF)
+  if(wikilib.common.isTable(tF)) then
+    local sE = "erro"; wikilib.isFlag(sE, tF[sE])
+    for k, v in pairs(tF) do -- Loop list
+      if(k ~= sE) then wikilib.isFlag(k, v) end
+    end -- Transfer all flags except error flag
+  else -- This is done fr handlings arrors in /isFlag/
+    wikilibError("List mismatch ["..type(tF).."] !", true)
+  end -- Force generated error when list is something else
+end
+
 function wikilib.newLoopTerm(sKey, vO, vN)
   wikiLoopTM[sKey] = {vN, vO, wikiLoopTM.Cnt}
 end

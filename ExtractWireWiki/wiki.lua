@@ -25,17 +25,10 @@ if(f) then io.output(f)
   if(API) then
     local tyF = type(API.FLAG)
     if(tyF == "table") then
-      wikilib.isFlag("erro", API.FLAG.erro)
-      for k, v in pairs(API.FLAG) do
-        if(k ~= "erro") then wikilib.isFlag(k, v) end
-      end
+      wikilib.setFlags(API.FLAG)
     elseif(tyF == "function") then
-      local bS, tF = pcall(API.FLAG)
-      if(bS) then
-        wikilib.isFlag("erro", tF.erro)
-        for k, v in pairs(tF) do
-          if(k ~= "erro") then wikilib.isFlag(k, v) end
-        end
+      local bS, tF = pcall(API.FLAG); if(bS) then
+        wikilib.setFlags(tF)
       else error("main.lua: API flag: "..tF) end
     else
       wikilib.isFlag("erro", true)
