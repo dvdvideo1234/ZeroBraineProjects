@@ -7,7 +7,7 @@ local wikiFlag = {
     qref = false, -- (TRUE) Quote the string in the link reference
     wdsc = false, -- (TRUE) Outputs the wire description /POOL.WDESCR/ in the markdown overhead
     mosp = false, -- (TRUE) Enables monospace font for the function names
-    ufbr = false, -- (TRUE) Enables reference links generation  when processing tokens
+    ufbr = false, -- (TRUE) Enables reference links generation when processing tokens
     prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
     nxtp = false, -- (TRUE) Utilizes the wire NUMBER datatype when one is not provided ( forced )
     prnt = false, -- (TRUE) Show the parent directory in the tree
@@ -16,7 +16,7 @@ local wikiFlag = {
     unqr = false, -- (TRUE) Use unique reference for every replaced token
     hash = false, -- (TRUE) Show directory hash address
     urls = false, -- (TRUE) Use URLs for the files /wikiFolder.__furl/
-    namr = false, -- (TRUE) Use Repo name for the tree name root
+    namr = false  -- (TRUE) Use Repo name for the tree name root
 }
 
 return wikiFlag

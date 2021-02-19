@@ -23,11 +23,20 @@ local sB = com.normFolder(dir.getBase()..sProj)
 local f, s = io.open(sB.."out/wiki.md", "wb")
 if(f) then io.output(f)
   if(API) then
-    if(type(API.FLAG) == "table") then
+    local tyF = type(API.FLAG)
+    if(tyF == "table") then
       wikilib.isFlag("erro", API.FLAG.erro)
       for k, v in pairs(API.FLAG) do
         if(k ~= "erro") then wikilib.isFlag(k, v) end
       end
+    elseif(tyF == "function") then
+      local bS, tF = pcall(API.FLAG)
+      if(bS) then
+        wikilib.isFlag("erro", tF.erro)
+        for k, v in pairs(tF) do
+          if(k ~= "erro") then wikilib.isFlag(k, v) end
+        end
+      else error("main.lua: API flag: "..tF) end
     else
       wikilib.isFlag("erro", true)
     end

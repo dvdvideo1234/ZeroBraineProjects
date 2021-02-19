@@ -150,14 +150,18 @@ local function apiGetValue(API, sTab, sKey, vDef)
   return (bTab and tTab[sKey] or vDef)
 end
 
-function wikilib.isFlag(sF, bF)
-  local sF = tostring(sF or wikiNotHere); if(sF == wikiNotHere) then
-    wikilibError("Flag hash missing !", wikiFlags.erro) end
-  local cF = wikiFlags[sF]; if(not wikilib.common.isBool(cF)) then 
-    wikilibError("Flag ["..sF.."] type ["..type(cF).."] !", wikiFlags.erro) end
-  if(not wikilib.common.isNil(bF)) then
-    wikiFlags[sF] = wikilib.common.toBool(bF)
-  end; return wikiFlags[sF]
+function wikilib.isFlag(vF, bF)
+  local sF = tostring(vF or ""); if(wikilib.common.isDryString(sF)) then
+    wikilibError("Flag name missing !", wikiFlags.erro) end
+  local cF = wikiFlags[sF]; if(wikilib.common.isNil(cF)) then 
+    wikilibError("Flag ["..sF.."] missing !", wikiFlags.erro)
+  else
+    if(not wikilib.common.isBool(cF)) then -- Check internal library flags
+      wikilibError("Flag ["..sF.."] intern type ["..type(cF).."] !", wikiFlags.erro) end
+    if(not wikilib.common.isNil(bF)) then -- When a second argument is passed
+      wikiFlags[sF] = wikilib.common.toBool(bF) -- Write the flag internally
+    end -- Finish setting. When no second argument is passed no change
+  end; return wikiFlags[sF] -- Return the intern library boolean value
 end
 
 function wikilib.newLoopTerm(sKey, vO, vN)

@@ -10,7 +10,7 @@ local API = {
     -- wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true,  -- (TRUE) Enables monospace font for the function names
     ufbr = true,  -- (TRUE) Enables reference links generation  when processing tokens
-    prep = false  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
+    prep = true  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
   },
   POOL = {
     {name="MAKE" ,cols={"Instance creator" , "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
