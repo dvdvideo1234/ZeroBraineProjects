@@ -17,7 +17,7 @@ local wikiFlag = {
   hash = false, -- (TRUE) Show directory hash address
   urls = false, -- (TRUE) Use URLs for the files /wikiFolder.__furl/
   namr = false, -- (TRUE) Use Repo name for the tree name root
-  caps = false  -- (TRUE) Replace tokens by searching for all caps in all caps text
+  caps = false  -- (TRUE) Replace tokens by using case insensitive matching
 }
 
 return wikiFlag
