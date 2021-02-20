@@ -8,9 +8,10 @@ local API = {
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
     -- wdsc = true,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    caps = true,  -- (TRUE) Replace tokens by searching for all caps in all caps text
     mosp = true,  -- (TRUE) Enables monospace font for the function names
     ufbr = true,  -- (TRUE) Enables reference links generation  when processing tokens
-    prep = true  -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
+    prep = true   -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
   },
   POOL = {
     {name="MAKE" ,cols={"Instance creator" , "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
@@ -47,12 +48,15 @@ local API = {
     LNK = "https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/%s"
   },
   REPLACE = {
+    ["reference"]       = "https://en.wikipedia.org/wiki/Reference_(computer_science)",
+    ["references"]      = "https://en.wikipedia.org/wiki/Reference_(computer_science)",
     ["flag"]            = "https://en.wikipedia.org/wiki/Boolean_flag",
     ["list"]            = "https://en.wikipedia.org/wiki/List_(abstract_data_type)",
     ["axis"]            = "https://en.wikipedia.org/wiki/Cartesian_coordinate_system",
     ["local axis"]      = "https://en.wikipedia.org/wiki/Local_coordinates",
     ["local"]           = "https://en.wikipedia.org/wiki/Local_coordinates",
     ["copy"]            = "https://en.wikipedia.org/wiki/Copying",
+    ["copies"]          = "https://en.wikipedia.org/wiki/Copying",
     ["position"]        = "https://en.wikipedia.org/wiki/Position_(geometry)",
     ["positions"]       = "https://en.wikipedia.org/wiki/Position_(geometry)",
     ["distance"]        = "https://en.wikipedia.org/wiki/Euclidean_distance",
@@ -102,6 +106,11 @@ local API = {
     ["StControl"]       = "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl",
     ["expression"]      = "https://github.com/wiremod/wire/wiki/Expression-2",
     ["expression chip"] = "https://github.com/wiremod/wire/wiki/Expression-2",
+    ["configuration"]   = "https://en.wikipedia.org/wiki/Computer_configuration",
+    ["configurations"]  = "https://en.wikipedia.org/wiki/Computer_configuration",
+    ["filter"]          = "https://en.wikipedia.org/wiki/Filter_(higher-order_function)",
+    ["filters"]         = "https://en.wikipedia.org/wiki/Filter_(higher-order_function)",
+    ["filtering"]       = "https://en.wikipedia.org/wiki/Filter_(higher-order_function)",
     ["surface"]         = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
     ["surfaces"]        = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
   },
@@ -185,17 +194,17 @@ the direction is reversed instead.
 ### How can I configure the trace filter?
 There are currently three types of trace filters in [Garry's mod][ref-gmod] that you can put in the
 [`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getFilterMode` will return the
-current tracer filter operation mode. The filter configuration is `NIL` by default  
- 1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace  
+current tracer filter operation mode. The filter configuration is `NIL` by default
+ 1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace
     This filter mode is activated by utilizing the `setFilterEnt` method by `Ent` as `entity`
- 2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace  
+ 2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace
     This filter mode is activated by utilizing the `setFilterEar` method by `Ear` as `entity array`
- 3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available   
+ 3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available
     This filter mode is activated by utilizing the `setFilterFnc` method by `Fnc` as `function`
  4. User can also clear the filter entierly by utilizing the `remFilter` method
 
 ### Do you have an example by any chance?
-The internal type of the class is `%s` and internal expression type `%s`, so to create 
+The internal type of the class is `%s` and internal expression type `%s`, so to create
 a tracer instance you can take a [look at the example][ref_example].
 
 ### Can you show me the methods of the class?

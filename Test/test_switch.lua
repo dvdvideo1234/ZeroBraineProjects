@@ -9,7 +9,7 @@ local drpath = require("directories")
 
 local com = require("common")
 
-local a = -1
+local a = 99
 
-print(com.getSwitch(a, 1, 7, 3, "asdad", -1, 10))
+print(com.getSwitch(a, 1, 7, 3, "asdad", -1, 10, "n/z"))
 

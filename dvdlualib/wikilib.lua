@@ -310,30 +310,33 @@ function wikilib.isEncodedURL(sURL)
   return ((tostring(sURL or ""):find("%%[A-Za-z0-9][A-Za-z0-9]")) > 0 and true or false)
 end
 
-function wikilib.findTokenCloser(sT, tR, iD)
+function wikilib.findTokenCloser(vT, tR, iD)
+  local bC = wikilib.isFlag("caps")
+  local sT = (bC and vT:upper() or vT)
   local iM, tM = 0, {}
   local mF, mB, mK, mV, mP
   for k, v in pairs(tR) do
+    local sK = (bC and k:upper() or k)
     if(k:sub(1,1) ~= "#") then
-      local nF, nB = sT:find(k, iD, true)
+      local nF, nB = sT:find(sK, iD, true)
       if(nF and nB) then
         if(not (mF and mB and mK)) then  
-          mF, mB, mK, mV, mP = nF, nB, k, v, false
+          mF, mB, mK, mV, mP = nF, nB, vT:sub(nF, nB), v, false
           iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
         else
           if(nF <= mF and mF >= iD) then
-            mF, mB, mK, mV, mP = nF, nB, k, v, false
+            mF, mB, mK, mV, mP = nF, nB, vT:sub(nF, nB), v, false
             iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
           end
         end
-      else nF, nB = sT:find(k, iD)
+      else nF, nB = sT:find(sK, iD)
         if(nF and nB) then
           if(not (mF and mB and mK)) then
-            mF, mB, mK, mV, mP = nF, nB, k, v, true
+            mF, mB, mK, mV, mP = nF, nB, vT:sub(nF, nB), v, true
             iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
           else
             if(nF <= mF and mF >= iD) then
-              mF, mB, mK, mV, mP = nF, nB, k, v, true
+              mF, mB, mK, mV, mP = nF, nB, vT:sub(nF, nB), v, true
               iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
             end
           end
@@ -772,15 +775,20 @@ function wikilib.makeReturnValues(API)
 end
 
 function wikilib.printMatchedAPI(API, DSC, sNam)
-  local tK, bF = wikiMList, false; table.sort(tK)
+  local tK, bF, iK = wikiMList, false, 0; table.sort(tK)
   local sD = apiGetValue(API, "HDESC", "dsc")
   local sN = tostring(sNam or (sD or wikiDChunk.mch))
   local bErr = wikilib.isFlag("erro")
-  for ID = 1, tK.__top do
-    if(not DSC[tK[ID]]) then bF = true
-      wikilib.common.logStatus(sN.."[\""..tK[ID].."\"] = \"\"") end
-  end
-  if(bF) then wikilibError("No file <"..sN..">!", bErr) end
+  for key, val in pairs(DSC) do bF = false
+    for iD = 1, tK.__top do -- Search description in source
+      if(tK[iD] == key) then bF = true; break end end
+    if(not bF) then iK = iK + 1 -- Description not found in the source
+      wikilib.common.logStatus("-- DSC > "..sN.."[\""..key.."\"] = \"\"") end
+  end; bF = false -- Restore the flag value for searching the other way
+  for iD = 1, tK.__top do if(not DSC[tK[iD]]) then bF = true
+    wikilib.common.logStatus("-- SRC > "..sN.."[\""..tK[iD].."\"] = \"\"") end
+  end -- Obtain all the function with no description
+  if(bF or iK > 0) then wikilibError("Description mismatch <"..sN..">!", bErr) end
 end
 
 function wikilib.printTypeTable(API)

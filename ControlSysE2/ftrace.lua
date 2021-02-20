@@ -38,19 +38,24 @@ oSelf.entity:SetPos(Vector(100,100,100))
 ATTACH:SetPos(Vector(500,500,500))
 
 local a = newItem(oSelf, ATTACH, Vector(0,0,0), Vector(0,0,1), -25)
-      a:addEntHitSkip(ATTACH):addEntHitSkip(ents.Create("alabala")):addEntHitOnly(ents.Create("gaga"))
+      a:addEntHitSkip(ATTACH)--:addEntHitSkip(ents.Create("alabala")):addEntHitOnly(ents.Create("gaga"))
+      a:addHitSkip("GetClass", "prop"):addHitSkip("GetModel", "model"):addHitSkip("GetClass", "TEST")
+      
+local b = newItem(oSelf, ATTACH, Vector(0,0,0), Vector(0,0,1), -25)
+      b:addEntHitSkip(ATTACH):addEntHitSkip(ents.Create("alabala")):addEntHitOnly(ents.Create("gaga"))
+      b:addHitSkip("physics", 2):addHitOnly("GetClass", "func"):addHitOnly("GetClass", "door"):addHitSkip("GetClass", "TEST")
       
 GetConVar("wire_expression2_"..api.."_enst"):SetData(1)
 GetConVar("wire_expression2_"..api.."_only"):SetData("IsVehicle/GetModel")
 
-a:dumpItem("TALK", "test")
+--a:dumpItem("TALK", "test")
 
-a:rayAim(6,6,6)
+--a:rayAim(6,6,6)
 
-a:dumpItem("TALK", "test")
+---a:dumpItem("TALK", "test")
 
 local h = 14.433756729741
-print(Vector(h,h,h):Length())
+-- print(Vector(h,h,h):Length())
 
 local function isValid(vE, vT)
   if(vT) then local sT = tostring(vT or "")
@@ -71,5 +76,30 @@ local function getEntityList(oFTrc, bID)
   end; return tO
 end
 
-com.logTable(getEntityList(oSelf, true))
+--[[
+ * Moves only the entities from source to destination
+ * oFTrc > Reference to tracer object
+ * tData > Source data table to read from
+]]
+local function putFunctionalList(oFTrc, tData)
+  oFTrc.mFnc = oFTrc.mHit
+  com.logTable(oFTrc.mFnc, "A")
+  com.logTable(tData     , "B")
+  
+  for iD = 1, tData.Size do local vD = tData[iD]
+    if(vD.SKIP) then for key, val in pairs(vD.SKIP) do
+      setHitFilter(oFTrc, oSelf, vD.CALL, "SKIP", key, true) end end
+    if(vD.ONLY) then for key, val in pairs(vD.ONLY) do
+      setHitFilter(oFTrc, oSelf, vD.CALL, "ONLY", key, true) end end
+  end
+  
+  for key, val in pairs(tData.Ent.SKIP) do
+    oFTrc.mFnc.Ent.SKIP[key] = val end
+  for key, val in pairs(tData.Ent.ONLY) do
+    oFTrc.mFnc.Ent.ONLY[key] = val end
+    
+    
+  com.logTable(oFTrc.mHit, "AS")
+end
 
+putFunctionalList(a, b.mHit)

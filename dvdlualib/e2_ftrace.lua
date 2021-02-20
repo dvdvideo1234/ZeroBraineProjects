@@ -225,7 +225,7 @@ local function remHitFilter(oFTrc, sM)
     tHit.ID[HM] = IH end; tHit.ID[sM] = nil; return oFTrc
 end
 
-local function setHitFilter(oFTrc, oSelf, sM, sO, vV, bS)
+function setHitFilter(oFTrc, oSelf, sM, sO, vV, bS)
   if(not oFTrc) then return nil end
   local tHit, sTyp = oFTrc.mHit, type(vV) -- Obtain hit filter location
   local nID = tHit.ID[sM]; if(not nID) then
