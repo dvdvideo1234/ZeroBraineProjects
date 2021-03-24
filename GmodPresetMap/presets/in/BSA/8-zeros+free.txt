@@ -1,0 +1,16 @@
+"Zeros+Free"
+{
+	"ballsocket_adv_ymin"		"0"
+	"ballsocket_adv_onlyrotation"		"1"
+	"ballsocket_adv_ymax"		"0"
+	"ballsocket_adv_yfric"		"0"
+	"ballsocket_adv_xmin"		"0"
+	"ballsocket_adv_zmax"		"0"
+	"ballsocket_adv_torquelimit"		"0"
+	"ballsocket_adv_nocollide"		"1"
+	"ballsocket_adv_xmax"		"0"
+	"ballsocket_adv_forcelimit"		"0"
+	"ballsocket_adv_zfric"		"0"
+	"ballsocket_adv_zmin"		"0"
+	"ballsocket_adv_xfric"		"0"
+}

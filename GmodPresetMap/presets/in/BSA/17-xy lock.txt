@@ -1,0 +1,16 @@
+"XY Lock"
+{
+	"ballsocket_adv_ymin"		"-0.100000"
+	"ballsocket_adv_onlyrotation"		"1"
+	"ballsocket_adv_ymax"		"0.100000"
+	"ballsocket_adv_yfric"		"0"
+	"ballsocket_adv_xmin"		"-0.100000"
+	"ballsocket_adv_zmax"		"180"
+	"ballsocket_adv_torquelimit"		"0"
+	"ballsocket_adv_nocollide"		"0"
+	"ballsocket_adv_xmax"		"0.100000"
+	"ballsocket_adv_forcelimit"		"0"
+	"ballsocket_adv_zfric"		"0"
+	"ballsocket_adv_zmin"		"-180"
+	"ballsocket_adv_xfric"		"0"
+}
