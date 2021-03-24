@@ -9,12 +9,12 @@ local dir = require("directories")
 
 local com = require("common")
 local cpx = require("complex")
-require("dvdlualib/asmlib")
+require("dvdlualib/trackasmlib")
 local asmlib = trackasmlib
 asmlib.InitBase("track","assembly")
 asmlib.SetLogControl(1000, false)
 
-n = 66.752
+local e = ents.Create("test")
+ e:SetModel("lol.mdl")
 
-print(">"..("%5.2f%%"):format(n).."<")
-
+asmlib.GetEntityHitID(e, Vector(0,0,0))

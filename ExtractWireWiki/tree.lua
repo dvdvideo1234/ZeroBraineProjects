@@ -12,7 +12,7 @@ local common = require("common")
 local wikilib = require("wikilib")
 
 local sSubs = ""
-local sDirs = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/TrackAssemblyTool_GIT"
+local sDirs = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/settings/presets"
 local sName = "gstp"
 local sUser = "mbqwertyaaa"
 local sRepo = "github.com/"..sUser.."/"..sName
@@ -54,7 +54,7 @@ local tSettings =
    -- "%..*$"
   },
   Only = {
-    "%.mdl$"
+    --"%.mdl$"
   }
 }
 
@@ -64,7 +64,7 @@ local fO, oE = io.open(sB.."out/tree.md", "wb")
 if(fO) then io.output(fO)
   -- Setup flags  
   wikilib.isFlag("unqr", true)
-  wikilib.isFlag("prnt", true)
+  -- wikilib.isFlag("prnt", true)
   wikilib.isFlag("size", true)
   wikilib.isFlag("urls", true)
   wikilib.isFlag("namr", true)
@@ -82,10 +82,9 @@ if(fO) then io.output(fO)
   -- common.logTable(tS, "IN")
   -- Write the tree
   if(tS and common.isTable(tS)) then
+    -- common.logTable(tS, "OUT")
     wikilib.folderDrawTree(tS, 2, sRepo, tSettings)
     wikilib.printTokenReferences()
-    
-    -- common.logTable(tS, "OUT")
   else
     error("Table error: "..sDirs)    
   end

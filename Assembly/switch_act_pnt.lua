@@ -1,7 +1,15 @@
-require("directories")
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/LuaIDE").setBase(1)
+
+local common = require("common")
+
 require("gmodlib")
-require("asmlib")
-local common = require("../dvdlualib/common")
+require("trackasmlib")
 local asmlib = trackasmlib
 
 if(asmlib.InitBase("track","assembly")) then

@@ -12,23 +12,35 @@ require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 local tableRemove = table and table.remove
+local gsSentHash = "test"
+local SERVER = true
 
-function use(t, n)
-  com.logTable(t, n)
+ENT = {[gsSentHash] = {AxiL = Vector(1,0,0), LevL = Vector(0,5,0), ForL = Vector(0,0,9)}}
+
+function ENT:GetTorqueAxis()
+  local vAxi = Vector(); if(SERVER) then
+    vAxi:Set(self[gsSentHash].AxiL)
+  elseif(CLIENT) then
+    vAxi:Set(self:GetNWVector(gsSentHash.."_adir"))
+  end; vAxi:Normalize(); return vAxi
 end
 
-local this = {}
-this.mFlt = {}
-this.mFlt.Enu = {1,2,3}
+function ENT:GetTorqueLever()
+  local vLev = Vector(); if(SERVER) then
+    vLev:Set(self[gsSentHash].LevL)
+  elseif(CLIENT) then
+    vLev:Set(self:GetNWVector(gsSentHash.."_ldir"))
+  end; vLev:Normalize(); return vLev
+end
 
+function ENT:GetTorqueForce()
+  local vFor = Vector(); if(SERVER) then
+    vFor:Set(self[gsSentHash].ForL)
+  elseif(CLIENT) then
+    vFor:Set(self:GetNWVector(gsSentHash.."_fdir"))
+  end; vFor:Normalize(); return vFor
+end
 
-local a = {b = 4}
-local b = {1,2 ,3}
-local c = {4,5,6}
-local d = {e = 99}
-
-this.mFlt.Enu = c
-use(this.mFlt.Enu, "A")
-
-c[4] = 999
-use(this.mFlt.Enu, "B")
+print(ENT:GetTorqueAxis())
+print(ENT:GetTorqueLever())
+print(ENT:GetTorqueForce())

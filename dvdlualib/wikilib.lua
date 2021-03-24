@@ -1213,10 +1213,8 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   local size = wikilib.isFlag("size")
   if(not wikilib.common.isTable(tPth)) then
     wikilibError("Structure invalid {"..type(tPth).."}["..tostring(tPth).."]", erro)
-  else
-    if(not wikilib.common.isTable(tPth.cont)) then
-      wikilibError("Structure content invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", erro)
-    end
+  else -- The folder is empty and content does not need ot be displayed
+    if(not wikilib.common.isTable(tPth.cont)) then return end
   end
   local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
   local sR, iI = tostring(sR or ""), wikiFolder.__dept
