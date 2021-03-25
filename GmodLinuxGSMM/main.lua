@@ -49,13 +49,27 @@ local function getName(sRepo)
 end
 
 local function printAddon(sRepo, sInfo, sAuth, sName, bOvr)
-local rep = tostring(sRepo or "") -- lgsm/functions/mods_list.sh
+local rep = tostring(sRepo or "") -- https://github.com/GameServerManagers/LinuxGSM/blob/master/lgsm/functions/mods_list.sh
 if(rep:len() == 0 or not rep:find("%w+")) then error("Repo invalid: ["..rep.."]") end
 local low, inf = rep:lower(), tostring(sInfo or tAddons.Base.inf)
 local ath = tostring(sAuth or tAddons.Base.ath) -- Utilize my account if not provided
 if(ath:len() == 0 or not ath:find("%w+")) then error("Auth invalid: ["..ath.."]") end
 local nam = tostring(sName or getName(rep))
 local ovr = ((bOvr ~= nil) and tAddons.Base.upd[1] or tAddons.Base.upd[2])
+-- [0]  | "MOD": separator, all mods must begin with it
+-- [1]  | "modcommand": the LGSM name and command to install the mod (must be unique and lowercase)
+-- [2]  | "Pretty Name": the common name people use to call the mod that will be displayed to the user
+-- [3]  | "URL": link to the mod archive file; can be a variable previously defined while scraping a URL
+-- [4]  | "filename": the output filename
+-- [5]  | "modsubdirs": in how many subdirectories is the mod (none is 0) (not used at release, but could be in the future)
+-- [6]  | "LowercaseOn/Off": LowercaseOff or LowercaseOn: enable/disable converting extracted files and directories to lowercase (some games require it)
+-- [7]  | "modinstalldir": the directory in which to install the mode (use LGSM dir variables such as ${systemdir})
+-- [8]  | "/files/to/keep;", files & directories that should not be overwritten upon update, separated and ended with a semicolon; you can also use "OVERWRITE" value to ignore the value or "NOUPDATE" to disallow updating; for files to keep upon uninstall, see fn_mod_tidy_files_list from mods_core.sh
+-- [9]  | "Supported Engines;": list them according to LGSM ${engine} variables, separated and ended with a semicolon, or use ENGINES to ignore the value
+-- [10] | "Supported Games;": list them according to LGSM ${gamename} variables, separated and ended with a semicolon, or use GAMES to ignore the value
+-- [11] | "Unsupported Games;": list them according to LGSM ${gamename} variables, separated and ended with a semicolon, or use NOTGAMES to ignore the value (useful to exclude a game when using Supported Engines)
+-- [12] | "AUTHOR_URL" is the author's website, displayed to the user when chosing mods to install
+-- [13] | "Short Description" a description showed to the user upon installation/removal
 io.write("mod_info_"..low.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \"OVERWRITE\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )")
 io.write("\n")
 end
