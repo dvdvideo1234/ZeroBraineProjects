@@ -55,8 +55,8 @@ if(rep:len() == 0 or not rep:find("%w+")) then error("Repo invalid: ["..rep.."]"
 local low, inf = rep:lower(), tostring(sInfo or tAddons.Base.inf)
 local ath = tostring(sAuth or tAddons.Base.ath) -- Utilize my account if not provided
 if(ath:len() == 0 or not ath:find("%w+")) then error("Auth invalid: ["..ath.."]") end
-local nam = tostring(sName or getName(rep))
-local ovr = ((bOvr ~= nil) and tAddons.Base.upd[1] or tAddons.Base.upd[2])
+local nam, var = tostring(sName or getName(rep)), low:gsub("%W+","_")
+local ovr = ((bOvr ~= nil) and tAddons.Base.upd[2] or tAddons.Base.upd[1])
 -- [0]  | "MOD": separator, all mods must begin with it
 -- [1]  | "modcommand": the LGSM name and command to install the mod (must be unique and lowercase)
 -- [2]  | "Pretty Name": the common name people use to call the mod that will be displayed to the user
@@ -71,7 +71,7 @@ local ovr = ((bOvr ~= nil) and tAddons.Base.upd[1] or tAddons.Base.upd[2])
 -- [11] | "Unsupported Games;": list them according to LGSM ${gamename} variables, separated and ended with a semicolon, or use NOTGAMES to ignore the value (useful to exclude a game when using Supported Engines)
 -- [12] | "AUTHOR_URL" is the author's website, displayed to the user when chosing mods to install
 -- [13] | "Short Description" a description showed to the user upon installation/removal
-io.write("mod_info_"..low.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \"OVERWRITE\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )")
+io.write("mod_info_"..var.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )")
 io.write("\n")
 end
 
@@ -80,7 +80,7 @@ local function printSettings()
     local a, b, c, d = vA[1], vA[2], vA[3], vA[4]
     local e, f, g, h = vA[5], vA[6], vA[7], vA[8]
     local suc, out = pcall(printAddon, a, b, c, d, e, f, g, h)
-    if(not suc) then error("Failed ["..tostring(a).."]: "..out) end
+    if(not suc) then error("Failed ["..tostring(a).."]["..out.."]: "..out) end
   end
 end
 
