@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
 local com = require("common")
 local fou = com.stringGetChunkPath():gsub("\\","/").."out.sh"
 
@@ -23,15 +23,16 @@ tAddons =
   -- [4]s: Addon custom name when the converted is desired
   -- [5]b: Should the addon be updated automatically or not
   -- My persinal addons
-  {"TrackAssemblyTool"   , "Assembles segmented train track. Supports wire"},
+  {"advduplicator"       , "Save your constructions. First version", "wiremod", "Advanced Duplicator 1"},
+  {"TrackAssemblyTool"   , "Assembles segmented track. Supports wire"},
   {"PhysPropertiesAdv"   , "Advanced configurable properties"},
-  {"ControlSystemsE2"    , "Adds PID controllers and fast traces as OOP to wire E2. Minor version included in wire-extas"},
-  {"E2PistonTiming"      , "Adds routine driven timings for piston engines to wire E2"},
-  {"PropCannonTool"      , "An actual cannon entity that can fire props. Supports wire"},
+  {"ControlSystemsE2"    , "PID controllers and fast traces for E2. Minor included in wire-extas"},
+  {"E2PistonTiming"      , "Routine driven piston engine timings for E2"},
+  {"PropCannonTool"      , "Cannon entity that can fire props. Supports wire"},
   {"GearAssemblyTool"    , "Assembles segmented gearbox"},
   {"SpinnerTool"         , "Torque lever controlled spinner. Supports wire"},
   {"SurfaceFrictionTool" , "Controls the surface friction of a prop"},
-  {"MagneticDipole"      , "An actual magnet entity that runs forces on its poles unlike magnetize. Supports wire"},
+  {"MagneticDipole"      , "Magnet entity that runs forces on its poles. Supports wire"},
   {"EnvironmentOrganizer", "Installs routines designed for server settings adjustment"},
   -- Other cool people addons
   {"improved-stacker"    , "Stacks entities in the direction chosen", "Mista-Tea"},
