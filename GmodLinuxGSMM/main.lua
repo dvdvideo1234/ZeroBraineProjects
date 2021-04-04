@@ -35,6 +35,7 @@ tAddons =
   {"MagneticDipole"      , "Magnet entity that runs forces on its poles. Supports wire"},
   {"EnvironmentOrganizer", "Installs routines designed for server settings adjustment"},
   -- Other cool people addons
+  {"precision-alignment" , "Creates precise constraints and aligments", "Mista-Tea"},
   {"improved-stacker"    , "Stacks entities in the direction chosen", "Mista-Tea"},
   {"improved-weight"     , "Weight tool but with more features", "Mista-Tea"},
   {"improved-antinoclip" , "Controls clipping trough an object", "Mista-Tea"}
@@ -90,5 +91,7 @@ else
   local f = assert(io.open(fou, "wb"))
   if(f) then io.output(f)
     printSettings()
+    io.flush()
+    io.close()
   end
 end

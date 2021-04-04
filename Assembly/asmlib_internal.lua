@@ -1,6 +1,13 @@
-require("directories")
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/LuaIDE").setBase(1)
+
 require("gmodlib")
-require("asmlib")
+require("trackasmlib")
 local common = require("common")
 local asmlib = trackasmlib
 
@@ -169,7 +176,7 @@ c = a:GetCommand(); common.logTable(c,"CMD")
 
 local oPieces = asmlib.GetBuilderNick("PIECES")
 
-asmlib.GetCategory("TEST-O")
+asmlib.Categorize("TEST-O")
 oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 1, "", "!test", "", "aaa"})
 oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 2, "", "1,2,4", "", "aaa"})
 oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "#", 1, "", "0,0,0", "", "aaa"})
