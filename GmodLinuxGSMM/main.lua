@@ -14,6 +14,7 @@ local fin = com.stringGetChunkPath():gsub("\\","/").."mods_list.sh"
 tAddons =
 { 
   Base = {
+    var = "mod_info_",
     ath = "dvdvideo1234", -- My account
     inf = "Garry's Mod Addon", -- Default name
     upd = {"OVERWRITE", "NOUPDATE"},
@@ -53,7 +54,7 @@ end
 
 local function getVar(sRepo)
   local rep = tostring(sRepo or "")
-  return rep:lower():gsub("%W+","_")
+  return tAddons.Base.var..rep:lower():gsub("%W+","_")
 end
 
 --[[
@@ -80,16 +81,22 @@ local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bOvr)
   if(ath:len() == 0 or not ath:find("%w+")) then error("Auth invalid: ["..ath.."]") end
   local nam, var = tostring(sName or getName(rep)), low:gsub("%W+","_")
   local ovr = ((bOvr ~= nil) and tAddons.Base.upd[2] or tAddons.Base.upd[1])
-  local lin = "mod_info_"..var.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )\n"
+  local lin = tAddons.Base.var..var.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )\n"
   if(pFile) then pFile:write(lin) else io.write(lin) end
 end
 
-local function printSettings(pFile)
-  for iD = 1, tAddons.Size do local vA = tAddons[iD]
+local function printSettings(pFile, tHere)
+  for iD = 1, tAddons.Size do
+    local vA = tAddons[iD]
     local a, b, c, d = vA[1], vA[2], vA[3], vA[4]
     local e, f, g, h = vA[5], vA[6], vA[7], vA[8]
-    local suc, out = pcall(printAddon, pFile, a, b, c, d, e, f, g, h)
-    if(not suc) then error("Failed ["..tostring(a).."]["..out.."]: "..out) end
+    local sV = getVar(a)
+    if(not tHere[sV]) then
+      local suc, out = pcall(printAddon, pFile, a, b, c, d, e, f, g, h)
+      if(not suc) then error("Failed ["..tostring(a).."]["..out.."]: "..out) end
+    else
+      print("Addon persists ["..a.."]!")
+    end
   end
 end
 
@@ -99,22 +106,45 @@ if(fi) then
   local fo = assert(io.open(fou, "wb"))
   local r, b = fi:read("*line"), false
   while(r) do
-    if(not b and r:lower():find("garry", 1, true) and r:find("#%s*")) then
+    if(not b and r:lower():find("# garry", 1, true) and r:find("#%s*")) then
       b = true
-      fo:write(r)
-    elseif(b and r:find("^#") or r == "") then
+      fo:write(r); fo:write("\n")
+    elseif(b and (r:find("^%s*#%s*") or r == "")) then
       b = false
-      fo:write(r)
-    elseif(b and r:find("^mod_info_")) then
-      local k = com.stringTrim(r:match("^mod_info_.+="):gsub("^mod_info_", ""):sub(1,-2))
-      fo:write(r)
+      printSettings(fo, ar)
+      fo:write(r); fo:write("\n")
+    elseif(b and r:find("^"..tAddons.Base.var)) then
+      local k = com.stringTrim(r:match("^"..tAddons.Base.var..".+="):sub(1,-2))
+      for iD = 1, tAddons.Size do
+        local v = getVar(tAddons[iD][1])
+        if(v == k) then ar[k] = true end
+      end
+      fo:write(r); fo:write("\n")
     elseif(r:find("^mods_global_array")) then
-      fo:write(r)
+      local tr = com.stringExplode(r, " ")
+      local fv = "\"${%s[@]}\""
+      for iD = 1, tAddons.Size do
+        local a = tAddons[iD]
+        local v, f = getVar(a[1]), false
+        if(not ar[v]) then
+          for iK = 1, #tr do
+            if(tr[iK]:find(v)) then f = true end
+          end
+          if(not f) then
+            table.insert(tr, #tr - 1, fv:format(v))
+            print("Addon registered ["..v.."]!")
+          end
+        end
+      end
+      fo:write(table.concat(tr, " ")); fo:write("\n")
     else
-      fo:write(r)
+      fo:write(r); fo:write("\n")
     end
     r = fi:read("*line")
   end
+  fi:close()
+  fo:flush()
+  fo:close()
 else
   if(not fou or fou == "") then
     printSettings()
