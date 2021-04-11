@@ -73,15 +73,19 @@ end
  * [12] | "AUTHOR_URL" is the author's website, displayed to the user when chosing mods to install
  * [13] | "Short Description" a description showed to the user upon installation/removal
 ]]
-local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bOvr)
+local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bLock)
   local rep = tostring(sRepo or "") -- https://github.com/GameServerManagers/LinuxGSM/blob/master/lgsm/functions/mods_list.sh
   if(rep:len() == 0 or not rep:find("%w+")) then error("Repo invalid: ["..rep.."]") end
   local low, inf = rep:lower(), tostring(sInfo or tAddons.Base.inf)
   local ath = tostring(sAuth or tAddons.Base.ath) -- Utilize my account if not provided
   if(ath:len() == 0 or not ath:find("%w+")) then error("Auth invalid: ["..ath.."]") end
   local nam, var = tostring(sName or getName(rep)), low:gsub("%W+","_")
-  local ovr = ((bOvr ~= nil) and tAddons.Base.upd[2] or tAddons.Base.upd[1])
-  local lin = tAddons.Base.var..var.."=( MOD \""..low.."\" \""..nam.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"..ath.."/"..rep.."\" \""..inf.."\" )\n"
+  local ovr = ((bLock and (bLock ~= nil)) and tAddons.Base.upd[2] or tAddons.Base.upd[1])
+  local lin = tAddons.Base.var..var.."=( MOD \""..low.."\" \""..nam
+        lin = lin.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""
+        lin = lin..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""
+        lin = lin..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"
+        lin = lin..ath.."/"..rep.."\" \""..inf.."\" )\n"
   if(pFile) then pFile:write(lin) else io.write(lin) end
 end
 
