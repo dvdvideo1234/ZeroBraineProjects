@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 local com = require("common")
 local fou = com.stringGetChunkPath():gsub("\\","/").."out.sh"
 local fin = com.stringGetChunkPath():gsub("\\","/").."mods_list.sh"
@@ -36,6 +36,7 @@ tAddons =
   {"SurfaceFrictionTool" , "Controls the surface friction of a prop"},
   {"MagneticDipole"      , "Magnet entity that runs forces on its poles. Supports wire"},
   {"EnvironmentOrganizer", "Installs routines designed for server settings adjustment"},
+  {"LaserTool"           , "Entity creating laser beam that can also reflected and even kill players"},
   -- Other cool people addons
   {"precision-alignment" , "Creates precise constraints and aligments", "Mista-Tea"},
   {"improved-stacker"    , "Stacks entities in the direction chosen", "Mista-Tea"},
