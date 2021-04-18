@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
 local com = require("common")
 local fou = com.stringGetChunkPath():gsub("\\","/").."out.sh"
 local fin = com.stringGetChunkPath():gsub("\\","/").."mods_list.sh"
@@ -16,6 +16,7 @@ tAddons =
   Base = {
     var = "mod_info_",
     ath = "dvdvideo1234", -- My account
+    bch = "master", -- The default branch
     inf = "Garry's Mod Addon", -- Default name
     upd = {"OVERWRITE", "NOUPDATE"},
   },
@@ -24,6 +25,7 @@ tAddons =
   -- [3]s: Addon owner when diffrent than my account
   -- [4]s: Addon custom name when the converted is desired
   -- [5]b: Should the addon be updated automatically or not
+  -- [6]s: Github branch that contains the addon default `master` new `main` or `patch-n`
   -- My persinal addons
   {"advduplicator"       , "Save your constructions. First version", "wiremod", "Advanced Duplicator 1"},
   {"TrackAssemblyTool"   , "Assembles segmented track. Supports wire"},
@@ -36,12 +38,12 @@ tAddons =
   {"SurfaceFrictionTool" , "Controls the surface friction of a prop"},
   {"MagneticDipole"      , "Magnet entity that runs forces on its poles. Supports wire"},
   {"EnvironmentOrganizer", "Installs routines designed for server settings adjustment"},
-  {"LaserTool"           , "Entity creating laser beam that can also reflected and even kill players"},
   -- Other cool people addons
   {"precision-alignment" , "Creates precise constraints and aligments", "Mista-Tea"},
   {"improved-stacker"    , "Stacks entities in the direction chosen", "Mista-Tea"},
   {"improved-weight"     , "Weight tool but with more features", "Mista-Tea"},
-  {"improved-antinoclip" , "Controls clipping trough an object", "Mista-Tea"}
+  {"improved-antinoclip" , "Controls clipping trough an object", "Mista-Tea"},
+  {"LaserSTool"          , "Scripted tool that spawns laser entities, simulates light rays and even kill players", nil, nil, nil, "main"}
 }; tAddons.Size = #tAddons
 
 local function getName(sRepo)
@@ -74,7 +76,7 @@ end
  * [12] | "AUTHOR_URL" is the author's website, displayed to the user when chosing mods to install
  * [13] | "Short Description" a description showed to the user upon installation/removal
 ]]
-local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bLock)
+local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bLock, sBran)
   local rep = tostring(sRepo or "") -- https://github.com/GameServerManagers/LinuxGSM/blob/master/lgsm/functions/mods_list.sh
   if(rep:len() == 0 or not rep:find("%w+")) then error("Repo invalid: ["..rep.."]") end
   local low, inf = rep:lower(), tostring(sInfo or tAddons.Base.inf)
@@ -82,9 +84,10 @@ local function printAddon(pFile, sRepo, sInfo, sAuth, sName, bLock)
   if(ath:len() == 0 or not ath:find("%w+")) then error("Auth invalid: ["..ath.."]") end
   local nam, var = tostring(sName or getName(rep)), low:gsub("%W+","_")
   local ovr = ((bLock and (bLock ~= nil)) and tAddons.Base.upd[2] or tAddons.Base.upd[1])
+  local bch = tostring(sBran or tAddons.Base.bch) -- Utilize another branch if needed
   local lin = tAddons.Base.var..var.."=( MOD \""..low.."\" \""..nam
-        lin = lin.."\" \"https://github.com/"..ath.."/"..low.."/archive/master.zip\" \""
-        lin = lin..low.."-master.zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""
+        lin = lin.."\" \"https://github.com/"..ath.."/"..low.."/archive/"..bch..".zip\" \""
+        lin = lin..low.."-"..bch..".zip\" \"0\" \"LowercaseOn\" \"${systemdir}/addons\" \""
         lin = lin..ovr.."\" \"ENGINES\" \"Garry's Mod;\" \"NOTGAMES\" \"https://github.com/"
         lin = lin..ath.."/"..rep.."\" \""..inf.."\" )\n"
   if(pFile) then pFile:write(lin) else io.write(lin) end
