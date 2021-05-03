@@ -22,6 +22,8 @@ local wikiFormat = {
   __hmg = "<img src=\"%s\" width=\"%s\" height=\"%s\"/>",
   __bnr = "via.placeholder.com/%dx%d.png/%02x%02x%02x/%02x%02x%02x?text=%s",
   __rid = "ref-%d-%s",
+  cub = "%(.+%)", -- Match string in curly brakets
+  sqb = "%[.+%]", -- Match string in square brakets
   tsp = "/",
   asp = ",",
   msp = ":",

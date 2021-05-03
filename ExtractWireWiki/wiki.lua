@@ -35,6 +35,7 @@ if(f) then io.output(f)
     end
     wikilib.setFormat("tfm", API.TYPE.FRM or "LOL") -- Type definition
     if(DSC) then
+      -- wikilib.isFlag("wdsc", true)
       wikilib.writeBOM("UTF8")
       wikilib.setInternalType(API)
       wikilib.updateAPI(API, DSC)

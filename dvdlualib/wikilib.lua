@@ -131,7 +131,7 @@ end
 
 local function getFunctionName(vS)
   return "wikilib."..wikilib.common.stringGetFunction(vS, wikiNotHere)
-end  
+end
 
 local function sortMatch(tM)
   table.sort(tM, apiSortFinctionParam)
@@ -153,7 +153,7 @@ end
 function wikilib.isFlag(vF, bF)
   local sF = tostring(vF or ""); if(wikilib.common.isDryString(sF)) then
     wikilibError("Flag name missing !", wikiFlags.erro) end
-  local cF = wikiFlags[sF]; if(wikilib.common.isNil(cF)) then 
+  local cF = wikiFlags[sF]; if(wikilib.common.isNil(cF)) then
     wikilibError("Flag ["..sF.."] missing !", wikiFlags.erro)
   else
     if(not wikilib.common.isBool(cF)) then -- Check internal library flags
@@ -320,7 +320,7 @@ function wikilib.findTokenCloser(vT, tR, iD)
     if(k:sub(1,1) ~= "#") then
       local nF, nB = sT:find(sK, iD, true)
       if(nF and nB) then
-        if(not (mF and mB and mK)) then  
+        if(not (mF and mB and mK)) then
           mF, mB, mK, mV, mP = nF, nB, vT:sub(nF, nB), v, false
           iM = iM + 1; tM[iM] = {mF, mB, mK, mV, mP}
         else
@@ -426,7 +426,7 @@ end
 function wikilib.updateAPI(API, DSC)
   local bQ = wikilib.isFlag("quot")
   local wD = wikilib.isFlag("wdsc")
-  local sO, tA, tW = apiGetValue(API,"TYPE", "OBJ")  
+  local sO, tA, tW = apiGetValue(API,"TYPE", "OBJ")
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
   if(wD) then
     API.POOL.WDESCR = {}
@@ -653,7 +653,7 @@ function wikilib.convApiE2Description(API, sE2)
       wikilib.common.logStatus("wikilib.convApiE2Description: Return line <"..sE2.."> !")
       wikilibError("Return type missing <"..sE2.."> !", bErr)
     end; tInfo.ret = tD[1]
-    sE = wikilib.common.stringTrim(sE:sub(iS, -1)); iS = sE:find(sM, 1, true)  
+    sE = wikilib.common.stringTrim(sE:sub(iS, -1)); iS = sE:find(sM, 1, true)
     if(iS) then -- Is this function a object method
       local sT = common.stringTrim(sE:sub(1, iS-1))
       local tD = wikilib.convTypeE2Description(API, sT)
@@ -710,7 +710,7 @@ function wikilib.convApiE2Description(API, sE2)
       end
     else -- In case of the parameters have unbalanced bracket
       wikilibError("Brackets mssing <"..sE2.."> !", bErr)
-    end    
+    end
     tInfo.com = tInfo.foo.."("
     if(tInfo.obj) then
       tInfo.com = tInfo.com..tInfo.obj..sM end
@@ -761,10 +761,13 @@ function wikilib.makeReturnValues(API)
               foo = foo:sub(mth+1, brk-1)
         local tP = tF[foo]; if(not tP) then
           tF[foo] = {__top = 0, __key = {}, __nam = foo}; tP = tF[foo] end
-        tP.__top = tP.__top + 1        
+        tP.__top = tP.__top + 1
         local tInfo = wikilib.convApiE2Description(API, sP)
         tP.__key[tInfo.com] = tP.__top; tP[tP.__top] = tInfo
-        if(sO) then tP.__equ = wikilib.convApiE2Description(API, sO) end
+        if(sO) then
+          if(not tP.__equ) then tP.__equ = {} end
+          tP.__equ[tP.__top] = wikilib.convApiE2Description(API, sO)
+        end
         if(not tK.__top) then tK.__top = 0 end
         tK.__top = tK.__top + 1; tK[tK.__top] = tInfo.com
         -- Register API and and write to the memory
@@ -776,19 +779,45 @@ end
 
 function wikilib.printMatchedAPI(API, DSC, sNam)
   local tK, bF, iK = wikiMList, false, 0; table.sort(tK)
-  local sD = apiGetValue(API, "HDESC", "dsc")
-  local sN = tostring(sNam or (sD or wikiDChunk.mch))
+  local sD, tC = apiGetValue(API, "HDESC", "dsc"), {}
+  local sC = tostring(sNam or (sD or wikiDChunk.mch))
   local bErr = wikilib.isFlag("erro")
   for key, val in pairs(DSC) do bF = false
     for iD = 1, tK.__top do -- Search description in source
       if(tK[iD] == key) then bF = true; break end end
     if(not bF) then iK = iK + 1 -- Description not found in the source
-      wikilib.common.logStatus("-- DSC > "..sN.."[\""..key.."\"] = \"\"") end
+      wikilib.common.logStatus("-- DSC > "..sC.."[\""..key.."\"] = \"\"") end
   end; bF = false -- Restore the flag value for searching the other way
-  for iD = 1, tK.__top do if(not DSC[tK[iD]]) then bF = true
-    wikilib.common.logStatus("-- SRC > "..sN.."[\""..tK[iD].."\"] = \"\"") end
+  for k, v in pairs(wikiMatch) do
+    for i = 1, v.__top do local cC = v[i].com
+      if(cC) then if(tC[cC]) then tC[cC] = tC[cC] + 1 else tC[cC] = 1 end end end end
+  for k, v in pairs(tC) do if(v == 1) then tC[k] = nil end end
+  if(next(tC)) then
+    for k, v in pairs(tC) do
+      wikilib.common.logStatus("DUPE ["..v.."]["..k.."]")
+    end
+    wikilibError("Multiple declarations for functions !", bErr)
+  end
+  for iD = 1, tK.__top do
+    local vK = tK[iD]
+    local sN = vK:gsub(wikiFormat.cub, "")
+    if(not DSC[vK]) then
+      local tM = wikiMatch[sN]; bF = true
+      if(tM) then
+        for iM = 1, tM.__top do local vM = tM[iM]
+          if(vM.com == vK and tM.__equ) then
+            local tE = tM.__equ[iM]
+            if(tE and tE.com) then
+              wikilib.common.logStatus("ALIAS > "..sC.."[\""..vK.."\"] = "..sC.."[\""..tE.com.."\"]..\". Alias: `"..tE.com.."`\"")
+            end
+          end
+        end
+      else
+        wikilib.common.logStatus("SOURCE > "..sC.."[\""..vK.."\"] = \"\"")
+      end
+    end
   end -- Obtain all the function with no description
-  if(bF or iK > 0) then wikilibError("Description mismatch <"..sN..">!", bErr) end
+  if(bF or iK > 0) then wikilibError("Description mismatch <"..sC..">!", bErr) end
 end
 
 function wikilib.printTypeTable(API)
@@ -1015,7 +1044,7 @@ function wikilib.folderReadStructure(sP, iV)
   local iT = (tonumber(iV) or 0) + 1
   local tU, bC = wikiFolder.__furl, false
   local sR = wikilib.common.randomGetString(wikiFolder.__ranm)
-  local erro = wikilib.isFlag("erro") 
+  local erro = wikilib.isFlag("erro")
   local prnt = wikilib.isFlag("prnt")
   local hide = wikilib.isFlag("hide")
   local vT = (tostring(iT or "").."_"..sR)
@@ -1032,7 +1061,7 @@ function wikilib.folderReadStructure(sP, iV)
       if(wikilib.common.isNil(iV)) then
         local nS, nE = sL:find(wikiFolder.__snum)
         tT.snum = wikilib.common.stringTrim(sL:sub(nE + 1, -1))
-      end   
+      end
     elseif(sL:find(wikiFolder.__drof)) then
       tT.base = sL:gsub("\\","/"):gsub(wikiFolder.__drof,"")
       tT.base = wikilib.common.stringTrim(tT.base)
@@ -1080,19 +1109,19 @@ end
 
 local function folderLinkItem(tR, vC, bB)
   local sR, sO, tU = tR.link, vC.name, wikiFolder.__furl
-  local urls = wikilib.isFlag("urls")  
+  local urls = wikilib.isFlag("urls")
   local ufbr = wikilib.isFlag("ufbr")
-  local unqr = wikilib.isFlag("unqr")  
+  local unqr = wikilib.isFlag("unqr")
   if(urls) then
     local sN = wikilib.common.normFolder(sR)
     local sU = wikilib.getEncodeURL(sN)
-    local sB = (bB and "" or wikilib.getEncodeURL(sO))   
+    local sB = (bB and "" or wikilib.getEncodeURL(sO))
     local sR = tostring(sR and toURL(sU) or toURL(tU[2]))
           sR = (bB and sR:sub(1,-2) or sR)
     local tD, vP = wikiFolder.__idir, sR..sB
     if(ufbr) then
       local sL = wikilib.common.stringGetFileName(vP)
-      local vR = wikilib.getTokenReference(sL, vP, unqr)      
+      local vR = wikilib.getTokenReference(sL, vP, unqr)
       sO = toLinkRefSrc("`"..sO.."`", vR)
       if(vC.name == tD[1]) then
         wikiRList[wikiRList.Size] = wikiRList[wikiRList.Size]:sub(1,-3)
@@ -1137,14 +1166,14 @@ function wikilib.folderSettings(tSet, tPth)
     tSet.Swap = tWln
     if(tSkp) then
       tSet.Skip = tSkp; tSet.Skip.__top = #tSet.Skip end
-    if(tOny) then  
+    if(tOny) then
       tSet.Only = tOny; tSet.Only.__top = #tSet.Only end
     return true
   end; return false
 end
 
 --[[
- * Updates the tree path abd removes the filtered nodes 
+ * Updates the tree path abd removes the filtered nodes
  * tPth > Folder structure to process
  * tO   > Table of only ones entries ( patterns )
  * tS   > Table of skipped entries ( patterns )
@@ -1185,16 +1214,16 @@ local function folderOnlySkip(tPth, tSet)
           end
         end
       end
-      
+
       if(not bRem) then iD = iD + 1 end
     end
     tSor = wikilib.common.sortTable(tPth.cont, {"name"}, true)
   end
-  
+
   -- common.logTable(tPth.cont, "CONT")
   -- common.logTable(tSor, "SORT")
-  
-  
+
+
   return tSor
 end
 
@@ -1220,7 +1249,7 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   local sR, iI = tostring(sR or ""), wikiFolder.__dept
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   local tSor = folderOnlySkip(tPth, tSet); if(not tSor) then
-    wikilibError("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", erro) end   
+    wikilibError("Sort invalid {"..type(tPth.cont).."}["..tostring(tPth.cont).."]", erro) end
   for iD = 1, tSor.__top do local vC, sL = tPth.cont[tSor[iD].__key], ""
     if(vC.root) then local dC = wikiSpace
       local sX = (tSor[iD+1] and tSym[2] or tSym[1])..tSym[3]:rep(iI)
@@ -1314,7 +1343,7 @@ function wikilib.getTokenReference(vT, vU, bN)
   end
   local sR = toReferID(iD, vT)
   if(not wikiRList[iD]) then
-    wikiRList[iD] = toLinkRef(sR, sU)    
+    wikiRList[iD] = toLinkRef(sR, sU)
   end
   return sR
 end
@@ -1322,7 +1351,7 @@ end
 function wikilib.printTokenReferences()
   if(wikiRList.Size and wikiRList.Size > 0) then
     for iD = 1, wikiRList.Size do
-      io.write(wikiRList[iD]); io.write("\n")  
+      io.write(wikiRList[iD]); io.write("\n")
     end -- Write all the link references
   end
 end
