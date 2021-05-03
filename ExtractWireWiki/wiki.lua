@@ -61,7 +61,7 @@ if(f) then io.output(f)
       for iD = 0, 3 do print(wikilib.insYoutubeVideo(YTK, iD)) end
     else
       error("main.lua: DSC missing: "..sEXP)
-    end  
+    end
   else
     error("main.lua: API missing: "..sEXP)
   end

@@ -112,7 +112,10 @@ local API = {
     ["filters"]         = "https://en.wikipedia.org/wiki/Filter_(higher-order_function)",
     ["filtering"]       = "https://en.wikipedia.org/wiki/Filter_(higher-order_function)",
     ["surface"]         = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
-    ["surfaces"]        = "https://developer.valvesoftware.com/wiki/Material_surface_properties"
+    ["surfaces"]        = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
+    ["deprecation"]     = "https://en.wikipedia.org/wiki/Deprecation",
+    ["deprecated"]      = "https://en.wikipedia.org/wiki/Deprecation",
+    ["deprecate"]       = "https://en.wikipedia.org/wiki/Deprecation"
   },
   HDESC = {
     top = "local E2Helper = {Descriptions = {}}; local language = {Add = function() return nil end}",

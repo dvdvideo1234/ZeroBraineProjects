@@ -366,6 +366,26 @@ function wikilib.findTokenCloser(vT, tR, iD)
 end
 
 --[[
+ * sT > Detects whenever the word is ordered with MSD quotes
+ * sS > String to search in for bordering
+ * nA > Location anchor position
+]]
+function wikilib.InQuoteMD(sS, nA)
+  local nF, nB = nA, nA
+  local cF = sS:sub(nF, nF)
+  local cB = sS:sub(nB, nB)
+  while(cF ~= "" and cF ~= " " and
+        cB ~= "" and cB ~= " ") do
+    if(cF == "`" and cB == "`") then return true end
+    if(cF ~= "" and cF ~= " ") then
+      if(cF ~= "`") then nF = nF - 1 end end
+    if(cB ~= "" and cB ~= " ") then
+      if(cB ~= "`") then nB = nB + 1 end end
+    cF, cB = sS:sub(nF, nF), sS:sub(nB, nB)
+  end; return false
+end
+
+--[[
  * sT > The sting to be tokenized
  * tR > Replace token table
  * tS > Set of parameters for found token
@@ -385,10 +405,12 @@ function wikilib.replaceToken(sT, tR, tS)
         local tV = {mF, mB, mK, mV, mP} -- Send the parameters to next stage
         local vD, vL = wikilib.replaceToken(sD, mV, tV)
         iD, sD = (mB + vL), vD
-      else local nF, nB = (mF-1), (mB+1)
+      else
+        local nF, nB = (mF-1), (mB+1)
         local sX = (bF and mV:format(mK) or mV)
         local cF, cB = sD:sub(nF,nF), sD:sub(nB,nB)
         local fX = toBracket(sX)
+        local qM = wikilib.InQuoteMD(sD, math.floor((nB - nF) / 2 + nF))
         if(bR) then fX = toRef(wikilib.getTokenReference(mK, mV)) end
         if(cF..cB == "``") then
           sN = sD:sub(1,nF-1)..toQSQ(cF,mK,cB)..fX -- Concatenate the link to the beginning
@@ -402,7 +424,7 @@ function wikilib.replaceToken(sT, tR, tS)
           if(tS and mF < tS[1] and mB < tS[1]) then
             dL = dL + sX:len() + 4 + (2 * qR:len())
           end
-        elseif(wikiDivTok[cB] or wikiDivTok[cF]) then
+        elseif(not qM and (wikiDivTok[cB] or wikiDivTok[cF])) then
           sN = sD:sub(1,nF)..toQSQ(qR,mK,qR)..fX
           sD, iD = sN..sD:sub(nB,-1), sN:len() + 1
           if(tS and mF < tS[1] and mB < tS[1]) then
@@ -808,7 +830,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
           if(vM.com == vK and tM.__equ) then
             local tE = tM.__equ[iM]
             if(tE and tE.com) then
-              wikilib.common.logStatus("ALIAS > "..sC.."[\""..vK.."\"] = "..sC.."[\""..tE.com.."\"]..\". Alias: `"..tE.com.."`\"")
+              wikilib.common.logStatus("ALIAS > "..sC.."[\""..vK.."\"] = \"Deprecated. Please use the alias `"..tE.com.."` instead !\"")
             end
           end
         end
