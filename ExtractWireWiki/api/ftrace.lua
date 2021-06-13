@@ -199,11 +199,11 @@ There are currently three types of trace filters in [Garry's mod][ref-gmod] that
 [`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getFilterMode` will return the
 current tracer filter operation mode. The filter configuration is `NIL` by default
  1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace
-    This filter mode is activated by utilizing the `setFilterEnt` method by `Ent` as `entity`
+    This filter mode is activated by utilizing the `XFT:useUnit()` methods after adding the `entity`.
  2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace
-    This filter mode is activated by utilizing the `setFilterEar` method by `Ear` as `entity array`
+    This filter mode is activated by utilizing the `XFT:useArray()` after filling the `entity` `array`.
  3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available
-    This filter mode is activated by utilizing the `setFilterFnc` method by `Fnc` as `function`
+    This filter mode is activated by utilizing the `XFT:useAction()` method to enable the routine.
  4. User can also clear the filter entierly by utilizing the `remFilter` method
 
 ### Do you have an example by any chance?

@@ -11,26 +11,12 @@ local drpath = require("directories")
 require("gmodlib")
 local common = require("common")
 
-local function isValid(vE, vT)
-  if(vT) then local sT = tostring(vT or "")
-    if(sT ~= type(vE)) then return false end end
-  return (vE and vE.IsValid and vE:IsValid())
-end
+local str = "CURVE"
 
-local function pickTable(tT)
-  if(not tT) then return nil end
-  return ((next(tT) ~= nil) and tT or nil)
-end
+local tBord = {1}
 
-local logStatus = print
+local vMin = (tBord and tBord[1] or nil) -- Read the minimum and maximum
+local vMax = (tBord and tBord[2] or nil)
 
-local gsFormFlt = " Flt: [%s]{%s}"
-local tF = pickTable({ents.Create("xx"), ents.Create("aa")})
-local nF = 15
-local fF = gsFormFlt:format("%"..tostring(nF):len().."d", "%s")
 
-for iF = 1, nF do
-  local vE, sC = tF[iF]
-  if(isValid(vE)) then sC = vE:GetClass() end
-  logStatus(fF:format(iF, tostring(sC)), oChip, nP)
-end
+print(vMin, vMax)

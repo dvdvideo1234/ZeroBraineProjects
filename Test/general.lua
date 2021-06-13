@@ -9,15 +9,10 @@ local drpath = require("directories")
 
 local common  = require('common')
 
-ErrorNoHalt = print
-gsToolName = "TEST"
-gtLang = {["S"] = 55}
+local v = {Ent = "!"}
 
-local function getPhrase(sK)
-  local sK = tostring(sK) if(not gtLang[sK]) then
-    ErrorNoHalt(gsToolName..": getPhrase("..sK.."): Missing")
-    return "Oops, missing ?" -- Return some default translation
-  end; return gtLang[sK]
+if(not v.Ent or not (tonumber(v.Ent) or tostring(v.Ent) ~= "a")) then
+  print("aaa")
 end
 
-print(table.concat({1,2,3,4,[10]=5}))
+print("finish")

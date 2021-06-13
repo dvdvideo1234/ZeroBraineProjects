@@ -803,13 +803,18 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
   local tK, bF, iK = wikiMList, false, 0; table.sort(tK)
   local sD, tC = apiGetValue(API, "HDESC", "dsc"), {}
   local sC = tostring(sNam or (sD or wikiDChunk.mch))
-  local bErr = wikilib.isFlag("erro")
+  local bErr, tD = wikilib.isFlag("erro"), {}
   for key, val in pairs(DSC) do bF = false
     for iD = 1, tK.__top do -- Search description in source
       if(tK[iD] == key) then bF = true; break end end
     if(not bF) then iK = iK + 1 -- Description not found in the source
       wikilib.common.logStatus("-- DSC > "..sC.."[\""..key.."\"] = \"\"") end
   end; bF = false -- Restore the flag value for searching the other way
+  
+  for iD = 1, iK do print(iD)
+    wikilib.common.logStatus("Missing: "..tD[iD])
+  end
+  
   for k, v in pairs(wikiMatch) do
     for i = 1, v.__top do local cC = v[i].com
       if(cC) then if(tC[cC]) then tC[cC] = tC[cC] + 1 else tC[cC] = 1 end end end end
@@ -823,7 +828,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
   for iD = 1, tK.__top do
     local vK = tK[iD]
     local sN = vK:gsub(wikiFormat.cub, "")
-    if(not DSC[vK]) then
+    if(not DSC[vK]) then tD[vK] = true
       local tM = wikiMatch[sN]; bF = true
       if(tM) then
         for iM = 1, tM.__top do local vM = tM[iM]
@@ -839,7 +844,10 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
       end
     end
   end -- Obtain all the function with no description
-  if(bF or iK > 0) then wikilibError("Description mismatch <"..sC..">!", bErr) end
+  if(bF or iK > 0) then
+    for k, v in pairs(tD) do wikilib.common.logStatus("MISS > "..k) end
+    wikilibError("Description mismatch <"..sC..">!", bErr)
+  end
 end
 
 function wikilib.printTypeTable(API)
