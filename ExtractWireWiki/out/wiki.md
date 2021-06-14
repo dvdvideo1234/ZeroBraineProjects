@@ -32,15 +32,18 @@ the direction is reversed instead.
 
 ### How can I configure the trace filter?
 There are currently three types of trace filters in [Garry's mod][ref-gmod] that you can put in the
-[`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getFilterMode` will return the
+[`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getMode()` will return the
 current tracer filter operation mode. The filter configuration is `NIL` by default
- 1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace
-    This filter mode is activated by utilizing the `XFT:useUnit()` methods after adding the `entity`.
- 2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace
-    This filter mode is activated by utilizing the `XFT:useArray()` after filling the `entity` `array`.
+ 1. [Entity][ref_entity] reference directly written to the filter `EU`. This entity is skipped by the trace
+    This filter mode is activated by utilizing the `useUnit()` methods after adding the `entity`.
+ 2. [Entity][ref_entity] sequential table ( array ) in the filter `AR`. Every item is skipped by the trace
+    This filter mode is activated by utilizing the `useArray()` after filling the `entity` `array`.
  3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available
-    This filter mode is activated by utilizing the `XFT:useAction()` method to enable the routine.
- 4. User can also clear the filter entierly by utilizing the `remFilter` method
+    This filter mode is activated by utilizing the `useAction()` method to enable the routine `FN`.
+
+User can also clear the filter entierly by utilizing the `remFilter()` method. When the configuration
+is copied from some other instance, the mode will always be `NA` indicating that the instance is not
+using its own configuration provided by its own methods.
 
 ### Do you have an example by any chance?
 The internal type of the class is `xft` and internal expression type `ftrace`, so to create
@@ -59,8 +62,8 @@ The description of the API is provided in the table below.
 |`newFTrace`(![image][ref-v],![image][ref-v],![image][ref-n])|![image][ref-xft]|Returns flash tracer relative to the world by [`origin`][ref-10-origin] [`position`][ref-11-position], [`direction`][ref-5-direction] [`vector`][ref-6-vector], [`length`][ref-12-length] [`distance`][ref-13-distance]|
 |`noFTrace`(![image][ref-xxx])|![image][ref-xft]|Returns invalid flash tracer object|
 
-|           Class methods           | Out | Description |
-|:----------------------------------|:---:|:------------|
+|             Class methods              | Out | Description |
+|:---------------------------------------|:---:|:------------|
 |![image][ref-xft]:`addEntHitOnly`(![image][ref-e])|![image][ref-xft]|[`Deprecated`][ref-23-Deprecated]. Please use the alias `putActionOnlyEnt(xft:e)` instead !|
 |![image][ref-xft]:`addEntHitSkip`(![image][ref-e])|![image][ref-xft]|[`Deprecated`][ref-23-Deprecated]. Please use the alias `putActionSkipEnt(xft:e)` instead !|
 |![image][ref-xft]:`addHitOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|[`Deprecated`][ref-23-Deprecated]. Please use the alias `putActionOnly(xft:sn)` instead !|
@@ -116,7 +119,7 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`getLen`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer [`length`][ref-12-length] [`distance`][ref-13-distance]|
 |![image][ref-xft]:`getMask`(![image][ref-xxx])|![image][ref-n]|Returns flash tracer [`trace`][ref-2-trace] hit [`mask`][ref-39-mask] [`enums`][ref-18-enums] [`MASK`][ref-40-MASK]|
 |![image][ref-xft]:`getMatType`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-14-trace result] `MatType` material type [`number`][ref-9-number]|
-|![image][ref-xft]:`getMode`(![image][ref-xxx])|![image][ref-s]|Returns flash tracer [`filter`][ref-30-filter] working mode. [`Function`][ref-42-Function] ``FN`` , [`array`][ref-37-array] ``AR``, [`entity`][ref-7-entity] ``EU``, none ``NA``, invalid ``XX``|
+|![image][ref-xft]:`getMode`(![image][ref-xxx])|![image][ref-s]|Returns current flash tracer [`filter`][ref-30-filter] working mode. [`Function`][ref-42-Function] ``FN`` , [`array`][ref-37-array] ``AR``, [`entity`][ref-7-entity] ``EU``, other ``NA``, invalid ``XX``|
 |![image][ref-xft]:`getNormal`(![image][ref-xxx])|![image][ref-v]|Returns the flash tracer [`trace result`][ref-14-trace result] [`Normal`][ref-21-Normal] aim [`vector`][ref-6-vector]|
 |![image][ref-xft]:`getPhysicsBoneID`(![image][ref-xxx])|![image][ref-n]|Returns the flash tracer [`trace result`][ref-14-trace result] `PhysicsBone` `ID` [`number`][ref-9-number]|
 |![image][ref-xft]:`getPlayer`(![image][ref-xxx])|![image][ref-e]|Returns the flash tracer auto assigned [`expression chip`][ref-49-expression chip] [`player`][ref-50-player]|
@@ -151,8 +154,8 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`putActionSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Inserts an option to the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
 |![image][ref-xft]:`putActionSkipEnt`(![image][ref-e])|![image][ref-xft]|Inserts the [`entity`][ref-7-entity] to the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
 |![image][ref-xft]:`putArray`(![image][ref-e])|![image][ref-xft]|Inserts the argument in the [`entity`][ref-7-entity] [`array`][ref-37-array] [`filter`][ref-30-filter] [`list`][ref-3-list]|
-|![image][ref-xft]:`putArray`(![image][ref-r])|![image][ref-xft]|Inserts the [`entities`][ref-45-entities] from the [`array`][ref-37-array] in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
-|![image][ref-xft]:`putArray`(![image][ref-t])|![image][ref-xft]|Inserts the [`entities`][ref-45-entities] from the table in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
+|![image][ref-xft]:`putArray`(![image][ref-r])|![image][ref-xft]|Inserts the [`entities`][ref-46-entities] from the [`array`][ref-37-array] in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
+|![image][ref-xft]:`putArray`(![image][ref-t])|![image][ref-xft]|Inserts the [`entities`][ref-46-entities] from the table in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
 |![image][ref-xft]:`putArrayID`(![image][ref-n])|![image][ref-xft]|Inserts the [`entity`][ref-7-entity] `ID` in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
 |![image][ref-xft]:`putArrayID`(![image][ref-r])|![image][ref-xft]|Inserts the [`entity`][ref-7-entity] `ID` from the [`array`][ref-37-array] in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
 |![image][ref-xft]:`putArrayID`(![image][ref-t])|![image][ref-xft]|Inserts the [`entity`][ref-7-entity] `ID` from the table in the [`filter`][ref-30-filter] [`list`][ref-3-list]|
@@ -175,19 +178,23 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`rayMul`(![image][ref-v])|![image][ref-xft]|Expands the flash tracer [`ray`][ref-38-ray] each component individually using a [`vector`][ref-6-vector]|
 |![image][ref-xft]:`remAction`(![image][ref-xxx])|![image][ref-xft]|Removes all the options from the [`function`][ref-1-function] flash tracer internal preferences|
 |![image][ref-xft]:`remAction`(![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-1-function] flash tracer internal preferences|
-|![image][ref-xft]:`remActionEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-45-entities] from the [`function`][ref-1-function] flash tracer internal [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-46-entities] from the [`function`][ref-1-function] flash tracer internal [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionOnly`(![image][ref-xxx])|![image][ref-xft]|Removes all options from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionOnly`(![image][ref-s])|![image][ref-xft]|Removes the method from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionOnly`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionOnly`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
-|![image][ref-xft]:`remActionOnlyEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-45-entities] from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionOnlyEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-46-entities] from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionOnlyEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-7-entity] from the [`function`][ref-1-function] flash tracer internal only [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionSkip`(![image][ref-xxx])|![image][ref-xft]|Removes all options from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionSkip`(![image][ref-s])|![image][ref-xft]|Removes the method from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionSkip`(![image][ref-s],![image][ref-n])|![image][ref-xft]|Removes the option from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionSkip`(![image][ref-s],![image][ref-s])|![image][ref-xft]|Removes the option from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
-|![image][ref-xft]:`remActionSkipEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-45-entities] from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
+|![image][ref-xft]:`remActionSkipEnt`(![image][ref-xxx])|![image][ref-xft]|Removes all the [`entities`][ref-46-entities] from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
 |![image][ref-xft]:`remActionSkipEnt`(![image][ref-e])|![image][ref-xft]|Removes the [`entity`][ref-7-entity] from the [`function`][ref-1-function] flash tracer internal ignore [`list`][ref-3-list]|
-|![image][ref-xft]:`remArray`(![image][ref-xxx])|![image][ref-xft]|Removes all [`entities`][ref-45-entities] from the [`filter`][ref-30-filter] [`list`][ref-3-list]|
+|![image][ref-xft]:`remArray`(![image][ref-xxx])|![image][ref-xft]|Removes all [`entities`][ref-46-entities] from the [`filter`][ref-30-filter] [`list`][ref-3-list]|
 |![image][ref-xft]:`remArray`(![image][ref-e])|![image][ref-xft]|Removes the specified [`entity`][ref-7-entity] from the [`filter`][ref-30-filter] [`list`][ref-3-list]|
 |![image][ref-xft]:`remArrayID`(![image][ref-n])|![image][ref-xft]|Removes the specified [`entity`][ref-7-entity] by `ID` from the [`filter`][ref-30-filter] [`list`][ref-3-list]|
-|![image][ref-xft]:`remArrayN`(![image][ref-n])|![image][ref-xft]|Removes an [`entity`][ref-7-entity] using the specified sequential [`number`][ref-9-number]|
+|![image][ref-xft]:`remArrayN`(![image][ref-n])|![image][ref-xft]|Removes an [`entity`][ref-7-entity] using the specified [`array`][ref-37-array] sequential [`number`][ref-9-number]|
 |![image][ref-xft]:`remBase`(![image][ref-xxx])|![image][ref-xft]|Removes the base attachment [`entity`][ref-7-entity] of the flash tracer|
 |![image][ref-xft]:`remEntHit`(![image][ref-xxx])|![image][ref-xft]|[`Deprecated`][ref-23-Deprecated]. Please use the alias `remActionEnt(xft:)` instead !|
 |![image][ref-xft]:`remEntHitOnly`(![image][ref-xxx])|![image][ref-xft]|[`Deprecated`][ref-23-Deprecated]. Please use the alias `remActionOnlyEnt(xft:)` instead !|
@@ -215,14 +222,14 @@ The description of the API is provided in the table below.
 |![image][ref-xft]:`setPos`(![image][ref-v])|![image][ref-xft]|Updates the flash tracer [`origin`][ref-10-origin] [`position`][ref-11-position] using a [`vector`][ref-6-vector]|
 |![image][ref-xft]:`smpLocal`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by base attachment [`entity`][ref-7-entity] [`local axis`][ref-35-local axis]|
 |![image][ref-xft]:`smpLocal`(![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by base [`position`][ref-11-position], [`angle`][ref-34-angle]|
-|![image][ref-xft]:`smpLocal`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position] and forward [`vectors`][ref-46-vectors]|
+|![image][ref-xft]:`smpLocal`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position] and forward [`vectors`][ref-45-vectors]|
 |![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position], [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpLocal`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`position`][ref-11-position], [`entity`][ref-7-entity] [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpLocal`(![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`position`][ref-11-position], base [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpLocal`(![image][ref-v],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`position`][ref-11-position], [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpWorld`(![image][ref-xxx])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by the world [`axis`][ref-8-axis]|
 |![image][ref-xft]:`smpWorld`(![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position] and [`angle`][ref-34-angle] forward|
-|![image][ref-xft]:`smpWorld`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position] and forward [`vectors`][ref-46-vectors]|
+|![image][ref-xft]:`smpWorld`(![image][ref-e])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position] and forward [`vectors`][ref-45-vectors]|
 |![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-a])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`entity`][ref-7-entity] [`position`][ref-11-position], [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpWorld`(![image][ref-e],![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`position`][ref-11-position], [`entity`][ref-7-entity] [`angle`][ref-34-angle]|
 |![image][ref-xft]:`smpWorld`(![image][ref-v])|![image][ref-xft]|Samples the flash tracer and updates the [`trace result`][ref-14-trace result] by [`position`][ref-11-position] [`vector`][ref-6-vector] and [`entity`][ref-7-entity] forward|
@@ -329,8 +336,8 @@ The description of the API is provided in the table below.
 [ref-42-Function]: https://en.wikipedia.org/wiki/Subroutine
 [ref-43-magnitude]: https://en.wikipedia.org/wiki/Euclidean_distance
 [ref-44-Copies]: https://en.wikipedia.org/wiki/Copying
-[ref-45-entities]: https://wiki.facepunch.com/gmod/Entity
-[ref-46-vectors]: https://en.wikipedia.org/wiki/Euclidean_vector
+[ref-45-vectors]: https://en.wikipedia.org/wiki/Euclidean_vector
+[ref-46-entities]: https://wiki.facepunch.com/gmod/Entity
 [ref-47-references]: https://en.wikipedia.org/wiki/Reference_(computer_science)
 [ref-48-SURF]: https://wiki.facepunch.com/gmod/Enums/SURF
 [ref-49-expression chip]: https://github.com/wiremod/wire/wiki/Expression-2

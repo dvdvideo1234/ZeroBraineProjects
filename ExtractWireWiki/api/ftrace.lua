@@ -15,7 +15,7 @@ local API = {
   },
   POOL = {
     {name="MAKE" ,cols={"Instance creator" , "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
-    {name="APPLY",cols={"Class methods"    , "Out", "Description"},size={35,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Class methods"    , "Out", "Description"},size={40,5,13},algn={"<","|","<"}},
     {name="SETUP",cols={"General functions", "Out", "Description"},size={25,5,13},algn={"<","|","<"}}
   },
   FILE = {
@@ -196,15 +196,18 @@ the direction is reversed instead.
 
 ### How can I configure the trace filter?
 There are currently three types of trace filters in [Garry's mod][ref-gmod] that you can put in the
-[`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getFilterMode` will return the
+[`trace data`][ref_trace-dt].`filter` value. Utilizing the method `getMode()` will return the
 current tracer filter operation mode. The filter configuration is `NIL` by default
- 1. [Entity][ref_entity] reference directly written to the filter. This entity is skipped by the trace
-    This filter mode is activated by utilizing the `XFT:useUnit()` methods after adding the `entity`.
- 2. [Entity][ref_entity] sequential table ( array ) in the filter. Every item is skipped by the trace
-    This filter mode is activated by utilizing the `XFT:useArray()` after filling the `entity` `array`.
+ 1. [Entity][ref_entity] reference directly written to the filter `EU`. This entity is skipped by the trace
+    This filter mode is activated by utilizing the `useUnit()` methods after adding the `entity`.
+ 2. [Entity][ref_entity] sequential table ( array ) in the filter `AR`. Every item is skipped by the trace
+    This filter mode is activated by utilizing the `useArray()` after filling the `entity` `array`.
  3. [Finction][ref_entity] callback routine. This is slower but the most uiversal method available
-    This filter mode is activated by utilizing the `XFT:useAction()` method to enable the routine.
- 4. User can also clear the filter entierly by utilizing the `remFilter` method
+    This filter mode is activated by utilizing the `useAction()` method to enable the routine `FN`.
+
+User can also clear the filter entierly by utilizing the `remFilter()` method. When the configuration
+is copied from some other instance, the mode will always be `NA` indicating that the instance is not
+using its own configuration provided by its own methods.
 
 ### Do you have an example by any chance?
 The internal type of the class is `%s` and internal expression type `%s`, so to create

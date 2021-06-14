@@ -845,7 +845,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
     end
   end -- Obtain all the function with no description
   if(bF or iK > 0) then
-    for k, v in pairs(tD) do wikilib.common.logStatus("MISS > "..k) end
+    for k, v in pairs(tD) do wikilib.common.logStatus("MISS > "..sC.."[\""..k.."\"] = \"\"") end
     wikilibError("Description mismatch <"..sC..">!", bErr)
   end
 end
