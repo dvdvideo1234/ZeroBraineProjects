@@ -329,14 +329,14 @@ end
 
 metaActors.store = {
   [1 ] = {"setTable"    , common.stringToTable},
-  [2 ] = {"setPos"      , complex.convNew},
-  [3 ] = {"setVel"      , complex.convNew},
-  [4 ] = {"setVert"     , complex.convNew},
+  [2 ] = {"setPos"      , complex.cnvNew},
+  [3 ] = {"setVel"      , complex.cnvNew},
+  [4 ] = {"setVert"     , complex.cnvNew},
   [5 ] = {"setAng"      , tonumber},
   [6 ] = {"setStat"     , common.toBool},
   [7 ] = {"setHard"     , common.toBool},
   [8 ] = {"setLife"     , tonumber},
-  [9 ] = {"setDrawColor", colormap.convColorRGB},
+  [9 ] = {"setDrawColor", colormap.cnvColorRGB},
   [10] = {"setTrace"    , tonumber}
 }
 function level.readStage(sF, bLog)
