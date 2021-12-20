@@ -76,6 +76,7 @@ local CompileFile                    = CompileFile
 local getmetatable                   = getmetatable
 local setmetatable                   = setmetatable
 local collectgarbage                 = collectgarbage
+local LocalToWorld                   = LocalToWorld
 local osClock                        = os and os.clock
 local osDate                         = os and os.date
 local bitBand                        = bit and bit.band
@@ -136,6 +137,8 @@ local debugTrace                     = debug and debug.Trace
 local renderDrawLine                 = render and render.DrawLine
 local renderDrawSphere               = render and render.DrawSphere
 local renderSetMaterial              = render and render.SetMaterial
+local renderSetBlend                 = render and render.SetBlend
+local renderGetBlend                 = render and render.GetBlend
 local stringGetFileName              = string and string.GetFileFromFilename
 local surfaceSetFont                 = surface and surface.SetFont
 local surfaceDrawPoly                = surface and surface.DrawPoly
@@ -172,6 +175,17 @@ local libQTable = {} -- Used to allocate SQL table builder objects
 module("trackasmlib")
 
 ---------------------------- PRIMITIVES ----------------------------
+
+function Stamp(time, func, ...)
+  local told = GetOpVar("TIME_STAMP")
+  local tnew = Time()
+  if((tnew - told) > time) then
+    local suc, err = pcall(func, ...)
+    if(not suc) then
+      ErrorNoHalt("Stamp error: "..err) end
+    SetOpVar("TIME_STAMP", tnew)
+  end
+end
 
 function GetInstPref()
   if    (CLIENT) then return "cl_"
@@ -340,7 +354,9 @@ function GetStrip(vV, vQ)
   return sV:Trim()
 end
 
-function GetSnapInc(pB, nV, aV)
+function GetSnap(nV, aV)
+  local aV = tonumber(aV)
+  if(not aV) then return nV end
   local mV = mathAbs(aV)
   local cV = mathRound(nV / mV) * mV
   if(aV > 0 and cV > nV) then return cV end
@@ -348,6 +364,24 @@ function GetSnapInc(pB, nV, aV)
   if(aV < 0 and cV > nV) then return (cV - mV) end
   if(aV < 0 and cV < nV) then return cV end
   return (nV + aV)
+end
+
+function GetGrid(nV, aV)
+  local aV = tonumber(aV)
+  if(not aV) then return nV end
+  local nA = GetSnap(nV,  aV)
+  local nB = GetSnap(nV, -aV)
+  local vA = mathAbs(nV - nA)
+  local vB = mathAbs(nV - nB)
+  if(vA < vB and nV > 0) then
+    return mathCeil(nA)
+  elseif(vA < vB and nV < 0) then
+    return mathFloor(nA)
+  elseif(vA > vB and nV > 0) then
+    return mathFloor(nB)
+  elseif(vA > vB and nV < 0) then
+    return mathCeil(nB)
+  end; return nV
 end
 
 ------------------ LOGS ------------------------
@@ -493,8 +527,8 @@ function BorderValue(nsVal, vKey)
     LogInstance("Value not comparable "..GetReport(nsVal)); return nsVal end
   local tB = GetOpVar("TABLE_BORDERS")[vKey]; if(not IsHere(tB)) then
     LogInstance("Missing "..GetReport(vKey)); return nsVal end
-  if(tB and tB[1] and nsVal < tB[1]) then return tB[1] end
-  if(tB and tB[2] and nsVal > tB[2]) then return tB[2] end
+  if(tB[1] and nsVal < tB[1]) then return tB[1] end
+  if(tB[2] and nsVal > tB[2]) then return tB[2] end
   return nsVal
 end
 
@@ -528,25 +562,31 @@ end
 function GetViewRadius(pPly, vPos, nMul)
   local nM = 5000 * (GetOpVar("GOLDEN_RATIO") - 1)
   local nS = mathClamp(tonumber(nMul or 1), 0, 1000)
-  local vP = pPly:GetShootPos() vP:Sub(vPos)
-  return nS * mathClamp(nM / vP:Length(), 0, 5000)
+  local nD = pPly:GetPos():Distance(vPos)
+  return nS * mathClamp(nM / nD, 0, 5000)
 end
 
--- Golden retriever. Retrieves file line as string
--- But seriously returns the sting line and EOF flag
-function GetStringFile(pFile,bNoTrim)
-  if(not pFile) then LogInstance("No file"); return "", true end
-  local sCh, sLine = "X", "" -- Use a value to start cycle with
-  while(sCh) do sCh = pFile:Read(1); if(not sCh) then break end
-    if(sCh == "\n") then
-      if(bNoTrim) then return sLine, false end
-      return sLine:Trim(), false
-    else sLine = sLine..sCh end
-  end -- EOF has been reached. Return the last data
-  if(bNoTrim) then return sLine, true end
-  return sLine:Trim(), true
+--[[
+* Golden retriever. Retrieves file line as string
+* But seriously returns the sting line and EOF flag
+* pFile > The file to read the line of characters from
+* bCons > Keeps data consistency. Enable to ignore trimming
+]]
+function GetStringFile(pFile, bCons)
+  if(not pFile) then LogInstance("Miss file"); return "", true end
+  local sLine = pFile:ReadLine()  -- Read one line at once
+  if(not sLine) then LogInstance("Reach EoF"); return "", true end
+  local isEOF = pFile:EndOfFile() -- Check for EOF status
+  if(not bCons) then sLine = sLine:Trim() end
+  return sLine, isEOF
 end
 
+--[[
+* Formats an icon and returns the string
+* Stoes the second argument to the table of icons
+* vKey > Unique enough icon key
+* vVal > The actual icon name
+]]
 function ToIcon(vKey, vVal)
   if(SERVER) then return nil end
   local tIcon = GetOpVar("TABLE_SKILLICON"); if(not IsHere(vKey)) then
@@ -554,9 +594,15 @@ function ToIcon(vKey, vVal)
   if(IsHere(vVal)) then tIcon[vKey] = tostring(vVal) end
   local sIcon = tIcon[vKey]; if(not IsHere(sIcon)) then
     LogInstance("Missing "..GetReport(vKey)); return nil end
-  return GetOpVar("FORM_SKILLICON"):format(tostring(sIcon))
+  return GetOpVar("FORM_ICONS"):format(tostring(sIcon))
 end
 
+--[[
+* Formats an workshop URL and returns the string
+* Stoes the second argument to the table of IDs
+* sKey > Actual addon name a written in the database
+* sID  > The actual workshop ID of the addon
+]]
 function WorkshopID(sKey, sID)
   if(SERVER) then return nil end
   local tID = GetOpVar("TABLE_WSIDADDON"); if(not IsString(sKey)) then
@@ -574,6 +620,12 @@ function WorkshopID(sKey, sID)
   end; return sWS
 end
 
+--[[
+* Creates or updates a flag when second argument is provided
+* Returns the flag state inder a given name
+* vKey > Actual flag name being manipulated
+* vVal > The falg value ( conveteed to boolean )
+]]
 function IsFlag(vKey, vVal)
   local tFlag = GetOpVar("TABLE_FLAGS")
   if(not IsHere(tFlag)) then LogInstance("Missing "..GetReport(tFlag)); return nil end
@@ -653,6 +705,7 @@ function InitBase(sName, sPurp)
   SetOpVar("LOG_CURLOGS",0)
   SetOpVar("LOG_LOGLAST","")
   SetOpVar("LOG_INIT",{"*Init", false, 0})
+  SetOpVar("TIME_STAMP",Time())
   SetOpVar("TIME_INIT",Time())
   SetOpVar("DELAY_FREEZE",0.01)
   SetOpVar("MAX_ROTATION",360)
@@ -708,7 +761,7 @@ function InitBase(sName, sPurp)
   SetOpVar("FORM_PREFIXDSV", "%s%s.txt")
   SetOpVar("FORM_GITWIKI", "https://github.com/dvdvideo1234/TrackAssemblyTool/wiki/%s")
   SetOpVar("LOG_FILENAME",GetOpVar("DIRPATH_BAS")..GetOpVar("NAME_LIBRARY").."_log.txt")
-  SetOpVar("FORM_LANGPATH","%s"..GetOpVar("TOOLNAME_NL").."/lang/%s")
+  SetOpVar("FORM_LANGPATH",GetOpVar("TOOLNAME_NL").."/lang/%s")
   SetOpVar("FORM_SNAPSND", "physics/metal/metal_canister_impact_hard%d.wav")
   SetOpVar("FORM_NTFGAME", "GAMEMODE:AddNotify(\"%s\", NOTIFY_%s, 6)")
   SetOpVar("FORM_NTFPLAY", "surface.PlaySound(\"ambient/water/drip%d.wav\")")
@@ -743,7 +796,7 @@ function InitBase(sName, sPurp)
     start  = Vector(),    -- Start position of the trace
     endpos = Vector(),    -- End position of the trace
     mask   = MASK_SOLID,  -- Mask telling it what to hit
-    filter = function(oEnt) -- Only valid props which are not the main entity or world or TRACE_FILTER ( if set )
+    filter = function(oEnt) -- Only valid props which are not the main entity, world or TRACE_FILTER
       if(oEnt and oEnt:IsValid() and oEnt ~= GetOpVar("TRACE_FILTER") and
         GetOpVar("TRACE_CLASS")[oEnt:GetClass()]) then return true end end })
   SetOpVar("CONSTRAINT_LIST", {"Weld", "AdvBallsocket", "NoCollide"})
@@ -753,18 +806,28 @@ function InitBase(sName, sPurp)
   SetOpVar("PATTEX_TABLEDAD", "%s*local%s+myAdditions%s*=%s*")
   SetOpVar("PATTEX_VARADDON", "%s*local%s+myAddon%s*=%s*")
   SetOpVar("PATTEM_WORKSHID", "^%d+$")
+  SetOpVar("HOVER_TRIGGER"  , {})
   if(CLIENT) then
+    SetOpVar("TABLE_IHEADER", {name = "", stage = 0, op = 0, icon = "", icon2 = ""})
+    SetOpVar("TABLE_TOOLINF", {
+      {name = "workmode"} ,
+      {name = "info"      , icon = "gui/info"   },
+      {name = "left"      , icon = "gui/lmb.png"},
+      {name = "right"     , icon = "gui/rmb.png"},
+      {name = "right_use" , icon = "gui/rmb.png" , icon2 = "gui/e.png"},
+      {name = "reload"    , icon = "gui/r.png"  },
+      {name = "reload_use", icon = "gui/r.png"   , icon2 = "gui/e.png"}
+    })
     SetOpVar("MISS_NOTR","Oops, missing ?") -- No translation found
     SetOpVar("TOOL_DEFMODE","gmod_tool")
     SetOpVar("FORM_FILENAMEAR", "z_autorun_[%s].txt")
     SetOpVar("FORM_DRAWDBG", "%s{%s}: %s > %s")
     SetOpVar("FORM_DRWSPKY", "%+6s")
-    SetOpVar("FORM_SKILLICON","icon16/%s.png")
+    SetOpVar("FORM_ICONS","icon16/%s.png")
     SetOpVar("FORM_URLADDON", "https://steamcommunity.com/sharedfiles/filedetails/?id=%s")
     SetOpVar("TABLE_SKILLICON",{})
     SetOpVar("TABLE_WSIDADDON", {})
     SetOpVar("ARRAY_GHOST",{Size=0, Slot=GetOpVar("MISS_NOMD")})
-    SetOpVar("HOVER_TRIGGER",{})
     SetOpVar("LOCALIFY_TABLE",{})
     SetOpVar("LOCALIFY_AUTO","en")
     SetOpVar("TABLE_CATEGORIES",{})
@@ -792,24 +855,26 @@ function ToColor(vBase, pX, pY, pZ, vA)
   return GetColor(vBase[iX], vBase[iY], vBase[iZ], vA)
 end
 
-function UpdateColorPick(oEnt, sVar, sCol, bSet)
+function UpdateColor(oEnt, sVar, sCol, bSet)
   if(IsOther(oEnt)) then return nil end
-  local sPrf = GetOpVar("TOOLNAME_PL")
   local cPal = GetContainer("COLORS_LIST")
+  local sPrf = GetOpVar("TOOLNAME_PL")..sVar
   if(IsHere(bSet)) then
     if(bSet) then
       oEnt:SetRenderMode(RENDERMODE_TRANSALPHA)
       oEnt:SetColor(cPal:Select(sCol))
-      oEnt:SetNWBool(sPrf..sVar, true)
+      oEnt:SetNWBool(sPrf, true)
     else
       oEnt:SetRenderMode(RENDERMODE_TRANSALPHA)
       oEnt:SetColor(cPal:Select("w"))
-      oEnt:SetNWBool(sPrf..sVar, false)
+      oEnt:SetNWBool(sPrf, false)
     end
   else
-    local bSet = oEnt:GetNWBool(sVar, false)
-    if(bSet) then
-      UpdateColorPick(oEnt, sVar, sCol, bSet) end
+    local bNow = oEnt:GetNWBool(sPrf, false)
+    if(bNow) then
+      oEnt:SetRenderMode(RENDERMODE_TRANSALPHA)
+      oEnt:SetColor(cPal:Select(sCol))
+    end
   end
 end
 
@@ -827,34 +892,24 @@ function ExpAngle(aBase, pP, pY, pR)
   return (tonumber(aBase[aP]) or 0), (tonumber(aBase[aY]) or 0), (tonumber(aBase[aR]) or 0)
 end
 
-function AddAngle(aBase, aUnit)
+function SnapAngle(aBase, nvDec)
   if(not aBase) then LogInstance("Base invalid"); return nil end
-  if(not aUnit) then LogInstance("Unit invalid"); return nil end
-  aBase[caP] = (tonumber(aBase[caP]) or 0) + (tonumber(aUnit[caP]) or 0)
-  aBase[caY] = (tonumber(aBase[caY]) or 0) + (tonumber(aUnit[caY]) or 0)
-  aBase[caR] = (tonumber(aBase[caR]) or 0) + (tonumber(aUnit[caR]) or 0)
+  local D = (tonumber(nvDec) or 0); if(D <= 0) then
+    LogInstance("Low mismatch "..GetReport(nvDec)); return nil end
+  if(D >= GetOpVar("MAX_ROTATION")) then
+    LogInstance("High mismatch "..GetReport(nvDec)); return nil end
+  -- Snap player viewing rotation angle for using walls and ceiling
+  aBase:SnapTo("pitch", D):SnapTo("yaw", D):SnapTo("roll", D)
+  return aBase
 end
 
-function AddAnglePYR(aBase, nP, nY, nR)
+function GridAngle(aBase, nvDec)
   if(not aBase) then LogInstance("Base invalid"); return nil end
-  aBase[caP] = (tonumber(aBase[caP]) or 0) + (tonumber(nP) or 0)
-  aBase[caY] = (tonumber(aBase[caY]) or 0) + (tonumber(nY) or 0)
-  aBase[caR] = (tonumber(aBase[caR]) or 0) + (tonumber(nR) or 0)
-end
-
-function SubAngle(aBase, aUnit)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  if(not aUnit) then LogInstance("Unit invalid"); return nil end
-  aBase[caP] = (tonumber(aBase[caP]) or 0) - (tonumber(aUnit[caP]) or 0)
-  aBase[caY] = (tonumber(aBase[caY]) or 0) - (tonumber(aUnit[caY]) or 0)
-  aBase[caR] = (tonumber(aBase[caR]) or 0) - (tonumber(aUnit[caR]) or 0)
-end
-
-function SubAnglePYR(aBase, nP, nY, nR)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  aBase[caP] = (tonumber(aBase[caP]) or 0) - (tonumber(nP) or 0)
-  aBase[caY] = (tonumber(aBase[caY]) or 0) - (tonumber(nY) or 0)
-  aBase[caR] = (tonumber(aBase[caR]) or 0) - (tonumber(nR) or 0)
+  local D = tonumber(nvDec or 0); if(not IsHere(D)) then
+    LogInstance("Grid mismatch "..GetReport(nvDec)); return nil end
+  if(aBase[caP] == 0 and aBase[caR] == 0 and D > 0) then
+    aBase[caY] = GetGrid(aBase[caY], D)
+  end return aBase
 end
 
 function NegAngle(vBase, bP, bY, bR)
@@ -862,22 +917,7 @@ function NegAngle(vBase, bP, bY, bR)
   local P = (tonumber(vBase[caP]) or 0); P = (IsHere(bP) and (bP and -P or P) or -P)
   local Y = (tonumber(vBase[caY]) or 0); Y = (IsHere(bY) and (bY and -Y or Y) or -Y)
   local R = (tonumber(vBase[caR]) or 0); R = (IsHere(bR) and (bR and -R or R) or -R)
-  vBase[caP], vBase[caY], vBase[caR] = P, Y, R
-end
-
-function SetAngle(aBase, aUnit)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  if(not aUnit) then LogInstance("Unit invalid"); return nil end
-  aBase[caP] = (tonumber(aUnit[caP]) or 0)
-  aBase[caY] = (tonumber(aUnit[caY]) or 0)
-  aBase[caR] = (tonumber(aUnit[caR]) or 0)
-end
-
-function SetAnglePYR(aBase, nP, nY, nR)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  aBase[caP] = (tonumber(nP) or 0)
-  aBase[caY] = (tonumber(nY) or 0)
-  aBase[caR] = (tonumber(nR) or 0)
+  vBase[caP], vBase[caY], vBase[caR] = P, Y, R; return vBase
 end
 
 ------------- VECTOR ---------------
@@ -894,29 +934,13 @@ function ExpVector(vBase, pX, pY, pZ)
   return (tonumber(vBase[vX]) or 0), (tonumber(vBase[vY]) or 0), (tonumber(vBase[vZ]) or 0)
 end
 
-function GetLength(vBase)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local X = (tonumber(vBase[cvX]) or 0); X = X * X
-  local Y = (tonumber(vBase[cvY]) or 0); Y = Y * Y
-  local Z = (tonumber(vBase[cvZ]) or 0); Z = Z * Z
-  return mathSqrt(X + Y + Z)
-end
-
-function RoundVector(vBase,nvDec)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local D = tonumber(nvDec); if(not IsHere(R)) then
-    LogInstance("Round mismatch "..GetReport(nvDec)); return nil end
-  local X = (tonumber(vBase[cvX]) or 0); X = mathRound(X,D); vBase[cvX] = X
-  local Y = (tonumber(vBase[cvY]) or 0); Y = mathRound(Y,D); vBase[cvY] = Y
-  local Z = (tonumber(vBase[cvZ]) or 0); Z = mathRound(Z,D); vBase[cvZ] = Z
-end
-
 function AddVector(vBase, vUnit)
   if(not vBase) then LogInstance("Base invalid"); return nil end
   if(not vUnit) then LogInstance("Unit invalid"); return nil end
   vBase[cvX] = (tonumber(vBase[cvX]) or 0) + (tonumber(vUnit[cvX]) or 0)
   vBase[cvY] = (tonumber(vBase[cvY]) or 0) + (tonumber(vUnit[cvY]) or 0)
   vBase[cvZ] = (tonumber(vBase[cvZ]) or 0) + (tonumber(vUnit[cvZ]) or 0)
+  return vBase
 end
 
 function AddVectorXYZ(vBase, nX, nY, nZ)
@@ -924,6 +948,7 @@ function AddVectorXYZ(vBase, nX, nY, nZ)
   vBase[cvX] = (tonumber(vBase[cvX]) or 0) + (tonumber(nX) or 0)
   vBase[cvY] = (tonumber(vBase[cvY]) or 0) + (tonumber(nY) or 0)
   vBase[cvZ] = (tonumber(vBase[cvZ]) or 0) + (tonumber(nZ) or 0)
+  return vBase
 end
 
 function SubVector(vBase, vUnit)
@@ -932,6 +957,7 @@ function SubVector(vBase, vUnit)
   vBase[cvX] = (tonumber(vBase[cvX]) or 0) - (tonumber(vUnit[cvX]) or 0)
   vBase[cvY] = (tonumber(vBase[cvY]) or 0) - (tonumber(vUnit[cvY]) or 0)
   vBase[cvZ] = (tonumber(vBase[cvZ]) or 0) - (tonumber(vUnit[cvZ]) or 0)
+  return vBase
 end
 
 function SubVectorXYZ(vBase, nX, nY, nZ)
@@ -939,6 +965,7 @@ function SubVectorXYZ(vBase, nX, nY, nZ)
   vBase[cvX] = (tonumber(vBase[cvX]) or 0) - (tonumber(nX) or 0)
   vBase[cvY] = (tonumber(vBase[cvY]) or 0) - (tonumber(nY) or 0)
   vBase[cvZ] = (tonumber(vBase[cvZ]) or 0) - (tonumber(nZ) or 0)
+  return vBase
 end
 
 function NegVector(vBase, bX, bY, bZ)
@@ -946,29 +973,7 @@ function NegVector(vBase, bX, bY, bZ)
   local X = (tonumber(vBase[cvX]) or 0); X = (IsHere(bX) and (bX and -X or X) or -X)
   local Y = (tonumber(vBase[cvY]) or 0); Y = (IsHere(bY) and (bY and -Y or Y) or -Y)
   local Z = (tonumber(vBase[cvZ]) or 0); Z = (IsHere(bZ) and (bZ and -Z or Z) or -Z)
-  vBase[cvX], vBase[cvY], vBase[cvZ] = X, Y, Z
-end
-
-function SetVector(vBase, vUnit)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  if(not vUnit) then LogInstance("Unit invalid"); return nil end
-  vBase[cvX] = (tonumber(vUnit[cvX]) or 0)
-  vBase[cvY] = (tonumber(vUnit[cvY]) or 0)
-  vBase[cvZ] = (tonumber(vUnit[cvZ]) or 0)
-end
-
-function SetVectorXYZ(vBase, nX, nY, nZ)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  vBase[cvX] = (tonumber(nX or 0))
-  vBase[cvY] = (tonumber(nY or 0))
-  vBase[cvZ] = (tonumber(nZ or 0))
-end
-
-function MulVectorXYZ(vBase, nX, nY, nZ)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  vBase[cvX] = vBase[cvX] * (tonumber(nX or 0))
-  vBase[cvY] = vBase[cvY] * (tonumber(nY or 0))
-  vBase[cvZ] = vBase[cvZ] * (tonumber(nZ or 0))
+  vBase[cvX], vBase[cvY], vBase[cvZ] = X, Y, Z; return vBase
 end
 
 function BasisVector(vBase, aUnit)
@@ -977,7 +982,7 @@ function BasisVector(vBase, aUnit)
   local X = vBase:Dot(aUnit:Forward())
   local Y = vBase:Dot(aUnit:Right())
   local Z = vBase:Dot(aUnit:Up())
-  SetVectorXYZ(vBase,X,Y,Z)
+  vBase:SetUnpacked(X, Y, Z); return vBase
 end
 
 -------------- 2DVECTOR ----------------
@@ -1568,7 +1573,7 @@ function GetScreen(sW, sH, eW, eH, conClr, aKey)
       else LogInstance("Draw method <"..sMeth.."> invalid", tLogs); return nil end
     end; return xyO -- Do not draw the rays when the size is zero
   end
-  function self:DrawPOA(oPly,ePOA,stPOA,nAct,bNoO)
+  function self:DrawPOA(oPly,ePOA,stPOA,iIdx,nAct,bNoO)
     if(not (ePOA and ePOA:IsValid())) then
       LogInstance("Entity invalid", tLogs); return nil end
     if(not IsPlayer(oPly)) then
@@ -1576,13 +1581,21 @@ function GetScreen(sW, sH, eW, eH, conClr, aKey)
     local nAct = BorderValue(tonumber(nAct) or 0, "non-neg")
     local eP, eA = ePOA:GetPos(), ePOA:GetAngles()
     local vO, vP = Vector(), Vector()
-    SetVector(vO,stPOA.O); vO:Rotate(eA); vO:Add(eP)
-    SetVector(vP,stPOA.P); vP:Rotate(eA); vP:Add(eP)
+    vO:SetUnpacked(stPOA.O[cvX], stPOA.O[cvY], stPOA.O[cvZ])
+    vP:SetUnpacked(stPOA.P[cvX], stPOA.P[cvY], stPOA.P[cvZ])
+    vO:Rotate(eA); vO:Add(eP)
+    vP:Rotate(eA); vP:Add(eP)
     local Op, Pp = vO:ToScreen(), vP:ToScreen()
-    local Rv = GetViewRadius(oPly, vP, nAct)
+    local Rv = GetViewRadius(oPly, vP, nAct / 5)
     if(not bNoO) then
       local nR = GetViewRadius(oPly, vO)
       self:DrawCircle(Op, nR,"y","SURF")
+    end
+    if(iIdx) then local nO = Rv / 5
+      if(stPOA.P[cvX] ~= 0 or stPOA.P[cvY] ~= 0 or stPOA.P[cvZ] ~= 0) then
+        self:SetTextStart(Pp.x + nO, Pp.y - 24 - nO)
+      else self:SetTextStart(Op.x + nO, Op.y - 24 - nO) end
+      self:DrawText(tostring(iIdx),"g","SURF",{"Trebuchet24"})
     end
     self:DrawCircle(Pp, Rv, "r","SEGM",{35})
     self:DrawLine(Op, Pp)
@@ -1908,30 +1921,38 @@ function SetButton(cPanel, sVar)
 end
 
 function SetNumSlider(cPanel, sVar, vDig, vMin, vMax, vDev)
-  local nMin = tonumber(vMin)
-  local nMax = tonumber(vMax)
-  local vDef = tonumber(vDev)
-  local sTool = GetOpVar("TOOLNAME_NL")
-  local tConv = GetOpVar("STORE_CONVARS")
-  local sKey, sNam, bExa = GetNameExp(sVar)
+  local nMin, nMax, nDev = tonumber(vMin), tonumber(vMax), tonumber(vDev)
+  local sTool, tConv = GetOpVar("TOOLNAME_NL"), GetOpVar("STORE_CONVARS")
+  local sKey, sNam, bExa, nDum = GetNameExp(sVar)
   local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
   local iDig = mathFloor(mathMax(tonumber(vDig) or 0, 0))
-  if(not IsHere(vDef)) then vDef = tConv[sKey]
-    if(not IsHere(vDef)) then vDef = GetAsmConvar(sVar, "DEF")
-      if(not IsHere(vDef)) then
+  -- Read default value form the first available
+  if(not IsHere(nDev)) then nDev = tConv[sKey]
+    if(not IsHere(nDev)) then nDev = GetAsmConvar(sVar, "DEF")
+      if(not IsHere(nDev)) then
         LogInstance("(D) Miss "..GetReport1(sKey))
-      else LogInstance("(D) Cvar "..GetReport2(sKey, vDef)) end
-    else LogInstance("(D) List "..GetReport2(sKey, vDef)) end
-  else LogInstance("(D) Args "..GetReport2(sKey, vDef)) end
-  if(not (nMin and nMax)) then nMin, nMax = GetBorder(sKey)
-    if(not (nMin and nMax)) then -- Check for border in convar list
-      local nMin = GetAsmConvar(sVar, "MIN")
-      local nMax = GetAsmConvar(sVar, "MAX")
-      if(not (nMin and nMax)) then
+      else LogInstance("(D) Cvar "..GetReport2(sKey, nDev)) end
+    else LogInstance("(D) List "..GetReport2(sKey, nDev)) end
+  else LogInstance("(D) Args "..GetReport2(sKey, nDev)) end
+  -- Read minimum value form the first available
+  if(not IsHere(nMin)) then nMin, nDum = GetBorder(sKey)
+    if(not IsHere(nMin)) then nMin = GetAsmConvar(sVar, "MIN")
+      if(not IsHere(nMin)) then -- Mininum bound is not located
+        nMin = -mathAbs(2 * mathFloor(GetAsmConvar(sVar, "FLT")))
         LogInstance("(L) Miss "..GetReport1(sKey))
-      else LogInstance("(L) Cvar "..GetReport3(sKey, nMin, nMax)) end
-    else LogInstance("(L) Bord "..GetReport3(sKey, nMin, nMax)) end
-  else LogInstance("(L) Args "..GetReport3(sKey, nMin, nMax)) end
+      else LogInstance("(L) Cvar "..GetReport2(sKey, nMin)) end
+    else LogInstance("(L) List "..GetReport2(sKey, nMin)) end
+  else LogInstance("(L) Args "..GetReport2(sKey, nMin)) end
+  -- Read maximum value form the first available
+  if(not IsHere(nMax)) then nDum, nMax = GetBorder(sKey)
+    if(not IsHere(nMax)) then nMax = GetAsmConvar(sVar, "MAX")
+      if(not IsHere(nMax)) then -- Maximum bound is not located
+        nMax = mathAbs(2 * mathCeil(GetAsmConvar(sVar, "FLT")))
+        LogInstance("(H) Miss "..GetReport1(sKey))
+      else LogInstance("(H) Cvar "..GetReport2(sKey, nMax)) end
+    else LogInstance("(H) List "..GetReport2(sKey, nMax)) end
+  else LogInstance("(H) Args "..GetReport2(sKey, nMax)) end
+  -- Create the slider control using the min, max and default
   local sMenu, sTtip = GetPhrase(sBase.."_con"), GetPhrase(sBase)
   local pItem = cPanel:NumSlider(sMenu, sKey, nMin, nMax, iDig)
   pItem:SetTooltip(sTtip); pItem:SetDefaultValue(vDef); return pItem
@@ -2025,7 +2046,8 @@ function GetPointElevation(oEnt,ivPoID)
   if(not (hdPnt.O and hdPnt.A)) then
     LogInstance("POA missing "..GetReport(ivPoID).." for <"..sModel..">"); return nil end
   local aDiffBB, vDiffBB = Angle(), oEnt:OBBMins()
-  SetAngle(aDiffBB,hdPnt.A) ; aDiffBB:RotateAroundAxis(aDiffBB:Up(),180)
+  aDiffBB:SetUnpacked(hdPnt.A[caP], hdPnt.A[caY], hdPnt.A[caR])
+  aDiffBB:RotateAroundAxis(aDiffBB:Up(), 180)
   SubVector(vDiffBB,hdPnt.O); BasisVector(vDiffBB,aDiffBB)
   return mathAbs(vDiffBB[cvZ])
 end
@@ -2034,7 +2056,9 @@ function GetBeautifyName(sName)
   local sDiv = GetOpVar("OPSYM_DIVIDER")
   local fCon = GetOpVar("MODELNAM_FUNC")
   local sNam = tostring(sName or ""):lower():Trim()
-  return ("_"..sNam):gsub(sDiv.."%w", fCon):sub(2,-1)
+  local sOut = sNam:gsub("_+","_"):gsub("_$", "")
+  if(sOut:sub(1,1) ~= "_") then sOut = "_"..sOut end
+  return sOut:gsub(sDiv.."%w", fCon):sub(2,-1)
 end
 
 function ModelToName(sModel, bNoSet)
@@ -2165,13 +2189,12 @@ end
 function DecodePOA(sStr)
   if(not IsString(sStr)) then
     LogInstance("Argument mismatch "..GetReport(sStr)); return nil end
-  if(sStr:len() == 0) then return ReloadPOA() end; ReloadPOA()
+  local arPOA  = ReloadPOA(); if(sStr:len() == 0) then return arPOA end
   local symSep = GetOpVar("OPSYM_SEPARATOR")
-  local arPOA  = GetOpVar("ARRAY_DECODEPOA")
-  local atPOA  = symSep:Explode(sStr)   -- Read the components
-  for iD = 1, arPOA.Size do             -- Apply on all components
-    local nCom = tonumber(atPOA[iD])    -- Is the data really a number
-    if(not IsHere(nCom)) then nCom = 0  -- If not write zero and report it
+  local atPOA  = symSep:Explode(sStr)  -- Read the components
+  for iD = 1, arPOA.Size do            -- Apply on all components
+    local nCom = tonumber(atPOA[iD])   -- Is the data really a number
+    if(not IsHere(nCom)) then nCom = 0 -- If not write zero and report it
       LogInstance("Mismatch <"..sStr..">") end; arPOA[iD] = nCom
   end; return arPOA -- Return the converted string to POA
 end
@@ -2323,7 +2346,7 @@ function ModelToNameRule(sRule, gCut, gSub, gApp)
   else LogInstance("Wrong mode name "..sRule); return false end
 end
 
-function Categorize(oTyp, fCat, iID)
+function Categorize(oTyp, fCat)
   local tCat = GetOpVar("TABLE_CATEGORIES")
   if(not IsHere(oTyp)) then
     local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
@@ -2400,13 +2423,14 @@ function CacheClear(pPly, bNow)
     LogInstance("Invalid "..GetReport(pPly)); return false end
   local stSpot = libPlayer[pPly]; if(not IsHere(stSpot)) then
     LogInstance("Clean"); return true end
-  libPlayer[pPly] = nil; if(bNow) then collectgarbage() end; return true
-end
-
-function GetDistanceHit(pPly, vHit)
-  if(not IsPlayer(pPly)) then
-    LogInstance("Invalid "..GetReport(pPly)); return nil end
-  return (vHit - pPly:GetPos()):Length()
+  if(SERVER) then
+    local qT = asmlib.GetQueue("THINK")
+    if(qT) then qT:GetBusy()[pPly] = nil end
+  end
+  local cT = asmlib.GetOpVar("HOVER_TRIGGER")
+  if(cT and cT[pPly]) then cT[pPly] = nil end
+  libPlayer[pPly] = nil; if(bNow) then collectgarbage() end
+  return true
 end
 
 --[[
@@ -2428,8 +2452,9 @@ function GetCacheRadius(pPly, vHit, nSca)
   local nMul = (tonumber(nSca) or 1) -- Disable scaling on missing or outside
         nMul = ((nMul <= 1 and nMul >= 0) and nMul or 1)
   local nMar, nLim = stData["MAR"], stData["LIM"]
-  local nDst = GetDistanceHit(pPly, vHit)
-  local nRad = ((nDst ~= 0) and mathClamp((nMar / nDst) * nMul, 1, nLim) or 0)
+  local nDst = vHit:Distance(pPly:GetPos())
+        nMul = mathClamp((nMar / nDst) * nMul, 1, nLim)
+  local nRad = ((nDst ~= 0) and nMul or 0)
   return nRad, nDst, nMar, nLim
 end
 
@@ -2612,7 +2637,7 @@ function CreateTable(sTable,defTab,bDelete,bReload)
   function self:Remove(vRet)
     local qtDef = self:GetDefinition()
     libQTable[qtDef.Nick] = nil
-    collectgarbage(); return vRet
+    return vRet
   end
   -- Generates a timer settings table and keeps the defaults
   function self:TimerSetup(vTim)
@@ -3026,17 +3051,14 @@ function CacheBoxLayout(oEnt,nRot,nCamX,nCamZ)
   local oRec = CacheQueryPiece(sMod); if(not IsHere(oRec)) then
     LogInstance("Record invalid <"..sMod..">"); return nil end
   local stBox = oRec.Layout; if(not IsHere(stBox)) then
-    local vMin, vMax; oRec.Layout = {}; stBox = oRec.Layout
-    if    (CLIENT) then vMin, vMax = oEnt:GetRenderBounds()
-    elseif(SERVER) then vMin, vMax = oEnt:OBBMins(), oEnt:OBBMaxs()
-    else LogInstance("Wrong instance"); return nil end
-    stBox.Ang = Angle () -- Layout entity angle
-    stBox.Cen = Vector() -- Layout entity center
-    stBox.Cen:Set(vMax); stBox.Cen:Add(vMin); stBox.Cen:Mul(0.5)
+    oRec.Layout = {}; stBox = oRec.Layout -- Allocated chace layout
+    stBox.Cen, stBox.Ang = oEnt:OBBCenter(), Angle() -- Layout position and angle
     stBox.Eye = oEnt:LocalToWorld(stBox.Cen) -- Layout camera eye
-    stBox.Len = (((vMax - stBox.Cen):Length() + (vMin - stBox.Cen):Length()) / 2)
-    stBox.Cam = Vector(); stBox.Cam:Set(stBox.Eye)  -- Layout camera position
-    AddVectorXYZ(stBox.Cam,stBox.Len*(tonumber(nCamX) or 0),0,stBox.Len*(tonumber(nCamZ) or 0))
+    stBox.Len = oEnt:BoundingRadius() -- Use bounding radius as enity size
+    stBox.Cam = Vector(stBox.Eye) -- Layout camera position
+    local nX = stBox.Len * (tonumber(nCamX) or 0) -- Calculate camera X
+    local nZ = stBox.Len * (tonumber(nCamZ) or 0) -- Calculate camera Z
+    AddVectorXYZ(stBox.Cam, nX, 0, nZ) -- Apply calculated camera offsets
     LogInstance("<"..tostring(stBox.Cen).."><"..tostring(stBox.Len)..">")
   end; stBox.Ang[caY] = (tonumber(nRot) or 0) * Time(); return stBox
 end
@@ -4018,10 +4040,7 @@ function GetNormalAngle(oPly, soTr, bSnp, nSnp)
       if(not (stTr and stTr.Hit)) then return aAng end
     end; aAng:Set(GetSurfaceAngle(oPly, stTr.HitNormal))
   else aAng[caY] = oPly:GetAimVector():Angle()[caY] end
-  if(nAsn and (nAsn > 0) and (nAsn <= GetOpVar("MAX_ROTATION"))) then
-    -- Snap player viewing rotation angle for using walls and ceiling
-    aAng:SnapTo("pitch", nAsn):SnapTo("yaw", nAsn):SnapTo("roll", nAsn)
-  end; return aAng
+  SnapAngle(aAng, nAsn); GridAngle(aAng, nAsn); return aAng
 end
 
 --[[
@@ -4042,14 +4061,15 @@ function GetEntityHitID(oEnt, vHit, bPnt)
   for ID = 1, oRec.Size do -- Ignore the point disabled flag
     local tPOA, tID = LocatePOA(oRec, ID); if(not IsHere(tPOA)) then
       LogInstance("Point missing "..GetReport1(ID)); return nil end
-    if(bPnt) then SetVector(oAnc, tPOA.P) else SetVector(oAnc, tPOA.O) end
-    oAnc:Rotate(eAng); oAnc:Add(ePos); oAnc:Sub(vHit)
-    local tMin = oAnc:Length() -- Calculate vector absolute ( distance )
+    if(bPnt) then oAnc:SetUnpacked(tPOA.P[cvX], tPOA.P[cvY], tPOA.P[cvZ])
+    else oAnc:SetUnpacked(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ]) end
+    oAnc:Rotate(eAng); oAnc:Add(ePos) -- Convert local to world space
+    local tMin = oAnc:DistToSqr(vHit) -- Calculate vector absolute ( distance )
     if(oID and oMin and oPOA) then -- Check if current distance is minimum
       if(oMin >= tMin) then oID, oMin, oPOA = tID, tMin, tPOA end
     else -- The shortest distance if the first one checked until others are looped
       oID, oMin, oPOA = tID, tMin, tPOA end
-  end; return oID, oMin, oPOA, oRec
+  end; return oID, mathSqrt(oMin), oPOA, oRec
 end
 
 function GetNearest(vHit, tVec)
@@ -4058,13 +4078,12 @@ function GetNearest(vHit, tVec)
   if(not IsTable(tVec)) then
     LogInstance("Vertices mismatch "..GetReport(tVec)); return nil end
   local vT, iD, mD, mL = Vector(), 1, nil, nil
-  while(tVec[iD]) do
-    vT:Set(vHit); vT:Sub(tVec[iD])
-    local nT = vT:Length() -- Get current length
+  while(tVec[iD]) do -- Get current length
+    local nT = vHit:DistToSqr(tVec[iD])
     if(mL and mD) then -- Length is allocated
       if(nT <= mL) then mD, mL = iD, nT end
     else mD, mL = iD, nT end; iD = (iD + 1)
-  end; return mD, mL
+  end; return mD, mathSqrt(mL)
 end
 
 --[[
@@ -4084,33 +4103,33 @@ function GetNormalSpawn(oPly,ucsPos,ucsAng,shdModel,ivhdPoID,
     LogInstance("No record located "..GetReport(shdModel)); return nil end
   local hdPOA, ihdPoID = LocatePOA(hdRec,ivhdPoID); if(not IsHere(hdPOA)) then
     LogInstance("Holder ID missing "..GetReport(ivhdPoID)); return nil end
-  local stSpawn = GetCacheSpawn(oPly, stData); stSpawn.HRec, stSpawn.HID = hdRec, ihdPoID
-  if(ucsPos) then SetVector(stSpawn.BPos, ucsPos) end
-  if(ucsAng) then SetAngle (stSpawn.BAng, ucsAng) end
+  local stSpawn = GetCacheSpawn(oPly, stData)
+        stSpawn.HID  = ihdPoID
+        stSpawn.HRec = hdRec
+  if(ucsPos) then stSpawn.BPos:SetUnpacked(ucsPos[cvX], ucsPos[cvY], ucsPos[cvZ]) end
+  if(ucsAng) then stSpawn.BAng:SetUnpacked(ucsAng[caP], ucsAng[caY], ucsAng[caR]) end
   stSpawn.OPos:Set(stSpawn.BPos); stSpawn.OAng:Set(stSpawn.BAng);
   -- Initialize F, R, U Copy the UCS like that to support database POA
-  SetAnglePYR (stSpawn.ANxt, (tonumber(ucsAngP) or 0), (tonumber(ucsAngY) or 0), (tonumber(ucsAngR) or 0))
-  SetVectorXYZ(stSpawn.PNxt, (tonumber(ucsPosX) or 0), (tonumber(ucsPosY) or 0), (tonumber(ucsPosZ) or 0))
+  stSpawn.ANxt:SetUnpacked(tonumber(ucsAngP) or 0,
+                           tonumber(ucsAngY) or 0,
+                           tonumber(ucsAngR) or 0)
+  stSpawn.PNxt:SetUnpacked(tonumber(ucsPosX) or 0,
+                           tonumber(ucsPosY) or 0,
+                           tonumber(ucsPosZ) or 0)
   -- Integrate additional position offset into the origin position
-  stSpawn.U:Set(stSpawn.OAng:Up())
-  stSpawn.R:Set(stSpawn.OAng:Right())
-  stSpawn.F:Set(stSpawn.OAng:Forward())
-  stSpawn.OPos:Add(stSpawn.PNxt[cvX] * stSpawn.F)
-  stSpawn.OPos:Add(stSpawn.PNxt[cvY] * stSpawn.R)
-  stSpawn.OPos:Add(stSpawn.PNxt[cvZ] * stSpawn.U)
-  -- Integrate additional angle offset into the origin angle
-  stSpawn.R:Set(stSpawn.OAng:Right())
-  stSpawn.U:Set(stSpawn.OAng:Up())
-  stSpawn.OAng:RotateAroundAxis(stSpawn.R, stSpawn.ANxt[caP])
-  stSpawn.OAng:RotateAroundAxis(stSpawn.U,-stSpawn.ANxt[caY])
-  stSpawn.F:Set(stSpawn.OAng:Forward())
-  stSpawn.OAng:RotateAroundAxis(stSpawn.F, stSpawn.ANxt[caR])
-  stSpawn.R:Set(stSpawn.OAng:Right())
-  stSpawn.U:Set(stSpawn.OAng:Up())
+  if(stSpawn.ANxt[caP] ~= 0 or stSpawn.ANxt[caY] ~= 0 or stSpawn.ANxt[caR] ~= 0 or
+     stSpawn.PNxt[cvX] ~= 0 or stSpawn.PNxt[cvY] ~= 0 or stSpawn.PNxt[cvZ] ~= 0) then
+    NegAngle(stSpawn.ANxt, true, true, false)
+    local pos, ang = LocalToWorld(stSpawn.PNxt, stSpawn.ANxt, stSpawn.BPos, stSpawn.BAng)
+    stSpawn.OPos:Set(pos); stSpawn.OAng:Set(ang);
+    stSpawn.F:Set(stSpawn.OAng:Forward())
+    stSpawn.R:Set(stSpawn.OAng:Right())
+    stSpawn.U:Set(stSpawn.OAng:Up())
+  end
   -- Read holder record
-  SetVector(stSpawn.HPnt, hdPOA.P)
-  SetVector(stSpawn.HOrg, hdPOA.O)
-  SetAngle (stSpawn.HAng, hdPOA.A)
+  stSpawn.HPnt:SetUnpacked(hdPOA.P[cvX], hdPOA.P[cvY], hdPOA.P[cvZ])
+  stSpawn.HOrg:SetUnpacked(hdPOA.O[cvX], hdPOA.O[cvY], hdPOA.O[cvZ])
+  stSpawn.HAng:SetUnpacked(hdPOA.A[caP], hdPOA.A[caY], hdPOA.A[caR])
   -- Apply origin basis to the trace matrix
   stSpawn.TMtx:Identity()
   stSpawn.TMtx:Translate(stSpawn.OPos)
@@ -4178,12 +4197,12 @@ function GetEntitySpawn(oPly,trEnt,trHitPos,shdModel,ivhdPoID,
         stSpawn.HID , stSpawn.TID  = ihdPoID, trID
         stSpawn.TOrg:Set(trEnt:GetPos())
         stSpawn.TAng:Set(trEnt:GetAngles())
-        SetVector(stSpawn.TPnt, trPOA.P)
+        stSpawn.TPnt:SetUnpacked(trPOA.P[cvX], trPOA.P[cvY], trPOA.P[cvZ])
         stSpawn.TPnt:Rotate(stSpawn.TAng)
         stSpawn.TPnt:Add(stSpawn.TOrg)
   -- Found the active point ID on trEnt. Initialize origins
-  SetVector(stSpawn.BPos, trPOA.O) -- Read origin
-  SetAngle (stSpawn.BAng, trPOA.A) -- Read angle
+  stSpawn.BPos:SetUnpacked(trPOA.O[cvX], trPOA.O[cvY], trPOA.O[cvZ]) -- Read origin
+  stSpawn.BAng:SetUnpacked(trPOA.A[caP], trPOA.A[caY], trPOA.A[caR]) -- Read angle
   stSpawn.BPos:Rotate(stSpawn.TAng); stSpawn.BPos:Add(stSpawn.TOrg)
   stSpawn.BAng:Set(trEnt:LocalToWorldAngles(stSpawn.BAng))
   -- Do the flatten flag right now Its important !
@@ -4206,10 +4225,13 @@ function GetTraceEntityPoint(trEnt, ivPoID, nLen)
   if(not trRec) then LogInstance("Trace not piece"); return nil end
   local trPOA = LocatePOA(trRec, ivPoID); if(not IsHere(trPOA)) then
     LogInstance("Point missing "..GetReport(ivPoID)); return nil end
-  local trDt, trAng = GetOpVar("TRACE_DATA"), Angle(); SetOpVar("TRACE_FILTER",trEnt)
-  SetVector(trDt.start, trPOA.O); trDt.start:Rotate(trEnt:GetAngles()); trDt.start:Add(trEnt:GetPos())
-  SetAngle (trAng     , trPOA.A); trAng:Set(trEnt:LocalToWorldAngles(trAng))
-  trDt.endpos:Set(trAng:Forward()); trDt.endpos:Mul(nLen); trDt.endpos:Add(trDt.start)
+  local trDt, trAng = GetOpVar("TRACE_DATA"), Angle()
+  trDt.start:SetUnpacked(trPOA.O[cvX], trPOA.O[cvY], trPOA.O[cvZ])
+  trDt.start:Rotate(trEnt:GetAngles()); trDt.start:Add(trEnt:GetPos())
+  trAng:SetUnpacked(trPOA.A[caP], trPOA.A[caY], trPOA.A[caR])
+  trAng:Set(trEnt:LocalToWorldAngles(trAng))
+  trDt.endpos:Set(trAng:Forward()); trDt.endpos:Mul(nLen)
+  trDt.endpos:Add(trDt.start); SetOpVar("TRACE_FILTER", trEnt)
   return utilTraceLine(trDt), trDt
 end
 
@@ -4245,10 +4267,11 @@ end
  *   f2 --> Intersection fraction of the second ray
 ]]--
 local function IntersectRay(vO1, vD1, vO2, vD2)
-  local d1 = vD1:GetNormalized(); if(d1:Length() == 0) then
+  if(vD1:LengthSqr() == 0) then
     LogInstance("First ray undefined"); return nil end
-  local d2 = vD2:GetNormalized(); if(d2:Length() == 0) then
+  if(vD2:LengthSqr() == 0) then
     LogInstance("Second ray undefined"); return nil end
+  local d1, d2 = vD1:GetNormalized(), vD2:GetNormalized()
   local dx, oo = d1:Cross(d2), (vO2 - vO1)
   local dn = (dx:Length())^2; if(dn < GetOpVar("EPSILON_ZERO")) then
     LogInstance("Rays parallel"); return nil end
@@ -4260,11 +4283,12 @@ local function IntersectRay(vO1, vD1, vO2, vD2)
 end
 
 local function IntersectRayParallel(vO1, vD1, vO2, vD2)
-  local d1 = vD1:GetNormalized(); if(d1:Length() == 0) then
+  if(vD1:LengthSqr() == 0) then
     LogInstance("First ray undefined"); return nil end
-  local d2 = vD2:GetNormalized(); if(d2:Length() == 0) then
+  if(vD2:LengthSqr() == 0) then
     LogInstance("Second ray undefined"); return nil end
-  local len = (vO2 - vO1):Length()
+  local d1, d2 = vD1:GetNormalized(), vD2:GetNormalized()
+  local len = vO2:Distance(vO1)
   local f1, f2 = (len / 2), (len / 2)
   local x1, x2 = (vO1 + f1 * d1), (vO2 + f2 * d2)
   local xx = (x2 - x1); xx:Mul(0.5); xx:Add(x1)
@@ -4314,7 +4338,9 @@ function IntersectRayCreate(oPly, oEnt, vHit, sKey)
     stRay.Key = sKey
     stRay.Ply, stRay.Ent, stRay.ID  = oPly , oEnt , trID
     stRay.POA, stRay.Rec, stRay.Min = trPOA, trRec, trMin
-  end; SetAngle(stRay.Dir, trPOA.A); SetVector(stRay.Org, trPOA.O)
+  end
+  stRay.Dir:SetUnpacked(trPOA.A[caP], trPOA.A[caY], trPOA.A[caR])
+  stRay.Org:SetUnpacked(trPOA.O[cvX], trPOA.O[cvY], trPOA.O[cvZ])
   return IntersectRayUpdate(stRay)
 end
 
@@ -4376,9 +4402,13 @@ function IntersectRayModel(sModel, nPntID, nNxtID)
     LogInstance("Start ID missing "..GetReport(nPntID)); return nil end
   local stPOA2 = LocatePOA(mRec, nNxtID); if(not stPOA2) then
     LogInstance("End ID missing "..GetReport(nNxtID)); return nil end
-  local aD1, aD2 = Angle(), Angle(); SetAngle(aD1, stPOA1.A); SetAngle(aD2, stPOA2.A)
-  local vO1, vD1 = Vector(), aD1:Forward(); SetVector(vO1, stPOA1.O); vD1:Mul(-1)
-  local vO2, vD2 = Vector(), aD2:Forward(); SetVector(vO2, stPOA2.O); vD2:Mul(-1)
+  local aD1, aD2 = Angle(), Angle()
+  aD1:SetUnpacked(stPOA1.A[caP], stPOA1.A[caY], stPOA1.A[caR])
+  aD2:SetUnpacked(stPOA2.A[caP], stPOA2.A[caY], stPOA2.A[caR])
+  local vO1, vD1 = Vector(), aD1:Forward()
+  vO1:SetUnpacked(stPOA1.O[cvX], stPOA1.O[cvY], stPOA1.O[cvZ]); vD1:Mul(-1)
+  local vO2, vD2 = Vector(), aD2:Forward()
+  vO2:SetUnpacked(stPOA2.O[cvX], stPOA2.O[cvY], stPOA2.O[cvZ]); vD2:Mul(-1)
   local f1, f2, x1, x2, xx = IntersectRay(vO1,vD1,vO2,vD2)
   if(not xx) then -- Attempts taking the mean vector when the rays are parallel for straight tracks
     f1, f2, x1, x2, xx = IntersectRayParallel(vO1,vD1,vO2,vD2) end
@@ -4409,7 +4439,7 @@ function AttachAdditions(ePiece)
         LogInstance("Position mismatch "..GetReport(ofPos)); return false end
       if(ofPos and not (IsNull(ofPos) or IsBlank(ofPos) or ofPos:sub(1,1) == sD)) then
         local vpAdd, arPOA = Vector(), DecodePOA(ofPos)
-        SetVectorXYZ(vpAdd, arPOA[1], arPOA[2], arPOA[3])
+        vpAdd:SetUnpacked(arPOA[1], arPOA[2], arPOA[3])
         vpAdd:Set(ePiece:LocalToWorld(vpAdd))
         eAddit:SetPos(vpAdd); LogInstance("SetPos(DB)")
       else eAddit:SetPos(ePos); LogInstance("SetPos(PIECE:POS)") end
@@ -4417,7 +4447,7 @@ function AttachAdditions(ePiece)
         LogInstance("Angle mismatch "..GetReport(ofAng)); return false end
       if(ofAng and not (IsNull(ofAng) or IsBlank(ofAng) or ofAng:sub(1,1) == sD)) then
         local apAdd, arPOA = Angle(), DecodePOA(ofAng)
-        SetAnglePYR(apAdd, arPOA[1], arPOA[2], arPOA[3])
+        apAdd:SetUnpacked(arPOA[1], arPOA[2], arPOA[3])
         apAdd:Set(ePiece:LocalToWorldAngles(apAdd))
         eAddit:SetAngles(apAdd); LogInstance("SetAngles(DB)")
       else eAddit:SetAngles(eAng); LogInstance("SetAngles(PIECE:ANG)") end
@@ -4538,7 +4568,8 @@ function MakePiece(pPly,sModel,vPos,aAng,nMass,sBgSkIDs,clColor,sMode)
   if(CLIENT) then LogInstance("Working on client"); return nil end
   if(not IsPlayer(pPly)) then -- If not player we cannot register limit
     LogInstance("Player missing <"..tostring(pPly)..">"); return nil end
-  local sLimit, sClass = GetOpVar("CVAR_LIMITNAME"), GetOpVar("ENTITY_DEFCLASS")
+  local sLimit  = GetOpVar("CVAR_LIMITNAME")
+  local sClass  = GetOpVar("ENTITY_DEFCLASS")
   if(not pPly:CheckLimit(sLimit)) then -- Check internal limit
     LogInstance("Track limit reached"); return nil end
   if(not pPly:CheckLimit("props")) then -- Check the props limit
@@ -4638,7 +4669,7 @@ function ApplyPhysicalAnchor(ePiece,eBase,bWe,bNc,bNw,nFm)
   if(constraintCanConstrain(ePiece, 0)) then -- Check piece for contrainability
     -- Weld on pieces between each other
     if(bWe) then -- Weld using force limit given here V
-      if(eBase and eBase:IsValid()) then
+      if(eBase and (eBase:IsValid() or eBase:IsWorld())) then
         if(constraintCanConstrain(eBase, 0)) then
           cnW = constraintWeld(ePiece, eBase, 0, 0, nFm, false, false)
           if(cnW and cnW:IsValid()) then
@@ -4650,7 +4681,7 @@ function ApplyPhysicalAnchor(ePiece,eBase,bWe,bNc,bNw,nFm)
     end
     -- NoCollide on pieces between each other made separately
     if(bNc) then
-      if(eBase and eBase:IsValid()) then
+      if(eBase and (eBase:IsValid() or eBase:IsWorld())) then
         if(constraintCanConstrain(eBase, 0)) then
           cnN = constraintNoCollide(ePiece, eBase, 0, 0)
           if(cnN and cnN:IsValid()) then
@@ -4827,11 +4858,10 @@ function MakeAsmConvar(sName, vVal, tBord, vFlg, vInf)
     LogInstance("Mismatch "..GetReport(sName)); return nil end
   local sKey, cVal = GetNameExp(sName), (tonumber(vVal) or tostring(vVal))
   local sInf, nFlg, vMin, vMax = tostring(vInf or ""), mathFloor(tonumber(vFlg) or 0), 0, 0
-  if(not IsHere(tBord)) then vMin, vMax = GetBorder(sKey) else
-    -- Force a border on the convar and update the borders list
-    vMin = (tBord and tBord[1] or nil) -- Read the minimum and maximum
-    vMax = (tBord and tBord[2] or nil); SetBorder(sKey, vMin, vMax)
-  end; LogInstance("Create "..GetReport4(sKey, cVal, vMin, vMax))
+  if(IsHere(tBord)) then -- Read the minimum and maximum from convar border provided
+    vMin, vMax = tBord[1], tBord[2]; SetBorder(sKey, vMin, vMax) -- Update border
+  else vMin, vMax = GetBorder(sKey) end -- Border not provided read it from borders
+  LogInstance("Create "..GetReport4(sKey, cVal, vMin, vMax))
   return CreateConVar(sKey, cVal, nFlg, sInf, vMin, vMax)
 end
 
@@ -4874,9 +4904,9 @@ function GetPhrase(vKey)
   local sDef = GetOpVar("MISS_NOTR")
   if(SERVER) then LogInstance("Server "..GetReport(vKey)); return sDef end
   local tSet = GetOpVar("LOCALIFY_TABLE"); if(not IsHere(tSet)) then
-    LogInstance("Skip "..GetReport(vKey)); return sDef end
+    LogInstance("Mismatch "..GetReport(vKey)); return sDef end
   local sKey = tostring(vKey); if(not IsHere(tSet[sKey])) then
-    LogInstance("Miss "..GetReport1(sKey)); return sDef end
+    LogInstance("Skipped "..GetReport1(sKey)); return sDef end
   return (tSet[sKey] or sDef) -- Translation fail safe
 end
 
@@ -4885,10 +4915,11 @@ end
  * vCode > The language code to allocate and return table for
 ]]
 local function GetLocalify(vCode)
-  local sCode = tostring(vCode or GetOpVar("MISS_NOAV"))
+  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
+  local sCode = tostring(vCode or auCod) -- No language code then english
   if(SERVER) then LogInstance("Server "..GetReport(vCode)); return nil end
   local sTool, sLimit = GetOpVar("TOOLNAME_NL"), GetOpVar("CVAR_LIMITNAME")
-  local sPath = GetOpVar("FORM_LANGPATH"):format("", sCode..".lua")
+  local sPath = GetOpVar("FORM_LANGPATH"):format(sCode..".lua")
   if(not fileExists("lua/"..sPath, "GAME")) then -- Translation file path
     LogInstance("Missing "..GetReport1(sCode)); return nil end
   local fCode = CompileFile(sPath); if(not fCode) then -- Compile
@@ -4904,11 +4935,11 @@ end
  * Switches the system to new translation provided
  * vCode > The translation to switch all messages to
 ]]
-function InitLocalify(sCode)
-  local cuCod = tostring(vCode or GetOpVar("MISS_NOAV"))
+function InitLocalify(vCode)
+  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
+  local cuCod = tostring(vCode or auCod) -- No language code then english
   if(SERVER) then LogInstance("Server "..GetReport(vCode)); return nil end
   local thSet = GetOpVar("LOCALIFY_TABLE"); tableEmpty(thSet)
-  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
   local auSet = GetLocalify(auCod); if(not auSet) then
     LogInstance("Mismatch "..GetReport(auCod)); return nil end
   if(cuCod ~= auCod) then local cuSet = GetLocalify(cuCod)
@@ -4933,16 +4964,19 @@ end
 --[[
  * Fades the ghosts stack and makes the elements invisible
  * bNoD > The state of the No-Draw flag
+ * nMrF > Fade margin in range [0-1]
  * Wait a minute, ghosts can't leave fingerprints!
 ]]
-function FadeGhosts(bNoD)
+function FadeGhosts(bNoD, nMrF)
   if(SERVER) then return true end
   if(not HasGhosts()) then return true end
+  local nMar = mathClamp((tonumber(nMrF) or 0), 0, 1)
   local tGho = GetOpVar("ARRAY_GHOST")
   local cPal = GetContainer("COLORS_LIST")
   local sMis, sMod = GetOpVar("MISS_NOMD"), tGho.Slot
   for iD = 1, tGho.Size do local eGho = tGho[iD]
     if(eGho and eGho:IsValid()) then
+      if(nMrF) then eGho.marginRender = nMar end
       eGho:SetNoDraw(bNoD); eGho:DrawShadow(false)
       eGho:SetColor(cPal:Select("gh"))
       if(sMod and sMod ~= sMis and sMod ~= eGho:GetModel()) then
@@ -4971,6 +5005,19 @@ function ClearGhosts(vSiz, bCol)
 end
 
 --[[
+ * Helper function to handle models that do not support
+ * color alpha channel have draw override. This is run
+ * for all the ghosted props to draw all of them correctly
+]]
+local function BlendGhost(self)
+  local mar = self.marginRender
+  local num = renderGetBlend()
+  renderSetBlend(mar)
+  self:DrawModel()
+  renderSetBlend(num)
+end
+
+--[[
  * Creates a single ghost entity for populating the stack
  * sModel > The model which the creation is requested for
  * vPos   > Position for the entity, otherwise zero is used
@@ -4982,6 +5029,8 @@ local function MakeEntityGhost(sModel, vPos, aAng)
   local eGho = entsCreateClientProp(sModel)
   if(not (eGho and eGho:IsValid())) then eGho = nil
     LogInstance("Ghost invalid "..sModel); return nil end
+  eGho.marginRender = 1
+  eGho.RenderOverride = BlendGhost
   eGho:SetModel(sModel)
   eGho:SetPos(vPos or GetOpVar("VEC_ZERO"))
   eGho:SetAngles(aAng or GetOpVar("ANG_ZERO"))
@@ -5073,8 +5122,7 @@ end
  * Returns the value of the tangent
 ]]
 local function GetCatmullRomCurveTangent(cS, cE, nT, nA)
-  local vD = Vector(); vD:Set(cE); vD:Sub(cS)
-  local nL, nM = vD:Length(), GetOpVar("EPSILON_ZERO")
+  local nL, nM = cE:Distance(cS), GetOpVar("EPSILON_ZERO")
   return ((((nL == 0) and nM or nL) ^ (tonumber(nA) or 0.5)) + nT)
 end
 
@@ -5123,10 +5171,11 @@ end
 local function GetCatmullRomCurve(tV, nT, nA, tO)
   if(not IsTable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
-  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
-    LogInstance("Samples mismatch "..GetReport1(nT)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
   if(nA and not IsNumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
+  if(nA < 0 or nA > 1) then LogInstance("Factor invalid "..GetReport1(nA)); return nil end
+  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
+    LogInstance("Samples mismatch "..GetReport1(nT)); return nil end
   local vM, iC, cS, cE, tN = GetOpVar("CURVE_MARGIN"), 1, Vector(), Vector(), (tO or {})
   cS:Set(tV[ 1]); cS:Sub(tV[2])   ; cS:Normalize(); cS:Mul(vM); cS:Add(tV[1])
   cE:Set(tV[nV]); cE:Sub(tV[nV-1]); cE:Normalize(); cE:Mul(vM); cE:Add(tV[nV])
@@ -5150,22 +5199,22 @@ end
 local function GetCatmullRomCurveDupe(tV, nT, nA, tO)
   if(not IsTable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
-  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
-    LogInstance("Curve samples mismatch "..GetReport(nT)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices are needed"); return nil end
   if(nA and not IsNumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
-  local tN, tF, nN = {tV[1], ID = {{true, 1}}}, (tO or {}), 1
-  local nM, vT = GetOpVar("EPSILON_ZERO"), Vector()
+  if(nA < 0 or nA > 1) then LogInstance("Factor invalid "..GetReport1(nA)); return nil end
+  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
+    LogInstance("Samples mismatch "..GetReport(nT)); return nil end
+  local nM, nN = GetOpVar("EPSILON_ZERO"), 1
+  local tN, tF = {tV[1], ID = {{true, 1}}}, (tO or {})
   for iD = 2, nV do
-    vT:Set(tV[iD]); vT:Sub(tN[nN])
-    if(vT:Length() > nM) then
+    if(tV[iD]:DistToSqr(tN[nN]) > nM) then
       tableInsert(tN, tV[iD])
       tN.ID[iD], nN = {true, nN}, (nN + 1)
     else tN.ID[iD] = {false} end
   end
   if(nN > 1) then
     local tC = GetCatmullRomCurve(tN, nT, nA)
-    for iD = 1, nV-1 do local iC = iD + 1
+    for iD = 1, (nV - 1) do local iC = iD + 1
       tableInsert(tF, Vector(tV[iD]))
       if(not tN.ID[iC][1]) then
         for iK = 1, nT do tableInsert(tF, Vector(tV[iD])) end
@@ -5176,12 +5225,12 @@ local function GetCatmullRomCurveDupe(tV, nT, nA, tO)
       end
     end; tableInsert(tF, Vector(tV[nV]))
   else
-    for iD = 1, nV-1 do
+    for iD = 1, (nV - 1) do
       tableInsert(tF, Vector(tV[1]))
       for iK = 1, nT do tableInsert(tF, Vector(tV[1])) end
     end; tableInsert(tF, Vector(tV[1]))
   end
-  return tF, tN
+  return tF
 end
 
 --[[
@@ -5250,13 +5299,13 @@ local function UpdateCurveNormUCS(oPly, vvS, vnS, vvE, vnE, vO, nD)
     LogInstance("End mismatch "..GetReport(vO)); return nil end
   local tC = GetCacheCurve(oPly); if(not tC) then
     LogInstance("Curve missing"); return nil end
-  local nR, tU = (vvE - vvS):Length(), tC.Info.UCS
+  local nR, tU = vvE:Distance(vvS), tC.Info.UCS
   local vP, vN = tU[1], tU[2] -- Index origin UCS
   local xP, xM = IntersectLineSphere(vvS, vvE, vO, nD)
   local bOn = IsAmongLine(xP, vvS, vvE)
   local xXX = (bOn and xP or xM) -- The nearest point has more weight
-  local nF1 = (xXX - vvS):Length() -- Start point fracttion
-  local nF2 = (xXX - vvE):Length() -- End point fracttion
+  local nF1 = xXX:Distance(vvS) -- Start point fracttion
+  local nF2 = xXX:Distance(vvE) -- End point fracttion
   local vF1 = Vector(vnS); vF1:Mul(1 - (nF1 / nR))
   local vF2 = Vector(vnE); vF2:Mul(1 - (nF2 / nR))
   local xNN = Vector(vF1); xNN:Add(vF2); xNN:Normalize()
@@ -5264,7 +5313,7 @@ local function UpdateCurveNormUCS(oPly, vvS, vnS, vvE, vnE, vO, nD)
   local tS, tO = tC.Snap[tC.SSize], {Vector(vP), vF:AngleEx(vU)}
   tS.Size, tC.SKept = (tS.Size + 1), (tC.SKept + 1) -- Update snap and nodes
   tS[tS.Size] = tO; vP:Set(xXX); vN:Set(xNN) -- Update the new origin point
-  return tS, (vvE - vP):Length() -- Return remaining length
+  return tS, vvE:Distance(vP) -- Return remaining length
 end
 
 --[[
@@ -5283,7 +5332,7 @@ function UpdateCurveSnap(oPly, iD, nD)
   local vP0, vN0 = tC.Info.UCS[1], tC.Info.UCS[2]
   local vP1, vN1 = tC.CNode[iD + 0], tC.CNorm[iD + 0]
   local vP2, vN2 = tC.CNode[iD + 1], tC.CNorm[iD + 1]
-  local nS, nE = (vP0 - vP1):Length(), (vP2 - vP0):Length()
+  local nS, nE = vP0:Distance(vP1), vP0:Distance(vP2)
   if(nS <= nD and nE >= nD) then
     tC.SSize = (tC.SSize + 1)  tC.Snap[tC.SSize] = {Size = 0, ID = tC.SSize};
     local tO, nL = UpdateCurveNormUCS(oPly, vP1, vN1, vP2, vN2, vP0, nD)
@@ -5298,6 +5347,9 @@ end
  * oPly > Player to do the calculation for
  * tS   > The snap list for the current iteration
  * iD   > Snap origin information ID
+ * Returns the turn and lean curving factors
+ * nF   > Turn factor. The smaller the value turns more
+ * nU   > Lean factor. The smaller the value leans more
 ]]
 function GetTurningFactor(oPly, tS, iD)
   local tC = GetCacheCurve(oPly); if(not tC) then
@@ -5342,6 +5394,97 @@ function CalculateRomCurve(oPly, nSmp, nFac)
   return tC -- Return the updated curve information reference
 end
 
+--[[
+ * Recursive helper function for Bezier curve vertices
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * cT > Current sample direction multiplier
+ * tV > A table of position vector vertices
+ * Returns the calculated recursive control sample
+]]
+local function GetBezierCurveVertex(cT, tV)
+  local tD, tP, nD = {}, {}, (#tV-1)
+  for iD = 1, nD do
+    tD[iD] = Vector(tV[iD+1])
+    tD[iD]:Sub(tV[iD])
+    tD[iD]:Mul(cT)
+  end
+  for iD = 1, nD do
+    tP[iD] = Vector(tV[iD])
+    tP[iD]:Add(tD[iD])
+  end
+  if(nD > 1) then
+    return GetBezierCurveVertex(cT, tP) end
+  return tP[1]
+end
+
+--[[
+ * Bezier curve calculator
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * tV > Array of bezier control nodes
+ * nT > Amount of samples between both ends
+ * tO > When provided it is filled with the curve
+ * Returns the table array of the calculated curve
+]]
+function GetBezierCurve(tV, nT, tO)
+  if(not IsTable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
+  if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
+  if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
+  local nT, nV = (mathFloor(tonumber(nT) or 200) + 1), #tV; if(nT < 0) then
+    LogInstance("Samples mismatch "..GetReport1(nT)); return nil end
+  local iD, cT, dT, tB = 1, 0, (1 / nT), (tO or {})
+  tB[iD], cT, iD = Vector(tV[iD]), (cT + dT), (iD + 1)
+  while(cT < 1) do -- Recursively populate ann the node segments
+    tB[iD] = GetBezierCurveVertex(cT, tV) -- Recursive calculation
+    cT, iD = (cT + dT), (iD + 1) -- Prepare for next segment
+  end; tB[iD] = Vector(tV[nV]) -- Bezier must include both ends
+  return tB -- Return the calculated curve table array
+end
+
+--[[
+ * Fills up the the general curve space for the given player
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * oPly > Player to fill the calculation for
+ * nSmp > Amount of samples between each node
+]]
+function CalculateBezierCurve(oPly, nSmp)
+  local tC = GetCacheCurve(oPly)
+  if(not tC) then LogInstance("Curve missing"); return nil end
+  local nC = #tC.Node; if(nC <= 0) then
+    LogInstance("Nodes missing"); return nil end
+  local iSmp = mathFloor((nC - 1) * nSmp)
+  if(not tC) then LogInstance("Curve missing"); return nil end
+  tableEmpty(tC.Snap) -- The size of all snaps
+  tC.SSize, tC.SKept = 0, 0 -- Amount of snapped points
+  tableEmpty(tC.CNode) -- Reset the curve and snapping
+  tableEmpty(tC.CNorm); tC.CSize = 0 -- And normals
+  GetBezierCurve(tC.Node, iSmp, tC.CNode)
+  GetBezierCurve(tC.Norm, iSmp, tC.CNorm)
+  tC.Info.UCS[1]:Set(tC.CNode[1]) -- Put the first node in the UCS
+  tC.Info.UCS[2]:Set(tC.CNorm[1]) -- Put the first normal in the UCS
+  tC.CSize = iSmp + 2 -- Get stack depth total samples including ends
+  return tC -- Return the updated curve information reference
+end
+
+function GetToolInformation()
+  local cWM = GetContainer("WORK_MODE")
+  local nWM = (cWM and cWM:GetSize() or 0); if(nWM <= 0) then
+    LogInstance("Mismatch "..GetReport1(nWM)); return nil end
+  local tD, tO = GetOpVar("TABLE_TOOLINF"), {}
+  local tH, iO = GetOpVar("TABLE_IHEADER"), 0
+  local snAV = GetOpVar("MISS_NOAV")
+  for iD = 1, #tD do local vD = tD[iD]
+    for iW = 1, nWM do
+      iO = iO + 1; tO[iO] = tableCopy(tH)
+      for k, v in pairs(vD) do tO[iO][k] = v end
+      tO[iO].op   = iW -- Transfer madatory values
+      tO[iO].name = tO[iO].name.."."..tostring(iW)
+      if(vD.name == "workmode") then
+        local sW = tostring(cWM:Select(iW) or snAV):lower()
+        tO[iO].icon = ToIcon("workmode_"..sW)
+      end
+    end
+  end; return tO
+end
 
 function GetTable(k) return (k and libQTable[k] or libQTable) end
 function GetCache(k) return (k and libCache[k] or libCache) end

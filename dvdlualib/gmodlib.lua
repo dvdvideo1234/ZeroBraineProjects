@@ -19,6 +19,14 @@ function Color(r,g,b,a)
   return {r=r,g=g,b=b,a=a}
 end
 
+function AddCSLuaFile(...)
+  common.logStatus("AddCSLuaFile: {"..table.concat({...}, "|").."}")
+end
+
+function include(...)
+  common.logStatus("include: {"..table.concat({...}, "|").."}")
+end
+
 local type = function(any)
   local typ = __type(any)
   if(typ == "table") then local mt = getmetatable(any)
@@ -47,8 +55,8 @@ function Matrix()
   return self
 end
 
-local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}}
-      mtVector.__tostring = function(self) return ("VEC{"..self.x..","..self.y..","..self.z.."}") end
+local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0}
+      mtVector.__tostring = function(self) return ("["..self.ID.."]VEC{"..self.x..","..self.y..","..self.z.."}") end
       mtVector.__index = function(self, aK)
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
@@ -57,10 +65,17 @@ local function isVector(v) return (getmetatable(v) == mtVector) end
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
   self.x, self.y, self.z = 0, 0, 0
+  self.ID = mtVector.__ID; mtVector.__ID = mtVector.__ID + 1
   if(getmetatable(x) == mtVector) then
     self.x, self.y, self.z = x.x, x.y, x.z
   else
     self.x, self.y, self.z = (tonumber(x) or 0), (tonumber(y) or 0), (tonumber(z) or 0)
+  end
+  function self:DistToSqr(v)
+    local x = (self.x - v.x)
+    local y = (self.y - v.y)
+    local z = (self.z - v.z)
+    return x^2 + y^2 + z^2
   end
   function self:LengthSqr() return self.x^2 + self.y^2 + self.z^2 end
   function self:Mul(n) self.x, self.y, self.z = n*self.x, n*self.y, n*self.z end
@@ -397,6 +412,12 @@ function file.Open(n, m)
   mt.Write = mt.write
   mt.Close = mt.close
   mt.Flush = mt.flush
+  mt.ReadLine = function(f) return f:read("*line") end
+  mt.EndOfFile = function(f)
+    local p = f:seek() -- Store position
+    local t = f:read(); f:seek("set", p)
+    return common.getPick(t, false, true)
+  end
   return f
 end
 

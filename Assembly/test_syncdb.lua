@@ -1,17 +1,26 @@
-require("directories")
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                     "CorporateProjects",
+                     "ZeroBraineProjects",
+                     -- When not located in general directory search in projects
+                     "ZeroBraineProjects/dvdlualib",
+                     "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+
 local common = require("common")
 
 SERVER = true
 CLIENT = true
 
 require("../dvdlualib/gmodlib")
-require("../dvdlualib/asmlib")
+require("../dvdlualib/trackasmlib")
 asmlib = trackasmlib
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 PIECES = asmlib.GetBuilderNick("PIECES")
 require("Assembly/data/pieces")
-asmlib.SetOpVar("DIRPATH_BAS", "E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/")
+asmlib.SetOpVar("DIRPATH_BAS", "Assembly/trackassembly/")
 asmlib.SetLogControl(1000,false)
 ---------------------------------------------------------------------------------------
 
