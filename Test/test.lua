@@ -13,34 +13,23 @@ local com = require("common")
 local cpx = require("complex")
 local tableRemove = table and table.remove
 local gsSentHash = "test"
-local SERVER = true
+local SERVER, LaserLib = true, {}
+local WireLib = true
+local ENT = {foo = nil}
 
-ENT = {[gsSentHash] = {AxiL = Vector(1,0,0), LevL = Vector(0,5,0), ForL = Vector(0,0,9)}}
-
-function ENT:GetTorqueAxis()
-  local vAxi = Vector(); if(SERVER) then
-    vAxi:Set(self[gsSentHash].AxiL)
-  elseif(CLIENT) then
-    vAxi:Set(self:GetNWVector(gsSentHash.."_adir"))
-  end; vAxi:Normalize(); return vAxi
+local function foo()
+  for i = 1, 5 do
+    ENT[i] = "test"
+  end
 end
 
-function ENT:GetTorqueLever()
-  local vLev = Vector(); if(SERVER) then
-    vLev:Set(self[gsSentHash].LevL)
-  elseif(CLIENT) then
-    vLev:Set(self:GetNWVector(gsSentHash.."_ldir"))
-  end; vLev:Normalize(); return vLev
+local function moo(foo)
+  local s, e = pcall(foo)
+  if(not s) then error(e) end
 end
 
-function ENT:GetTorqueForce()
-  local vFor = Vector(); if(SERVER) then
-    vFor:Set(self[gsSentHash].ForL)
-  elseif(CLIENT) then
-    vFor:Set(self:GetNWVector(gsSentHash.."_fdir"))
-  end; vFor:Normalize(); return vFor
-end
 
-print(ENT:GetTorqueAxis())
-print(ENT:GetTorqueLever())
-print(ENT:GetTorqueForce())
+
+
+
+

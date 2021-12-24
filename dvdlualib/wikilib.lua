@@ -809,12 +809,7 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
       if(tK[iD] == key) then bF = true; break end end
     if(not bF) then iK = iK + 1 -- Description not found in the source
       wikilib.common.logStatus("-- DSC > "..sC.."[\""..key.."\"] = \"\"") end
-  end; bF = false -- Restore the flag value for searching the other way
-  
-  for iD = 1, iK do print(iD)
-    wikilib.common.logStatus("Missing: "..tD[iD])
-  end
-  
+  end; bF = false -- Restore the flag value for searching the other way 
   for k, v in pairs(wikiMatch) do
     for i = 1, v.__top do local cC = v[i].com
       if(cC) then if(tC[cC]) then tC[cC] = tC[cC] + 1 else tC[cC] = 1 end end end end
