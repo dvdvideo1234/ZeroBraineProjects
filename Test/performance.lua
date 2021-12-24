@@ -57,7 +57,7 @@ local stEstim = {
 }
 
 local stCard = {
-  {nil, nil , "Speed", 1000, 10000, .2},
+  {nil, nil , "Speed", 1000, 1000, .2}
 }
 
- testexec.Run(stCard,stEstim,nil,0.1)
+ testexec.Run(stCard,stEstim,0.1)
