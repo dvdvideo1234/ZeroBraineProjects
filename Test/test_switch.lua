@@ -9,7 +9,8 @@ local drpath = require("directories")
 
 local com = require("common")
 
-local a = 99
+local iscap = 12
 
-print(com.getSwitch(a, 1, 7, 3, "asdad", -1, 10, "n/z"))
+local b = iscap and 11
 
+print(b)

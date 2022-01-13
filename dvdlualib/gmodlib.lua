@@ -1,3 +1,13 @@
+FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY, FCVAR_REPLICATED = 0, 0, 0, 0
+
+MAT_SNOW       = 0
+MAT_GRATE      = 0
+MAT_CLIP       = 0
+MAT_METAL      = 0
+MAT_VENT       = 0
+MAT_GLASS      = 0
+MAT_WARPSHIELD = 0
+
 local common = require("common")
 
 local language = {__data = {}}
@@ -10,6 +20,20 @@ local __lang   = {}
 local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
+
+game = {__single = true}
+language = {}
+cleanup = {}
+util = {}
+bit  = {}
+cvars = {__data={}}
+file = {}
+ents = {}
+properties = {__data= {}}
+sql = {}
+net = {}
+constraint = {}
+surface = {__fonts = {}}
 
 function tobool(any)
   if(__tobool[tostring(any)]) then return false end return true
@@ -185,7 +209,7 @@ mtVector.__mul = function(o1,o2)
   if(v1 and v2) then ov:Set(v1); ov:Mul(ov:Dot(v2)); return ov end
   if(v1 and tonumber(o2)) then ov:Set(v1); ov:Mul(tonumber(o2)); return ov end
   if(v2 and tonumber(o1)) then ov:Set(v2); ov:Mul(tonumber(o1)); return ov end
-  print("Cannot preform multiplication between <"..type(o1).."/"..type(o2)..">")
+  Msg("Cannot preform multiplication between <"..type(o1).."/"..type(o2)..">")
   return ov
 end
 
@@ -316,10 +340,10 @@ function LocalPlayer()
   function self:IsPlayer() return true end
   function self:Nick() return "[Sk&Bh]YOLO" end
   function self:PrintMessage(n, m)
-    print("[player]["..tostring(n).."] "..tostring(m))
+    Msg("[player]["..tostring(n).."] "..tostring(m))
   end
   function self:ConCommand(a)
-    print("player:ConCommand(\""..tostring(a:gsub("\n","|")).."\")")
+    Msg("player:ConCommand(\""..tostring(a:gsub("\n","|")).."\")")
   end
   return self
 end
@@ -341,9 +365,6 @@ function RunConsoleCommand(a, b)
   __tools[tB[1]]:SetClient(tB[2], b)
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-language = {}
-
 function language.Add(key, val)
   __lang[key] = val
 end
@@ -354,19 +375,15 @@ end
 
 function language.List() return __lang end
 
---------------------------------------------------------------------------------------------------------------------------------
-cleanup = {}
-
 function cleanup.Register() end
 
---------------------------------------------------------------------------------------------------------------------------------
-util = {}
-
 function util.TraceLine() end
+
 function util.IsValidModel(sMdl)
   if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
   return false
 end
+
 function util.GetPlayerTrace(pl)
   return {}
 end
@@ -378,13 +395,7 @@ end
 function util.AddNetworkString()
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-bit  = {}
-
 function bit.bor() end
-
---------------------------------------------------------------------------------------------------------------------------------
-cvars = {__data={}}
 
 function cvars.RemoveChangeCallback(sVar, sKey)
   cvars.__data[sVar] = nil
@@ -398,9 +409,6 @@ function cvars.AddChangeCallback(sVar, fFoo, sKey)
   end
   tVar[sKey] = fFoo -- sVar, vOld, vNew
 end
-
---------------------------------------------------------------------------------------------------------------------------------
-file = {}
 
 function file.Open(n, m)
   local s, f, e = pcall(io.open, n, m)
@@ -460,16 +468,11 @@ function file.Find(sName, sPath, sSort)
   end; return common.fileFind(sName, sArg)
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-properties = {__data= {}}
-
 function properties.Add(sN, tD)
   properties.__data[sN] = tD
   return tD
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-ents = {}
 local mtEntity = {__type = "Entity"}
       mtEntity.__tostring = function(oE) return ("ENT{"..oE:EntIndex().."}{"..oE:GetClass().."}") end
       mtEntity.__index = mtEntity
@@ -508,6 +511,8 @@ function ents.Create(cla)
   function self:LookupAttachment(sK) return matach.Nam[sK] end
   function self:GetAttachment(iD) return matach.ID[iD] end
   function self:CallOnRemove() return nil end
+  function self:IsWorld() return self == game.__world end
+  function self:DeleteOnRemove(e) Msg(tostring(self)..":DeleteOnRemove("..tostring(e)..")") end
   table.insert(__entity, mid, self)
   return self
 end
@@ -515,9 +520,6 @@ end
 function ents.GetAll()
   return __entity
 end
-
---------------------------------------------------------------------------------------------------------------------------------
-net = {}
 
 function net.Start(sK)
   if(__nermsg[sK]) then tableEmpty(__nermsg[sK])
@@ -544,25 +546,37 @@ function net.Receive()
   return true
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-sql = {}
-
 function sql.TableExists(anyTable) return true end
 function sql.Query(sQ) return {} end
-
---------------------------------------------------------------------------------------------------------------------------------
-game = {__single = true}
 
 function game.SinglePlayer(vS)
   if(vS ~= nil) then game.__single = common.toBool(vS) end
   return game.__single
 end
 
---------------------------------------------------------------------------------------------------------------------------------
-surface = {__fonts = {}}
+function game.GetWorld()
+  if(game.__world) then return __world end
+  game.__world = ents.Create("game_worldspawn")
+  game.__world.IsValid = function(weld) return false end
+  return game.__world
+end
 
 function surface.CreateFont(sK, tD)
   if(not sK) then return nil end
   surface.__fonts[sK] = tD
 end
 
+function constraint.Weld(e1, e2, b1, b2, frc, noc, bdel)
+  local w = ents.Create("constraint_weld")
+  w.E1, w.E2 = e1, e2
+  w.B1, w.B2 = b1, b2
+  w.F , w.N,  w.D = frc, noc, tobool(bdel)
+  return w
+end
+
+function constraint.NoCollide(e1, e2, b1, b2)
+  local n = ents.Create("constraint_nocollide")
+  n.E1, n.E2 = e1, e2
+  n.B1, n.B2 = b1, b2
+  return n
+end
