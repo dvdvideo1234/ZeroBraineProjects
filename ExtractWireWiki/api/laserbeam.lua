@@ -11,19 +11,20 @@ local API = {
     mosp = true,  -- (TRUE) Enables monospace font for the function names
     prep = false, -- (TRUE) Replace key in the link pattern in the replace table. Call formatting
     nxtp = true,  -- (TRUE) Uses the `number` datatype when one is not provided ( forced )
-    ufbr = true   -- (TRUE) Uses file bottom references insted of long links ( forced )
+    ufbr = true,  -- (TRUE) Uses file bottom references insted of long links ( forced )
+    mchp = true   -- (TRUE) Customize API pools that have the /mach/ key present (with priority)
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
-    {name="APPLY",cols={"Class methods", "Out", "Description"},size={35,5,13},algn={"<","|","<"}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={25,5,13},algn={"<","|","<"}}
+    {name="DATA" ,mach="laserGetData" ,cols={"Beam data parameters"  , "Out", "Description"},size={32,5,13},algn={"<","|","<"}},
+    {name="TRACE",mach="laserGetTrace",cols={"Beam trace parameters" , "Out", "Description"},size={35,5,13},algn={"<","|","<"}},
+    {name="CLASS",mach="e:"           ,cols={"Class configurations"  , "Out", "Description"},size={25,5,13},algn={"<","|","<"}},
+    {name="OTHER",cols={"Other helper functions", "Out", "Description"},size={50,5,13},algn={"<","|","<"}},
   },
   FILE = {
     exts = "laserbeam",
     base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/LaserSTool",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
-    --cvar = "wire_expression2_joystick",
     repo = "github.com/dvdvideo1234/LaserSTool",
     blob = "blob/main",
     desc = {
@@ -63,7 +64,17 @@ local API = {
     ["surface contents enums"] = "https://wiki.facepunch.com/gmod/Enums/CONTENTS",
     ["entity"] = "https://wiki.facepunch.com/gmod/Entity",
     ["vector"] = "https://wiki.facepunch.com/gmod/Vector",
-    ["surface properties name"] = "https://wiki.facepunch.com/gmod/util.GetSurfacePropName"
+    ["surface properties name"] = "https://wiki.facepunch.com/gmod/util.GetSurfacePropName",
+    ["incident"] = "https://en.wikipedia.org/wiki/Ray_(optics)",
+    ["normal"] = "https://en.wikipedia.org/wiki/Normal_(geometry)",
+    ["reflection"] = "https://en.wikipedia.org/wiki/Reflection_(physics)",
+    ["reflect"] = "https://en.wikipedia.org/wiki/Reflection_(physics)",
+    ["refraction"] = "https://en.wikipedia.org/wiki/Refraction",
+    ["refract"] = "https://en.wikipedia.org/wiki/Refraction",
+    ["medium"] = "https://en.wikipedia.org/wiki/Optical_medium",
+    ["laser"] = "https://en.wikipedia.org/wiki/Laser",
+    ["beam"] = "https://en.wikipedia.org/wiki/Laser",
+    ["dissolve"] = "https://developer.valvesoftware.com/wiki/Env_entity_dissolver"
   },
   HDESC = {
     top = [===[
@@ -82,7 +93,8 @@ local API = {
     {"ref_exp2", "https://github.com/wiremod/wire/wiki/Expression-2"},
     {"ref_perfe2","https://github.com/wiremod/wire/wiki/Expression-2#performance"},
     {"ref_addon", "https://en.wikipedia.org/wiki/Laser"},
-    {"ref_wiremod", "https://wiremod.com/"}
+    {"ref_wiremod", "https://wiremod.com/"},
+    {"ref_autogen_page", "https://github.com/dvdvideo1234/ZeroBraineProjects/blob/master/ExtractWireWiki/api/laserbeam.lua"}
   }
 }
 
@@ -153,11 +165,15 @@ E2Helper.Descriptions["laserGetTraceSurfacePropsName(e:n)"] = "Returns the last 
 API.DSCHUNK = nil -- Read description from the client file
 
 API.TEXT = function() return ([===[
+### Documentation updates
+
+[Do **NOT** edit this documentation manually. This page is automatically generated!][ref_autogen_page]
+
 ### What does this extension do?
 
 The [wiremod][ref_wiremod] [Lua][ref_lua] extension [`%s`][ref_addon] is designed to be used with [`Wire Expression2`][ref_exp2]
-in mind and implements general functions for retrieving various values form a dominant source entity. 
-Beware of the E2 [performance][ref_perfe2] though. You can create feebback loops for controling source beam parameters.
+in mind and implements general functions for retrieving various values form a dominant source entity or database entries. 
+Beware of the E2 [performance][ref_perfe2] though. You can create feedback loops for controlling source beam parameters.
 
 ### What is the [wiremod][ref_wiremod] [`%s`][ref_addon] API then?
 ]===]):format(API.NAME, API.NAME)

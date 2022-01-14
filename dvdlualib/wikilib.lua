@@ -448,6 +448,7 @@ end
 function wikilib.updateAPI(API, DSC)
   local bQ = wikilib.isFlag("quot")
   local wD = wikilib.isFlag("wdsc")
+  local bM = wikilib.isFlag("mchp")
   local sO, tA, tW = apiGetValue(API,"TYPE", "OBJ")
   wikilib.addPrefixNameOOP(apiGetValue(API,"TYPE", "DSG"))
   if(wD) then
@@ -481,14 +482,21 @@ function wikilib.updateAPI(API, DSC)
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
-
-    if(wikiMakeOOP[api:gsub(API.NAME..wikiBraketsIN, "")] -- newNAME()
-      or api:find(API.NAME..wikiBraketsIN) == 1) then     --    NAME()
-      tA = API.POOL[1] -- The function is class creator
-    elseif(api:find(sO..":")) then
-      tA = API.POOL[2] -- The finction is calss method
-    else -- Some other helper function for the class
-      tA = API.POOL[3] -- The functoion is a helper API
+  
+    if(bM) then
+      local nA = #API.POOL; tA = nil -- No match pool selected      
+      for ID = 1, nA do local tP = API.POOL[ID]
+        if(tP.mach and api:find(tP.mach, 1, true)) then tA = tP; break end
+      end; if(not tA) then tA = API.POOL[nA] end -- Other wire functions
+    else
+      if(wikiMakeOOP[api:gsub(API.NAME..wikiBraketsIN, "")] -- newNAME()
+        or api:find(API.NAME..wikiBraketsIN) == 1) then     --    NAME()
+        tA = API.POOL[1] -- The function is class creator
+      elseif(api:find(sO..":")) then
+        tA = API.POOL[2] -- The finction is calss method
+      else -- Some other helper function for the class
+        tA = API.POOL[3] -- The functoion is a helper API
+      end
     end
     if(API.REPLACE) then local tR = API.REPLACE
       DSC[api] = wikilib.replaceToken(DSC[api], tR)
