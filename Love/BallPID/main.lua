@@ -1,41 +1,38 @@
 ﻿---------------  Methods and Functions
 
+function GetSign(num)
+  return num / math.abs(num)
+end
+
 function NewPoint(X,Y)
-  P = {
-    x = X,
-    y = Y
-  }
-  return P
+  return {x = X, y = Y}
 end
 
 -- 100 - 250
 -- 150 - 500
-function NumScaleIt(Num,NMin,NMax,VMin,VMax)
-   MiddleN = (NMin + NMax) / 2
-   MiddleV = (VMin + VMax) / 2
-   Scale   = (VMax - VMin) / (NMax - NMin)
-   Rez = MiddleV + (MiddleN - Num) * Scale
-   return Rez
+function Remap(Num,NMin,NMax,VMin,VMax)
+  local N = (NMin + NMax) / 2
+  local V = (VMin + VMax) / 2
+  local S = (VMax - VMin) / (NMax - NMin)
+  return V + (N - Num) * S
 end
 
-function NewGraph(PointCntVal,YInit)
+function NewGraph(iPoint,YInit)
   self = {}
-  local PointCnt = 2*PointCntVal
+  local Size = 2 * iPoint
   local Data = {}
-  for i = 1,PointCnt,2 do
-    Data[i]  = i-1
-    Data[i+1]= YInit
+  for i = 1, Size, 2 do
+    Data[i]   = i - 1
+    Data[i+1] = YInit
   end
   function self:Update(Val)
-    local i = 2
-    for i = 2,PointCnt,2 do
+    for i = 2, Size, 2 do
       Data[i] = Data[i+2]
     end
-    Data[PointCnt] = Val
+    Data[Size] = Val
   end
   function self:GetData()
-    Dat = Data
-    return Dat
+    return Data
   end
   return self
 end
@@ -56,24 +53,22 @@ function NewPID(kP,kI,kD,iP,iI,iD)
      [3] = {Val = kD, Name = "Dif", Step = iD}
   }
 
-  function self:SetEnable(Val)
-    ConEnb = Val
+  function self:SetEnable(en)
+    ConEnb = en
   end
 
   function self:GetEnable()
-    local Val = ConEnb
-    return Val
+    return ConEnb
   end
 
-  function self:SetParmID(Val)
-    if(Val > 3) then Val = 3 end
-    if(Val < 1) then Val = 1 end
-    ParamID = Val
+  function self:SetParmID(id)
+    if(id > 3) then id = 3 end
+    if(id < 1) then id = 1 end
+    ParamID = id
   end
 
   function self:GetParamID()
-    local ID = ParamID
-    return ID
+    return ParamID
   end
 
   function self:NextParam(Val)
@@ -103,164 +98,142 @@ function NewPID(kP,kI,kD,iP,iI,iD)
   end
 
   function self:GetControl()
-    local Value = Con
-    return Value
+    return Con
   end
 
   function self:Process(R,Y)
     if(ConEnb ~= 0) then
       ErrO = ErrN
       ErrN = R - Y
+      if(GetSign(ErrO) ~= GetSign(ErrN)) then
+        Int = 0
+      end
       Pro = PID[1].Val * ErrN
       Int = Int + (PID[2].Val * (ErrN + ErrO))
-      Dif = PID[3].Val * ( ErrN - ErrO)
+      Dif = PID[3].Val * (ErrN - ErrO)
       Con = Pro + Int + Dif
     end
   end
 
   function self:Reset()
-   Con    = 0
-   ConEnb = 0
-   Pro    = 0
-   Int    = 0
-   Dif    = 0
-   ErrN   = 0
-   ErrO   = 0
+    Con    = 0
+    ConEnb = 0
+    Pro    = 0
+    Int    = 0
+    Dif    = 0
+    ErrN   = 0
+    ErrO   = 0
   end
 
   return self
 end
 
-function NewSignal(ValueMin,ValueMax,Period,Step,Mode,Info)
-
-  if(Mode < 1) then return nil end
+function NewSignal(vMin,vMax,nPeriod,nStep,sInfo,fScale,fFlow)
   self = {}
-
-  function MakeMathFunc(Y)
-    local makfoo = load(" return function(x) return ("..Y..") end")
-    local foo = makfoo()
-    return foo
-  end
-
-  local Name   = Info
+  self.mInfo = tostring(sInfo or "")
   -- Y interval for signal "Out"
-  local MinY   = ValueMin.Y
-  local MaxY   = ValueMax.Y
-  -- X interval for a function ( when Mode = 9 )
-  -- function must persist in Info
-  local MinX   = ValueMin.X
-  local MaxX   = ValueMax.X
-  local MinF   = 0
-  local MaxF   = 0
-  local Stp    = math.abs(Step)
-  local Perd   = math.abs(Period) * Stp
-  local Time   = 0
-  local Direct = 1
-  local Koef   = 0
-  local Mode   = Mode
-  local Middle = MinY + (MaxY - MinY) / 2
-  local Amplit = math.abs(Middle - MinY)
-  local F      = MakeMathFunc(Name)
-  local CurVal = Middle
-  local Out    = CurVal
-
-
-  if(Mode == 1) then -- SinWave
-    Koef = (2 * math.pi) / Perd
-  elseif(Mode == 2 or Mode == 3) then -- PWM or TRI
-    Koef = 4 * Amplit / ( Perd / Stp)
-  elseif(Mode == 4 or Mode == 5) then -- SawS
-    Koef = 2 * Stp * (Amplit / Perd)
-  elseif(Mode == 7) then
-  -- Asume that angle is 60 deg
-    Koef = 8 * Amplit / ( Perd / Stp )
-  -- There is noting for the white noice
-  elseif(Mode == 9) then
-  -- Scale it Yerself !!
+  self.mMin = {x = vMin.x, y = vMin.y}
+  self.mMax = {x = vMax.x, y = vMax.y}
+  self.mMinF   = 0
+  self.mMaxF   = 0
+  self.mStep   = math.abs(nStep)
+  self.mPeriod = math.abs(nPeriod) * self.mStep
+  self.mTime   = 0
+  self.mDirect = 1
+  self.mScale  = 0
+  self.mMiddle = self.mMin.y + (self.mMax.y - self.mMin.y) / 2
+  self.mAmplit = math.abs(self.mMiddle - self.mMin.y)
+  self.mValue  = self.mMiddle
+  self.mOutput = self.mValue
+  
+  if(sInfo:sub(1,1) == "#") then -- Function must persist in Info
+    self.mInfo = self.mInfo:sub(2,-1)
+    self.mFMath = load(" return function(x) return ("..self.mInfo..") end")()
+  end
+  
+  if(fScale) then
+    self.mFScale = fScale
+    self.mScale = self.mFScale(self)
   end
 
-  function self:GetCurValue()
-    local Val = CurVal
-    return Val
+  if(fFlow) then
+    self.mFFlow = fFlow
+  else
+    error("Signal ["..self.mInfo.."] does not have flow!")
   end
 
-  function self:SetPeriod(Val)
-    if (Val < 10) then return end
-    Perd = math.abs(Val) * Stp
-    self:SetMode(Mode)
+  function self:Pass()
+    self.mOutput = self.mValue
+    return self
+  end
+  
+  function self:Switch()
+    if((self.mValue > self.mMax.y) or (self.mValue < self.mMin.y)) then
+      self.mDirect = -self.mDirect end; return self
   end
 
-  function self:SetMode(Val)
-    if(Val < 1) then return nil end
-    if(Val == 1) then -- SinWave
-      Koef = (2 * math.pi) / Perd
-    elseif(Val == 2 or Val == 3) then -- PWM or TRI
-      Koef = 4 * Stp * (Amplit / Perd)
-    elseif(Val == 4 or Val == 5) then -- SawS
-      Koef = 2 * Stp * (Amplit / Perd)
-    elseif(Mode == 7) then
-      Koef = 8 * Stp * (Amplit / Perd)
-    -- There is noting for the white noice
-    elseif(Mode == 9) then
-    -- Scale it Yerself !!
-    end
+  function self:SwitchMiddle()
+    if((self.mValue > (self.mMiddle + 2 * self.mAmplit)) or
+       (self.mValue < (self.mMiddle - 2 * self.mAmplit))) then
+    self.mDirect = -self.mDirect
+    end; return self
   end
-  function self:GetName()
-    local Info = Name
-    return Info
+
+  function self:MaxToMin()
+    if(self.mValue >= self.mMax.y) then
+      self.mValue = self.mMin.y
+    end; return self
   end
+
+  function self:MinToMax()
+    if(self.mValue <= self.mMin.y) then
+      self.mValue = self.mMax.y
+    end; return self
+  end
+
+  function self:SetPeriod(new)
+    if(new < 10) then return end
+    self.mPeriod = math.abs(new) * self.mStep
+    if(self.mFScale) then
+      self.mScale = self.mFScale(self)
+    end; return self
+  end
+  
+  function self:GetHalfPeriod()
+    return (self.mPeriod / 2)
+  end
+
+  function self:Reset()
+    if(self.mTime > self.mPeriod) then self.mTime = 0 end
+  end
+  
+  function self:Direct(new)
+    local num = tonumber(new) or self.mDirect
+    self.mValue = self.mValue + (self.mScale * num)
+    return self
+  end
+  
+  function self:Clamp(na, nb)
+    local ma = tonumber(nb) or self.mMax.y
+    local mi = tonumber(na) or self.mMin.y
+    if(self.mValue > ma) then self.mOutput = ma end
+    if(self.mValue < mi) then self.mOutput = mi end
+    return self
+  end
+  
+  function self:Random(na, nb)
+    local ma = tonumber(nb) or self.mMax.y
+    local mi = tonumber(na) or self.mMin.y
+    self.mValue = love.math.random(mi, ma)
+    return self
+  end
+
   function self:Flow()
-    if(Mode == 1) then -- SinWave
-      CurVal = Middle + Amplit * math.sin(Koef * Time)
-      Out = CurVal
-    elseif(Mode == 2) then  -- Square
-      if((CurVal > MaxY) or (CurVal < MinY)) then
-          Direct = -Direct
-      end
-      CurVal = CurVal + ( Koef * Direct )
-      Out = Amplit * Direct + Middle
-    elseif(Mode == 3) then -- Tri
-      if((CurVal > MaxY) or (CurVal < MinY)) then
-          Direct = -Direct
-      end
-      CurVal = CurVal + ( Koef * Direct )
-      Out = CurVal
-    elseif(Mode == 4) then -- Saw1
-      if(CurVal >= MaxY) then
-          CurVal = MinY
-      end
-      CurVal = CurVal + Koef
-      Out = CurVal
-    elseif(Mode == 5) then -- Saw2
-      if(Out <= MinY) then
-          CurVal = MaxY
-      end
-      CurVal = CurVal - Koef
-      Out = CurVal
-    elseif(Mode == 6) then -- Circle
-      if(Time > Perd) then Time = 0 end
-      CurVal = math.sqrt(Amplit*(1-((Time - (Perd/2))^2)/(Perd/2)^2))
-      CurVal = NumScaleIt(CurVal,0,11,MinY,MaxY)
-      Out = CurVal
-    elseif(Mode == 7) then
-      if((CurVal > (Middle + 2 * Amplit)) or (CurVal < (Middle - 2 * Amplit))) then
-          Direct = -Direct
-      end
-      CurVal = CurVal + Koef * Direct
-      Out = CurVal
-      if(CurVal > MaxY) then Out = MaxY end
-      if(CurVal < MinY) then Out = MinY end
-    elseif(Mode == 8) then
-      CurVal = love.math.random(MinY, MaxY)
-      Out = CurVal
-    elseif(Mode == 9) then
-      CurVal = NumScaleIt(Time,0,Perd,MaxX,MinX)
-      Out = (MaxY - F(CurVal)) or 99
-      if(math.abs(Time) > Perd) then Time = 0 end
-    end -- Mode end .. Time is passing by ...
-    Time = Time + Stp
-    return Out
+    if(not self.mFFlow) then return self end
+    self.mFFlow(self); self.mTime = self.mTime + self.mStep
+    return self.mOutput
   end
+  
   return self
 end
 
@@ -327,42 +300,58 @@ function love.update(dt)
     RefY = MouseRef
     Info = "Manual"
   else
-    for k, _ in pairs(Sig) do
-      if(k == CurSignal) then
-               Sig[k]:SetPeriod(SignalPeriod)
-        RefY = Sig[k]:Flow()
-        Info = Sig[k]:GetName()
-        break
-      end
-    end
+    Sig[CurSignal]:SetPeriod(SignalPeriod)
+    RefY = Sig[CurSignal]:Flow()
+    Info = Sig[CurSignal].mInfo
   end
   PID:Process(RefY,PV.y)
   Ball.Body:applyForce(0, PID:GetControl())
-  Process:Update(NumScaleIt(PV.y,0,320,599,427))
-  RefProc:Update(NumScaleIt(RefY,0,320,599,427))
+  Process:Update(Remap(PV.y,0,320,599,427))
+  RefProc:Update(Remap(RefY,0,320,599,427))
 end
 
 function love.load()
     Process = NewGraph(400,600)
     RefProc = NewGraph(400,600)
-    PID     = NewPID(17300,14,590000,20,1,500)
-    ValueMin = {
-      X = 0,
-      Y = 60
-    }
-    ValueMax = {
-      X = 2,
-      Y = 300
-    }
-    Sig[1] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,1,"SinWave")
-    Sig[2] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,2,"Square")
-    Sig[3] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,3,"Triangle")
-    Sig[4] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,4,"SawtoothL")
-    Sig[5] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,5,"SawtoothR")
-    Sig[6] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,6,"HalfCircle")
-    Sig[7] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,7,"Trapezoidal")
-    Sig[8] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,8,"WhiteNoice")
-    Sig[9] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,9,"38*(4*x^3-8*x^2+3*x+1)")
+    PID     = NewPID(17300,14,570000,20,1,500)
+    VMin = {x = 0, y =  60}
+    VMax = {x = 2, y = 300}
+    
+    Sig[1] = NewSignal(VMin,VMax,SignalPeriod,0.1,"SinWave",
+      function(o) return (2 * math.pi) / o.mPeriod end,
+      function(o)
+        o.mValue = o.mMiddle + o.mAmplit * math.sin(o.mScale * o.mTime)
+        o.mOutput = o.mValue
+      end)
+    Sig[2] = NewSignal(VMin,VMax,SignalPeriod,0.1,"Square",
+      function(o) return 4 * o.mAmplit / ( o.mPeriod / o.mStep) end,
+      function(o) o:Switch():Direct()
+        o.mOutput = o.mAmplit * o.mDirect + o.mMiddle
+      end)
+    Sig[3] = NewSignal(VMin,VMax,SignalPeriod,0.1,"Triangle",
+      function(o) return 4 * o.mAmplit / ( o.mPeriod / o.mStep) end,
+      function(o) o:Switch():Direct():Pass() end)
+    Sig[4] = NewSignal(VMin,VMax,SignalPeriod,0.1,"SawtoothL",
+      function(o) return 2 * o.mStep * (o.mAmplit / o.mPeriod) end,
+      function(o) o:MaxToMin():Direct(1):Pass() end)
+    Sig[5] = NewSignal(VMin,VMax,SignalPeriod,0.1,"SawtoothR",
+      function(o) return 2 * o.mStep * (o.mAmplit / o.mPeriod) end,
+      function(o) o:MinToMax():Direct(-1):Pass() end)
+    Sig[6] = NewSignal(VMin,VMax,SignalPeriod,0.1,"HalfCircle", nil,
+      function(o) o:Reset(); local h = o:GetHalfPeriod()
+        o.mValue = math.sqrt(o.mAmplit*(1-((o.mTime - (h))^2)/(h)^2))
+        o.mValue = Remap(o.mValue, 0, 11, o.mMin.y, o.mMax.y)
+        o.mOutput = o.mValue
+      end)
+    Sig[7] = NewSignal(VMin,VMax,SignalPeriod,0.1,"Trapezoidal",
+      function(o) return 8 * o.mAmplit / ( o.mPeriod / o.mStep ) end,
+      function(o) o:SwitchMiddle():Direct():Pass():Clamp() end)
+    Sig[8] = NewSignal(VMin,VMax,SignalPeriod,0.1,"WhiteNoice", nil,
+      function(o) o:Random():Pass() end)
+    Sig[9] = NewSignal(VMin,VMax,SignalPeriod,0.1,"#38*(4*x^3-8*x^2+3*x+1)", nil,
+      function(o) o.mValue = Remap(o.mTime, 0, o.mPeriod, o.mMax.x, o.mMin.x)
+        o.mOutput = o.mMax.y - o.mFMath(o.mValue); o:Reset()
+      end)
 
     love.window.setTitle("Ball position PID")
     w, h = love.graphics.getDimensions()
@@ -407,14 +396,12 @@ function love.draw()
     love.graphics.line(RefProc:GetData())
 end
 
-function love.mousepressed(x, y, button)
-    print(button)
-  
-    if(button == 2) then
+function love.mousepressed(x, y, button)  
+    if(button == 2) then -- Right click
       Mass = Mass + 50
-    elseif(button == 1) then
+    elseif(button == 1) then -- Left click
       Mass = Mass - 50
-    elseif(button == 3) then
+    elseif(button == 3) then -- Middle click
       MouseRef = y
     end
     if(Mass <= 10) then Mass = 10 end
