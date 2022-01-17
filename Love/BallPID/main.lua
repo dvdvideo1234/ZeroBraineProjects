@@ -282,6 +282,7 @@ SignalPeriod = 100
 ------------------- Body
 
 function love.keypressed(key, isrepeat)
+   print(key)
    if(key == "right") then
       PID:SwingParam(1)
    elseif(key == "left") then
@@ -290,7 +291,7 @@ function love.keypressed(key, isrepeat)
       PID:NextParam(1)
    elseif(key == "down" ) then
       PID:NextParam(-1)
-   elseif (key == " " ) then
+   elseif (key == "space" ) then
       if (PID:GetEnable() == 0) then
           PID:Reset()
           PID:SetEnable(1)
@@ -324,15 +325,16 @@ function love.update(dt)
   PV.x, PV.y = Ball.Body:getPosition()
   if(CurSignal == 0) then -- Middle mouse
     RefY = MouseRef
-    Info = "ManualRef"
-  else for k,_ in pairs(Sig) do
-        if(k == CurSignal) then
-                 Sig[k]:SetPeriod(SignalPeriod)
-          RefY = Sig[k]:Flow()
-          Info = Sig[k]:GetName()
-          break
-        end
+    Info = "Manual"
+  else
+    for k, _ in pairs(Sig) do
+      if(k == CurSignal) then
+               Sig[k]:SetPeriod(SignalPeriod)
+        RefY = Sig[k]:Flow()
+        Info = Sig[k]:GetName()
+        break
       end
+    end
   end
   PID:Process(RefY,PV.y)
   Ball.Body:applyForce(0, PID:GetControl())
@@ -363,7 +365,7 @@ function love.load()
     Sig[9] = NewSignal(ValueMin,ValueMax,SignalPeriod,0.1,9,"38*(4*x^3-8*x^2+3*x+1)")
 
     love.window.setTitle("Ball position PID")
-    w, h = love.window.getDimensions()
+    w, h = love.graphics.getDimensions()
     love.keyboard.setKeyRepeat(true)
     world = love.physics.newWorld(0, 200, true)
     Ball = {}
@@ -406,11 +408,13 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-    if     button == "r" then
-      Mass = Mass + 20
-    elseif button == "l" then
-      Mass = Mass - 20
-    elseif button == "m" then
+    print(button)
+  
+    if(button == 2) then
+      Mass = Mass + 50
+    elseif(button == 1) then
+      Mass = Mass - 50
+    elseif(button == 3) then
       MouseRef = y
     end
     if(Mass <= 10) then Mass = 10 end
