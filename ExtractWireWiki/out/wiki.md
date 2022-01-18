@@ -1,96 +1,317 @@
-﻿### Documentation updates
+﻿E2Helper.Descriptions["dmpInfo(xsc:n)"] = "Dumps state controller to the chat area by number identifier"
+E2Helper.Descriptions["dmpInfo(xsc:s)"] = "Dumps state controller to the chat area by string identifier"
+E2Helper.Descriptions["dmpInfo(xsc:sn)"] = "Dumps state controller by number identifier in the specified area by first argument"
+E2Helper.Descriptions["dmpInfo(xsc:ss)"] = "Dumps state controller by string identifier in the specified area by first argument"
+E2Helper.Descriptions["dumpItem(xsc:n)"] = "Dumps state controller to the chat area by number identifier"
+E2Helper.Descriptions["dumpItem(xsc:s)"] = "Dumps state controller to the chat area by string identifier"
+E2Helper.Descriptions["dumpItem(xsc:sn)"] = "Dumps state controller by number identifier in the specified area by first argument"
+E2Helper.Descriptions["dumpItem(xsc:ss)"] = "Dumps state controller by string identifier in the specified area by first argument"
+E2Helper.Descriptions["getBias(xsc:)"] = "Returns state controller output signal bias"
+E2Helper.Descriptions["getControl(xsc:)"] = "Returns state controller automated control output signal value"
+E2Helper.Descriptions["getControlTerm(xsc:)"] = "Returns state controller automated control term signals as vector or array"
+E2Helper.Descriptions["getControlTermD(xsc:)"] = "Returns state controller derivative automated control term signal"
+E2Helper.Descriptions["getControlTermI(xsc:)"] = "Returns state controller integral automated control term signal"
+E2Helper.Descriptions["getControlTermP(xsc:)"] = "Returns state controller proportional automated control term signal"
+E2Helper.Descriptions["getCopy(xsc:)"] = "Returns state controller object copy instance"
+E2Helper.Descriptions["getCopy(xsc:n)"] = "Returns state controller object copy instance with static sampling time"
+E2Helper.Descriptions["getErrorDelta(xsc:)"] = "Returns state controller process error delta"
+E2Helper.Descriptions["getErrorNow(xsc:)"] = "Returns state controller process current error"
+E2Helper.Descriptions["getErrorPast(xsc:)"] = "Returns state controller process passed error"
+E2Helper.Descriptions["getGain(xsc:)"] = "Returns state controller proportional, integral and derivative term gains"
+E2Helper.Descriptions["getGainD(xsc:)"] = "Returns state controller derivative term gain"
+E2Helper.Descriptions["getGainI(xsc:)"] = "Returns state controller integral term gain"
+E2Helper.Descriptions["getGainID(xsc:)"] = "Returns state controller integral and derivative term gain"
+E2Helper.Descriptions["getGainP(xsc:)"] = "Returns state controller proportional term gain"
+E2Helper.Descriptions["getGainPD(xsc:)"] = "Returns state controller proportional and derivative term gain"
+E2Helper.Descriptions["getGainPI(xsc:)"] = "Returns state controller proportional and integral term gain"
+E2Helper.Descriptions["getManual(xsc:)"] = "Returns state controller manual control signal value"
+E2Helper.Descriptions["getPower(xsc:)"] = "Returns state controller proportional, integral and derivative term power"
+E2Helper.Descriptions["getPowerD(xsc:)"] = "Returns state controller derivative term power"
+E2Helper.Descriptions["getPowerI(xsc:)"] = "Returns state controller integral term power"
+E2Helper.Descriptions["getPowerID(xsc:)"] = "Returns state controller integral and derivative term power"
+E2Helper.Descriptions["getPowerP(xsc:)"] = "Returns state controller proportional term power"
+E2Helper.Descriptions["getPowerPD(xsc:)"] = "Returns state controller proportional and derivative term power"
+E2Helper.Descriptions["getPowerPI(xsc:)"] = "Returns state controller proportional and integral term power"
+E2Helper.Descriptions["getTimeBench(xsc:)"] = "Returns state controller dynamic process benchmark time"
+E2Helper.Descriptions["getTimeDelta(xsc:)"] = "Returns state controller dynamic process time delta"
+E2Helper.Descriptions["getTimeNow(xsc:)"] = "Returns state controller dynamic process current time"
+E2Helper.Descriptions["getTimePast(xsc:)"] = "Returns state controller dynamic process passed time"
+E2Helper.Descriptions["getTimeRatio(xsc:)"] = "Returns state controller dynamic process time ratio"
+E2Helper.Descriptions["getTimeSample(xsc:)"] = "Returns state controller static process time delta"
+E2Helper.Descriptions["getType(xsc:)"] = "Returns state controller control type"
+E2Helper.Descriptions["getWindup(xsc:)"] = "Returns state controller windup lower and upper bound"
+E2Helper.Descriptions["getWindupMax(xsc:)"] = "Returns state controller windup upper bound"
+E2Helper.Descriptions["getWindupMin(xsc:)"] = "Returns state controller windup lower bound"
+E2Helper.Descriptions["getZeroCross(xsc:)"] = "Checks state controller integral zero crossing margin"
+E2Helper.Descriptions["isActive(xsc:)"] = "Checks state controller activated working flag"
+E2Helper.Descriptions["isCombined(xsc:)"] = "Checks state controller combined flag spreading proportional term gain across others"
+E2Helper.Descriptions["isDerivative(xsc:)"] = "Checks state controller derivative enabled flag"
+E2Helper.Descriptions["isIntegral(xsc:)"] = "Checks state controller integral enabled flag"
+E2Helper.Descriptions["isInverted(xsc:)"] = "Checks state controller inverted feedback flag of the reference and set-point"
+E2Helper.Descriptions["isManual(xsc:)"] = "Checks state controller manual control signal flag"
+E2Helper.Descriptions["isZeroCross(xsc:)"] = "Checks state controller integral zero crossing flag"
+E2Helper.Descriptions["newStControl()"] = "Creates state controller object with dynamic sampling time"
+E2Helper.Descriptions["newStControl(n)"] = "Creates state controller object with static sampling time"
+E2Helper.Descriptions["noStControl()"] = "Returns state controller invalid object"
+E2Helper.Descriptions["remGain(xsc:)"] = "Removes state controller proportional, integral and derivative term gains"
+E2Helper.Descriptions["remGainD(xsc:)"] = "Removes state controller derivative term gain"
+E2Helper.Descriptions["remGainI(xsc:)"] = "Removes state controller integral term gain"
+E2Helper.Descriptions["remGainID(xsc:)"] = "Removes state controller integral and derivative term gains"
+E2Helper.Descriptions["remGainP(xsc:)"] = "Removes state controller proportional term gain"
+E2Helper.Descriptions["remGainPD(xsc:)"] = "Removes state controller proportional and derivative term gains"
+E2Helper.Descriptions["remGainPI(xsc:)"] = "Removes state controller proportional and integral term gains"
+E2Helper.Descriptions["remTimeSample(xsc:)"] = "Removes state controller static process time delta"
+E2Helper.Descriptions["remWindup(xsc:)"] = "Removes state controller windup lower and upper bound"
+E2Helper.Descriptions["remWindupMax(xsc:)"] = "Removes state controller windup upper bound"
+E2Helper.Descriptions["remWindupMin(xsc:)"] = "Removes state controller windup lower bound"
+E2Helper.Descriptions["resState(xsc:)"] = "Resets state controller automated internal parameters"
+E2Helper.Descriptions["setBias(xsc:n)"] = "Updates state controller output signal bias"
+E2Helper.Descriptions["setGain(xsc:nnn)"] = "Updates state controller proportional, integral and derivative term gains"
+E2Helper.Descriptions["setGain(xsc:r)"] = "Updates state controller proportional, integral and derivative term gains"
+E2Helper.Descriptions["setGain(xsc:v)"] = "Updates state controller proportional, integral and derivative term gains"
+E2Helper.Descriptions["setGainD(xsc:n)"] = "Updates state controller derivative term gain"
+E2Helper.Descriptions["setGainI(xsc:n)"] = "Updates state controller integral term gain"
+E2Helper.Descriptions["setGainID(xsc:nn)"] = "Updates state controller integral and derivative term gains"
+E2Helper.Descriptions["setGainID(xsc:r)"] = "Updates state controller integral and derivative term gains"
+E2Helper.Descriptions["setGainID(xsc:xv2)"] = "Updates state controller integral and derivative term gains"
+E2Helper.Descriptions["setGainP(xsc:n)"] = "Updates state controller proportional term gain"
+E2Helper.Descriptions["setGainPD(xsc:nn)"] = "Updates state controller proportional and derivative term gains"
+E2Helper.Descriptions["setGainPD(xsc:r)"] = "Updates state controller proportional and derivative term gains"
+E2Helper.Descriptions["setGainPD(xsc:xv2)"] = "Updates state controller proportional and derivative term gains"
+E2Helper.Descriptions["setGainPI(xsc:nn)"] = "Updates state controller proportional and integral term gains"
+E2Helper.Descriptions["setGainPI(xsc:r)"] = "Updates state controller proportional and integral term gains"
+E2Helper.Descriptions["setGainPI(xsc:xv2)"] = "Updates state controller proportional and integral term gains"
+E2Helper.Descriptions["setIsActive(xsc:n)"] = "Updates state controller activated working flag"
+E2Helper.Descriptions["setIsCombined(xsc:n)"] = "Updates state controller combined flag spreading proportional term gain across others"
+E2Helper.Descriptions["setIsDerivative(xsc:n)"] = "Updates state controller derivative enabled flag"
+E2Helper.Descriptions["setIsIntegral(xsc:n)"] = "Updates state controller integral enabled flag"
+E2Helper.Descriptions["setIsInverted(xsc:n)"] = "Updates state controller inverted feedback flag of the reference and set-point"
+E2Helper.Descriptions["setIsManual(xsc:n)"] = "Updates state controller manual control signal flag"
+E2Helper.Descriptions["setIsZeroCross(xsc:n)"] = "Updates state controller integral zero crossing flag"
+E2Helper.Descriptions["setManual(xsc:n)"] = "Updates state controller manual control signal value"
+E2Helper.Descriptions["setPower(xsc:nnn)"] = "Updates state controller proportional, integral and derivative term powers"
+E2Helper.Descriptions["setPower(xsc:r)"] = "Updates state controller proportional, integral and derivative term powers"
+E2Helper.Descriptions["setPower(xsc:v)"] = "Updates state controller proportional, integral and derivative term powers"
+E2Helper.Descriptions["setPowerD(xsc:n)"] = "Updates state controller derivative term power"
+E2Helper.Descriptions["setPowerI(xsc:n)"] = "Updates state controller integral term power"
+E2Helper.Descriptions["setPowerID(xsc:nn)"] = "Updates state controller integral and derivative term powers"
+E2Helper.Descriptions["setPowerID(xsc:r)"] = "Updates state controller integral and derivative term powers"
+E2Helper.Descriptions["setPowerID(xsc:xv2)"] = "Updates state controller integral and derivative term powers"
+E2Helper.Descriptions["setPowerP(xsc:n)"] = "Updates state controller proportional term power"
+E2Helper.Descriptions["setPowerPD(xsc:nn)"] = "Updates state controller proportional and derivative term powers"
+E2Helper.Descriptions["setPowerPD(xsc:r)"] = "Updates state controller proportional and derivative term powers"
+E2Helper.Descriptions["setPowerPD(xsc:xv2)"] = "Updates state controller proportional and derivative term powers"
+E2Helper.Descriptions["setPowerPI(xsc:nn)"] = "Updates state controller proportional and integral term powers"
+E2Helper.Descriptions["setPowerPI(xsc:r)"] = "Updates state controller proportional and integral term powers"
+E2Helper.Descriptions["setPowerPI(xsc:xv2)"] = "Updates state controller proportional and integral term powers"
+E2Helper.Descriptions["setState(xsc:nn)"] = "Updates state controller automated internal parameters"
+E2Helper.Descriptions["setTimeSample(xsc:n)"] = "Updates state controller static process time delta"
+E2Helper.Descriptions["setWindup(xsc:nn)"] = "Updates state controller windup lower and upper bound"
+E2Helper.Descriptions["setWindup(xsc:r)"] = "Updates state controller windup lower and upper bound"
+E2Helper.Descriptions["setWindup(xsc:xv2)"] = "Updates state controller windup lower and upper bound"
+E2Helper.Descriptions["setWindupMax(xsc:n)"] = "Updates state controller windup upper bound"
+E2Helper.Descriptions["setWindupMin(xsc:n)"] = "Updates state controller windup lower bound"
+E2Helper.Descriptions["setZeroCross(xsc:n)"] = "Updates state controller integral zero crossing margin"
+E2Helper.Descriptions["tuneAutoTL(xsc:nn)"] = "Tunes state controller using the method (TL) Tyreus-Luyben auto oscillation"
+E2Helper.Descriptions["tuneAutoZN(xsc:nn)"] = "Tunes state controller using the method (ZN) Ziegler-Nichols auto oscillation"
+E2Helper.Descriptions["tuneAutoZN(xsc:nns)"] = "Tunes state controller using the method (ZN) Ziegler-Nichols auto oscillation extended by type: `classic`, `pessen`, `sovers`, `novers`"
+E2Helper.Descriptions["tuneOverCHRLR(xsc:nnn)"] = "Tunes state controller using the method (CHR) Chien-Hrones-Reswick load rejection 20% overshot"
+E2Helper.Descriptions["tuneOverCHRSP(xsc:nnn)"] = "Tunes state controller using the method (CHR) Chien-Hrones-Reswick set point track 20% overshot"
+E2Helper.Descriptions["tuneProcAH(xsc:nnn)"] = "Tunes state controller using the method (AH) Astrom-Hagglund"
+E2Helper.Descriptions["tuneProcCC(xsc:nnn)"] = "Tunes state controller using the method (CC) Choen-Coon"
+E2Helper.Descriptions["tuneProcCHRLR(xsc:nnn)"] = "Tunes state controller using the method (CHR) Chien-Hrones-Reswick load rejection"
+E2Helper.Descriptions["tuneProcCHRSP(xsc:nnn)"] = "Tunes state controller using the method (CHR) Chien-Hrones-Reswick set point track"
+E2Helper.Descriptions["tuneProcIAE(xsc:nnn)"] = "Tunes state controller using the method (IAE) Integral absolute error"
+E2Helper.Descriptions["tuneProcISE(xsc:nnn)"] = "Tunes state controller using the method (ISE) Integral square error"
+E2Helper.Descriptions["tuneProcITAE(xsc:nnn)"] = "Tunes state controller using the method (ITAE) Integral of time-weighted absolute error"
+E2Helper.Descriptions["tuneProcZN(xsc:nnnn)"] = "Tunes state controller using the method (ZNM) Ziegler-Nichols plant process"
 
-[Do **NOT** edit this documentation manually. This page is automatically generated!][ref_autogen_page]
+------------------------------------------------------------------------------------------------------------------------
 
-### What does this extension do?
+### What does this extension include?
+State controller [OOP class][ref_class_oop] that creates LQ-PID controllers with static or
+dynamic [sampling time][ref_samp_time]. They are used generally for every kind of
+[automatic control][ref_auto_con] that is needed in Wiremod. Supports a bunch of general
+[tuning methods][ref_contr_tune], I studied at [the university][ref_tusofia] and can be
+initialized as a [relay][ref_relay], linear or power controller. The error `E` with power
+`P` can be [any real number][ref_realnum]. When zero, the output is calculated as [relay][ref_relay],
+when equal to `1`, we have the [classic PID controller][ref_pid] when the power
+is `2` the error has [quadratic relation][ref_quad_eq] `E^2`, `3`, for [cubic][ref_cubic_eq] `E^3`
+and so on needed for [aero-propeller][ref_aero_sys] systems. Negative powers will be treated as error
+[square root][ref_root] `E^(-2) = 1/E^2`. The user can apply even fractional powers `P` on each term.
+The [fractional powers][ref_exponent] can be treated as the numerator is taken as the power and the
+denominator as a root. However, there is no difference in which operation will be applied first
+as you have `E^(2/5) = sqr5(E^2) = sqr5(E)^2`. It has a lot of possibilities. The only limits is your imagination.
 
-The [wiremod][ref_wiremod] [Lua][ref_lua] extension [`Laser`][ref_addon] is designed to be used with [`Wire Expression2`][ref_exp2]
-in mind and implements general functions for retrieving various values form a dominant source entity or database entries. 
-Beware of the E2 [performance][ref_perfe2] though. You can create feedback loops for controlling source beam parameters.
+### What is this thing designed for?
+The `StControl` class consists of fast performing controller object-oriented
+instance that is designed to be `@persist`and initialized in expression
+`first() || dupefinished()`. That way you create the controller instance once
+and you can use it as many times as you need, without creating a new one.
 
-### What is the [wiremod][ref_wiremod] [`Laser`][ref_addon] API then?
+### What console variables can be used to setup it
+```
+wire_expression2_stcontrol_enst > Contains flag that enables status output messages
+wire_expression2_stcontrol_dprn > Stores the default status output messages streaming destination
+```
 
-|      Beam data parameters      | Out | Description |
-|:-------------------------------|:---:|:------------|
-|![image][ref-e]:`laserGetDataBounceMax`(![image][ref-n])|![image][ref-n]|Returns the maximum allowed [`laser`][ref-4-laser] [`beam`][ref-5-beam] bounces|
-|![image][ref-e]:`laserGetDataBounceRest`(![image][ref-n])|![image][ref-n]|Returns the remaining [`laser`][ref-4-laser] [`beam`][ref-5-beam] bounces|
-|![image][ref-e]:`laserGetDataDamage`(![image][ref-n])|![image][ref-n]|Returns the remaining [`laser`][ref-4-laser] [`beam`][ref-5-beam] damage|
-|![image][ref-e]:`laserGetDataDirect`(![image][ref-n])|![image][ref-v]|Returns the last [`laser`][ref-4-laser] [`beam`][ref-5-beam] direction [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetDataForce`(![image][ref-n])|![image][ref-n]|Returns the remaining [`laser`][ref-4-laser] [`beam`][ref-5-beam] force|
-|![image][ref-e]:`laserGetDataIsReflect`(![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`reflect`][ref-12-reflect] flag|
-|![image][ref-e]:`laserGetDataIsRefract`(![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`refract`][ref-3-refract] flag|
-|![image][ref-e]:`laserGetDataLength`(![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] length|
-|![image][ref-e]:`laserGetDataLengthRest`(![image][ref-n])|![image][ref-n]|Returns the remaining [`laser`][ref-4-laser] [`beam`][ref-5-beam] length|
-|![image][ref-e]:`laserGetDataOrigin`(![image][ref-n])|![image][ref-v]|Returns the last [`laser`][ref-4-laser] [`beam`][ref-5-beam] origin [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetDataPointDamage`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] node damage|
-|![image][ref-e]:`laserGetDataPointForce`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] node force|
-|![image][ref-e]:`laserGetDataPointIsDraw`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] node draw flag|
-|![image][ref-e]:`laserGetDataPointNode`(![image][ref-n],![image][ref-n])|![image][ref-v]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] node location [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetDataPointSize`(![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] nodes count|
-|![image][ref-e]:`laserGetDataPointWidth`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] node width|
-|![image][ref-e]:`laserGetDataRange`(![image][ref-n])|![image][ref-n]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] traverse range|
-|![image][ref-e]:`laserGetDataSource`(![image][ref-n])|![image][ref-e]|Returns the [`laser`][ref-4-laser] [`beam`][ref-5-beam] source [`entity`][ref-11-entity]|
-|![image][ref-e]:`laserGetDataWidth`(![image][ref-n])|![image][ref-n]|Returns the remaining [`laser`][ref-4-laser] [`beam`][ref-5-beam] width|
+### How to create an instance then?
+You can create a controller object by calling one of the dedicated creators `newStControl` below 
+either with an argument of sampling time to make the sampling time static or without
+a parameter to make it take the value dynamically as some other thing may slow down the E2.
+Then you must activate the instance `setIsActive(1)` to enable it to calculate the control signal,
+apply the current state values `setState` and retrieve the control signal afterwards by calling
+`getControl(...)`.
 
-|       Beam trace parameters       | Out | Description |
+### Do you have an example by any chance?
+The internal type of the class is `xsc` and internal expression type `stcontrol`, so to create 
+an instance you can take a [look at the example][ref_example].
+
+### Can you show me the methods of the class?
+The description of the API is provided in the table below.
+
+|  Instance creator  | Out | Description |
+|:-------------------|:---:|:------------|
+|`newStControl`(![image][ref-xxx])|![image][ref-xsc]|Creates state controller object with dynamic sampling time|
+|`newStControl`(![image][ref-n])|![image][ref-xsc]|Creates state controller object with static sampling time|
+|`noStControl`(![image][ref-xxx])|![image][ref-xsc]|Returns state controller invalid object|
+
+|           Class methods           | Out | Description |
 |:----------------------------------|:---:|:------------|
-|![image][ref-e]:`laserGetTraceAllSolid`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] all solid flag|
-|![image][ref-e]:`laserGetTraceContents`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit [`surface contents enums`][ref-14-surface contents enums]|
-|![image][ref-e]:`laserGetTraceDispFlags`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit [`surface displacement flag enums`][ref-10-surface displacement flag enums]|
-|![image][ref-e]:`laserGetTraceEntity`(![image][ref-n])|![image][ref-e]|Returns the [`last trace`][ref-1-last trace] [`entity`][ref-11-entity]|
-|![image][ref-e]:`laserGetTraceFraction`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] used hit fraction `[0-1]`|
-|![image][ref-e]:`laserGetTraceFractionLS`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] fraction left solid `[0-1]`|
-|![image][ref-e]:`laserGetTraceHit`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit flag|
-|![image][ref-e]:`laserGetTraceHitBox`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit box `ID`|
-|![image][ref-e]:`laserGetTraceHitGroup`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] [`hit group enums`][ref-2-hit group enums]|
-|![image][ref-e]:`laserGetTraceHitNoDraw`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit no-draw brush|
-|![image][ref-e]:`laserGetTraceHitNonWorld`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit non-world flag|
-|![image][ref-e]:`laserGetTraceHitNormal`(![image][ref-n])|![image][ref-v]|Returns the [`last trace`][ref-1-last trace] hit [`normal`][ref-8-normal] [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetTraceHitPhysicsBone`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit physics bone `ID`|
-|![image][ref-e]:`laserGetTraceHitPos`(![image][ref-n])|![image][ref-v]|Returns the [`last trace`][ref-1-last trace] hit position [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetTraceHitSky`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit sky flag|
-|![image][ref-e]:`laserGetTraceHitTexture`(![image][ref-n])|![image][ref-s]|Returns the [`last trace`][ref-1-last trace] hit texture|
-|![image][ref-e]:`laserGetTraceHitWorld`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit world flag|
-|![image][ref-e]:`laserGetTraceMatType`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] [`material type enums`][ref-17-material type enums]|
-|![image][ref-e]:`laserGetTraceNormal`(![image][ref-n])|![image][ref-v]|Returns the [`last trace`][ref-1-last trace] [`normal`][ref-8-normal] [`vector`][ref-6-vector]|
-|![image][ref-e]:`laserGetTraceStartPos`(![image][ref-n])|![image][ref-v]|Returns the [`last trace`][ref-1-last trace] start position|
-|![image][ref-e]:`laserGetTraceStartSolid`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] start solid flag|
-|![image][ref-e]:`laserGetTraceSurfaceFlags`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit [`surface flags enums`][ref-15-surface flags enums]|
-|![image][ref-e]:`laserGetTraceSurfacePropsID`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit surface property `ID`|
-|![image][ref-e]:`laserGetTraceSurfacePropsName`(![image][ref-n])|![image][ref-s]|Returns the [`last trace`][ref-1-last trace] hit surface property name|
-
-|  Class configurations   | Out | Description |
-|:------------------------|:---:|:------------|
-|![image][ref-e]:`laserGetBeamDamage`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] damage|
-|![image][ref-e]:`laserGetBeamForce`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] force|
-|![image][ref-e]:`laserGetBeamLength`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] length|
-|![image][ref-e]:`laserGetBeamMaterial`()|![image][ref-s]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] material|
-|![image][ref-e]:`laserGetBeamPower`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] power|
-|![image][ref-e]:`laserGetBeamWidth`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`beam`][ref-5-beam] width|
-|![image][ref-e]:`laserGetDissolveType`()|![image][ref-s]|Returns the [`laser`][ref-4-laser] source [`dissolve`][ref-13-dissolve] type name|
-|![image][ref-e]:`laserGetDissolveTypeID`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`dissolve`][ref-13-dissolve] type `ID`|
-|![image][ref-e]:`laserGetEndingEffect`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source ending effect flag|
-|![image][ref-e]:`laserGetForceCenter`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source force in center flag|
-|![image][ref-e]:`laserGetKillSound`()|![image][ref-s]|Returns the [`laser`][ref-4-laser] source kill sound|
-|![image][ref-e]:`laserGetNonOverMater`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source base [`entity`][ref-11-entity] material flag|
-|![image][ref-e]:`laserGetPlayer`()|![image][ref-e]|Returns the [`laser`][ref-4-laser] unit player getting the kill credit|
-|![image][ref-e]:`laserGetReflectRatio`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`reflection`][ref-16-reflection] ratio flag|
-|![image][ref-e]:`laserGetRefractRatio`()|![image][ref-n]|Returns the [`laser`][ref-4-laser] source [`refraction`][ref-18-refraction] ratio flag|
-|![image][ref-e]:`laserGetStartSound`()|![image][ref-s]|Returns the [`laser`][ref-4-laser] source start sound|
-|![image][ref-e]:`laserGetStopSound`()|![image][ref-s]|Returns the [`laser`][ref-4-laser] source stop sound|
-
-|              Other helper functions              | Out | Description |
-|:-------------------------------------------------|:---:|:------------|
-|`laserGetBeamIsPower`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the flag indicating the power enabled threshold|
-|`laserGetBeamPower`(![image][ref-n],![image][ref-n])|![image][ref-n]|Returns the calcuated power by external width and damage|
-|`laserGetReflectBeam`(![image][ref-v],![image][ref-v])|![image][ref-v]|Returns the reflected [`vector`][ref-6-vector] by external [`incident`][ref-7-incident] and [`normal`][ref-8-normal]|
-|`laserGetReflectDataKey`(![image][ref-s])|![image][ref-s]|Returns the [`reflect`][ref-12-reflect] loop key database entry|
-|`laserGetReflectDataRatio`(![image][ref-s])|![image][ref-n]|Returns the [`reflect`][ref-12-reflect] ratio database entry|
-|`laserGetRefractBeam`(![image][ref-v],![image][ref-v],![image][ref-n],![image][ref-n])|![image][ref-v]|Returns the refracted [`vector`][ref-6-vector] by external [`incident`][ref-7-incident], [`normal`][ref-8-normal] and [`medium`][ref-9-medium] indices|
-|`laserGetRefractDataIndex`(![image][ref-s])|![image][ref-n]|Returns the [`refract`][ref-3-refract] index database entry|
-|`laserGetRefractDataKey`(![image][ref-s])|![image][ref-s]|Returns the [`refract`][ref-3-refract] loop key database entry|
-|`laserGetRefractDataRatio`(![image][ref-s])|![image][ref-n]|Returns the [`refract`][ref-3-refract] ratio database entry|
-|`laserGetRefractIsOut`()|![image][ref-n]|Returns a flag indicating the [`beam`][ref-5-beam] exiting the [`medium`][ref-9-medium] after refracting|
+|![image][ref-xsc]:`dmpInfo`(![image][ref-n])|![image][ref-xsc]|Dumps state controller to the chat area by number identifier|
+|![image][ref-xsc]:`dmpInfo`(![image][ref-s])|![image][ref-xsc]|Dumps state controller to the chat area by string identifier|
+|![image][ref-xsc]:`dmpInfo`(![image][ref-s],![image][ref-n])|![image][ref-xsc]|Dumps state controller by number identifier in the specified area by first argument|
+|![image][ref-xsc]:`dmpInfo`(![image][ref-s],![image][ref-s])|![image][ref-xsc]|Dumps state controller by string identifier in the specified area by first argument|
+|![image][ref-xsc]:`dumpItem`(![image][ref-n])|![image][ref-xsc]|Dumps state controller to the chat area by number identifier|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s])|![image][ref-xsc]|Dumps state controller to the chat area by string identifier|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xsc]|Dumps state controller by number identifier in the specified area by first argument|
+|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xsc]|Dumps state controller by string identifier in the specified area by first argument|
+|![image][ref-xsc]:`getBias`(![image][ref-xxx])|![image][ref-n]|Returns state controller output signal bias|
+|![image][ref-xsc]:`getControl`(![image][ref-xxx])|![image][ref-n]|Returns state controller automated control output signal value|
+|![image][ref-xsc]:`getControlTerm`(![image][ref-xxx])|![image][ref-r]|Returns state controller automated control term signals as vector or array|
+|![image][ref-xsc]:`getControlTerm`(![image][ref-xxx])|![image][ref-v]|Returns state controller automated control term signals as vector or array|
+|![image][ref-xsc]:`getControlTermD`(![image][ref-xxx])|![image][ref-n]|Returns state controller derivative automated control term signal|
+|![image][ref-xsc]:`getControlTermI`(![image][ref-xxx])|![image][ref-n]|Returns state controller integral automated control term signal|
+|![image][ref-xsc]:`getControlTermP`(![image][ref-xxx])|![image][ref-n]|Returns state controller proportional automated control term signal|
+|![image][ref-xsc]:`getCopy`(![image][ref-xxx])|![image][ref-xsc]|Returns state controller object copy instance|
+|![image][ref-xsc]:`getCopy`(![image][ref-n])|![image][ref-xsc]|Returns state controller object copy instance with static sampling time|
+|![image][ref-xsc]:`getErrorDelta`(![image][ref-xxx])|![image][ref-n]|Returns state controller process error delta|
+|![image][ref-xsc]:`getErrorNow`(![image][ref-xxx])|![image][ref-n]|Returns state controller process current error|
+|![image][ref-xsc]:`getErrorPast`(![image][ref-xxx])|![image][ref-n]|Returns state controller process passed error|
+|![image][ref-xsc]:`getGain`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`getGain`(![image][ref-xxx])|![image][ref-v]|Returns state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`getGainD`(![image][ref-xxx])|![image][ref-n]|Returns state controller derivative term gain|
+|![image][ref-xsc]:`getGainI`(![image][ref-xxx])|![image][ref-n]|Returns state controller integral term gain|
+|![image][ref-xsc]:`getGainID`(![image][ref-xxx])|![image][ref-r]|Returns state controller integral and derivative term gain|
+|![image][ref-xsc]:`getGainID`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller integral and derivative term gain|
+|![image][ref-xsc]:`getGainP`(![image][ref-xxx])|![image][ref-n]|Returns state controller proportional term gain|
+|![image][ref-xsc]:`getGainPD`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional and derivative term gain|
+|![image][ref-xsc]:`getGainPD`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller proportional and derivative term gain|
+|![image][ref-xsc]:`getGainPI`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional and integral term gain|
+|![image][ref-xsc]:`getGainPI`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller proportional and integral term gain|
+|![image][ref-xsc]:`getManual`(![image][ref-xxx])|![image][ref-n]|Returns state controller manual control signal value|
+|![image][ref-xsc]:`getPower`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional, integral and derivative term power|
+|![image][ref-xsc]:`getPower`(![image][ref-xxx])|![image][ref-v]|Returns state controller proportional, integral and derivative term power|
+|![image][ref-xsc]:`getPowerD`(![image][ref-xxx])|![image][ref-n]|Returns state controller derivative term power|
+|![image][ref-xsc]:`getPowerI`(![image][ref-xxx])|![image][ref-n]|Returns state controller integral term power|
+|![image][ref-xsc]:`getPowerID`(![image][ref-xxx])|![image][ref-r]|Returns state controller integral and derivative term power|
+|![image][ref-xsc]:`getPowerID`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller integral and derivative term power|
+|![image][ref-xsc]:`getPowerP`(![image][ref-xxx])|![image][ref-n]|Returns state controller proportional term power|
+|![image][ref-xsc]:`getPowerPD`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional and derivative term power|
+|![image][ref-xsc]:`getPowerPD`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller proportional and derivative term power|
+|![image][ref-xsc]:`getPowerPI`(![image][ref-xxx])|![image][ref-r]|Returns state controller proportional and integral term power|
+|![image][ref-xsc]:`getPowerPI`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller proportional and integral term power|
+|![image][ref-xsc]:`getTimeBench`(![image][ref-xxx])|![image][ref-n]|Returns state controller dynamic process benchmark time|
+|![image][ref-xsc]:`getTimeDelta`(![image][ref-xxx])|![image][ref-n]|Returns state controller dynamic process time delta|
+|![image][ref-xsc]:`getTimeNow`(![image][ref-xxx])|![image][ref-n]|Returns state controller dynamic process current time|
+|![image][ref-xsc]:`getTimePast`(![image][ref-xxx])|![image][ref-n]|Returns state controller dynamic process passed time|
+|![image][ref-xsc]:`getTimeRatio`(![image][ref-xxx])|![image][ref-n]|Returns state controller dynamic process time ratio|
+|![image][ref-xsc]:`getTimeSample`(![image][ref-xxx])|![image][ref-n]|Returns state controller static process time delta|
+|![image][ref-xsc]:`getType`(![image][ref-xxx])|![image][ref-s]|Returns state controller control type|
+|![image][ref-xsc]:`getWindup`(![image][ref-xxx])|![image][ref-r]|Returns state controller windup lower and upper bound|
+|![image][ref-xsc]:`getWindup`(![image][ref-xxx])|![image][ref-xv2]|Returns state controller windup lower and upper bound|
+|![image][ref-xsc]:`getWindupMax`(![image][ref-xxx])|![image][ref-n]|Returns state controller windup upper bound|
+|![image][ref-xsc]:`getWindupMin`(![image][ref-xxx])|![image][ref-n]|Returns state controller windup lower bound|
+|![image][ref-xsc]:`getZeroCross`(![image][ref-xxx])|![image][ref-n]|Checks state controller integral zero crossing margin|
+|![image][ref-xsc]:`isActive`(![image][ref-xxx])|![image][ref-n]|Checks state controller activated working flag|
+|![image][ref-xsc]:`isCombined`(![image][ref-xxx])|![image][ref-n]|Checks state controller combined flag spreading proportional term gain across others|
+|![image][ref-xsc]:`isDerivative`(![image][ref-xxx])|![image][ref-n]|Checks state controller derivative enabled flag|
+|![image][ref-xsc]:`isIntegral`(![image][ref-xxx])|![image][ref-n]|Checks state controller integral enabled flag|
+|![image][ref-xsc]:`isInverted`(![image][ref-xxx])|![image][ref-n]|Checks state controller inverted feedback flag of the reference and set-point|
+|![image][ref-xsc]:`isManual`(![image][ref-xxx])|![image][ref-n]|Checks state controller manual control signal flag|
+|![image][ref-xsc]:`isZeroCross`(![image][ref-xxx])|![image][ref-n]|Checks state controller integral zero crossing flag|
+|![image][ref-xsc]:`remGain`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`remGainD`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller derivative term gain|
+|![image][ref-xsc]:`remGainI`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller integral term gain|
+|![image][ref-xsc]:`remGainID`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller integral and derivative term gains|
+|![image][ref-xsc]:`remGainP`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional term gain|
+|![image][ref-xsc]:`remGainPD`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and derivative term gains|
+|![image][ref-xsc]:`remGainPI`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller proportional and integral term gains|
+|![image][ref-xsc]:`remTimeSample`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller static process time delta|
+|![image][ref-xsc]:`remWindup`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller windup lower and upper bound|
+|![image][ref-xsc]:`remWindupMax`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller windup upper bound|
+|![image][ref-xsc]:`remWindupMin`(![image][ref-xxx])|![image][ref-xsc]|Removes state controller windup lower bound|
+|![image][ref-xsc]:`resState`(![image][ref-xxx])|![image][ref-xsc]|Resets state controller automated internal parameters|
+|![image][ref-xsc]:`setBias`(![image][ref-n])|![image][ref-xsc]|Updates state controller output signal bias|
+|![image][ref-xsc]:`setGain`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`setGain`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`setGain`(![image][ref-v])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term gains|
+|![image][ref-xsc]:`setGainD`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative term gain|
+|![image][ref-xsc]:`setGainI`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral term gain|
+|![image][ref-xsc]:`setGainID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
+|![image][ref-xsc]:`setGainID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
+|![image][ref-xsc]:`setGainID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term gains|
+|![image][ref-xsc]:`setGainP`(![image][ref-n])|![image][ref-xsc]|Updates state controller proportional term gain|
+|![image][ref-xsc]:`setGainPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
+|![image][ref-xsc]:`setGainPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term gains|
+|![image][ref-xsc]:`setIsActive`(![image][ref-n])|![image][ref-xsc]|Updates state controller activated working flag|
+|![image][ref-xsc]:`setIsCombined`(![image][ref-n])|![image][ref-xsc]|Updates state controller combined flag spreading proportional term gain across others|
+|![image][ref-xsc]:`setIsDerivative`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative enabled flag|
+|![image][ref-xsc]:`setIsIntegral`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral enabled flag|
+|![image][ref-xsc]:`setIsInverted`(![image][ref-n])|![image][ref-xsc]|Updates state controller inverted feedback flag of the reference and set-point|
+|![image][ref-xsc]:`setIsManual`(![image][ref-n])|![image][ref-xsc]|Updates state controller manual control signal flag|
+|![image][ref-xsc]:`setIsZeroCross`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral zero crossing flag|
+|![image][ref-xsc]:`setManual`(![image][ref-n])|![image][ref-xsc]|Updates state controller manual control signal value|
+|![image][ref-xsc]:`setPower`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
+|![image][ref-xsc]:`setPower`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
+|![image][ref-xsc]:`setPower`(![image][ref-v])|![image][ref-xsc]|Updates state controller proportional, integral and derivative term powers|
+|![image][ref-xsc]:`setPowerD`(![image][ref-n])|![image][ref-xsc]|Updates state controller derivative term power|
+|![image][ref-xsc]:`setPowerI`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral term power|
+|![image][ref-xsc]:`setPowerID`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
+|![image][ref-xsc]:`setPowerID`(![image][ref-r])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
+|![image][ref-xsc]:`setPowerID`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller integral and derivative term powers|
+|![image][ref-xsc]:`setPowerP`(![image][ref-n])|![image][ref-xsc]|Updates state controller proportional term power|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPD`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and derivative term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-r])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
+|![image][ref-xsc]:`setPowerPI`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller proportional and integral term powers|
+|![image][ref-xsc]:`setState`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller automated internal parameters|
+|![image][ref-xsc]:`setTimeSample`(![image][ref-n])|![image][ref-xsc]|Updates state controller static process time delta|
+|![image][ref-xsc]:`setWindup`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Updates state controller windup lower and upper bound|
+|![image][ref-xsc]:`setWindup`(![image][ref-r])|![image][ref-xsc]|Updates state controller windup lower and upper bound|
+|![image][ref-xsc]:`setWindup`(![image][ref-xv2])|![image][ref-xsc]|Updates state controller windup lower and upper bound|
+|![image][ref-xsc]:`setWindupMax`(![image][ref-n])|![image][ref-xsc]|Updates state controller windup upper bound|
+|![image][ref-xsc]:`setWindupMin`(![image][ref-n])|![image][ref-xsc]|Updates state controller windup lower bound|
+|![image][ref-xsc]:`setZeroCross`(![image][ref-n])|![image][ref-xsc]|Updates state controller integral zero crossing margin|
+|![image][ref-xsc]:`tuneAutoTL`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`TL`) [`Tyreus-Luyben`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/TL_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png)|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ZN`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png)|
+|![image][ref-xsc]:`tuneAutoZN`(![image][ref-n],![image][ref-n],![image][ref-s])|![image][ref-xsc]|Tunes state controller using the method (`ZN`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_tunning.png) [`auto oscillation`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/auto_Tu.png) extended by type: `classic`, `pessen`, `sovers`, `novers`|
+|![image][ref-xsc]:`tuneOverCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_dr.png) load rejection `20%` overshot|
+|![image][ref-xsc]:`tuneOverCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_sp.png) set point track `20%` overshot|
+|![image][ref-xsc]:`tuneProcAH`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`AH`) Astrom-Hagglund|
+|![image][ref-xsc]:`tuneProcCC`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CC`) [`Choen-Coon`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CC_tuning.png)|
+|![image][ref-xsc]:`tuneProcCHRLR`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_dr.png) load rejection|
+|![image][ref-xsc]:`tuneProcCHRSP`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`CHR`) [`Chien-Hrones-Reswick`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/CHR_tunning_sp.png) set point track|
+|![image][ref-xsc]:`tuneProcIAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`IAE`) [`Integral absolute error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneProcISE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ISE`) [`Integral square error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneProcITAE`(![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ITAE`) [`Integral of time-weighted absolute error`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/IAE_tuning.png)|
+|![image][ref-xsc]:`tuneProcZN`(![image][ref-n],![image][ref-n],![image][ref-n],![image][ref-n])|![image][ref-xsc]|Tunes state controller using the method (`ZNM`) [`Ziegler-Nichols`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/ZN_proc_tunning.png) [`plant process`](https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/proc_curve.png)|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png
@@ -113,29 +334,18 @@ Beware of the E2 [performance][ref_perfe2] though. You can create feedback loops
 [ref-xsc]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xsc.png
 [ref-xxx]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-xxx.png
 
+[ref_example]: https://github.com/dvdvideo1234/ControlSystemsE2/blob/master/data/Expression2/e2_code_test_stcontrol.txt
+[ref_tusofia]: https://tu-sofia.bg/
+[ref_exponent]: https://en.wikipedia.org/wiki/Exponentiation
+[ref_relay]: https://en.wikipedia.org/wiki/Relay
+[ref_realnum]: https://en.wikipedia.org/wiki/Real_number
+[ref_pid]: https://en.wikipedia.org/wiki/PID_controller
+[ref_aero_sys]: https://en.wikipedia.org/wiki/Propeller_(aeronautics)
+[ref_quad_eq]: https://en.wikipedia.org/wiki/Quadratic_equation
 [ref_class_oop]: https://en.wikipedia.org/wiki/Class_(computer_programming)
-[ref_entity]: https://wiki.garrysmod.com/page/Global/Entity
-[ref_lua]: https://en.wikipedia.org/wiki/Lua_(programming_language)
-[ref_exp2]: https://github.com/wiremod/wire/wiki/Expression-2
-[ref_perfe2]: https://github.com/wiremod/wire/wiki/Expression-2#performance
-[ref_addon]: https://en.wikipedia.org/wiki/Laser
-[ref_wiremod]: https://wiremod.com/
-[ref_autogen_page]: https://github.com/dvdvideo1234/ZeroBraineProjects/blob/master/ExtractWireWiki/api/laserbeam.lua
-[ref-1-last trace]: https://wiki.facepunch.com/gmod/Structures/TraceResult
-[ref-2-hit group enums]: https://wiki.facepunch.com/gmod/Enums/HITGROUP
-[ref-3-refract]: https://en.wikipedia.org/wiki/Refraction
-[ref-4-laser]: https://en.wikipedia.org/wiki/Laser
-[ref-5-beam]: https://en.wikipedia.org/wiki/Laser
-[ref-6-vector]: https://wiki.facepunch.com/gmod/Vector
-[ref-7-incident]: https://en.wikipedia.org/wiki/Ray_(optics)
-[ref-8-normal]: https://en.wikipedia.org/wiki/Normal_(geometry)
-[ref-9-medium]: https://en.wikipedia.org/wiki/Optical_medium
-[ref-10-surface displacement flag enums]: https://wiki.facepunch.com/gmod/Enums/DISPSURF
-[ref-11-entity]: https://wiki.facepunch.com/gmod/Entity
-[ref-12-reflect]: https://en.wikipedia.org/wiki/Reflection_(physics)
-[ref-13-dissolve]: https://developer.valvesoftware.com/wiki/Env_entity_dissolver
-[ref-14-surface contents enums]: https://wiki.facepunch.com/gmod/Enums/CONTENTS
-[ref-15-surface flags enums]: https://wiki.facepunch.com/gmod/Enums/SURF
-[ref-16-reflection]: https://en.wikipedia.org/wiki/Reflection_(physics)
-[ref-17-material type enums]: https://wiki.facepunch.com/gmod/Enums/MAT
-[ref-18-refraction]: https://en.wikipedia.org/wiki/Refraction
+[ref_fa_tu]: https://tu-sofia.bg/department/preview/13?dep_id=4
+[ref_samp_time]: https://en.wikipedia.org/wiki/Sampling_(signal_processing)
+[ref_auto_con]: https://en.wikipedia.org/wiki/Automation
+[ref_contr_tune]: https://en.wikipedia.org/wiki/PID_controller#Loop_tuning
+[ref_cubic_eq]: https://en.wikipedia.org/wiki/Cubic_equation
+[ref_root]: https://en.wikipedia.org/wiki/Square_root

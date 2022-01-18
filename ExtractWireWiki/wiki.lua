@@ -10,7 +10,7 @@ local dir = require("directories")
 
 local com = require("common")
 
-local sEXP = "laserbeam"
+local sEXP = "stcontrol"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)

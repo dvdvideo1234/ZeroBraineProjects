@@ -482,9 +482,9 @@ function wikilib.updateAPI(API, DSC)
         end
       end; dsc = table.concat(tD, " "); DSC[api] = dsc
     end
-  
+
     if(bM) then
-      local nA = #API.POOL; tA = nil -- No match pool selected      
+      local nA = #API.POOL; tA = nil -- No match pool selected
       for ID = 1, nA do local tP = API.POOL[ID]
         if(tP.mach and api:find(tP.mach, 1, true)) then tA = tP; break end
       end; if(not tA) then tA = API.POOL[nA] end -- Other wire functions
@@ -817,10 +817,11 @@ function wikilib.printMatchedAPI(API, DSC, sNam)
       if(tK[iD] == key) then bF = true; break end end
     if(not bF) then iK = iK + 1 -- Description not found in the source
       wikilib.common.logStatus("-- DSC > "..sC.."[\""..key.."\"] = \"\"") end
-  end; bF = false -- Restore the flag value for searching the other way 
+  end; bF = false -- Restore the flag value for searching the other way
   for k, v in pairs(wikiMatch) do
-    for i = 1, v.__top do local cC = v[i].com
-      if(cC) then if(tC[cC]) then tC[cC] = tC[cC] + 1 else tC[cC] = 1 end end end end
+    for i = 1, v.__top do local sK = v[i].ret.."="..v[i].com
+      if(sK) then if(tC[sK]) then tC[sK] = tC[sK] + 1 else tC[sK] = 1
+  end end end end
   for k, v in pairs(tC) do if(v == 1) then tC[k] = nil end end
   if(next(tC)) then
     for k, v in pairs(tC) do

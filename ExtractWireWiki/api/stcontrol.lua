@@ -9,7 +9,7 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = false,  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    wdsc = true, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
@@ -19,7 +19,7 @@ local API = {
   },
   FILE = {
     exts = "stcontrol",
-    base = "E:/Documents/Lua-Projs/SVN/ControlSystemsE2",
+    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/ControlSystemsE2",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_stcontrol",
@@ -243,7 +243,12 @@ DSC["tuneProcCHRLR(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Res
 DSC["tuneProcCHRSP(xsc:nnn)"] = fTuneM:format(tActon[9], "(CHR) Chien-Hrones-Reswick set point track")
 DSC["tuneProcZN(xsc:nnnn)"]   = fTuneM:format(tActon[9], "(ZNM) Ziegler-Nichols plant process")
 DSC["tuneAutoTL(xsc:nn)"]     = fTuneM:format(tActon[9], "(TL) Tyreus-Luyben auto oscillation")
-
+DSC["dmpInfo(xsc:n)"]         = fDump1:format(tActon[2], "number", "chat area")
+DSC["dmpInfo(xsc:s)"]         = fDump1:format(tActon[2], "string", "chat area")
+DSC["dmpInfo(xsc:sn)"]        = fDump2:format(tActon[2], "number", "specified area by first argument")
+DSC["dmpInfo(xsc:ss)"]        = fDump2:format(tActon[2], "string", "specified area by first argument")
+DSC["setZeroCross(xsc:n)"]    = fGnRet:format(tActon[8], "integral zero crossing margin")
+DSC["getZeroCross(xsc:)"]     = fGnRet:format(tActon[4], "integral zero crossing margin")
 ]===]
 
 API.TEXT = function() return([===[
