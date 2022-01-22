@@ -18,7 +18,7 @@ local tData = {
   {Item = "goat", Open = false}
 }; tData.Size = #tData
 
-tData[common.randomGetNumber(3)].Item = "car" 
+tData[common.randomGetNumber(tData.Size)].Item = "car" 
 
 print("Pick a door!")
 
@@ -32,9 +32,9 @@ else
   end
 end
 
-local iShow = common.randomGetNumber(3)
+local iShow = common.randomGetNumber(tData.Size)
 while(tData[iShow].Item == "car") do
-  iShow = common.randomGetNumber(3)
+  iShow = common.randomGetNumber(tData.Size)
 end
 
 tData[iShow].Open = true
