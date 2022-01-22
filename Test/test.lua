@@ -15,21 +15,17 @@ local tableRemove = table and table.remove
 local gsSentHash = "test"
 local SERVER, LaserLib = true, {}
 local WireLib = true
-local ENT = {foo = nil}
+local prop1 = ents.Create("prop1")
+local prop2 = ents.Create("prop2")
 
-local function foo()
-  for i = 1, 5 do
-    ENT[i] = "test"
-  end
+local t = {prop1, prop2}
+
+for k, v in pairs(t) do
+  v:Remove()
+  t[k] = nil
 end
 
-local function moo(foo)
-  local s, e = pcall(foo)
-  if(not s) then error(e) end
-end
-
-
-
+com.logTable(t)
 
 
 

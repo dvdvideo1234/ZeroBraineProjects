@@ -512,6 +512,7 @@ function ents.Create(cla)
   function self:GetAttachment(iD) return matach.ID[iD] end
   function self:CallOnRemove() return nil end
   function self:IsWorld() return self == game.__world end
+  function self:Remove() Msg("Remove: "..tostring(self)) end
   function self:DeleteOnRemove(e) Msg(tostring(self)..":DeleteOnRemove("..tostring(e)..")") end
   table.insert(__entity, mid, self)
   return self

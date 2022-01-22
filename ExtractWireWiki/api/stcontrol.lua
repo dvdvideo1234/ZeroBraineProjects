@@ -9,7 +9,7 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    -- wdsc = true, -- (TRUE) Outputs the direct wire-based description in the markdown overhead
     mosp = true   -- (TRUE) Enables monospace font for the function names
   },
   POOL = {
