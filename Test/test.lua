@@ -18,14 +18,12 @@ local WireLib = true
 local prop1 = ents.Create("prop1")
 local prop2 = ents.Create("prop2")
 
-local t = {prop1, prop2}
+local iN    = 5
+local iName = 5
 
-for k, v in pairs(t) do
-  v:Remove()
-  t[k] = nil
-end
+local bNow = false
 
-com.logTable(t)
+local bS = (bNow and (iN == iName) or false)
 
-
+print(bS)
 

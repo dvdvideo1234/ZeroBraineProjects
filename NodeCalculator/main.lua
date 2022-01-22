@@ -1,4 +1,13 @@
-local dir = require("directories").remTPathID(3).setBase(1)
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/LuaIDE")
+      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+
 local node = require("NodeCalculator/node")
 
 local r = node.New("+")
