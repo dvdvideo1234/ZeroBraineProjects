@@ -7,19 +7,14 @@ local drpath = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE").setBase(1)
 local com = require("common")
+
 require("gmodlib")
 require("laserlib")
 
 local prop  = ents.Create("prop_physics")
 local entity = ents.Create("gmod_laser")
 local trace = util.TraceLine()
-local foo
 
-function test(entity)
-  foo = function(ent) return (ent == entity) end
-end
+local t = LaserLib.GetSequence(LaserLib.DataRefract("*"))
 
-test(prop)
-
-print(foo(entity))
-print(foo(prop))
+com.logTable(t)
