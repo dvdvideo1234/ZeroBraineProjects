@@ -5,7 +5,8 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE").setBase(1)
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 
 require("turtle")
 require("gmodlib")
@@ -17,13 +18,27 @@ local SERVER, LaserLib = true, {}
 local WireLib = true
 local prop1 = ents.Create("prop1")
 local prop2 = ents.Create("prop2")
+local istable = com.isTable
 
-local iN    = 5
-local iName = 5
 
-local bNow = false
+local vals = {}
+vals[ "Table" ] = {}
+vals[ "Function" ] = function() end
+vals[ "String" ] = "Hello world"
 
-local bS = (bNow and (iN == iName) or false)
+local ics = {}
+ics[ "Table" ] = "icon16/cross.png"
 
-print(bS)
+local vars = {values = vals, icons = ics}
 
+local hasIcons, icon = istable( vars.icons )
+for id, thing in pairs( vars.values or {} ) do
+  if(hasIcons) then
+    icon = vars.icons[id]
+  else
+    icon = vars.icons
+  end
+  
+  
+  print("combo:AddChoice(", id, thing, id == vars.select, icon, ")")
+end

@@ -1,11 +1,6 @@
-require("directories")
-local common = require("common")
-local wikilib = require("wikilib")
-
-
-local s = "function setPistonMark(number nX, number nY, number nZ)"
-local p = "%s*%(.+%)$"
+local s = "aaa --[[ bb"
+local p = "%-%-%[=*%["
 
 
 
-print(s:sub(s:find(p)))
+print(s:find(p))

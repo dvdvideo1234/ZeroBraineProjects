@@ -5,36 +5,29 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE").setBase(1)
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 
+require("dvdlualib/gmodlib")
 local testexec = require("testexec")
-local mt = getmetatable("")
-local ts = "string"
 
-local function f1(a)
-  return getmetatable(a) == mt
-end
-
-local function f2(a)
-  return type(a) == ts
-end
-
-local function f3(a)
-  return type(a) == "string"
+local function f1(bedraw)
+  local bedraw = (bedraw or bedraw == nil) and true or false
+  return bedraw
 end
 
 local stEstim = {
-  testexec.Case(f1, "mt"),
-  testexec.Case(f2, "ty")
+  testexec.Case(f1, "origin")
 }
 
 local stCard = {
-  {1, false , "number", 10000, 100000, .2},
-  {nil, false , "nul", 10000, 100000, .2},
-  {true, false , "bool", 10000, 100000, .2},
-  {function() end, false , "func", 10000, 100000, .2},
-  {{}, false , "table", 10000, 100000, .2},
-  {"", true , "string", 10000, 10000, .2}
+  {true , true  , "true", 1000, 10000, .2},
+  {false, false , "false", 1000, 10000, .2},
+  {nil, true , "nil", 1000, 10000, .2},
+  {"",  true, "string", 1000, 10000, .2},
+  {0,  true, "number-0", 1000, 10000, .2},
+  {5,  true, "number!=0", 1000, 10000, .2},
+  {{},  true, "table", 1000, 10000, .2}
 }
 
- testexec.Run(stCard,stEstim,0.1)
+testexec.Run(stCard,stEstim,0.1)

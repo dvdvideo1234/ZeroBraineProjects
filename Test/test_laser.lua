@@ -5,7 +5,9 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE").setBase(1)
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
+      
 local com = require("common")
 
 require("gmodlib")
@@ -15,6 +17,8 @@ local prop  = ents.Create("prop_physics")
 local entity = ents.Create("gmod_laser")
 local trace = util.TraceLine()
 
-local t = LaserLib.GetSequence(LaserLib.DataRefract("*"))
+local bedraw
 
-com.logTable(t)
+bedraw = (bedraw or bedraw == nil) and true or false
+
+print(bedraw)
