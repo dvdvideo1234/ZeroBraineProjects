@@ -1,40 +1,49 @@
-local szbIDE = "D:/LuaIDE"
-package.path = package.path..";"..szbIDE.."/myprograms/?.lua"
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase()
 
 local sEOL  = "\n"
-local sTool = "gearassembly"
-local nLibs = "gearasmlib"
+local sTool = "physprop_adv" -- Which tool definition to use. From folder `tools`
+local sLibs = ""   -- Which library does the tool use
 
 local fTool = "GmodToolTest/tools/%s.lua"
 local fGmod = "dvdlualib/gmodlib.lua"
-local fLibs = "dvdlualib/"..nLibs..".lua"
+local fLibs = "dvdlualib/"..sLibs..".lua"
+local bLibs = (tostring(sLibs or "") ~= "")
+local I, O, G, L
 
-local I = assert(io.open(fTool:format(sTool), "rb"))
-local O = assert(io.open("GmodToolTest/tool.out", "wb"))
-local G = assert(io.open(fGmod, "rb"))
-local L = assert(io.open(fLibs, "rb"))
+I = assert(io.open(fTool:format(sTool), "rb"))
+O = assert(io.open("GmodToolTest/tool.out", "wb"))
+G = assert(io.open(fGmod, "rb"))
+if(bLibs) then L = assert(io.open(fLibs, "rb")) end
 
-if(not I) then return end
-if(not O) then return end
-if(not G) then return end
-if(not L) then return end
+if(not I) then error("No input file!"); return end
+if(not O) then error("No output file!"); return end
+if(not G) then error("No gmod file!"); return end
+if(not L and bLibs) then error("No library file!"); return end
 
+local fC, bS, sE
 local sFile, sHead = I:read("*all"), ""
       sFile = sFile:gsub("%s+!", " not ")      -- Preprocessor for !
       sFile = sFile:gsub("||","or")            -- Preprocessor for ||
       sFile = sFile:gsub("&&","and")           -- Preprocessor for &&
-local sGmod = G:read("*all"):gsub("%s+$",sEOL) -- Convert line endings to [sEOL]
-local sLibs = L:read("*all"):gsub("%s+$",sEOL) -- Convert line endings to [sEOL]
-
-sLibs = sLibs:gsub("function%s", "function "..nLibs..".")
-sLibs = sLibs:gsub("local%sfunction%s"..nLibs.."%.", "local function ")
-
+      sFile = sFile:gsub("local%s+function%s+","function ") -- Local variables limit      
+      
 sHead = sHead.."----------------- BEGIN HEADER -----------------"..sEOL
-sHead = sHead..sGmod..sEOL
-sHead = sHead..sLibs..sEOL
-sHead = sHead.."local SEVER  = true"..sEOL
-sHead = sHead.."local CLIENT = true"..sEOL
-sHead = sHead.."local TOOL   = {}"  ..sEOL
+if(bLibs) then
+  sHead = sHead.."require(\"../"..fLibs:gsub("%.lua", "").."\")"..sEOL
+else
+  sHead = sHead.."require(\"../"..fGmod:gsub("%.lua", "").."\")"..sEOL
+end
+sHead = sHead.."SEVER  = true"..sEOL
+sHead = sHead.."CLIENT = true"..sEOL
+sHead = sHead.."local TOOL   = {Mode = \""..sTool.."\"}"  ..sEOL
 sHead = sHead.."----------------- END HEADER -----------------"..sEOL
 
 O:write(sHead..sFile)
@@ -43,10 +52,16 @@ O:close()
 I:close()
 G:close()
 
-local fCode = assert(load(sHead..sFile))
-local bS, sE = pcall(fCode)
+fC, sE = load(sHead..sFile)
+if(not fC) then
+  error(sE)
+end
+
+bS, sE = pcall(fC)
 if(bS) then
   print("Pass OK")
 else
   error("Fails NOK: "..sE)
 end
+
+

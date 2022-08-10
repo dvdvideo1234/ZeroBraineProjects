@@ -10,8 +10,8 @@ MAT_WARPSHIELD = 0
 
 local common = require("common")
 
-local language = {__data = {}}
 local logStatus = print
+local __noval  = "N/A"
 local __tools  = {}
 local __entity = {}
 local __convar = {}
@@ -35,6 +35,14 @@ net = {}
 constraint = {}
 surface = {__fonts = {}}
 
+function ErrorNoHalt(m)
+  print("ERROR: "..tostring(m))
+end
+
+function Error(m)
+  error(tostring(m))
+end
+
 function tobool(any)
   if(__tobool[tostring(any)]) then return false end return true
 end
@@ -47,9 +55,11 @@ function AddCSLuaFile(...)
   common.logStatus("AddCSLuaFile: {"..table.concat({...}, "|").."}")
 end
 
+--[[
 function include(...)
   common.logStatus("include: {"..table.concat({...}, "|").."}")
 end
+]]
 
 local type = function(any)
   local typ = __type(any)
@@ -76,6 +86,20 @@ function Matrix()
     end; return tM
   end
 
+  return self
+end
+
+local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0}
+      mtColor.__tostring = function(self)
+        return ("["..self.ID.."]COL{"..self.r..","..self.g..","..self.b..","..self.a.."}") end
+      mtColor.__index = function(self, aK)
+        local cK = mtVector.__idx[aK]
+        return (cK and self[cK] or nil)
+      end
+function Color(r, g, b, a)
+  local self = {}; setmetatable(self, mtColor)
+  self.r, self.g = r, g
+  self.b, self.a = b, (a ~= nil and a or 255)
   return self
 end
 
@@ -369,8 +393,8 @@ function language.Add(key, val)
   __lang[key] = val
 end
 
-function language.GetPhrase(key, val)
-  __lang[key] = val
+function language.GetPhrase(key)
+  return (__lang[key] or __noval)
 end
 
 function language.List() return __lang end
@@ -581,3 +605,7 @@ function constraint.NoCollide(e1, e2, b1, b2)
   n.B1, n.B2 = b1, b2
   return n
 end
+
+--- INITIALIZATION ---
+
+CreateConVar("gmod_language")
