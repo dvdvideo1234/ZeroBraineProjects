@@ -335,6 +335,10 @@ function math.Clamp(v,a,b)
   return v
 end
 
+function math.Remap( value, inMin, inMax, outMin, outMax )
+	return outMin + ( ( ( value - inMin ) / ( inMax - inMin ) ) * ( outMax - outMin ) )
+end
+
 function table.GetKeys( tab )
 	local keys = {}
 	local id = 1
