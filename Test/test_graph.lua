@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase()
 
 require("turtle")
 require("gmodlib")
@@ -30,10 +30,10 @@ local nIndx = 1.458
 
 -------------------------------------
 
-local dX, dY = 1, 0.005
+local dX, dY = 0.1, 0.0025
 local W , H = 1000, 600
 local minX, maxX = DATA.WMAP[1], DATA.WMAP[2]
-local minY, maxY = 1.445, 1.475
+local minY, maxY = 1.45, 1.47
 local greyLevel  = 200
 local intX  = crm.New("interval","WinX", minX, maxX, 0, W)
 local intY  = crm.New("interval","WinY", minY, maxY, H, 0)
