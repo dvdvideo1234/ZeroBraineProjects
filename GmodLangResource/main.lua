@@ -12,7 +12,7 @@ local dir = require("directories")
 local key = "trackassembly"
 local com = require("common")
 local inf = require(key.."/info")
-local pth = com.stringGetChunkPath():gsub("\\", "/")
+local pth = dir.getNorm(com.stringGetChunkPath())
 
 for ing = 1, inf.lang.size do local eng = inf.lang[ing]
   local I = assert(io.open(inf.sors:format(pth, eng), "rb"))

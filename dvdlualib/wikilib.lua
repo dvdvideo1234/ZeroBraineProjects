@@ -1,6 +1,5 @@
-local common = require("common")
-
 local wikilib   = {} -- Reference to the library
+      wikilib.common = require("common")
 local wikiMList = {} -- Stores the ordered list of the APIs
 local wikiMatch = {} -- Stores the APIs hashed list information
 local wikiRList = {Size = 0, Meta = {}} -- Stores the markdown link
@@ -10,7 +9,6 @@ local wikiFolder = require("dvdlualib/wikilib/folder")
 local wikiFormat = require("dvdlualib/wikilib/format")
 local wikiDChunk = require("dvdlualib/wikilib/dscchnk")
 local wikiEncodeURL = require("dvdlualib/wikilib/uenc")
-wikilib.common = common
 
 -- Stores the direct API outputs based on function mnemonics ( IFF named correctly xD )
 local wikiRefer = { ["is"] = "n",
@@ -1046,10 +1044,10 @@ function wikilib.folderRoundSize(vS)
 end
 
 function wikilib.writeBOM(sF, vE)
-  local sC, lE = tostring(sF or ""), wikilib.common.toBool(lE)
+  local sC, bE = tostring(sF or ""), wikilib.common.toBool(vE)
   local tU = wikiFolder.__ubom[sC]; if(not tU) then
     wikilibError("Missed ("..tostring(lE)..") <"..sC..">", tF.erro) end
-  if(not lE) then
+  if(not bE) then
     for iD = 1, #tU,  1 do io.write(string.char(tU[iD])) end
   else
     for iD = #tU, 1, -1 do io.write(string.char(tU[iD])) end
