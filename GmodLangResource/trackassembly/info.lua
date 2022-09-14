@@ -5,11 +5,10 @@ info.limit = "asmtracks" -- Spawn limit convar name
 info.sors = "%s/"..info.tool.."/lang/%s.lua"
 info.dest = "%s/"..info.tool.."/resource/localization/%s/"..info.tool..".properties"
 info.lang = {"en", "bg", "fr", "ru", "ja"} -- Available naguages
-info.base = info.lang[1] -- The language having all translations
 info.match = { -- The amount of matches to try
-  {"\"%.%..*tool.*%.%.\"", info.tool},
-  {"\"%.%..*lim.*%.%.\"", info.limit},
-  {"\"%.%..*lim%S+", info.limit}
+  {"\"..stool..\"", info.tool},
+  {"\"..slimit..\"", info.limit},
+  {"\"..slimit", info.limit}
 } -- Automatic array size
 info.lang.size = #info.lang
 info.match.size = #info.match
