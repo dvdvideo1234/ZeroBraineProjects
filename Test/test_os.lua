@@ -1,38 +1,16 @@
-function directories.osChange(sB, bP, bR)
-  local sB = directories.getNorm(sB)
-  local sOS = metaDirectories.sNmOS
-  local sSP = metaDirectories.tSupr[sOS]
-  if(metaDirectories.sNmOS == "windows") then
-    local sC = "cd "..(bR and "/d " or "")..sB..(bP and sSP or "")
-    local bS, sE, nE = os.execute(sC)
-    if(not bS) then error("Error: ".. sC) end
-    return bS, sE, nE
-  elseif(metaDirectories.sNmOS == "linux") then
-    local sC = "cd "..sB..(bP and sSP or "")
-    local bS, sE, nE = os.execute(sC)
-    if(not bS) then error("Error: ".. sC) end
-    return bS, sE, nE
-  else
-    error("Unsupported: "..sOS)
-  end
-end
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 
-function directories.osNew(sB, sN, bP)
-  local sB = directories.getNorm(sB)
-  local sOS = metaDirectories.sNmOS
-  local sSP = metaDirectories.tSupr[sOS]
-  if(metaDirectories.sNmOS == "windows") then
-    local sC = "mkdir "..sB.."/"..sN..(bP and sSP or "")
-    local bS, sE, nE, sE = os.execute(sC)
-    print(bS, sE, nE, sE)
-    if(not bS) then error("Error: ".. sC) end
-    return bS, sE, nE
-  elseif(metaDirectories.sNmOS == "linux") then
-    local sC = "mkdir "..sB.."/"..sN..(bP and sSP or "")
-    local bS, sE, nE = os.execute(sC)
-    if(not bS) then error("Error: ".. sC) end
-    return bS, sE, nE
-  else
-    error("Unsupported: "..sOS)
-  end
-end
+local com = require("common")
+
+local bas = "C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Test"
+
+drpath.ersRec("o.txt", bas)
+
