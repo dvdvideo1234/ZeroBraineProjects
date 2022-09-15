@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
       dir.addBase("D:/LuaIDE")
-      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase()
 
 -- Manual stuff
 local nam = "trackassembly"
@@ -18,8 +18,15 @@ local inf = require(nam.."/info")
 local bas, key = inf.lang[1]
 local pth = dir.getNorm(com.stringGetChunkPath())
 
+dir.ersDir("resource", pth.."/"..nam)
+dir.newDir("resource", pth.."/"..nam)
+dir.newDir("localization", pth.."/"..nam.."/resource")
+
+local res = pth.."/"..nam.."/resource/localization"; com.timeDelay(0.5)
+
 -- Automatic loop
-for ing = 1, inf.lang.size do local eng = inf.lang[ing]
+for ing = 1, inf.lang.size do
+  local eng = inf.lang[ing]; dir.newDir(eng, res)
   local I = assert(io.open(inf.sors:format(pth, eng), "rb"))
   if(not I) then return end
   local F = assert(load(I:read("*all"))); I:seek("set", 0)
