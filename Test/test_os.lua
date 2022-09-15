@@ -12,5 +12,5 @@ local com = require("common")
 
 local bas = "C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Test"
 
-drpath.ersRec("o.txt", bas)
+drpath.ersDir("New Folder", bas)
 
