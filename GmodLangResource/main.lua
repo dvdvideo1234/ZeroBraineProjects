@@ -17,12 +17,13 @@ local com = require("common")
 local inf = require(nam.."/info")
 local bas, key = inf.lang[1]
 local pth = dir.getNorm(com.stringGetChunkPath())
+local res = pth.."/"..nam.."/resource/localization"
 
 dir.ersDir("resource", pth.."/"..nam)
 dir.newDir("resource", pth.."/"..nam)
 dir.newDir("localization", pth.."/"..nam.."/resource")
 
-local res = pth.."/"..nam.."/resource/localization"; com.timeDelay(0.5)
+com.timeDelay(0.5)
 
 -- Automatic loop
 for ing = 1, inf.lang.size do
