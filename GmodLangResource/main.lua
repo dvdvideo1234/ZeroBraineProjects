@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
       dir.addBase("D:/LuaIDE")
-      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase()
+      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
 
 -- Manual stuff
 local nam = "trackassembly"
@@ -15,6 +15,7 @@ local nam = "trackassembly"
 -- Automatic stuff
 local com = require("common")
 local inf = require(nam.."/info")
+local bom = {0xEF, 0xBB, 0xBF}
 local bas, key = inf.lang[1]
 local pth = dir.getNorm(com.stringGetChunkPath())
 local res = pth.."/"..nam.."/resource/localization"
@@ -40,6 +41,9 @@ for ing = 1, inf.lang.size do
   if(eng == bas) then
     if(ing == 1) then key = L else
       error("Primary key ["..ing.."] mismatch: "..eng) end
+  end
+  for idb = 1, #bom do
+    O:write(string.char(bom[idb]))
   end
   local r = I:read("*line")
   while(r) do
