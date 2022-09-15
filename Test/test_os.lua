@@ -13,4 +13,3 @@ local com = require("common")
 local bas = "C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Test"
 
 drpath.ersDir("New Folder", bas)
-

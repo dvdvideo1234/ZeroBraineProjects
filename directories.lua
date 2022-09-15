@@ -73,28 +73,37 @@ local function getExecuteOS(tTY, sBS, sNA, bP)
   local sP = metaDirectories.sInam
   local sN = tostring(sNA or ""); if(sN:find(sP)) then
     error("Invalid name ["..sN.."]: "..tTY.name) end
-  local sB = directories.getNorm(sBS)
   local sOS = metaDirectories.sNmOS
-  local sSP = metaDirectories.tSupr[sOS]
-  local sCD = metaDirectories.tCdir[sOS]
   local sMD = tTY[sOS]; if(not sMD) then
     error("Invalid request ["..sOS.."]: "..tTY.name) end
+  local sSP = metaDirectories.tSupr[sOS]
+  local sCD = metaDirectories.tCdir[sOS]
+  local sB = directories.getNorm(sBS)
+  local sS  = ((sSP and (bP or bP == nil)) and sSP or "")
   if(sN:find("%s+")) then sN = "\""..sN.."\"" end
   if(sB:find("%s+")) then sB = "\""..sB.."\"" end
-  local sC  = sMD..sN..((bP or bP == nil) and sSP or "")
+  local sC  = sMD..sN..sS
   if(sOS == "windows") then
     if(sB ~= "") then
       local bD = sB:find(":", 1, true)
-      sC = sCD..(bD and "/d " or "")..sB.." && "..sC
-    end
-    return sC -- Return the terminal command
+      if(sN ~= "") then
+        sC = sCD..(bD and "/d " or "")..sB.." && "..sC
+      else -- File name is not provided. Change directory
+        sC = sCD..(bD and "/d " or "")..sB..sS
+      end
+    end; return sC -- Return the terminal command
   elseif(sOS == "linux") then
-    if(sB ~= "") then sC = sCD..sB.." && "..sC end
-    return sC -- Return the terminal command
+    if(sB ~= "") then
+      if(sN ~= "") then
+        sC = sCD..sB.." && "..sC
+      else -- File name is not provided. Change directory
+        sC = sCD..sB..sS
+      end
+    end; return sC -- Return the terminal command
   else error("Unsupported OS: "..sOS) end
 end
 
-function directories.swcDir(sB, bP)
+function directories.swcDir(sB, bP) -- Use the current directory
   return os.execute(getExecuteOS(metaDirectories.tCdir, sB, "", bP))
 end
 
@@ -156,7 +165,7 @@ local function setBaseID(iBase)
   local sBase = tBase[iBase]
   if(not (type(sBase) == "string" and sBase:len() > 0)) then
     error("Base path missing ["..tostring(sBase).."]") end
-  local bS, sE, nE = directories.swcDir(sBase)
+  local bS, sE, nE = directories.swcDir(sBase, true)
   if(not (bS and bS ~= nil and nE == 0)) then
     error("Base path invalid ["..sBase.."]") end
   local iCount = 0 -- Stores the number of paths processed
@@ -173,7 +182,7 @@ local function setBaseID(iBase)
       local sP = tostring(tPath[iD] or "")
       if(sP:len() > 0) then
         local sD = (sBase.."/"..sP)
-        local bS, sE, nE = directories.swcDir(sD)
+        local bS, sE, nE = directories.swcDir(sD, true)
         if(bS and bS ~= nil and nE == 0) then
           iCount = iCount + 1
           metaDirectories[iCount] = sD
