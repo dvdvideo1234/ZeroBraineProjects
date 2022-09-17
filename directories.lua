@@ -7,8 +7,8 @@ local metaDirectories =
   tPath = {}, -- Contains different sub-paths included relative to the install path
   bSupr = true, -- Global output supression for OS commants for terminal
   sInam = "[/\\:*?<>|]+", -- Illegal characters for a file name
-  sNmOS = tostring(jit.os):lower(),
-  sArch = tostring(jit.arch):lower(),
+  sNmOS = tostring(jit.os):lower(), -- Operating system we are running on
+  sArch = tostring(jit.arch):lower(), -- CPU architecture we are running on
   tSupr = {name = "SUPOUT", ["windows"] = " >nul 2>nul"       , ["linux"] = " &> /dev/null"},
   tCdir = {name = "CHNDIR", ["windows"] = "cd "               , ["linux"] = "cd "          },
   tMdir = {name = "NEWDIR", ["windows"] = "mkdir "            , ["linux"] = "mkdir "       },
@@ -96,14 +96,17 @@ local function getPrepareOS(tTY, sBS, sNS, sBD, sND, bPM)
       if    (tTY.name == "CPYDIR") then sND = (sND.."/")
       elseif(tTY.name == "CPYREC") then sND = (sND.."*") end
     end
+    sBS = sBS:gsub("/","\\")
+    sNS = sNS:gsub("/","\\")
+    sND = sND:gsub("/","\\")
     if(sBS ~= "") then
       local bD = sBS:find(":", 1, true)
       if(sNS ~= "") then -- Return the terminal command
-        return sCD..(bD and "/d " or "")..sBS:gsub("/","\\")..sSP.." && "..sMD..sNS:gsub("/","\\")..sND:gsub("/","\\")..sSP
+        return sCD..(bD and "/d " or "")..sBS..sSP.." && "..sMD..sNS..sND..sSP
       else -- File name is not provided. Change directory
-        return sCD..(bD and "/d " or "")..sBS:gsub("/","\\")..sSP
+        return sCD..(bD and "/d " or "")..sBS..sSP
       end -- Otherwise execute in current folder
-    else return sMD..sNS:gsub("/","\\")..sND:gsub("/","\\")..sSP end
+    else return sMD..sNS..sND..sSP end
   elseif(sOS == "linux") then
     if(sBS ~= "") then
       if(sNS ~= "") then -- Return the terminal command
@@ -228,8 +231,27 @@ local function setBaseID(iBase)
   return directories
 end
 
-function directories.getBase()
-  return metaDirectories.sBase, metaDirectories.iBase
+function directories.getBase(vB)
+  if(vB) then
+    local iB = tonumber(vB)
+    if(iB) then
+      local iB = math.floor(iB)
+      local tB = directories.retBase()
+      local sB = tB[iB]
+      if(sB) then return sB, iB end
+    else
+      local iB = tostring(vB or "")
+      local tB = directories.retBase()
+      for iK = 1, #tB do local sB = tB[iK]
+        if(tostring(sB):find(iB)) then
+          return sB, iK
+        end
+      end
+    end
+  else
+    return metaDirectories.sBase,
+           metaDirectories.iBase
+  end
 end
 
 function directories.retBase()
@@ -252,18 +274,15 @@ function directories.setBase(vD)
   if(vD) then
     local iD = tonumber(vD)
     if(iD) then
-      print("directories.setBase: Process ["..iD.."]")
       if(iD > 0) then setBaseID(iD) else
         errorOptions(directories.retBase(), iD, "base")
       end
     else
       tableClear(directories.retBase()); directories.addBase(vD)
-      print("directories.setBase: Replace ["..tostring(vD).."]")
       setBaseID(1)
     end
   else
     local iN = #directories.retBase()
-    print("directories.setBase: Using ["..iN.."]")
     setBaseID(iN)
   end
 end
