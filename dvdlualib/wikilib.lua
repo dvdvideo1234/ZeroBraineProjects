@@ -209,7 +209,7 @@ end
 
 function wikilib.insYoutubeVideo(sK, iD)
   local nD = tonumber(iD)
-  return wikiFormat.__ytb:format(sK, (nD and math.floor(common.getClamp(nD, 0 ,3)) or 0), sK)
+  return wikiFormat.__ytb:format(sK, (nD and math.floor(wikilib.common.getClamp(nD, 0 ,3)) or 0), sK)
 end
 
 function wikilib.insReferID(iD, sNam, sURL)
@@ -539,7 +539,7 @@ function wikilib.readDescriptions(API)
       else wikilib.common.logStatus("wikilib.readDescriptions: API chink unsuccessful: "..type(API.DSCHUNK)) end
     else wikilib.common.logStatus("wikilib.readDescriptions: API chink not supported: "..type(API.DSCHUNK)) end
   else
-    local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
+    local sN = wikilib.common.normFolder(sBas)..wikilib.common.normFolder(sLua)
           sN = sN.."cl_"..sE2:lower()..".lua"
     local fR = io.open(sN, "rb"); if(not fR) then
       return wikilib.common.logStatus("wikilib.readDescriptions: No file <"..sN..">") end
@@ -603,7 +603,7 @@ end
 
 function wikilib.printLinkReferences(API)
   local tRef = API.REFLN
-  if(common.isTable(tRef)) then
+  if(wikilib.common.isTable(tRef)) then
     for k, v in ipairs(tRef) do
       io.write(toLinkRef(tostring(v[1] or ""), tostring(v[2] or "")).."\n")
     end
@@ -642,7 +642,7 @@ function wikilib.readReturnValues(API)
   local sBas = apiGetValue(API,"FILE", "base")
   local sPth = apiGetValue(API,"FILE", "path")
   local sE2  = apiGetValue(API,"FILE", "exts")
-  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sPth)
+  local sN = wikilib.common.normFolder(sBas)..wikilib.common.normFolder(sPth)
         sN = sN..sE2:lower().."_rt.txt"
   local fR = io.open(sN, "r"); if(not fR) then
     return wikilib.common.logStatus("wikilib.readReturnValues: No file <"..sN..">") end
@@ -674,7 +674,7 @@ function wikilib.convApiE2Description(API, sE2)
   if(sE:sub(1,10) == "e2function") then
     local tInfo, tTyp = {}, API.TYPE; tInfo.row = sE2
     sE = wikilib.common.stringTrim(sE:sub(11, -1)); iS = sE:find("%s", 1)
-    sR = common.stringTrim(sE:sub(1, iS))
+    sR = wikilib.common.stringTrim(sE:sub(1, iS))
     -- Remove the header and extract function return type
     local tD = wikilib.convTypeE2Description(API, sR)
     if(not tD) then
@@ -683,7 +683,7 @@ function wikilib.convApiE2Description(API, sE2)
     end; tInfo.ret = tD[1]
     sE = wikilib.common.stringTrim(sE:sub(iS, -1)); iS = sE:find(sM, 1, true)
     if(iS) then -- Is this function a object method
-      local sT = common.stringTrim(sE:sub(1, iS-1))
+      local sT = wikilib.common.stringTrim(sE:sub(1, iS-1))
       local tD = wikilib.convTypeE2Description(API, sT)
       if(not tD) then
         wikilib.common.logStatus("wikilib.convApiE2Description: API mismatch <"..sE2.."> !")
@@ -765,7 +765,7 @@ function wikilib.makeReturnValues(API)
   local sE2  = apiGetValue(API,"FILE", "exts")
   local sBas = apiGetValue(API,"FILE", "base")
   local sLua = apiGetValue(API,"FILE", "slua")
-  local sN = wikilib.common.normFolder(sBas)..common.normFolder(sLua)
+  local sN = wikilib.common.normFolder(sBas)..wikilib.common.normFolder(sLua)
   local sM, sE = wikiFormat.msp, wikiFormat.esp
         sN = sN..sE2:lower()..".lua"
   local fR = io.open(sN, "r"); if(not fR) then
@@ -889,7 +889,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
     local ccat = ((csiz - clen) / 2)
     local fcat, bcat = math.floor(ccat), math.ceil(ccat)
     local algn = tPool.algn; algn = (algn and algn[ID] or nil)
-    tH[ID] = ("-"):rep(common.getClamp((csiz or clen), 3))
+    tH[ID] = ("-"):rep(wikilib.common.getClamp((csiz or clen), 3))
     if(algn) then
       if    (algn:sub(1,1) == "<") then tH[ID] = ":"..tH[ID]:sub(2,-1)
       elseif(algn:sub(1,1) == ">") then tH[ID] = tH[ID]:sub(1,-2)..":"
@@ -993,19 +993,19 @@ end
 
 function wikilib.parseKeyCombination(sS, vT, nW, nH)
   local sTF, sTB, sO, iD = "", "", "", 1
-  local sW = tostring(nW and common.getClamp(tonumber(nW) or 0, 0) or "")
-  local sH = tostring(nH and common.getClamp(tonumber(nH) or 0, 0) or "")
-  if(common.isString(vT)) then
+  local sW = tostring(nW and wikilib.common.getClamp(tonumber(nW) or 0, 0) or "")
+  local sH = tostring(nH and wikilib.common.getClamp(tonumber(nH) or 0, 0) or "")
+  if(wikilib.common.isString(vT)) then
     sTF, sTB = vT, vT
-  elseif(common.isTable(vT)) then
+  elseif(wikilib.common.isTable(vT)) then
     sTF, sTB = vT[1], vT[2]
   else wikilibError("Token invalid <"..tostring(vT).."> !", bErr) end
   local bO, eO = sS:find(sTF, iD, true) -- Open token
   local bC, eC = sS:find(sTB, iD, true) -- Close token
   while(bO and eO and bC and eC) do
     sO = sO..sS:sub(iD, bO - 1)
-    local tT = common.stringExplode(sS:sub(eO + 1, bC - 1),"+")
-    for iK = 1, #tT do local vS = common.stringTrim(tT[iK])
+    local tT = wikilib.common.stringExplode(sS:sub(eO + 1, bC - 1),"+")
+    for iK = 1, #tT do local vS = wikilib.common.stringTrim(tT[iK])
       vS = toImgHTML(toImgSrcHTML(vS:lower()), sW, sH)
       tT[iK] = vS
     end
@@ -1022,7 +1022,7 @@ function wikilib.folderReplaceURL(sF, ...)
   local tA, sU = {...}, ""
   local sF = wikilib.common.normFolder(tostring(sF or ""))
   if(wikilib.common.isTable(tA[1])) then tA = tA[1] end
-  for iD = 1, #tA do sU = sU..common.normFolder(tostring(tA[iD] or "")) end
+  for iD = 1, #tA do sU = sU..wikilib.common.normFolder(tostring(tA[iD] or "")) end
   wikiFolder.__furl = {sF, sU}; return wikiFolder.__furl
 end
 
@@ -1252,8 +1252,8 @@ local function folderOnlySkip(tPth, tSet)
     tSor = wikilib.common.sortTable(tPth.cont, {"name"}, true)
   end
 
-  -- common.logTable(tPth.cont, "CONT")
-  -- common.logTable(tSor, "SORT")
+  -- wikilib.common.logTable(tPth.cont, "CONT")
+  -- wikilib.common.logTable(tSor, "SORT")
 
 
   return tSor
@@ -1277,7 +1277,7 @@ local function folderDrawTreeRecurse(tPth, tSym, sGen, tSet, vR, sR)
   else -- The folder is empty and content does not need ot be displayed
     if(not wikilib.common.isTable(tPth.cont)) then return end
   end
-  local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
+  local sG = wikilib.common.getPick(wikilib.common.isString(sGen), sGen, nil)
   local sR, iI = tostring(sR or ""), wikiFolder.__dept
   local iR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   local tSor = folderOnlySkip(tPth, tSet); if(not tSor) then
@@ -1314,7 +1314,7 @@ function wikilib.folderDrawTree(tPth, vIdx, sGen, tSet)
   local namr = wikilib.isFlag("namr")
   local tS, sR = wikiFolder.__syms, tostring(sR or "")
   local iA = wikilib.common.getClamp(tonumber(vIdx) or 1, 1, #tS); tS = tS[iA]
-  local sG = wikilib.common.getPick(common.isString(sGen), sGen, nil)
+  local sG = wikilib.common.getPick(wikilib.common.isString(sGen), sGen, nil)
   local nS, nE = tPth.base:find(wikiFolder.__drem)
   local vR = wikilib.common.getClamp(tonumber(vR) or 0, 0)
   if(not wikilib.folderSettings(tSet, tPth)) then
