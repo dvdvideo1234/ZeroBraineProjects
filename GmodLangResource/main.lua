@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
       dir.addBase("D:/LuaIDE")
-      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(2)
 
 -- sConstant stuff
 local com = require("common")
@@ -18,7 +18,8 @@ local tam = {
   "physprop_adv",
   "material_adv",
   "spinner",
-  "trackassembly"
+  "trackassembly",
+  "gearassembly"
 }
 
 for idn = 1, #tam do
