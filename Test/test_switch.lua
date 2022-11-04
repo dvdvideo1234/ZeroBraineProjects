@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase()
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase()
 
 -- require("gmodlib")
 local com = require("common")

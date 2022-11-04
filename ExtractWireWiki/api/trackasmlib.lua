@@ -7,16 +7,18 @@ local API = {
     remv = false, -- (TRUE) Replace void type with empty string
     quot = true,  -- (TRUE) Place backticks on words containing control symbols links []
     qref = true,  -- (TRUE) Quote the string in the link reference
-    wdsc = true   -- (TRUE) Outputs the direct wire-based description in the markdown overhead
+    mosp = true,  -- (TRUE) Enables monospace font for the function names
+    wdsc = false  -- (TRUE) Outputs the direct wire-based description in the markdown overhead
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={0,5,13}},
-    {name="APPLY",cols={"Class methods", "Out", "Description"},size={70,5,13}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={70,5,13}},
+    {name="MAKE",cols={"Instance creator"  , "Out", "Description"},size={ 0,5,13},algn={"<","|","<"}},
+    {name="APPLY",cols={"Class methods"    , "Out", "Description"},size={70,5,13},algn={"<","|","<"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={70,5,13},algn={"<","|","<"}},
   },
   FILE = {
     exts = "trackasmlib_wire",
-    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/TrackAssemblyTool_GIT",
+    -- base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/TrackAssemblyTool_GIT",
+    base = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     repo = "github.com/dvdvideo1234/TrackAssemblyTool",
@@ -80,7 +82,6 @@ sure the piece is not going anywhere and it is not generating server collisions.
  
 ### Data types
 This list is derived from the Wiremod types wiki [located here][ref-e2-data].
-Here are all the icons for the data types of this addon summarized in the table below:
 
 ### API functions list
 For every table, there is a wrapper function that reads the desired data you want:

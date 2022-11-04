@@ -6,11 +6,11 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/LuaIDE")
-      dir.addBase("C:/Users/ddobromirov/Documents/Lua-Projs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase()
 
 local com = require("common")
 
-local sEXP = "stcontrol"
+local sEXP = "trackasmlib"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)
