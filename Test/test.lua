@@ -19,26 +19,3 @@ local WireLib = true
 local prop1 = ents.Create("prop1")
 local prop2 = ents.Create("prop2")
 local istable = com.isTable
-
-
-local vals = {}
-vals[ "Table" ] = {}
-vals[ "Function" ] = function() end
-vals[ "String" ] = "Hello world"
-
-local ics = {}
-ics[ "Table" ] = "icon16/cross.png"
-
-local vars = {values = vals, icons = ics}
-
-local hasIcons, icon = istable( vars.icons )
-for id, thing in pairs( vars.values or {} ) do
-  if(hasIcons) then
-    icon = vars.icons[id]
-  else
-    icon = vars.icons
-  end
-  
-  
-  print("combo:AddChoice(", id, thing, id == vars.select, icon, ")")
-end

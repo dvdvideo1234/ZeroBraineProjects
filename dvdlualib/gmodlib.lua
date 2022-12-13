@@ -55,6 +55,16 @@ function AddCSLuaFile(...)
   common.logStatus("AddCSLuaFile: {"..table.concat({...}, "|").."}")
 end
 
+function DamageInfo(...)
+end
+
+function Sound(...)
+end
+
+function istable(t)
+  return (type(t) == "table")
+end
+
 --[[
 function include(...)
   common.logStatus("include: {"..table.concat({...}, "|").."}")
