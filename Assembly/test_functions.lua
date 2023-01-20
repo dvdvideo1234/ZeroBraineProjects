@@ -5,7 +5,7 @@ local dir = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      dir.addBase("D:/LuaIDE").setBase(1)
+      dir.addBase("D:/Programs/LuaIDE").setBase(1)
 
 local com = require("common")
 local cpx = require("complex")
