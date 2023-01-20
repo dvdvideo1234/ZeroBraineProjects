@@ -4,7 +4,7 @@ local dir = require("directories")
                   "CorporateProjects",
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
-                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/LuaIDE").setBase(1)
+                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/Programs/LuaIDE").setBase(1)
 
 require("gmodlib")
 require("trackasmlib")
