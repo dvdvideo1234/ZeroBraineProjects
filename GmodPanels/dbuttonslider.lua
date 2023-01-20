@@ -8,23 +8,23 @@ function PANEL:Init()
   self.SBX, self.SBY = 0, 22
   self.Slider = vgui.Create("DNumSlider", self)
   self.Slider:Dock(TOP)
-	self.Slider:SetDark(true)
+  self.Slider:SetDark(true)
   self.Slider:SetHeight(self.SY)
 end
 
 -- https://github.com/Facepunch/garrysmod/blob/master/garrysmod/lua/vgui/dnumslider.lua
 function PANEL:Slider(sVar, sNam, sTyp)
-	self.Slider:SetText(sNam)
-	self.Slider:SetConVar(sVar)
-	self.Slider:SizeToContents()
+  self.Slider:SetText(sNam)
+  self.Slider:SetConVar(sVar)
+  self.Slider:SizeToContents()
   if(sTyp ~= nil) then self.Slider:SetTooltip() end
-	self:AddItem(self.Slider)
+  self:AddItem(self.Slider)
 end
 
 function PANEL:Limits(nMin, nMax, nDef, iDig)
-	self.Slider:SetMinMax(nMin, nMax)  
+  self.Slider:SetMinMax(nMin, nMax)  
   if(iDig != nil) then self.Slider:SetDecimals(iDig) end
-	if(nDef != nil) then self.Slider:SetDefaultValue(nDef) end
+  if(nDef != nil) then self.Slider:SetDefaultValue(nDef) end
   self.Slider:UpdateNotches()
 end
 
