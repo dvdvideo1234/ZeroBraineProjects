@@ -61,11 +61,15 @@ function include(...)
 end
 ]]
 
-local type = function(any)
-  local typ = __type(any)
-  if(typ == "table") then local mt = getmetatable(any)
-    return (mt.__type and tostring(mt.__type) or typ)
-  end; return typ
+type = function(any)
+  local mt = getmetatable(any)
+  if(mt and mt.__type) then
+    return tostring(mt.__type)
+  else return __type(any) end
+end
+
+function istable(t)
+  return (type(t) == "table")
 end
 
 local mtMatrix = {__type = "Matrix"}
@@ -77,7 +81,9 @@ local mtMatrix = {__type = "Matrix"}
         end; return sM
       end
       mtMatrix.__index = mtMatrix
-local function isMatrix(a) return (getmetatable(a) == mtMatrix) end
+
+local function ismatrix(a) return (getmetatable(a) == mtMatrix) end
+
 function Matrix()
   local self = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; setmetatable(self, mtMatrix)
   function self:ToTable() local tM = {}
@@ -109,7 +115,9 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0}
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
       end
-local function isVector(v) return (getmetatable(v) == mtVector) end
+
+local function isvector(v) return (getmetatable(v) == mtVector) end
+
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
   self.x, self.y, self.z = 0, 0, 0
@@ -215,20 +223,20 @@ function Vector(x,y,z)
 end
 
 mtVector.__add = function(o1,o2)
-  local v1 = isVector(o1) and o1 or Vector(o1)
-  local v2 = isVector(o2) and o2 or Vector(o2)
+  local v1 = isvector(o1) and o1 or Vector(o1)
+  local v2 = isvector(o2) and o2 or Vector(o2)
   local ov = Vector(); ov:Set(v1); ov:Add(v2); return ov
 end
 
 mtVector.__sub = function(o1,o2)
-  local v1 = isVector(o1) and o1 or Vector(o1)
-  local v2 = isVector(o2) and o2 or Vector(o2)
+  local v1 = isvector(o1) and o1 or Vector(o1)
+  local v2 = isvector(o2) and o2 or Vector(o2)
   local ov = Vector(); ov:Set(v1); ov:Sub(v2); return ov
 end
 
 mtVector.__mul = function(o1,o2)
-  local v1 = isVector(o1) and o1
-  local v2 = isVector(o2) and o2
+  local v1 = isvector(o1) and o1
+  local v2 = isvector(o2) and o2
   local ov = Vector()
   if(v1 and v2) then ov:Set(v1); ov:Mul(ov:Dot(v2)); return ov end
   if(v1 and tonumber(o2)) then ov:Set(v1); ov:Mul(tonumber(o2)); return ov end
@@ -243,7 +251,9 @@ local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
       end
-local function isAngle(a) return (getmetatable(a) == mtAngle) end
+
+local function isangle(a) return (getmetatable(a) == mtAngle) end
+
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
   self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0

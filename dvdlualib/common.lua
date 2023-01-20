@@ -6,6 +6,7 @@ local math         = math
 local type         = type
 local next         = next
 local pcall        = pcall
+local table        = table
 local pairs        = pairs
 local select       = select
 local tonumber     = tonumber
@@ -24,6 +25,8 @@ metaCommon.__clok = 0
 metaCommon.__func = {}
 metaCommon.__sort = {}
 metaCommon.__marg = 1e-10
+metaCommon.__prct = {">","|"}
+metaCommon.__fmdr = "%s?.lua"
 metaCommon.__fmtb = "[%s]:%d {%s} [%d]<%s>[%s](%d)"
 metaCommon.__type = {"number", "boolean", "string", "function", "table", "nil", "userdata"}
 metaCommon.__syms = "1234567890abcdefghijklmnopqrstuvwxyxABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -144,8 +147,8 @@ function common.logSkipClear(...)
       end
     end
   end; local nTop = tNlg.__top
-  while(not tNlg[nTop]) do nTop = nTop - 1 end
-  tNlg.__top = nTop; collectgarbage(); print(nTop)
+  while(not tNlg[nTop] and nTop > 0) do nTop = nTop - 1 end
+  tNlg.__top = nTop; collectgarbage();
 end
 
 function common.logString(anyMsg, ...)
@@ -172,20 +175,25 @@ function common.logCallStack(sMsg, ...)
   local iLev, sFmt = 1, metaCommon.__fmtb
   if(sMsg) then common.logStatus(tostring(sMsg)) end
   while(true) do local tInf = debug.getinfo(iLev)
-    if(not tInf)then break end
+    if(not tInf) then break end
     if tInf.what ~= "C" then
       common.logStatus(sFmt:format(common.logUnpackInfo(tInf)))
     end; iLev = iLev + 1
   end; return ...
 end
 
-function common.logConcat(anyMsg,aDel, ...)
-  local sDel, tDat = tostring(aDel or ","), {...}
-  io.write(tostring(anyMsg))
+function common.logConcat(anyMsg, aDel, ...)
+  local tPar, tDat = metaCommon.__prct, {...}
+  local sDel = tostring(aDel or tPar[2])
+  io.write(tostring(anyMsg)..tPar[1])
   for ID = 1, #tDat do
     io.write(tostring(tDat[ID] or ""))
     if(tDat[ID+1]) then io.write(sDel) end
   end; io.write("\n")
+end
+
+function common.logCase(bCond, ...)
+  if(bCond) then common.logConcat(...) end
 end
 
 -- http://lua-users.org/wiki/MathLibraryTutorial
@@ -226,28 +234,55 @@ function common.randomGetString(vE, vN)
   end; return sR
 end
 
+-- Noramalizes spaces in a CSV 
+function common.stringNormSpaceCSV(sS)
+  return sS:gsub("(,)(%S)", "%1 %2"):gsub("(%s+)(,)", " %2"):gsub("%s+,", ",")
+end
+
+-- Returns true when string includes atleast one letter
+function common.stringHasLetter(sS)
+  return (sS:find("%a") ~= nil)
+end
+
+-- Returns true when charactters are not affected by upper
 function common.stringIsUpper(sS)
   return (sS:upper() == sS)
 end
 
+-- Returns true when charactters are not affected by lower
 function common.stringIsLower(sS)
   return (sS:lower() == sS)
 end
 
-function common.stringImplode(tLst,sDel)
+function common.stringImplode(tLst, sDel)
   local ID, sStr, sDel = 1, "", tostring(sDel or "")
   while(tLst and tLst[ID]) do sStr = sStr..tLst[ID]; ID = ID + 1
     if(tLst[ID] and not common.isDryString(sDel)) then sStr = sStr..sDel end
   end; return sStr
 end
 
-function common.stringExplode(sStr,sDel)
+function common.stringExplode(sStr, sDel)
+  local sDel = tostring(sDel or " ")
   local tLst, sC, iDx, ID, dL = {""}, "", 1, 1, (sDel:len()-1)
-  while(sC) do sC = sStr:sub(iDx,iDx+dL)
+  while(sC) do sC = sStr:sub(iDx, iDx + dL)
     if(common.isDryString(sC)) then return tLst
     elseif(sC == sDel) then ID = ID + 1; tLst[ID], iDx = "", (iDx + dL)
     else tLst[ID] = tLst[ID]..sC:sub(1,1) end; iDx = iDx + 1
   end; return tLst
+end
+
+function common.stringExplodePattern(sStr, sPat)
+  local sPat, tLst, ID = tostring(sPat or " "), {sStr}, 1
+  local bM, nB, nE = false, tLst[ID]:find(sPat)
+  if(common.isDryString(sPat)) then -- Modify pattern
+    bM, sPat, nB, nE = true, ".", 1, 1 -- Trigger flag
+  end -- Empty string can be found at every position
+  while(nB and nE and nE >= nB and nB > 0) do
+    tLst[ID + 1] = tLst[ID]:sub(nE + 1, -1)
+    tLst[ID]     = tLst[ID]:sub(1, nB - (bM and 0 or 1))
+    ID = ID + 1; nB, nE = tLst[ID]:find(sPat)
+  end; if(bM) then table.remove(tLst) end
+  return tLst
 end
 
 function common.stringCenter(sStr, vN, vC, bS)
@@ -258,6 +293,16 @@ function common.stringCenter(sStr, vN, vC, bS)
     if(bS) then return (sC:rep(nL)..sStr..sC:rep(nH))
     else return (sC:rep(nH)..sStr..sC:rep(nL)) end
   end; return sStr
+end
+
+function common.stringTrimL(sStr, sC)
+  local sC = tostring(sC or "%s")
+  local sO = sStr:gsub("^"..sC.."*", ""); return sO
+end
+
+function common.stringTrimR(sStr, sC)
+  local sC = tostring(sC or "%s")
+  local sO = sStr:gsub(sC.."*$", ""); return sO
 end
 
 function common.stringTrim(sStr, sC)
@@ -297,6 +342,12 @@ function common.stringGetChunkPath()
   return common.stringGetFilePath(sSrc:gsub("@","",1))
 end
 
+function common.stringGetFunction(vS, sD)
+  local iS = math.floor(tonumber(vS) or 0)
+  local tD = debug.getinfo(common.getClamp(iS, 0))
+  return (tD and tostring(tD.name or (sD or "")))
+end
+
 local function stringParseTableRec(sRc, fCnv, tInfo, nStg)
   local sIn = common.stringTrim(tostring(sRc or ""))
   if(sIn:sub(1,1)..sIn:sub(-1,-1) ~= "{}") then
@@ -329,7 +380,7 @@ local function stringParseTableRec(sRc, fCnv, tInfo, nStg)
 end
 
 function common.stringToTable(sRc)
-  return stringParseTableRec(sRc,function(tIn, sCh)
+  return stringParseTableRec(sRc, function(tIn, sCh)
     local aAr, aID, aIN = {}, 1, 0
     for ID = 1, #tIn do
       local sVal = common.stringTrim(tIn[ID])
@@ -342,11 +393,15 @@ function common.stringToTable(sRc)
   end, {}, 1)
 end
 
-function common.fileRead(pF, sM, bT)
+function common.stringToNyan(sR)
+  return sR:gsub("([Nn])(a)", "%1y%2")
+end
+
+function common.fileRead(pF, vM, bT)
   if(not pF) then
     return common.logStatus("common.fileGetLine: No file", "", true) end
-  local tMd, nM = metaCommon.__rmod, tonumber(sM)
-  local vMd = common.getPick(nM, nM, tostring(sM or tMd[2][1]))
+  local tMd, nM = metaCommon.__rmod, tonumber(vM)
+  local vMd = common.getPick(nM, nM, tostring(vM or tMd[2][1]))
   if(common.isNil(tMd[vMd]) and not nM) then
     local sEr = "common.fileRead: Mode missed <"..tostring(vMd)..">"; nM = 1
     while(tMd[nM]) do sEr = sEr .."\n"
@@ -362,8 +417,40 @@ function common.fileRead(pF, sM, bT)
   return sLn, bEf
 end
 
+-- https://www.computerhope.com/dirhlp.htm
+function common.fileFind(sN, sA)
+  local tSet, fFoo = metaCommon.__tfil, metaCommon.__ffil
+  local sNam = sN:gsub("/+","/"):gsub("\\+","/")
+  local sExt = common.stringGetExtension(sNam)
+  local sArg = tostring(sA or "")
+  local sTmp, sMch = os.tmpname(), ("%."..sExt.."$")
+  os.execute("dir "..sNam:gsub("/","\\").." "..sArg.." >> "..sTmp)
+  local fT, tO, iD = io.open(sTmp), {}, 0
+  for line in fT:lines() do
+    if(line:find(sMch)) then
+      iD = iD + 1; tO[iD] = {}
+      tO[iD] = line:sub(37, -1)
+  end; end; fT:close()
+  os.execute("del "..sTmp)
+  return tO
+end
+
 function common.isEven(nV)
   return ((nV % 2) == 0)
+end
+
+function common.isOdd(nV)
+  return ((nV % 2) ~= 0)
+end
+
+function common.getRemap(nV, iH, iL, oH, oL, bR)
+  if(bR) then
+    local nK = ((nV - oL) / (oH - oL))
+    return (nK * (iH - iL) + iL)
+  else
+    local nK = ((nV - iL) / (iH - iL))
+    return (nK * (oH - oL) + oL)
+  end; return nV
 end
 
 function common.getSign(nV)
@@ -376,13 +463,13 @@ end
 
 function common.getSignString(nV)
   if(not common.isNumber(nV)) then
-    return common.logStatus("common.getSignString: Not number",nil) end
+    return common.logStatus("common.getSignString: Not number", nil) end
   return (nV < 0 and "-" or "+")
 end
 
-function common.convSignString(nV)
+function common.cnvSignString(nV)
   local sS = common.getSignString(nV); if(not sS) then
-    return common.logStatus("common.convSignString: Not number",nil) end
+    return common.logStatus("common.cnvSignString: Not number", nil) end
   return (sS..tostring(math.abs(nV)))
 end
 
@@ -402,9 +489,9 @@ local __tobool = {
 }
 
 -- http://lua-users.org/lists/lua-l/2005-11/msg00207.html
-function common.toBool(anyVal)
-  if(not anyVal) then return false end
-  if(__tobool[anyVal]) then return false end
+function common.toBool(vAny)
+  if(common.isNil(vAny)) then return false end
+  if(__tobool[vAny]) then return false end
   return true
 end
 
@@ -412,12 +499,13 @@ function common.getPick(bC, vT, vF)
   if(bC) then return vT end; return vF
 end
 
-function common.getDecode(vC, nM, ...)
-  local tV, vO = {...}, nil
-  local nV, nD = (tonumber(nM) or #tV), nil
-  if(nV % 2 ~= 0) then nD = tV[nV]; nV = (nV-1) end
-  for iD = 1, (nV-1), 2 do if(vC == tV[iD]) then
-    return tV[iD+1] end; end; return nD
+-- https://docs.oracle.com/cd/B19306_01/server.102/b14200/functions040.htm
+function common.getSwitch(vC, ...)
+  local tV = {...} -- Search and result aruments
+  local nV, vD = #tV, nil -- Count and defaults
+  if(nV % 2 ~= 0) then vD = tV[nV]; nV = (nV-1) end
+  for iD = 1, (nV - 1), 2 do if(vC == tV[iD]) then
+    return tV[iD + 1] end; end; return vD
 end
 
 function common.getValueKeys(tTab, tKeys, aKey)
@@ -430,7 +518,8 @@ end
 
 function common.getClamp(nN, nL, nH)
   if(nL and nN < nL) then return nL end
-  if(nH and nN > nH) then return nH end; return nN
+  if(nH and nN > nH) then return nH end
+  return nN
 end
 
 function common.getRoll(nN, nL, nH)
@@ -504,20 +593,20 @@ function common.copyItem(obj, ccpy, seen)
   return res
 end
 
-local function logTableRec(tT,sS,tP,tD)
+local function logTableRec(tT, sN, tP, tD)
   local tY = metaCommon.__type
-  local sS, tP = tostring(sS or "Data"), (tP or {})
-  local vS, vT, vK = type(sS), type(tT), ""
+  local sN, tP = tostring(sN or "AA"), (tP or {})
+  local vS, vT, vK = type(sN), type(tT), ""
   if(vT ~= tY[5]) then
-    return common.logStatus("{"..vT.."}["..tostring(sS or "Data").."] = <"..tostring(tT)..">",nil) end
+    return common.logStatus("{"..vT.."}["..tostring(sN or "Data").."] = <"..tostring(tT)..">", nil) end
   if(next(tT) == nil) then
-    return common.logStatus(sS.." = {}") end; common.logStatus(sS.." = {}",nil)
-  for k,v in pairs(tT) do
+    return common.logStatus(sN.." = {}") end; common.logStatus(sN.." = {}", nil)
+  for k, v in pairs(tT) do
     if(type(k) == tY[3]) then
-      vK = sS.."[\""..k.."\"]"
+      vK = sN.."[\""..k.."\"]"
     else sK = tostring(k)
       if(tP[k]) then sK = tostring(tP[k]) end
-      vK = sS.."["..sK.."]"
+      vK = sN.."["..sK.."]"
     end
     if(type(v) ~= tY[5]) then
       if(type(v) == tY[3]) then
@@ -527,17 +616,18 @@ local function logTableRec(tT,sS,tP,tD)
         common.logStatus(vK.." = "..sK)
       end
     else local cT, mT = common.getType(v), getmetatable(v)
+      print("----------------")
       if(v == tT) then
-        common.logStatus(vK.." = "..sS)
+        common.logStatus(vK.." = "..sN)
       elseif(tP[v]) then
         common.logStatus(vK.." = "..tostring(tP[v]))
       elseif(type(tD) == tY[5] and
-        (type(tD[cT]) == tY[4] or tD[mT] == tY[4])) then
+        (type(tD[cT]) == tY[4] or type(tD[mT]) == tY[4])) then
           local vF = common.getPick(tD[cT], tD[cT], tD[mT])
           common.logStatus(vK.." = "..vF(v))
       else
         if(not tP[v]) then tP[v] = vK end
-        logTableRec(v,vK,tP,tD)
+        logTableRec(v, vK, tP, tD)
       end
     end
   end
@@ -557,31 +647,44 @@ function common.logTable(tT, sS, tP, tD)
   logTableRec(tT, lS, lP, tD); return lP
 end
 
-function common.addPathLibrary(sB, sE)
-  local bas = tostring(sB or "")
-  if(common.isDryString(bas)) then
-    common.logStatus("common.addPathLibrary: Missing path") return end
-  bas = common.getPick(bas:sub(-1,-1) == "/", bas, bas.."/")
-  local ext = tostring(sE or ""):gsub("%*",""):gsub("%.","")
-  if(common.isDryString(ext)) then
-    return common.logStatus("common.addPathLibrary: Missing extension") end
-  local pad = (bas.."*."..ext):match("(.-)[^\\/]+$").."?."..ext
-  common.logStatus("common.addPathLibrary <"..pad..">")
-  package.path = package.path..";"..pad
+function common.addLibrary(sB, ...)
+  local bas = tostring(sB or ""); if(common.isDryString(bas)) then
+    common.logStatus("common.addPathLibrary: Missing base path") return end
+  bas = common.normFolder(bas:sub(-1,-1) == "/" and bas or bas.."/")
+  local arg, fmt = {...}, metaCommon.__fmdr; bas = common.stringTrim(bas)
+  if(arg[1] and common.isTable(arg[1])) then arg = arg[1] end
+  for idx, val in ipairs(arg) do
+    local ext = common.stringTrim(val)
+    local dir = ext:gsub("/",""):gsub("%s+", "")
+    if(not common.isDryString(dir)) then
+      ext = common.normFolder(ext)
+      local ok = os.execute("cd "..bas..ext)
+      if(ok) then ext = (bas..fmt:format(ext))
+        package.path = package.path..";"..ext
+      else ext = bas..ext
+        common.logStatus("common.addLibrary["..tostring(idx).."]: Mismatch: "..ext, nil)
+      end
+    else
+      common.logStatus("common.addLibrary["..tostring(idx).."]: Skipped", nil)
+    end
+  end
 end
 
 function common.tableClear(tT)
   if(not common.isTable(tT)) then
     return common.logStatus("common.tableClear: Missing <"..tostring(tT)..">") end
-  for k,v in pairs(tT) do tT[k] = nil end
+  for k, v in pairs(tT) do tT[k] = nil end
 end
 
-function common.tableArrGetLinearSpace(nS, nE, nN)
-  local fN = common.getClamp(math.floor(tonumber(nN) or 0), 0)
-  local iE, dI, fS, fE = (fN + 1), (nE - nS), 1, (fN+2)
-  local tO, nI, nD = {[fS]=nS, [fE] = nE}, 1, (dI / iE)
-  while(fS <= fE) do fS, fE = (fS + 1), (fE - 1)
-    tO[fS], tO[fE] = tO[fS-1]+nD, tO[fE+1]-nD end; return tO
+function common.tableArrGetLinearSpace(nBeg, nEnd, nAmt)
+  local fAmt = math.floor(tonumber(nAmt) or 0); if(fAmt < 0) then
+    return common.logStatus("common.tableArrGetLinearSpace: Samples count invalid <"..tostring(fAmt)..">", nil) end
+  local iAmt, dAmt = (fAmt + 1), (nEnd - nBeg)
+  local fBeg, fEnd, nAdd = 1, (fAmt+2), (dAmt / iAmt)
+  local tO = {[fBeg] = nBeg, [fEnd] = nEnd}
+  while(fBeg <= fEnd) do fBeg, fEnd = (fBeg + 1), (fEnd - 1)
+    tO[fBeg], tO[fEnd] = (tO[fBeg-1] + nAdd), (tO[fEnd+1] - nAdd)
+  end return tO
 end
 
 function common.tableArrReverse(tT)
@@ -591,7 +694,7 @@ function common.tableArrReverse(tT)
 end
 
 function common.tableArrMallocDim(vV, ...)
-  local vA, tA = common.getPick(vV,common.copyItem(vV),0), {...}
+  local vA, tA = common.getPick(vV, common.copyItem(vV),0), {...}
   local nD, tO = table.remove(tA, 1), {}
   if(common.isNil(nD)) then return vA end
   for iD = 1, nD do
@@ -620,8 +723,8 @@ end
 
 --[[
  * Converts linear array to a 2D array
- * arLin -> Linear array in format {1,2,3,4,w=2,h=2}
- * w,h   -> Custom array size
+ * arLin -> Linear array in format {1, 2, 3, 4, w = 2, h = 2}
+ * w, h  -> Custom array size
 ]]
 function common.tableArrConvert2D(arLin, vW, vH)
   if(not arLin) then return false end
@@ -634,8 +737,8 @@ function common.tableArrConvert2D(arLin, vW, vH)
   end end; return arRez
 end
 
-function common.tableArrRotateR(tArr,sX,sY)
-  local ii, jj, tTmp = 1, 1, common.tableArrMalloc2D(sY,sX)
+function common.tableArrRotateR(tArr, sX, sY)
+  local ii, jj, tTmp = 1, 1, common.tableArrMalloc2D(sY, sX)
   for j = 1, sX, 1 do for i = sY, 1, -1  do
       if(jj > sY) then ii, jj = (ii + 1), 1 end
       tTmp[ii][jj] = tArr[i][j]
@@ -646,8 +749,8 @@ function common.tableArrRotateR(tArr,sX,sY)
   end
 end
 
-function common.tableArrRotateL(tArr,sX,sY)
-  local ii, jj, tTmp = 1, 1, common.tableArrMalloc2D(sY,sX)
+function common.tableArrRotateL(tArr, sX, sY)
+  local ii, jj, tTmp = 1, 1, common.tableArrMalloc2D(sY, sX)
   for j = sX, 1, -1 do for i = 1, sY, 1  do
       if(jj > sY) then ii, jj = (ii + 1), 1 end
       tTmp[ii][jj] = tArr[i][j]
@@ -659,28 +762,28 @@ function common.tableArrRotateL(tArr,sX,sY)
 end
 
 -- Getting a start end and delta used in a for loop
-function common.getValuesSED(nVal,nMin,nMax)
+function common.getValuesSED(nVal, nMin, nMax)
   local s = (nVal > 0) and nMin or nMax
   local e = (nVal > 0) and nMax or nMin
   local d = getSign(e - s)
   return s, e, d
 end
 
-function common.tableArrShift2D(tArr,sX,sY,nX,nY)
+function common.tableArrShift2D(tArr, sX, sY, nX, nY)
   if(not (sX > 0 and sY > 0)) then return end
   local x = math.floor(nX or 0)
   local y = math.floor(nY or 0)
   if(x ~= 0) then local M
-    local sx,ex,dx = common.getValuesSED(x,sX,1)
-    for i = 1,sY do for j = sx,ex,dx do
+    local sx, ex, dx = common.getValuesSED(x, sX, 1)
+    for i = 1, sY do for j = sx, ex, dx do
         M = (j-x); if(M >= 1 and M <= sX) then
           tArr[i][j] = tArr[i][M]
         else tArr[i][j] = 0 end
     end end
   end
   if(y ~= 0) then local M
-    local sy,ey,dy = common.getValuesSED(y,sY,1)
-    for i = sy,ey,dy do for j = 1,sX do
+    local sy, ey, dy = common.getValuesSED(y, sY, 1)
+    for i = sy, ey, dy do for j = 1, sX do
         M = (i-y); if(M >= 1 and M <= sY) then
           tArr[i][j] = tArr[M][j]
         else tArr[i][j] = 0 end
@@ -688,7 +791,7 @@ function common.tableArrShift2D(tArr,sX,sY,nX,nY)
   end
 end
 
-function common.tableArrRoll2D(tArr,sX,sY,nX,nY)
+function common.tableArrRoll2D(tArr, sX, sY, nX, nY)
   if( not( sX > 0 and sY > 0) ) then return end
   local x, y = math.floor(nX or 0), math.floor(nY or 0)
   if(y ~= 0) then
@@ -696,9 +799,9 @@ function common.tableArrRoll2D(tArr,sX,sY,nX,nY)
     local MinY = (y > 0) and 1 or sY
     local siY, y, arTmp  = getSign(y), (y * siY), {}
     while(y > 0) do
-      for i = 1,sX do arTmp[i] = tArr[MaxY][i] end
-      common.tableArrShift2D(tArr,sX,sY,0,siY)
-      for i = 1,sX do tArr[MinY][i] = arTmp[i] end
+      for i = 1, sX do arTmp[i] = tArr[MaxY][i] end
+      common.tableArrShift2D(tArr, sX, sY, 0, siY)
+      for i = 1, sX do tArr[MinY][i] = arTmp[i] end
       y = y - 1
     end
   end
@@ -707,18 +810,18 @@ function common.tableArrRoll2D(tArr,sX,sY,nX,nY)
     local MinX = (x > 0) and 1 or sX
     local siX, x, arTmp  = getSign(x), (x * siX), {}
     while(x > 0) do
-      for i = 1,sY do arTmp[i] = tArr[i][MaxX] end
-      common.tableArrShift2D(tArr,sX,sY,siX)
-      for i = 1,sY do tArr[i][MinX] = arTmp[i] end
+      for i = 1, sY do arTmp[i] = tArr[i][MaxX] end
+      common.tableArrShift2D(tArr, sX, sY, siX)
+      for i = 1, sY do tArr[i][MinX] = arTmp[i] end
       x = x - 1
     end
   end
 end
 
-function common.tableArrMirror2D(tArr,sX,sY,fX,fY)
+function common.tableArrMirror2D(tArr, sX, sY, fX, fY)
   local tTmp, s = 0, 1
   if(fY) then local e = sY
-    while(s < e) do for k = 1,sX do
+    while(s < e) do for k = 1, sX do
       tTmp       = tArr[s][k]
       tArr[s][k] = tArr[e][k]
       tArr[e][k] = tTmp end
@@ -726,7 +829,7 @@ function common.tableArrMirror2D(tArr,sX,sY,fX,fY)
     end
   end
   if(fX) then local e = sX
-    while(s < e) do for k = 1,sY do
+    while(s < e) do for k = 1, sY do
       tTmp       = tArr[k][s]
       tArr[k][s] = tArr[k][e]
       tArr[k][e] = tTmp
@@ -748,7 +851,7 @@ function common.tableArrConcat(...)
   end; return tO
 end
 
-function common.tableArrExtract2D(tA,sX,eX,sY,eY)
+function common.tableArrExtract2D(tA, sX, eX, sY, eY)
   local tO, cX, cY = {}
   for iY = sY, eY  do for iX = sX, eX do
     if(not tO[iY-sY+1]) then tO[iY-sY+1] = {} end
@@ -787,7 +890,7 @@ function common.binaryNextBaseTwo(nN)
 end
 -- Check if the number is a binary power
 function common.binaryIsPower(nN)
-  return (bit.band(nN-1,nN) == 0)
+  return (bit.band(nN - 1, nN) == 0)
 end
 
 function common.bytesGetString(tB)
@@ -813,7 +916,7 @@ function common.getDerivative(fF, vX)
     return common.logStatus("common.getDerivative: "..yL ,0) end
   bS, yH = pcall(fF, xH); if(not bS) then
     return common.logStatus("common.getDerivative: "..yH, 0) end
-  return (yH-yL)/(xH-xL)
+  return (yH - yL) / (xH - xL)
 end
 
 local function sortQuick(tD, iL, iH)
@@ -821,14 +924,14 @@ local function sortQuick(tD, iL, iH)
     local iM = common.randomGetNumber(iH-(iL-1))+iL-1
     tD[iL], tD[iM] = tD[iM], tD[iL]
     local vM, iN = tD[iL].__val, (iL + 1); iM = iL
-    while(iN <= iH)do
+    while(iN <= iH) do
       if(tD[iN].__val < vM) then iM = iM + 1
         tD[iM], tD[iN] = tD[iN], tD[iM]
       end; iN = iN + 1
     end
     tD[iL], tD[iM] = tD[iM], tD[iL]
-    sortQuick(tD,iL,iM-1)
-    sortQuick(tD,iM+1,iH)
+    sortQuick(tD, iL, iM - 1)
+    sortQuick(tD, iM + 1, iH)
   end
 end
 
@@ -870,6 +973,11 @@ function common.sortList()
     local sS = "] "..((iN == tS.__ID) and "@" or ">").." "..inf
     common.logStatus("  ["..common.stringPadL(tostring(iN), iL, " ")..sS)
   end
+end
+
+function common.normFolder(sD)
+  local sS = tostring(sD):gsub("\\","/"):gsub("/+","/")
+  return ((sS:sub(-1,-1) == "/") and sS or (sS.."/"))
 end
 
 function common.sortRem(vN)
@@ -922,7 +1030,7 @@ function common.sortTable(tT, tC, bR)
 end
 
 function common.getFibonacci(vN)
-  nN, nA, nB = math.floor(tonumber(vN) or 0), 0, 1
+  local nN, nA, nB = math.floor(tonumber(vN) or 0), 0, 1
   for iD = 1, nN do nA, nB = nB, (nA + nB) end
   return nA
 end
@@ -943,11 +1051,81 @@ function common.getPermute(...)
   for iD = 1, nV do
     local cP = common.copyItem(tV)
     local vP = table.remove(cP, iD) -- Pop element
-    local tP = common.getPermute(unpack(cP))    
+    local tP = common.getPermute(unpack(cP))
     for iP = 1, #tP do table.insert(tP[iP], vP)
       tO[iO] = tP[iP]; iO = (iO + 1)
     end
   end; return tO
+end
+
+function common.getChoose(nN, nK)
+  if(nN < 0 or nK < 0) then return 0 end
+  if(nN == nK or nK == 0) then return 1 end
+  local nE = common.getChoose(nN - 1, nK - 1)
+  return (nN / nK) * nE
+end
+
+function common.getAngNorm(nA)
+  local nA = (tonumber(nA) or 0)
+  return ((nA + 180) % 360 - 180)
+end
+
+function common.getCompileString(sS)
+  local fF, sE = commonCompileString(sS); if(not fF) then
+    return common.logStatus("common.getCompile[1]: "..tostring(sE)) end
+  local bS , fC = pcall(fF); if(not bS) then
+    return common.logStatus("common.getCompile[2]: "..tostring(fC)) end
+  return fC -- Return the created function from string
+end
+
+function common.getEulerGamma(nN) local nO = 0
+  for iN = 1, nN do nO = nO + (1 / iN) end
+  return (nO - math.log(nN))
+end
+
+function common.getApprox(a, b, n)
+  local so, nn = "", (tonumber(n) or 0)
+  local na, nb = tonumber(a), tonumber(b)
+  if(na and nb and nn > 0) then local bt = false
+    local sa, sb = tostring(na), tostring(nb)
+    local id = 0  -- Drop digit index
+    local sd = "" -- The dropped digit
+    local st = "" -- The result dring selected for division
+    local nt = 0  -- Subtraction base number holder
+    local nd = 0  -- Subtraction argument holder
+    local ns = 0  -- Subtraction result
+    local nk = 0  -- Koef for reverse multiplication
+    while(nt < nb) do
+      id = (id + 1)
+      sd = sa:sub(id, id)
+      if(sd == "") then sd = "0"; nn = (nn - 1)
+        if(so == "") then so, bt = sd..".", true
+        else so = so..sd end
+      end
+      st = st..sd; nt = tonumber(st)
+    end
+    nk = math.floor(nt/nb)
+    so = so..tostring(nk)
+    nd = nk * nb; ns = nt - nd
+    st, nt = tostring(ns), ns
+    if(ns ~= 0) then
+      if(not bt) then so = so.."." end
+      while(nn >= 0) do
+        while(nt < nb and ns ~= 0) do
+          id, nn = (id + 1), (nn - 1)
+          sd = sa:sub(id, id)
+          if(sd == "") then sd = "0" end
+          st = st..sd
+          nt = tonumber(st)
+        end
+        nk = math.floor(nt/nb)
+        so = so..tostring(nk)
+        nd = nk * nb; ns = nt - nd
+        st, nt = tostring(ns), ns
+      end
+    end
+  end
+  return so
 end
 
 common.randomSetSeed()

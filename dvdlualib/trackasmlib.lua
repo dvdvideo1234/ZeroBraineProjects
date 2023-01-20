@@ -1,6 +1,3 @@
-local common = require("common")
-require("../dvdlualib/gmodlib")
-
 local cvX, cvY, cvZ -- Vector Component indexes
 local caP, caY, caR -- Angle Component indexes
 local wvX, wvY, wvZ -- Wire vector Component indexes
@@ -156,6 +153,7 @@ local surfaceScreenHeight            = surface and surface.ScreenHeight
 local surfaceDrawTexturedRect        = surface and surface.DrawTexturedRect
 local surfaceDrawTexturedRectRotated = surface and surface.DrawTexturedRectRotated
 local languageAdd                    = language and language.Add
+local languageGetPhrase              = language and language.GetPhrase
 local constructSetPhysProp           = construct and construct.SetPhysProp
 local constraintWeld                 = constraint and constraint.Weld
 local constraintGetTable             = constraint and constraint.GetTable
@@ -272,6 +270,29 @@ function IsPlayer(oPly)
   if(not oPly:IsValid())  then return false end
   if(not oPly:IsPlayer()) then return false end
   return true
+end
+
+function GetOwner(oEnt)
+  if(not (oEnt and oEnt:IsValid())) then return nil end
+  local set, ows = oEnt.OnDieFunctions
+  -- Use CPPI first when installed. If fails search down
+  ows = ((CPPI and oEnt.CPPIGetOwner) and oEnt:CPPIGetOwner() or nil)
+  if(IsPlayer(ows)) then return ows else ows = nil end
+  -- Try the direct entity methods. Extract owner from functios
+  ows = (oEnt.GetOwner and oEnt:GetOwner() or nil)
+  if(IsPlayer(ows)) then return ows else ows = nil end
+  ows = (oEnt.GetCreator and oEnt:GetCreator() or nil)
+  if(IsPlayer(ows)) then return ows else ows = nil end
+  -- Try then various entity internal key values
+  ows = oEnt.player; if(IsPlayer(ows)) then return ows else ows = nil end
+  ows = oEnt.Owner; if(IsPlayer(ows)) then return ows else ows = nil end
+  ows = oEnt.owner; if(IsPlayer(ows)) then return ows else ows = nil end
+  if(set) then -- Duplicatior die functions are registered
+    set = set.GetCountUpdate; ows = (set.Args and set.Args[1] or nil)
+    if(IsPlayer(ows)) then return ows else ows = nil end
+    set = set.undo1; ows = (set.Args and set.Args[1] or nil)
+    if(IsPlayer(ows)) then return ows else ows = nil end
+  end; return ows -- No owner is found. Nothing is returned
 end
 
 function IsOther(oEnt)
@@ -567,16 +588,20 @@ function GetViewRadius(pPly, vPos, nMul)
 end
 
 --[[
-* Golden retriever. Retrieves file line as string
-* But seriously returns the sting line and EOF flag
-* pFile > The file to read the line of characters from
-* bCons > Keeps data consistency. Enable to ignore trimming
+ * Golden retriever. Retrieves file line as string
+ * But seriously returns the sting line and EOF flag
+ * pFile > The file to read the line of characters from
+ * bCons > Keeps data consistency. Enable to skip trim
+ * sChar > Custom pattern to be used when trimming
+ * Reurns line contents and reaching EOF flag
+ * sLine > The line being read from the file
+ * isEOF > Flag indicating pointer reached EOF
 ]]
-function GetStringFile(pFile, bCons)
+function GetStringFile(pFile, bCons, sChar)
   if(not pFile) then LogInstance("No file"); return "", true end
-  local sLine = pFile:ReadLine()  -- Read one line at once
-  local isEOF = pFile:EndOfFile() -- Check for EOF status
-  if(not bCons) then sLine = sLine:Trim() end
+  local sLine = (pFile:ReadLine() or "") -- Read one line at once
+  local isEOF = pFile:EndOfFile() -- Check for file EOF status
+  if(not bCons) then sLine = sLine:Trim(sChar) end
   return sLine, isEOF
 end
 
@@ -829,12 +854,6 @@ function GetColor(xR, xG, xB, xA)
   return Color(nR, nG, nB, nA)
 end
 
-function ToColor(vBase, pX, pY, pZ, vA)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local iX, iY, iZ = UseIndexes(pX, pY, pZ, cvX, cvY, cvZ)
-  return GetColor(vBase[iX], vBase[iY], vBase[iZ], vA)
-end
-
 function UpdateColor(oEnt, sVar, sCol, bSet)
   if(IsOther(oEnt)) then return nil end
   local cPal = GetContainer("COLORS_LIST")
@@ -859,18 +878,6 @@ function UpdateColor(oEnt, sVar, sCol, bSet)
 end
 
 ------------- ANGLE ---------------
-
-function ToAngle(aBase, pP, pY, pR)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  local aP, aY, aR = UseIndexes(pP, pY, pR, caP, caY, caR)
-  return Angle((tonumber(aBase[aP]) or 0), (tonumber(aBase[aY]) or 0), (tonumber(aBase[aR]) or 0))
-end
-
-function ExpAngle(aBase, pP, pY, pR)
-  if(not aBase) then LogInstance("Base invalid"); return nil end
-  local aP, aY, aR = UseIndexes(pP, pY, pR, caP, caY, caR)
-  return (tonumber(aBase[aP]) or 0), (tonumber(aBase[aY]) or 0), (tonumber(aBase[aR]) or 0)
-end
 
 function SnapAngle(aBase, nvDec)
   if(not aBase) then LogInstance("Base invalid"); return nil end
@@ -901,18 +908,6 @@ function NegAngle(vBase, bP, bY, bR)
 end
 
 ------------- VECTOR ---------------
-
-function ToVector(vBase, pX, pY, pZ)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local vX, vY, vZ = UseIndexes(pX, pY, pZ, cvX, cvY, cvZ)
-  return Vector((tonumber(vBase[vX]) or 0), (tonumber(vBase[vY]) or 0), (tonumber(vBase[vZ]) or 0))
-end
-
-function ExpVector(vBase, pX, pY, pZ)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local vX, vY, vZ = UseIndexes(pX, pY, pZ, cvX, cvY, cvZ)
-  return (tonumber(vBase[vX]) or 0), (tonumber(vBase[vY]) or 0), (tonumber(vBase[vZ]) or 0)
-end
 
 function AddVector(vBase, vUnit)
   if(not vBase) then LogInstance("Base invalid"); return nil end
@@ -946,14 +941,6 @@ function SubVectorXYZ(vBase, nX, nY, nZ)
   vBase[cvY] = (tonumber(vBase[cvY]) or 0) - (tonumber(nY) or 0)
   vBase[cvZ] = (tonumber(vBase[cvZ]) or 0) - (tonumber(nZ) or 0)
   return vBase
-end
-
-function NegVector(vBase, bX, bY, bZ)
-  if(not vBase) then LogInstance("Base invalid"); return nil end
-  local X = (tonumber(vBase[cvX]) or 0); X = (IsHere(bX) and (bX and -X or X) or -X)
-  local Y = (tonumber(vBase[cvY]) or 0); Y = (IsHere(bY) and (bY and -Y or Y) or -Y)
-  local Z = (tonumber(vBase[cvZ]) or 0); Z = (IsHere(bZ) and (bZ and -Z or Z) or -Z)
-  vBase[cvX], vBase[cvY], vBase[cvZ] = X, Y, Z; return vBase
 end
 
 function BasisVector(vBase, aUnit)
@@ -1063,11 +1050,6 @@ function RotateXY(xyR, nR)
   xyR.y = (nX * nS + nY * nC); return xyR
 end
 
-function GetAngleXY(xyR)
-  if(not xyR) then LogInstance("Base invalid"); return nil end
-  return mathAtan2(xyR.y, xyR.x)
-end
-
 ----------------- OOP ------------------
 
 -- https://github.com/GitSparTV/cavefight/blob/master/gamemodes/cavefight/gamemode/init.lua#L115
@@ -1082,9 +1064,9 @@ function GetQueue(sKey)
   -- Returns the queue mamber key
   function self:GetKey() return mKey end
   -- Returns the last item in the queue
-  function self:GetStart() return mS end
+  function self:GetHead() return mS end
   -- Returns the first item in the queue
-  function self:GetEnd() return mE end
+  function self:GetTail() return mE end
   -- Yo sexy ladies want par with us
   function self:GetBusy() return mBusy end
   -- Checks when the queue is empty
@@ -1102,10 +1084,10 @@ function GetQueue(sKey)
       P = oP, -- Current task player ( mandatory )
       A = oA, -- Current task arguments ( mandatory )
       M = oM, -- Current task main routine ( mandatory )
-      S = oS, -- Current task start routine ( if any )
-      E = oE, -- Current task end routine ( if any )
-      D = tostring(oD), -- Current task start description ( if any )
-      N = oN  -- Current task sequential pointer ( if any )
+      S = oS, -- Current task start routine ( optional )
+      E = oE, -- Current task end routine ( optional )
+      D = tostring(oD), -- Current task start description ( optional )
+      N = oN  -- Current task sequential pointer ( optional )
     }
   end
   -- Checks whenever the queue is busy for that player
@@ -1113,17 +1095,23 @@ function GetQueue(sKey)
     if(not IsHere(oPly)) then return true end
     local bB = mBusy[oPly]; return (bB and IsBool(bB))
   end
-  -- Removes the finished task for the queue
-  function self:Remove()
-    if(self:IsEmpty()) then return self end
-    if(self:IsBusy(mS.P)) then return self end
-    LogInstance("Start "..GetReport2(mS.D, mS.P:Nick()), mKey)
-    if(mS.E) then -- Post-processing. Return value is ignored
-      local bOK, bErr = pcall(mS.E, mS.P, mS.A); if(not bOK) then
-        LogInstance("Error "..GetReport2(mS.D, mS.P:Nick()).." "..bErr, mKey)
-      else LogInstance("Finish "..GetReport2(mS.D, mS.P:Nick()), mKey) end
-    end -- Wipe all the columns in the item and go to the next item
-    local tD = mS.N; tableEmpty(mS); mS = tD; return self -- Wipe entry
+  -- Switch to the next tasks in the list
+  function self:Next(bMen) -- Crack open a cold one with!
+    if(self:IsEmpty()) then return self end -- List empty
+    if(self:IsBusy(mS.P)) then -- Task runnning. We are busy
+      if(not bMen) then return self end -- Mulstitasking disabled
+      if(mS == mE) then return self end -- Only one list element
+      mE.N = mS; mE = mS; mS = mE.N; mE.N = nil -- Move entry
+      return self -- Moves only busy tasks with work remaining
+    else -- Task has been done. Run post processing and clear
+      if(mS.E) then -- Post-processing. Return value is ignored
+        local bOK, bErr = pcall(mS.E, mS.P, mS.A); if(not bOK) then
+          LogInstance("Error "..GetReport2(mS.D, mS.P:Nick()).." "..bErr, mKey)
+        else LogInstance("Finish "..GetReport2(mS.D, mS.P:Nick()), mKey) end
+      end -- Wipe all the columns in the item and go to the next item
+      LogInstance("Clear "..GetReport2(mS.D, mS.P:Nick()), mKey)
+      local tD = mS.N; tableEmpty(mS); mS = tD; return self -- Wipe entry
+    end
   end
   -- Setups a task to be called in the queue
   function self:Attach(oPly, tArg, fFoo, aDsc)
@@ -1150,7 +1138,7 @@ function GetQueue(sKey)
     mE.E = fFoo; return self
   end
   -- Execute the current task at the queue beginning
-  function self:Execute()
+  function self:Work()
     if(self:IsEmpty()) then return self end
     if(mS.S) then -- Pre-processing. Return value is ignored
       local bOK, bErr = pcall(mS.S, mS.P, mS.A); if(not bOK) then
@@ -1710,7 +1698,7 @@ function SetDirectory(pnBase, pCurr, vName)
         sName = (IsBlank(sName) and "Other" or sName)
   local pNode = pnBase:AddNode(sName)
   pCurr[sName] = {}; pCurr[sName][keyOb] = pNode
-  pNode:SetTooltip(GetPhrase("tool."..sTool..".subfolder"))
+  pNode:SetTooltip(languageGetPhrase("tool."..sTool..".subfolder"))
   pNode.Icon:SetImage(ToIcon("subfolder_item"))
   pNode.DoClick = function(pnSelf)
     if(inputIsKeyDown(KEY_LSHIFT)) then
@@ -1732,7 +1720,7 @@ function SetDirectoryNode(pnBase, sName, sModel)
     ..GetReport2(sName, sModel)); return nil end
   local tSkin = pnBase:GetSkin()
   local sTool = GetOpVar("TOOLNAME_NL")
-  local sModC = GetPhrase("tool."..sTool..".model_con")
+  local sModC = languageGetPhrase("tool."..sTool..".model_con")
   pNode.DoRightClick = function()
     if(inputIsKeyDown(KEY_LSHIFT)) then
       SetClipboardText(sModel)
@@ -1816,8 +1804,8 @@ function SetButtonSlider(cPanel, sVar, sTyp, nMin, nMax, nDec, tBtn)
   pSlider:SizeToContentsY()
   pSlider:Dock(TOP)
   pSlider:SetTall(sY)
-  pSlider:SetText(GetPhrase(sBase.."_con"))
-  pSlider:SetTooltip(GetPhrase(sBase))
+  pSlider:SetText(languageGetPhrase(sBase.."_con"))
+  pSlider:SetTooltip(languageGetPhrase(sBase))
   pSlider:SetMin(nMin)
   pSlider:SetMax(nMax)
   pSlider:SetDefaultValue(tConv[sKey])
@@ -1870,7 +1858,7 @@ function SetComboBoxList(cPanel, sVar)
     local sKey, sNam, bExa = GetNameExp(sVar)
     local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
     local sName = GetAsmConvar(sVar, "NAM")
-    local sMenu, sTtip = GetPhrase(sBase.."_con"), GetPhrase(sBase)
+    local sMenu, sTtip = languageGetPhrase(sBase.."_con"), languageGetPhrase(sBase)
     pItem = cPanel:ComboBox(sMenu, sName)
     pItem:SetSortItems(false); pItem:Dock(TOP); pItem:SetTall(25)
     pItem:SetTooltip(sTtip); pItem:UpdateColours(tSkin)
@@ -1884,7 +1872,7 @@ function SetComboBoxList(cPanel, sVar)
     for iD = 1, #tSet do local sI = tSet[iD]
       local sIco = ToIcon(sNam.."_"..sI:lower())
       local sPrv = (sBase.."_"..sI:lower())
-      pItem:AddChoice(GetPhrase(sPrv), sI, false, sIco)
+      pItem:AddChoice(languageGetPhrase(sPrv), sI, false, sIco)
     end
   else LogInstance("Missing "..GetReport1(sNam)) end
 end
@@ -1894,7 +1882,7 @@ function SetButton(cPanel, sVar)
   local tConv = GetOpVar("STORE_CONVARS")
   local sKey, sNam, bExa = GetNameExp(sVar)
   local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
-  local sMenu, sTtip = GetPhrase(sBase.."_con"), GetPhrase(sBase)
+  local sMenu, sTtip = languageGetPhrase(sBase.."_con"), languageGetPhrase(sBase)
   local pItem = cPanel:Button(sMenu, sKey)
         pItem:SetTooltip(sTtip); return pItem
 end
@@ -1905,14 +1893,6 @@ function SetNumSlider(cPanel, sVar, vDig, vMin, vMax, vDev)
   local sKey, sNam, bExa, nDum = GetNameExp(sVar)
   local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
   local iDig = mathFloor(mathMax(tonumber(vDig) or 0, 0))
-  -- Read default value form the first available
-  if(not IsHere(nDev)) then nDev = tConv[sKey]
-    if(not IsHere(nDev)) then nDev = GetAsmConvar(sVar, "DEF")
-      if(not IsHere(nDev)) then
-        LogInstance("(D) Miss "..GetReport1(sKey))
-      else LogInstance("(D) Cvar "..GetReport2(sKey, nDev)) end
-    else LogInstance("(D) List "..GetReport2(sKey, nDev)) end
-  else LogInstance("(D) Args "..GetReport2(sKey, nDev)) end
   -- Read minimum value form the first available
   if(not IsHere(nMin)) then nMin, nDum = GetBorder(sKey)
     if(not IsHere(nMin)) then nMin = GetAsmConvar(sVar, "MIN")
@@ -1931,17 +1911,25 @@ function SetNumSlider(cPanel, sVar, vDig, vMin, vMax, vDev)
       else LogInstance("(H) Cvar "..GetReport2(sKey, nMax)) end
     else LogInstance("(H) List "..GetReport2(sKey, nMax)) end
   else LogInstance("(H) Args "..GetReport2(sKey, nMax)) end
+  -- Read default value form the first available
+  if(not IsHere(nDev)) then nDev = tConv[sKey]
+    if(not IsHere(nDev)) then nDev = GetAsmConvar(sVar, "DEF")
+      if(not IsHere(nDev)) then nDev = nMin + ((nMax - nMin) / 2)
+        LogInstance("(D) Miss "..GetReport1(sKey))
+      else LogInstance("(D) Cvar "..GetReport2(sKey, nDev)) end
+    else LogInstance("(D) List "..GetReport2(sKey, nDev)) end
+  else LogInstance("(D) Args "..GetReport2(sKey, nDev)) end
   -- Create the slider control using the min, max and default
-  local sMenu, sTtip = GetPhrase(sBase.."_con"), GetPhrase(sBase)
+  local sMenu, sTtip = languageGetPhrase(sBase.."_con"), languageGetPhrase(sBase)
   local pItem = cPanel:NumSlider(sMenu, sKey, nMin, nMax, iDig)
-  pItem:SetTooltip(sTtip); pItem:SetDefaultValue(vDef); return pItem
+  pItem:SetTooltip(sTtip); pItem:SetDefaultValue(nDev); return pItem
 end
 
 function SetCheckBox(cPanel, sVar)
   local sTool = GetOpVar("TOOLNAME_NL")
   local sKey, sNam, bExa = GetNameExp(sVar)
   local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
-  local sMenu, sTtip = GetPhrase(sBase.."_con"), GetPhrase(sBase)
+  local sMenu, sTtip = languageGetPhrase(sBase.."_con"), languageGetPhrase(sBase)
   local pItem = cPanel:CheckBox(sMenu, sKey)
   pItem:SetTooltip(sTtip); return pItem
 end
@@ -1951,7 +1939,7 @@ function SetCenter(oEnt, vPos, aAng, nX, nY, nZ) -- Set the ENT's Angles first!
     LogInstance("Entity Invalid"); return Vector(0,0,0) end
   oEnt:SetPos(vPos); oEnt:SetAngles(aAng)
   local vCen, vMin = oEnt:OBBCenter(), oEnt:OBBMins()
-  NegVector(vCen); vCen[cvZ] = 0 -- Adjust only X and Y
+  vCen:Negate(); vCen[cvZ] = 0 -- Adjust only X and Y
   AddVectorXYZ(vCen, nX, -nY, nZ-vMin[cvZ])
   vCen:Rotate(aAng); vCen:Add(vPos); oEnt:SetPos(vCen)
   return vCen -- Returns X-Y OBB centered model
@@ -2747,15 +2735,16 @@ function CreateTable(sTable,defTab,bDelete,bReload)
       LogInstance("Column ID mismatch "..GetReport(ivID),tabDef.Nick); return nil end
     local defCol = qtDef[nvInd]; if(not IsHere(defCol)) then
       LogInstance("Invalid col #"..tostring(nvInd),tabDef.Nick); return nil end
-    local tipCol, sMoDB, snOut = tostring(defCol[2]), GetOpVar("MODE_DATABASE")
-    if(tipCol == "TEXT") then snOut = tostring(snValue or "")
+    local sMoDB, snOut = GetOpVar("MODE_DATABASE")
+    local tyCol, opCol = tostring(defCol[2]), defCol[3]
+    if(tyCol == "TEXT") then snOut = tostring(snValue or "")
       if(not bNoNull and IsBlank(snOut)) then
         if    (sMoDB == "SQL") then snOut = sNull
         elseif(sMoDB == "LUA") then snOut = sNull
         else LogInstance("Wrong database empty mode <"..sMoDB..">",tabDef.Nick); return nil end
       end
-      if    (defCol[3] == "LOW") then snOut = snOut:lower()
-      elseif(defCol[3] == "CAP") then snOut = snOut:upper() end
+      if    (opCol == "LOW") then snOut = snOut:lower()
+      elseif(opCol == "CAP") then snOut = snOut:upper() end
       if(not bNoRev and sMoDB == "SQL" and defCol[4] == "QMK") then
         snOut = snOut:gsub("'","''") end
       if(bQuoted) then local sqChar
@@ -2767,15 +2756,15 @@ function CreateTable(sTable,defTab,bDelete,bReload)
           else LogInstance("Wrong database quote mode <"..sMoDB..">",tabDef.Nick); return nil end
         end; snOut = sqChar..snOut..sqChar
       end
-    elseif(tipCol == "REAL" or tipCol == "INTEGER") then
+    elseif(tyCol == "REAL" or tyCol == "INTEGER") then
       snOut = tonumber(snValue)
       if(IsHere(snOut)) then
-        if(tipCol == "INTEGER") then
-          if    (defCol[3] == "FLR") then snOut = mathFloor(snOut)
-          elseif(defCol[3] == "CEL") then snOut = mathCeil (snOut) end
+        if(tyCol == "INTEGER") then
+          if    (opCol == "FLR") then snOut = mathFloor(snOut)
+          elseif(opCol == "CEL") then snOut = mathCeil (snOut) end
         end
-      else LogInstance("Failed converting "..GetReport(snValue).." to NUMBER col #"..nvInd,tabDef.Nick); return nil end
-    else LogInstance("Invalid col type <"..tipCol..">",tabDef.Nick); return nil
+      else LogInstance("Failed converting "..GetReport(snValue).." to NUMBER column #"..nvInd,tabDef.Nick); return nil end
+    else LogInstance("Invalid column type <"..tyCol..">",tabDef.Nick); return nil
     end; return snOut
   end
   -- Build drop statment
@@ -3464,7 +3453,7 @@ end
  * Import table data from DSV database created earlier
  * sTable > Definition KEY to import
  * bComm  > Calls TABLE:Record(arLine) when set to true
- * sPref  > Prefix used on importing ( if any )
+ * sPref  > Prefix used on importing ( optional )
  * sDelim > Delimiter separating the values
 ]]--
 function ImportDSV(sTable, bComm, sPref, sDelim)
@@ -3835,7 +3824,7 @@ local function ExportPiecesAR(fF,qData,sName,sInd,qList)
     end
   end
   if(IsTable(qData) and IsHere(qData[1])) then
-    fF:Write(sInd:rep(1).."local "..sName.." = {\n")
+    fF:Write("local "..sName.." = {\n")
     local pkID, sInd, fRow = 1, "  ", true
     local idxID = makTab:GetColumnID("LINEID")
     for iD = 1, #qData do local qRow = qData[iD]
@@ -3847,22 +3836,22 @@ local function ExportPiecesAR(fF,qData,sName,sInd,qList)
         if(vA == dbNull) then aRow[iA] = "gsMissDB" end
       end
       if(fRow) then fRow = false
-        fF:Write(sInd:rep(2).."["..aRow[pkID].."] = {\n")
+        fF:Write(sInd:rep(1).."["..aRow[pkID].."] = {\n")
         SetAdditionsAR(mMod, makAdd, qList)
       else
         if(aRow[idxID] == 1) then fF:Seek(fF:Tell() - 2)
-          fF:Write("\n"..sInd:rep(2).."},\n"..sInd:rep(2).."["..aRow[pkID].."] = {\n")
+          fF:Write("\n"..sInd:rep(1).."},\n"..sInd:rep(1).."["..aRow[pkID].."] = {\n")
           SetAdditionsAR(mMod, makAdd, qList)
         end
       end
       mgrTab.ExportAR(aRow); tableRemove(aRow, 1)
-      fF:Write(sInd:rep(3).."{"..tableConcat(aRow, ", ").."},\n")
+      fF:Write(sInd:rep(2).."{"..tableConcat(aRow, ", ").."},\n")
     end
     fF:Seek(fF:Tell() - 2)
-    fF:Write("\n"..sInd:rep(2).."}\n")
-    fF:Write(sInd:rep(1).."}\n")
+    fF:Write("\n"..sInd:rep(1).."}\n")
+    fF:Write("}\n")
   else
-    fF:Write(sInd:rep(1).."local "..sName.." = {}\n")
+    fF:Write("local "..sName.." = {}\n")
   end
 end
 
@@ -3958,26 +3947,28 @@ function ExportTypeAR(sType)
       local patAddon = GetOpVar("PATTEX_VARADDON")
       local keyBuild = GetOpVar("KEYQ_BUILDER"); qPieces[keyBuild] = makP
       local sLine, isEOF, isSkip, sInd, qAdditions = "", false, false, "  ", {}
-      while(not isEOF) do sLine, isEOF = GetStringFile(fS, true)
+      while(not isEOF) do
+        sLine, isEOF = GetStringFile(fS, true)
+        sLine = sLine:gsub("%s*$", "")
         if(sLine:find(patAddon)) then isSkip = true
           fE:Write("local myAddon = \""..sType.."\"\n")
         elseif(sLine:find(patCateg)) then isSkip = true
           local tCat = GetOpVar("TABLE_CATEGORIES")[sType]
           if(IsTable(tCat) and tCat.Txt) then
-            fE:Write(sInd:rep(1).."local myCategory = {\n")
-            fE:Write(sInd:rep(2).."[myType] = {Txt = [[\n")
-            fE:Write(sInd:rep(3)..tCat.Txt:gsub("\n","\n"..sInd:rep(3)).."\n")
-            fE:Write(sInd:rep(2).."]]}\n")
-            fE:Write(sInd:rep(1).."}\n")
+            fE:Write("local myCategory = {\n")
+            fE:Write(sInd:rep(1).."[myType] = {Txt = [[\n")
+            fE:Write(sInd:rep(2)..tCat.Txt:gsub("\n","\n"..sInd:rep(2)).."\n")
+            fE:Write(sInd:rep(1).."]]}\n")
+            fE:Write("}\n")
           else
-            fE:Write(sInd:rep(1).."local myCategory = {}\n")
+            fE:Write("local myCategory = {}\n")
           end
         elseif(sLine:find(patWorks)) then isSkip = true
           local sID = WorkshopID(sType)
           if(sID and sID:len() > 0) then
-            fE:Write(sInd:rep(1).."asmlib.WorkshopID(myAddon, \""..sID.."\")\n")
+            fE:Write("asmlib.WorkshopID(myAddon, \""..sID.."\")\n")
           else
-            fE:Write(sInd:rep(1).."asmlib.WorkshopID(myAddon)\n")
+            fE:Write("asmlib.WorkshopID(myAddon)\n")
           end
         elseif(sLine:find(patPiece)) then isSkip = true
           ExportPiecesAR(fE, qPieces, "myPieces", sInd, qAdditions)
@@ -3990,7 +3981,8 @@ function ExportTypeAR(sType)
           if(isEOF) then fE:Write(sLine) else fE:Write(sLine.."\n") end
         end
       end
-      fE:Flush(); fE:Close(); fS:Close()
+      fE:Write("\n"); fE:Flush()
+      fE:Close(); fS:Close()
     end
   end
 end
@@ -4224,9 +4216,11 @@ end
  * vP > Position vector to be projected
 ]]--
 function ProjectRay(vO, vD, vP)
-  local vR = Vector(vP); vR:Sub(vO)
-  local nD = vR:Dot(vD); vR:Set(vD)
-  vR:Mul(nD); vR:Add(vO); return vR
+  local vN = vD:GetNormalized()
+  local vX = Vector(vP); vX:Sub(vO)
+  local nD = vX:Dot(vN); vX:Set(vN)
+  vX:Mul(nD); vX:Add(vO);
+  return nD, vN, vX
 end
 
 --[[
@@ -4609,7 +4603,8 @@ function MakePiece(pPly,sModel,vPos,aAng,nMass,sBgSkIDs,clColor,sMode)
     LogInstance("Entity phys object invalid"); return nil end
   ePiece.owner, ePiece.Owner = pPly, pPly -- Some PPs actually use this value
   phPiece:EnableMotion(false) -- Spawn frozen by default to reduce lag
-  phPiece:SetMass(mathMax(1, (tonumber(nMass) or 1)))
+  local nMass = mathMax(0, (tonumber(nMass) or 0))
+  if(nMass > 0) then phPiece:SetMass(nMass) end
   local tBgSk = GetOpVar("OPSYM_DIRECTORY"):Explode(sBgSkIDs or "")
   ePiece:SetSkin(mathClamp(tonumber(tBgSk[2]) or 0, 0, ePiece:SkinCount()-1))
   if(not AttachBodyGroups(ePiece, tBgSk[1])) then ePiece:Remove()
@@ -4886,13 +4881,13 @@ function GetAsmConvar(sName, sMode)
   if    (sMode == "INT") then return (tonumber(BorderValue(CVar:GetInt()   , sKey)) or 0)
   elseif(sMode == "FLT") then return (tonumber(BorderValue(CVar:GetFloat() , sKey)) or 0)
   elseif(sMode == "STR") then return (tostring(BorderValue(CVar:GetString(), sKey)) or "")
-  elseif(sMode == "BUL") then return (CVar:GetBool() or false)
-  elseif(sMode == "DEF") then return  CVar:GetDefault()
-  elseif(sMode == "INF") then return  CVar:GetHelpText()
-  elseif(sMode == "NAM") then return  CVar:GetName()
-  elseif(sMode == "MIN") then return  CVar:GetMin()
-  elseif(sMode == "MAX") then return  CVar:GetMax()
-  elseif(sMode == "OBJ") then return  CVar
+  elseif(sMode == "OBJ") then return CVar
+  elseif(sMode == "MIN") then return CVar:GetMin()
+  elseif(sMode == "MAX") then return CVar:GetMax()
+  elseif(sMode == "NAM") then return CVar:GetName()
+  elseif(sMode == "BUL") then return CVar:GetBool()
+  elseif(sMode == "DEF") then return CVar:GetDefault()
+  elseif(sMode == "INF") then return CVar:GetHelpText()
   end; LogInstance("("..sName..", "..sMode..") Missed mode"); return nil
 end
 
@@ -4903,60 +4898,6 @@ function SetAsmConvar(pPly, sName, snVal)
   local sKey = GetNameExp(sName); if(IsPlayer(pPly)) then -- Use the player when available
     return pPly:ConCommand(sFmt:format(sKey, "\""..tostring(snVal or "")).."\"\n")
   end; return RunConsoleCommand(sKey, tostring(snVal or ""))
-end
-
---[[
- * Returns translation hash dedicated to user menus
- * vKey > The translation hash to obtain forn the information table
- * When translation cannot be located ir is replaced by `MISS_NOTR`
-]]
-function GetPhrase(vKey)
-  local sDef = GetOpVar("MISS_NOTR")
-  if(SERVER) then LogInstance("Server "..GetReport(vKey)); return sDef end
-  local tSet = GetOpVar("LOCALIFY_TABLE"); if(not IsHere(tSet)) then
-    LogInstance("Mismatch "..GetReport(vKey)); return sDef end
-  local sKey = tostring(vKey); if(not IsHere(tSet[sKey])) then
-    LogInstance("Skipped "..GetReport1(sKey)); return sDef end
-  return (tSet[sKey] or sDef) -- Translation fail safe
-end
-
---[[
- * Returns or allocates translation hash definition table
- * vCode > The language code to allocate and return table for
-]]
-local function GetLocalify(vCode)
-  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
-  local sCode = tostring(vCode or auCod) -- No language code then english
-  if(SERVER) then LogInstance("Server "..GetReport(vCode)); return nil end
-  local sTool, sLimit = GetOpVar("TOOLNAME_NL"), GetOpVar("CVAR_LIMITNAME")
-  local sPath = GetOpVar("FORM_LANGPATH"):format(sCode..".lua")
-  if(not fileExists("lua/"..sPath, "GAME")) then -- Translation file path
-    LogInstance("Missing "..GetReport1(sCode)); return nil end
-  local fCode = CompileFile(sPath); if(not fCode) then -- Compile
-    LogInstance("Stage[0] "..GetReport2(sCode, sPath)); return nil end
-  local bFunc, fFunc = pcall(fCode); if(not bFunc) then -- Call the function factory
-    LogInstance("Stage[1] "..GetReport2(sCode, sPath)..": "..fFunc); return nil end
-  local bCode, tCode = pcall(fFunc, sTool, sLimit); if(not bCode) then -- Produce entry
-    LogInstance("Stage[2] "..GetReport2(sCode, sPath)..": "..tCode); return nil end
-  return tCode -- The successfully extracted translations table and returns the list
-end
-
---[[
- * Switches the system to new translation provided
- * vCode > The translation to switch all messages to
-]]
-function InitLocalify(vCode)
-  local auCod = GetOpVar("LOCALIFY_AUTO") -- Automatic translation code
-  local cuCod = tostring(vCode or auCod) -- No language code then english
-  if(SERVER) then LogInstance("Server "..GetReport(vCode)); return nil end
-  local thSet = GetOpVar("LOCALIFY_TABLE"); tableEmpty(thSet)
-  local auSet = GetLocalify(auCod); if(not auSet) then
-    LogInstance("Mismatch "..GetReport(auCod)); return nil end
-  if(cuCod ~= auCod) then local cuSet = GetLocalify(cuCod)
-    if(cuSet) then -- When the language infornation is extracted apply on success
-      for key, val in pairs(auSet) do auSet[key] = (cuSet[key] or auSet[key]) end
-    else LogInstance("Skipped "..GetReport(auCod)) end -- Apply auto code
-  end; for key, val in pairs(auSet) do thSet[key] = auSet[key]; languageAdd(key, val) end
 end
 
 --[[
@@ -5495,6 +5436,3 @@ function GetToolInformation()
     end
   end; return tO
 end
-
-function GetTable(k) return (k and libQTable[k] or libQTable) end
-function GetCache(k) return (k and libCache[k] or libCache) end
