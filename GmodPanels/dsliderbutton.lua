@@ -91,4 +91,4 @@ function PANEL:UpdateColours(tSkin)
   end
 end
 
-derma.DefineControl("DButtonSlider", "Button interactive slider", PANEL, "DCollapsibleCategory")
+derma.DefineControl("DSliderButton", "Button interactive slider", PANEL, "DSizeToContents")
