@@ -46,8 +46,8 @@ local stEstim = {
 
 local stCard = {
   AcTime = 1, -- Draw a dot after X seconds
-  FnCount = 100, -- Amount of loops to be done for the test card
-  FnCycle = 100, -- Amount of loops to be done for the function tested
+  FnCount = 400, -- Amount of loops to be done for the test card
+  FnCycle = 1000, -- Amount of loops to be done for the function tested
   ExPercn = .1, -- Draw percent completed every X margin ( 0 to 1 )
   {"basic", {ent , Vector(1,1,1), Angle(0,0,0), 10}, false}
 }

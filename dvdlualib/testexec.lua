@@ -14,7 +14,7 @@ metaexec.nocyc = "No test card cycles `stCard.Cyc` for test ID # %d!"
 metaexec.nocas = "Test case name <%s> already done under ID # %s!"
 metaexec.sumry = "Overall testing rank list summary:"
 metaexec.tfail = "The following tests have failed. Please check!"
-metaexec.ffail = "%3.3f Time: %3.3f (%5.3f[s]) %15.3f[c/s] Failed: %d"
+metaexec.ffail = "%7.3f Time: %8.3f (%8.3f[s]) %15.3f[c/s] Failed: %d"
  
 local function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg)); return ...
@@ -24,16 +24,16 @@ local function getMaxNameLength(stEstim)
   local iMax, iEnd = 0, #stEstim
   for ID = 1, #stEstim do
     local tCase = stEstim[ID]
-    if(tCase and tCase.Name) then
-      if(tCase.Name:len() >= iMax) then
-        iMax = tCase.Name:len()
+    if(tCase and tCase.Na) then
+      if(tCase.Na:len() >= iMax) then
+        iMax = tCase.Na:len()
       end
     end
   end; return iMax, iEnd
 end
 
 function testexec.Case(fFunction, sName)
-  return {Function = fFunction, Name = sName, Times = {}, Rolled = {}}
+  return {Function = fFunction, Na = sName, Tm = {}, Ro = {}}
 end
 
 function testexec.Time(sec)
@@ -75,13 +75,13 @@ function testexec.Run(stCard,stEstim)
     for idx = 1, fooCnt do -- Repeat each test
       for cnt = 1, iEstm  do -- For all functions
         local fnc = stEstim[cnt]
-        if(not fnc.Times[tstNam]) then fnc.Times[tstNam] = 0 end
-        if(not fnc.Rolled[tstNam]) then
-          fnc.Rolled[tstNam] = {}
-          fnc.Rolled[tstNam]["PASS"] = 0
-          fnc.Rolled[tstNam]["FAIL"] = 0
+        if(not fnc.Tm[tstNam]) then fnc.Tm[tstNam] = 0 end
+        if(not fnc.Ro[tstNam]) then
+          fnc.Ro[tstNam] = {}
+          fnc.Ro[tstNam]["PASS"] = 0
+          fnc.Ro[tstNam]["FAIL"] = 0
         end
-        local tRoll = fnc.Rolled[tstNam]
+        local tRoll = fnc.Ro[tstNam]
         local nTime = os.clock()
         for Ind = 1, fooCyc do -- N Cycles
           local Rez = fnc.Function(fooVal)
@@ -93,11 +93,11 @@ function testexec.Run(stCard,stEstim)
             tRoll["FAIL"] = tRoll["FAIL"] + 1
           end
         end
-        fnc.Times[tstNam] = fnc.Times[tstNam] + (os.clock() - nTime)
+        fnc.Tm[tstNam] = fnc.Tm[tstNam] + (os.clock() - nTime)
         if(stCard.ExPercn) then mrkCnt = mrkCnt + 1
           if(mrkCnt % iStar == 0) then logStatus(((mrkCnt/nStar)*100).."% ") end
         end
-        if(bStar) then local iTimn = fnc.Times[tstNam]; bStar = false;
+        if(bStar) then local iTimn = fnc.Tm[tstNam]; bStar = false;
           logStatus("TimNow: {"..os.date(metaexec.ftime).."}\n", nil)
           logStatus("TimCnt: {"..testexec.Time(iTimn).."} ("..iTimn..")\n", nil)
           logStatus("TimCyc: {"..testexec.Time(iTimn * fooCnt).."} ("..(iTimn * fooCnt)..")\n", nil)
@@ -105,22 +105,22 @@ function testexec.Run(stCard,stEstim)
         if(stCard.AcTime and (os.clock() - iTime) > stCard.AcTime) then iTime = os.clock(); logStatus(".") end
       end
     end; logStatus("Done\n")
-    local nMin = stEstim[1].Times[tstNam]
+    local nMin = stEstim[1].Tm[tstNam]
     for cnt = 1, iEstm do  -- For all functions
       local fnc = stEstim[cnt]
-      if(fnc.Times[tstNam] <= nMin) then nMin = fnc.Times[tstNam] end
+      if(fnc.Tm[tstNam] <= nMin) then nMin = fnc.Tm[tstNam] end
     end
     for cnt = 1, iEstm do  -- For all functions
       local fnc = stEstim[cnt]
       local nAll = (fooCnt * fooCyc)
-      local nPas = ((100 * fnc.Rolled[tstNam]["PASS"]) / nAll)
-      local nFal = ((100 * fnc.Rolled[tstNam]["FAIL"]) / nAll)
-      local nTim = fnc.Times[tstNam]
+      local nPas = ((100 * fnc.Ro[tstNam]["PASS"]) / nAll)
+      local nFal = ((100 * fnc.Ro[tstNam]["FAIL"]) / nAll)
+      local nTim = fnc.Tm[tstNam]
       local nTip =  (nMin ~= 0) and (100 * (nTim / nMin)) or 0
       local sDat = metaexec.ffail:format(nPas,nTip,nTim,(fooCnt*fooCyc/nTim),nFal)
-      if(not tFoo[fnc.Name]) then tFoo[fnc.Name] = 0 end; tFoo[fnc.Name] = tFoo[fnc.Name] + nTim
+      if(not tFoo[fnc.Na]) then tFoo[fnc.Na] = 0 end; tFoo[fnc.Na] = tFoo[fnc.Na] + nTim
       tstFail.Hash[tstNam][2] = nFal
-      logStatus((metaexec.ffspc[1]..iMaxL..metaexec.ffspc[2]):format(fnc.Name, sDat).."\n", nil)
+      logStatus((metaexec.ffspc[1]..iMaxL..metaexec.ffspc[2]):format(fnc.Na, sDat).."\n", nil)
     end; tCase[tstNam] = ID;
     logStatus("\n", nil)
     ID = ID + 1
