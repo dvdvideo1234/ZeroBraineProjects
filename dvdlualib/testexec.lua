@@ -20,34 +20,43 @@ function testexec.Case(fFunction, sName)
   return {Function = fFunction, Name = sName, Times = {}, Rolled = {}}
 end
 
-function testexec.Run(stCard,stEstim,nMrkP,sFile)
-  if(sFile) then
-    logStatus("Output set to: "..sFile.."\n", nil)
-    io.output(sFile)
+function testexec.Time(sec)
+  local iH = (sec - (sec % 3600)) / 3600
+  local iM = (sec - (iH * 3600))
+        iM = (iM  - (iM % 60)) / 60
+  local iS = (sec - iM * 60 - iH * 3600)
+  return ("%02d:%02d:%02d"):format(iH,iM,iS)
+end
+
+function testexec.Run(stCard,stEstim)
+  if(stCard.OuFile) then
+    logStatus("Output set to: "..stCard.OuFile.."\n", nil)
+    io.output(stCard.OuFile)
   end
-  local iCard, tFoo = #stCard, {}
+  local iTime, bStar = os.clock(), true
+  local iCard, tFoo, iStar, nStar = #stCard, {}
   local iMaxL, iEstm = getMaxNameLength(stEstim)
   logStatus("Started "..tostring(iCard).." tast cases for "..tostring(iEstm).." functions...\n", nil)
   local ID, tCase, tstFail = 1, {}, {Cnt = 0, Hash = {}} -- No tests have hailed
   while(stCard[ID]) do -- Loop trough all the test cards
     local tstVal = stCard[ID] -- Retrieve the test card information
-    local fooVal = tstVal[1] -- The test is not failed yet. Read the input value
-    local fooRes = tstVal[2] -- The test is not failed yet. Read the output value
-    local tstNam = tostring(tstVal[3] or ""); tstFail.Hash[tstNam] = {false, 0}
-    local fooCnt = tonumber(tstVal[4]) or 0  -- Amount of loops to be done for the test card
-    local fooCyc = tonumber(tstVal[5]) or 0  -- Amount of loops to be done for the function tested
-    local mrkFoo = (tonumber(nMrkP) or 0); mrkFoo = (((mrkFoo > 0) and (mrkFoo < 1)) and mrkFoo or nil)
-    local mrkCyc = (mrkFoo and (fooCnt * mrkFoo * iEstm) or nil)
+    local fooVal = tstVal[2] -- The test is not failed yet. Read the input value
+    local fooRes = tstVal[3] -- The test is not failed yet. Read the output value
+    local tstNam = tostring(tstVal[1] or ""); tstFail.Hash[tstNam] = {false, 0}
+    local fooCnt = tonumber(stCard.FnCount) or 0 -- Amount of loops to be done for the test card
+    local fooCyc = tonumber(stCard.FnCycle) or 0 -- Amount of loops to be done for the function tested
     if(fooCnt < 1) then logStatus("No test card count  stCard.Cnt for test ID # "..tostring(ID).."!\n", nil); return end
     if(fooCyc < 1) then logStatus("No test card cycles stCard.Cyc for test ID # "..tostring(ID).."!\n", nil); return end
     if(tCase[tstNam]) then logStatus("Test case name <"..tstNam.."> already done under ID # "..tostring(tCase[tstNam]).."!\n", nil); return; end
-    logStatus("Testing case["..tostring(ID).."]: <"..tostring(tstVal[3])..">\n", nil)
-    logStatus("   Inp: <"..tostring(tstVal[1])..">\n", nil)
-    logStatus("   Out: <"..tostring(tstVal[2])..">\n", nil)
+    logStatus("Testing case["..tostring(ID).."]: <"..tostring(tstNam)..">\n", nil)
+    logStatus("   Inp: <"..tostring(fooVal)..">\n", nil)
+    logStatus("   Out: <"..tostring(fooRes)..">\n", nil)
     logStatus("   Set: {"..tostring(fooCnt)..", "..tostring(fooCyc).."}\n", nil)
-    if(mrkFoo) then logStatus("   Pro: {"..tostring(mrkFoo*100).."%, "..tostring(fooCnt*iEstm).."}\n", nil) end
+    if(stCard.ExPercn) then nStar = fooCnt*iEstm; iStar = stCard.ExPercn*nStar
+      logStatus("   Pro: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)
+    end
     local idx, mrkCnt = 1, 0 -- Current iteration
-    for idx = 1, fooCnt, 1 do -- Repeat each test
+    for idx = 1, fooCnt do -- Repeat each test
       for cnt = 1, iEstm  do -- For all functions
         local fnc = stEstim[cnt]
         if(not fnc.Times[tstNam]) then fnc.Times[tstNam] = 0 end
@@ -69,7 +78,15 @@ function testexec.Run(stCard,stEstim,nMrkP,sFile)
           end
         end
         fnc.Times[tstNam] = fnc.Times[tstNam] + (os.clock() - nTime)
-        mrkCnt = mrkCnt + 1; if(mrkCyc and (mrkCnt % mrkCyc == 0)) then logStatus((mrkCnt/(fooCnt*iEstm)*100).."% ") end
+        if(stCard.ExPercn) then mrkCnt = mrkCnt + 1
+          if(mrkCnt % iStar == 0) then logStatus(((mrkCnt/nStar)*100).."% ") end
+        end
+        if(bStar) then local iTimn = fnc.Times[tstNam]; bStar = false;
+          logStatus("   Now: {"..os.date('%H:%M:%S').."}\n", nil)
+          logStatus("   Ttm: {"..testexec.Time(iTimn).."} ("..iTimn..")\n", nil)
+          logStatus("   Atm: {"..testexec.Time(iTimn * fooCnt).."} ("..(iTimn * fooCnt)..")\n", nil)
+        end
+        if(stCard.AcTime and (os.clock() - iTime) > stCard.AcTime) then iTime = os.clock(); logStatus(".") end
       end
     end; logStatus("Done\n")
     local nMin = stEstim[1].Times[tstNam]
