@@ -7,7 +7,7 @@ metaexec.outfi = "Output set to: %s"
 metaexec.start = "Started %d tast cases for %d functions..."
 metaexec.ffins = "Test finished all %d cases successfully!"
 metaexec.ffina = "Test finished %d of %d cases successfully!"
-metaexec.ffina = "Test case <%s> with fail rate: %d%"
+metaexec.ffina = "Test case <%s> with fail rate: %d%%"
 metaexec.ffspc = {"Estimation for [%", "s]: %s"}
 metaexec.nocnt = "No test card count `stCard.Cnt` for test ID # %d!"
 metaexec.nocyc = "No test card cycles `stCard.Cyc` for test ID # %d!"
@@ -65,8 +65,22 @@ function testexec.Run(stCard,stEstim)
     if(fooCyc < 1) then logStatus(metaexec.nocyc:format(ID).."\n", nil); return end
     if(tCase[tstNam]) then logStatus(metaexec.nocas:format(tstNam, tostring(tCase[tstNam])).."\n", nil); return; end
     logStatus("Testing case["..tostring(ID).."]: <"..tostring(tstNam)..">\n", nil)
-    logStatus(" Input: <"..tostring(fooVal)..">\n", nil)
-    logStatus("Output: <"..tostring(fooRes)..">\n", nil)
+    if(type(fooVal) == "table") then
+      local sA = ""; fooVal.N = tonumber(fooVal.N)
+      if(not fooVal.N) then fooVal.N = #fooVal
+        logStatus("Updating input count to `N="..#fooVal.."`!\n", nil) end
+      for iV = 1, fooVal.N do sA = sA..tostring(fooVal[iV])
+        if(iV ~= fooVal.N) then sA = sA.."," end
+      end; logStatus(" Input: {"..sA.."}\n", nil)
+    else logStatus(" Input: {"..tostring(fooVal).."}\n", nil) end    
+    if(type(fooRes) == "table") then
+      local sA = ""; fooRes.N = tonumber(fooRes.N)
+      if(not fooRes.N) then fooRes.N = #fooRes
+        logStatus("Updating output count to `N="..#fooRes.."`!\n", nil) end
+      for iR = 1, fooRes.N do sA = sA..tostring(fooRes[iR])
+        if(iR ~= fooRes.N) then sA = sA.."," end
+      end; logStatus("Output: {"..sA.."}\n", nil)
+    else logStatus("Output: {"..tostring(fooRes).."}\n", nil) end
     logStatus(" Tests: {"..tostring(fooCnt)..", "..tostring(fooCyc).."}\n", nil)
     if(stCard.ExPercn) then nStar = fooCnt*iEstm; iStar = stCard.ExPercn*nStar
       logStatus("Proces: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)

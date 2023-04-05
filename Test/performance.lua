@@ -11,45 +11,45 @@ local drpath = require("directories")
 require("dvdlualib/gmodlib")
 local testexec = require("testexec")
 
-local ent = ents.Create("seamless_portal")
-function ent:GetSize() return Vector(1,1,1) end
-function ent:GetUp() return Vector(1,1,1) end
+local po = ents.Create("seamless_portal")
+local pl = ents.Create("player")
+local pd = ents.Create("other")
 
-local eyeAngle = Angle(0,0,0)
-function eyeAngle:Forward() return Vector(1,0,0) end
+local seamless_table = {
+	["seamless_portal"] = true,
+	["player"         ] = true
+}
 
-SeamlessPortals = {}
+local seamless_check1 = function(t)
+  local e = t[1]
+  return not (e:GetClass() == "seamless_portal" or e:GetClass() == "player")
+end -- for traces
 
-SeamlessPortals.ShouldRender = function(arg)
-  local portal, eyePos, distance = arg[1], arg[2], arg[4]
-	local portalPos, portalUp, exitSize = portal:GetPos(), portal:GetUp(), portal:GetSize()
-	local max = math.max(exitSize[1], exitSize[2])
-	return ((eyePos - portalPos):Dot(portalUp) > -max and 
-	eyePos:DistToSqr(portalPos) < distance^2 * max and 
-	(eyePos - portalPos):Dot(eyeAngle:Forward()) < max)
-end
+local function seamless_check2(t)
+    local e = t[1]
+	return not (seamless_table[e:GetClass()] or false)
+end -- for traces
 
-SeamlessPortals.ShouldRenderNew = function(arg)
-  local portal, eyePos, distance = arg[1], arg[2], arg[4]
-	local portalPos, portalUp, exitSize = portal:GetPos(), portal:GetUp(), portal:GetSize()
-  local vec, max = (eyePos - portalPos), math.max(exitSize[1], exitSize[2])
-  if((vec):Dot(portalUp) <= -max) then return false end
-  if(vec:LengthSqr() >= distance^2 * max) then return false end
-  if(vec:Dot(eyeAngle:Forward()) >= max) then return false end
-  return true
-end
+local function seamless_check3(t)
+    local e = t[1]
+  if(seamless_table[e:GetClass()]) then return false end
+	return true
+end -- for traces
 
 local stEstim = {
-  testexec.Case(SeamlessPortals.ShouldRender, "original"),
-  testexec.Case(SeamlessPortals.ShouldRenderNew, "modified")
+  testexec.Case(seamless_check1, "original"),
+  testexec.Case(seamless_check2, "modified"),
+  testexec.Case(seamless_check3, "modif-IF")
 }
 
 local stCard = {
   AcTime = 1, -- Draw a dot after X seconds
-  FnCount = 400, -- Amount of loops to be done for the test card
-  FnCycle = 1000, -- Amount of loops to be done for the function tested
+  FnCount = 12800, -- Amount of loops to be done for the test card
+  FnCycle = 68500, -- Amount of loops to be done for the function tested
   ExPercn = .1, -- Draw percent completed every X margin ( 0 to 1 )
-  {"basic", {ent , Vector(1,1,1), Angle(0,0,0), 10}, false}
+  {"portal", {po}, false},
+  {"player", {pl}, false},
+  {"other" , {pd}, true}
 }
 
 testexec.Run(stCard,stEstim)
