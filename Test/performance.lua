@@ -32,20 +32,20 @@ end -- for traces
 
 local function seamless_check3(t)
     local e = t[1]
-  if(seamless_table[e:GetClass()]) then return false end
-	return true
+  if(seamless_table[e:GetClass()]) then return false end; return true
 end -- for traces
 
+--[[
 local stEstim = {
-  testexec.Case(seamless_check1, "original"),
-  testexec.Case(seamless_check2, "modified"),
-  testexec.Case(seamless_check3, "modif-IF")
+  testexec.Case("original", seamless_check1),
+  testexec.Case("modified", seamless_check2),
+  testexec.Case("modif-IF", seamless_check3)
 }
 
 local stCard = {
   AcTime = 1, -- Draw a dot after X seconds
-  FnCount = 12800, -- Amount of loops to be done for the test card
-  FnCycle = 68500, -- Amount of loops to be done for the function tested
+  FnCount = 2000, -- Amount of loops to be done for the test card
+  FnCycle = 3000, -- Amount of loops to be done for the function tested
   ExPercn = .1, -- Draw percent completed every X margin ( 0 to 1 )
   {"portal", {po}, false},
   {"player", {pl}, false},
@@ -53,3 +53,15 @@ local stCard = {
 }
 
 testexec.Run(stCard,stEstim)
+]]
+
+t = testexec.New()
+t:setCase(seamless_check1, "original")
+t:setCase(seamless_check2, "modified")
+t:setCase(seamless_check3, "modif-IF")
+t:setProgress(1, 0.1)
+t:setCount(12000, 12000)
+t:setCard({po}, false, "portal")
+t:setCard({pl}, false, "player")
+t:setCard({pd}, true , "other" )
+t:runMeasure()

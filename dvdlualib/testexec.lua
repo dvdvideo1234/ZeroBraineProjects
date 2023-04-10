@@ -9,8 +9,8 @@ metaexec.ffins = "Test finished all %d cases successfully!"
 metaexec.ffina = "Test finished %d of %d cases successfully!"
 metaexec.ffina = "Test case <%s> with fail rate: %d%%"
 metaexec.ffspc = {"Estimation for [%", "s]: %s"}
-metaexec.nocnt = "No test card count `stCard.Cnt` for test ID # %d!"
-metaexec.nocyc = "No test card cycles `stCard.Cyc` for test ID # %d!"
+metaexec.nocnt = "No test card count `stCard.%s` for test ID # %d!"
+metaexec.nocyc = "No test card cycles `stCard.%s` for test ID # %d!"
 metaexec.nocas = "Test case name <%s> already done under ID # %s!"
 metaexec.sumry = "Overall testing rank list summary:"
 metaexec.tfail = "The following tests have failed. Please check!"
@@ -32,8 +32,9 @@ local function getMaxNameLength(stEstim)
   end; return iMax, iEnd
 end
 
-function testexec.Case(fFunction, sName)
-  return {Function = fFunction, Na = sName, Tm = {}, Ro = {}}
+function testexec.Case(fFunc, sName)
+  if(type(fFunc) ~= "function") then return end
+  return {Func = fFunc, Na = sName, Tm = {}, Ro = {}}
 end
 
 function testexec.Time(sec)
@@ -44,7 +45,7 @@ function testexec.Time(sec)
   return (metaexec.secto):format(iH,iM,iS)
 end
 
-function testexec.Run(stCard,stEstim)
+function testexec.Run(stCard, stEstim)
   if(stCard.OuFile) then
     logStatus(metaexec.outfi:format(stCard.OuFile).."\n", nil)
     io.output(stCard.OuFile)
@@ -61,10 +62,10 @@ function testexec.Run(stCard,stEstim)
     local tstNam = tostring(tstVal[1] or ""); tstFail.Hash[tstNam] = {false, 0}
     local fooCnt = tonumber(stCard.FnCount) or 0 -- Amount of loops to be done for the test card
     local fooCyc = tonumber(stCard.FnCycle) or 0 -- Amount of loops to be done for the function tested
-    if(fooCnt < 1) then logStatus(metaexec.nocnt:format(ID).."\n", nil); return end
-    if(fooCyc < 1) then logStatus(metaexec.nocyc:format(ID).."\n", nil); return end
+    if(fooCnt < 1) then logStatus(metaexec.nocnt:format("FnCount",ID).."\n", nil); return end
+    if(fooCyc < 1) then logStatus(metaexec.nocyc:format("FnCycle",ID).."\n", nil); return end
     if(tCase[tstNam]) then logStatus(metaexec.nocas:format(tstNam, tostring(tCase[tstNam])).."\n", nil); return; end
-    logStatus("Testing case["..tostring(ID).."]: <"..tostring(tstNam)..">\n", nil)
+    logStatus("Testing case ["..tostring(ID).."]: <"..tostring(tstNam)..">\n", nil)
     if(type(fooVal) == "table") then
       local sA = ""; fooVal.N = tonumber(fooVal.N)
       if(not fooVal.N) then fooVal.N = #fooVal
@@ -98,7 +99,7 @@ function testexec.Run(stCard,stEstim)
         local tRoll = fnc.Ro[tstNam]
         local nTime = os.clock()
         for Ind = 1, fooCyc do -- N Cycles
-          local Rez = fnc.Function(fooVal)
+          local Rez = fnc.Func(fooVal)
           if(Rez == fooRes) then tRoll["PASS"] = tRoll["PASS"] + 1 else
             if(not tstFail.Hash[tstNam][1]) then
               tstFail.Hash[tstNam][1] = true
@@ -151,6 +152,44 @@ function testexec.Run(stCard,stEstim)
   logStatus(metaexec.sumry.."\n")
   for Key, Val in pairs(tFoo) do 
     logStatus("["..("%15.3f"):format(Val).."]: "..tostring(Key).."\n") end
+end
+
+local mtExec = {}
+      mtExec.__index = mtExec
+      mtExec.__defcase = "case[%d]"
+      mtExec.__defcard = "card[%d]"
+function testexec.New()
+  local self = {}; setmetatable(self, mtExec)
+  local stCard, stEstim = {}, {}
+  function self:runMeasure(stC, stE)
+    testexec.Run(stC or stCard, stE or stEstim)
+  end
+  function self:setCase(fActf, sName)
+    if(type(fActf) ~= "function") then return self end
+    local sName = tostring(sName or mtExec.__defcase:format(#stEstim + 1))
+    table.insert(stEstim, testexec.Case(fActf, sName)); return self
+  end
+  function self:setCard(vIn, vOut, sName)
+    local sName = tostring(sName or mtExec.__defcard:format(#stCard + 1))
+    table.insert(stCard, {sName, vIn, vOut}); return self
+  end
+  function self:setOutput(sName)
+    if(sName) then stCard.OuFile = tostring(sName) else stCard.OuFile = nil end
+    return self
+  end
+  function self:setProgress(vAct, vPer)
+    local nAct, nPer = tonumber(vAct), tonumber(vPer)
+    if(nAct and nAct >= 0) then stCard.AcTime  = nAct else stCard.AcTime  = nil end
+    if(nPer and nPer >= 0) then stCard.ExPercn = nPer else stCard.ExPercn = nil end
+    return self
+  end
+  function self:setCount(vCnt, vCyc)
+    local nCnt, nCyc = tonumber(vCnt), tonumber(vCyc)
+    if(nCnt and nCnt > 0) then stCard.FnCount = nCnt else stCard.FnCount = nil end
+    if(nCyc and nCyc > 0) then stCard.FnCycle = nCyc else stCard.FnCycle = nil end
+    return self
+  end
+  return self 
 end
 
 return testexec
