@@ -26,3 +26,4 @@ end
   
 com.logTable(beam, "beam")
 
+print(type(Vector(1,1,1)))
