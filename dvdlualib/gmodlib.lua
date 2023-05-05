@@ -173,6 +173,9 @@ function Vector(x,y,z)
   function self:GetNormalized() local m = self:Length()
     if(m ~= 0) then return Vector(self.x/m, self.y/m, self.z/m) end; return Vector()
   end
+  function self:Zero()
+    self.x, self.y, self.z = 0, 0, 0
+  end
   function self:Determinant(vec2, vec3)
     local a, b, c = self:Unpack()
     local d, e, f = vec2:Unpack()
