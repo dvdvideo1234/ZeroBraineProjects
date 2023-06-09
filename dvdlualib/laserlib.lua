@@ -640,6 +640,39 @@ local function SelectData(tArr, iID, bOvr)
 end
 
 --[[
+ * Copies data contents from a table
+ * tArr > Array to copy from
+ * tSkp > Skipped columns list
+ * tOny >  Selected columns list
+ * tCpn > Columns to use table.Copy for
+ * tPtr > Columns to use assignment for
+ * tDst > Destination table when provided
+]]
+local function CopyData(tArr, tSkp, tOny, tCpn, tPtr, tDst)
+  local tCpy = (tDst or {}) -- Destination data
+  for nam, vsm in pairs(tArr) do
+    if((not tOny or (tOny and tOny[nam])) or
+       (not tSkp or (tSkp and not tSkp[nam]))
+    ) then local typ = type(vsm)
+      if(typ == "boolean" or typ ==  "number" or
+         typ ==  "string" or typ ==  "Entity"
+      ) then -- Call direct assignment
+        tCpy[nam] = vsm -- Assign
+      elseif(typ == "Vector") then
+        tCpy[nam] = Vector(vsm) -- Construct
+      elseif(typ == "Angle") then
+        tCpy[nam] = Angle(vsm) -- Construct
+      else -- Table or other case
+        if(tPtr and tPtr[nam]) then
+          tCpy[nam] = vsm -- Assign enable
+        elseif(tCpn and tCpn[nam]) then
+          tCpy[nam] = table.Copy(vsm)
+        end -- Assign a copy table
+      end -- The snapshot is completed
+  end; end; return tCpy
+end
+
+--[[
  * Checks if The given vectors are orthogonal
  * vFw > Forward axis vector as direction
  * vUp > Up axis vector finishing the plane
@@ -677,7 +710,7 @@ function LaserLib.GetIcon(icon)
 end
 
 function LaserLib.GetData(key)
-  if(not key) then return DATA end
+  if(not key) then return end
   return DATA[key]
 end
 
@@ -1407,16 +1440,13 @@ function LaserLib.Configure(unit)
     local set = self.hitSetup
     if(not set) then return self end
     local arg, idx = {...}, self.hitSize
-    print("1SetArrays", idx, self.hitSize, set.Save, arg[1])
     if(set.Save == arg[1]) then return self end
     if(not set.Save) then set.Save = arg[1] end
     idx = (tonumber(idx) or 0) + 1
-    print("2SetArrays", idx, self.hitSize)
     for cnt = 1, set.Size do
       local wsr = set[cnt]
       wsr.Data[idx] = arg[cnt]
     end; self.hitSize = idx
-    print("3SetArrays", idx, self.hitSize)
     return self
   end
   --[[
@@ -2621,6 +2651,19 @@ local function Beam(origin, direct, width, damage, length, force)
   self.RaLength = self.BmLength -- Range of the length. Just like wire ranger
   self.NvLength = self.BmLength -- The actual beam lengths subtracted after iterations
   return self
+end
+
+--[[
+ * Creates a beam snapshot sopy
+ * Snapshots have the same property as origina
+ * They represent dedicated beam copy at a time
+ * tSkp > Keys that are not processed or skipped
+ * tCpy > Keys that use table.Copy on data
+ * tPtr > Keys that are assigned as references
+]]
+function mtBeam:GetCopy(tSkp, tOny, tCpn, tPtr, tDst)
+  local cpBeam = CopyData(self, tSkp, tOny, tCpn, tPtr, tDst)
+  setmetatable(cpBeam, mtBeam); return cpBeam
 end
 
 --[[
@@ -3898,41 +3941,33 @@ local gtACTORS = {
       local pss = ent.pssSources
       local src = beam:GetSource()
       if(LaserLib.IsValid(src)) then
-        local idx, ptm, pdt = beam.BmIdenty, pss.Time, pss.Data
+        local idx, pdt = beam.BmIdenty, pss.Data
         local pky = DATA.FPSS:format(src:EntIndex(), idx)
-        local dat, ord = pdt[pky], false; pss.Time = CurTime()
+        local dat = pdt[pky]; pss.Time = CurTime()
+        local tcb, tct, num = pss.Copy.Bm, pss.Copy.Tr, pss.Size
         if(dat) then -- Update beam entry
-          dat.Tim, dat.Src = pss.Time, src
-          dat.Pbm, dat.Ptr = beam, trace
+          dat.Ptr, dat.Src = CopyData(trace, nil, nil, nil, tct.P, dat.Ptr), src
+          dat.Pbm, dat.Tim = beam:GetCopy(nil, tcb.O, nil, tcb.P, dat.Pbm), pss.Time
         else -- Entry is missing so create one
-          pdt[pky] = {Tim = pss.Time, Src = src,
-                      Pbm = beam    , Ptr = trace}
-          dat = pdt[pky] -- Register beam entry
-          ord = true; pss.Size = (pss.Size + 1)
-        end
-        ent:SetNWVector("tr-pos1", trace.HitPos)
-        ent:SetNWVector("tr-nrm1", trace.HitNormal)
-        print("======",ent,src)
-        PrintTable(table.GetKeys(pdt))
-        print("======",pss.Time, ent.hitSize,trace.HitNormal)
-        for key, set in pairs(pdt) do
-          print(">", key)
-          if(ent:IsPass(set.Tim)) then
-            print("-------------------", key)
-            pdt[key] = nil; ord = true
-            pss.Size = (pss.Size - 1)
-          end
-        end
-        print("******")
-        if(ord) then
-          pss.Keys = table.GetKeys(pss.Data)
-          table.sort(pss.Keys, function(cr, nx)
-            return (pss.Data[cr].Tim > pss.Data[nx].Tim)
-          end) -- Record with the biggest time is more recent
+          pdt[pky] = {Pbm = beam:GetCopy(nil, tcb.O, nil, tcb.P), Src = src,
+                      Ptr = CopyData(trace, nil, nil, nil, tct.P)   , Tim = pss.Time}
+          dat = pdt[pky]; num = (num + 1)  -- Register beam entry
+        end -- Modify array size whenever item is added or removed
+        for key, set in pairs(pdt) do  -- Check all items
+          if(ent:IsPass(set.Tim)) then -- Time delta is passed
+            pdt[key] = nil   -- Remove and trigger ordering
+            num = (num - 1)  -- Reduce array size
+          end -- Entry is checked for removal
+        end -- Ordering is needed
+        if(num ~= pss.Size) then -- Order request
+          pss.Keys = table.GetKeys(pss.Data) -- Read key from key-table
+          table.sort(pss.Keys, function(cr, nx) -- Sort keys by data conten
+            return (pss.Data[cr].Tim > pss.Data[nx].Tim) -- Return boolean
+          end); pss.Size = num -- Record with the biggest time is more recent
         end -- Order by the time the beam hits the sensor
       end -- Work only for valir entity sources
-    end
-    beam.IsTrace = true
+    end -- Continue to trace the beam
+    beam.IsTrace = true -- Still tracing
     beam:SetActor(ent) -- Makes beam pass the dimmer
   end
 }
@@ -3988,7 +4023,6 @@ function LaserLib.DoBeam(entity, origin, direct, length, width, damage, force, u
   -- Ignore the trarting entity and register first node
   beam:SourceFilter(entity); beam:RegisterNode(origin)
   -- Start tracing the beam
-  --[[
   repeat
     -- Run the trace using the defined conditional parameters
     trace, target = beam:Trace(trace) -- Sample one trace and read contents
@@ -4190,7 +4224,6 @@ function LaserLib.DoBeam(entity, origin, direct, length, width, damage, force, u
     else beam:Finish(trace) end -- Trace did not hit anything to be bounced off from
   until(beam:IsFinish())
   -- Clear the water trigger refraction flag
-  ]]
   beam:ClearWater()
   -- The beam ends inside transparent entity
   if(not beam:IsNode()) then return beam end

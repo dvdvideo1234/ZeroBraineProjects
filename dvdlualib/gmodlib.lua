@@ -379,6 +379,26 @@ function table.Empty(tT)
   for k,v in pairs(tT) do tT[k] = nil end
 end
 
+function table.Copy(tab, lookup)
+	if(tab == nil) then return nil end
+
+	local copy, lookup = {}, (lookup or {})
+	setmetatable(copy, debug.getmetatable(tab))
+	for i, v in pairs(tab) do
+		if(not istable(v)) then
+			copy[i] = v
+		else
+			lookup[tab] = copy
+			if(lookup[v]) then
+				copy[i] = lookup[v]
+			else
+				copy[i] = table.Copy(v, lookup)
+			end
+		end
+	end
+	return copy
+end
+
 function CurTime() return os.clock() end
 
 function LocalPlayer()
@@ -424,8 +444,6 @@ function language.List() return __lang end
 
 function cleanup.Register() end
 
-function util.TraceLine() end
-
 function util.IsValidModel(sMdl)
   if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
   return false
@@ -436,7 +454,31 @@ function util.GetPlayerTrace(pl)
 end
 
 function util.TraceLine(dt)
-  return {}
+  return {
+    Entity = 0,
+    Fraction = 1,
+    FractionLeftSolid = 0,
+    Hit = false,
+    HitBox = 0,
+    HitGroup = 0,
+    HitNoDraw = false,
+    HitNonWorld = false,
+    HitNormal = Vector(0,0,1),
+    HitPos = Vector(10,10,10),
+    HitSky = false,
+    HitTexture = "**studio**",
+    HitWorld = false,
+    MatType = 0,
+    Normal = 0.5,
+    PhysicsBone = 0,
+    StartPos = Vector(0,0,0),
+    SurfaceProps = 0,
+    StartSolid = false,
+    AllSolid = false,
+    SurfaceFlags = 0,
+    DispFlags = 0,
+    Contents = 0    
+  }
 end
 
 function util.AddNetworkString()

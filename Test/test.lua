@@ -6,22 +6,18 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 require("turtle")
 require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 
-local TOOL = {GetStackMode = function() return 11 end, SetOperation = function(...) print("MODE", ...) end}
-local CLIENT = false
-local asmlib = {GetCorrectID = print}
-local SMode = 77
+local tst = nil
 
 
-function TOOL:Deploy()
-  if(CLIENT) then return end
-  self:SetOperation(asmlib.GetCorrectID(self:GetStackMode(),SMode))
+local function GetMinContraptionUndoDelay(def)
+	return (tonumber(tst) or def or 0)
 end
 
-TOOL:Deploy()
+print(GetMinContraptionUndoDelay())
