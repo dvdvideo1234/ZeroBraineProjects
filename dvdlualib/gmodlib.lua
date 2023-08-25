@@ -674,3 +674,5 @@ end
 --- INITIALIZATION ---
 
 CreateConVar("gmod_language")
+
+require("gmodlib/math")
