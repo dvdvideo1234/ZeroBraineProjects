@@ -6,10 +6,10 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
-      dir.addBase("D:/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
-
--- sConstant stuff
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      
+-- Constant stuff
 local com = require("common")
 local bom = {0xEF, 0xBB, 0xBF}
 
