@@ -25,6 +25,8 @@ else
 end
 
 local r, t = f:read("*line"), {}
+if(r and r:len() > 0) then
+  error("First row must be empty ["..r.."]") end
 while(r) do
   local n = com.stringTrim(r)
   if(n:len() > 0 and n:sub(1,1) ~= "#") then
