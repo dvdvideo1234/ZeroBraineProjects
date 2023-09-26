@@ -7,26 +7,12 @@ local drpath = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
-require("turtle")
-require("gmodlib")
+      
 local com = require("common")
-local cpx = require("complex")
+local pth = com.stringGetChunkPath()
 
+local inf = require("GmodLangResource/PROPERTIES/info")
 local bom = {0xEF, 0xBB, 0xBF} -- UTF-8-BOM
-local tP = {
-  Base = "D:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/",
-  Prop = "resource/localization/",
-  {
-    Dir  = "TrackAssemblyTool_GIT",
-    Name = "trackassembly",
-    Tran = {"en", "bg", "ru", "fr", "ja"}
-  },
-  {
-    Dir  = "LaserSTool",
-    Name = "laseremitter",
-    Tran = {"en", "bg"}
-  }
-}; tP.Size = #tP
 
 function checkProperties(src)
   local src, nam, f = tostring(src or ""), nil
@@ -34,7 +20,7 @@ function checkProperties(src)
     nam = src:gsub("\\", "/"):gsub("/+", "/")
     f = assert(io.open(src, "r"))
   else
-    nam = com.stringGetChunkPath().."PROPERTIES\\"..src
+    nam = pth.."PROPERTIES/"..src
     nam = nam:gsub("\\", "/"):gsub("/+", "/")
     f = assert(io.open(nam, "r"))
   end
@@ -65,14 +51,16 @@ function checkProperties(src)
   f:close()
 end
 
-for i = 1, tP.Size do
-  local v = tP[i]
-  print("Checking: "..v.Name.."@"..v.Dir)
-  for k = 1, #v.Tran do
-    local p = tP.Base..v.Dir.."/"..
-              tP.Prop..v.Tran[k]..
-              "/"..v.Name..".properties"
-    checkProperties(p)
-    print("OK: "..p)
+for i = 1, inf.Size do
+  local v = inf[i]
+  for n = 1, v.Name.Size do
+    print("Checking: "..v.Name[n].."@"..v.Dir)
+    for k = 1, v.Tran.Size do
+      local p = inf.Base..v.Dir.."/"..
+                inf.Prop..v.Tran[k]..
+                "/"..v.Name[n]..".properties"
+      checkProperties(p)
+      print("OK: "..p)
+    end
   end
 end
