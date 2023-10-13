@@ -14,7 +14,7 @@ metaexec.nocyc = "No test card cycles `stCard.%s` for test ID # %d!"
 metaexec.nocas = "Test case name <%s> already done under ID # %s!"
 metaexec.sumry = "Overall testing rank list summary:"
 metaexec.tfail = "The following tests have failed. Please check!"
-metaexec.ffail = "%7.3f Time: %8.3f (%8.3f[s]) %15.3f[c/s] Failed: %d"
+metaexec.ffail = "%10.3f Time: %10.3f (%10.3f[s]) %15.3f[c/s] Failed: %d"
  
 local function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg)); return ...

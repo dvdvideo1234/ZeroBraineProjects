@@ -11,57 +11,34 @@ local drpath = require("directories")
 require("dvdlualib/gmodlib")
 local testexec = require("testexec")
 
-local po = ents.Create("seamless_portal")
-local pl = ents.Create("player")
-local pd = ents.Create("other")
+local mtc = "*" -- Fast check
 
-local seamless_table = {
-	["seamless_portal"] = true,
-	["player"         ] = true
-}
+local function mat1(tab)
+  local mat = tab[1]
+  if(mat:sub(1,1) == mtc and mat:sub(-1,-1) == mtc) then
+    return true
+  end; return false
+end
 
-local seamless_check1 = function(t)
-  local e = t[1]
-  return not (e:GetClass() == "seamless_portal" or e:GetClass() == "player")
-end -- for traces
-
-local function seamless_check2(t)
-    local e = t[1]
-	return not (seamless_table[e:GetClass()] or false)
-end -- for traces
-
-local function seamless_check3(t)
-    local e = t[1]
-  if(seamless_table[e:GetClass()]) then return false end; return true
-end -- for traces
-
---[[
-local stEstim = {
-  testexec.Case("original", seamless_check1),
-  testexec.Case("modified", seamless_check2),
-  testexec.Case("modif-IF", seamless_check3)
-}
-
-local stCard = {
-  AcTime = 1, -- Draw a dot after X seconds
-  FnCount = 2000, -- Amount of loops to be done for the test card
-  FnCycle = 3000, -- Amount of loops to be done for the function tested
-  ExPercn = .1, -- Draw percent completed every X margin ( 0 to 1 )
-  {"portal", {po}, false},
-  {"player", {pl}, false},
-  {"other" , {pd}, true}
-}
-
-testexec.Run(stCard,stEstim)
-]]
+local function mat2(tab)
+  local mat = tab[1]
+  if(mat:find("%*.*%*")) then
+    return true
+  end; return false
+end
 
 t = testexec.New()
-t:setCase(seamless_check1, "original")
-t:setCase(seamless_check2, "modified")
-t:setCase(seamless_check3, "modif-IF")
+t:setCase(mat1, "original")
+t:setCase(mat2, "modified")
 t:setProgress(1, 0.1)
 t:setCount(12000, 12000)
-t:setCard({po}, false, "portal")
-t:setCard({pl}, false, "player")
-t:setCard({pd}, true , "other" )
+t:setCard({""}, false, "1")
+t:setCard({"asdf"}, false, "2")
+t:setCard({"*asdf"}, false , "3" )
+t:setCard({"asdf*"}, false , "4" )
+t:setCard({"*asdf*"}, true , "5" )
+t:setCard({"**asdf*"}, true , "6" )
+t:setCard({"*asdf**"}, true , "7" )
+t:setCard({"**asdf**"}, true , "8" )
+
 t:runMeasure()
