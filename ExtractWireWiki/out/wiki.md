@@ -35,7 +35,7 @@ Beware of the E2 [performance][ref_perfe2] though. You can create feedback loops
 |       Beam trace parameters       | Out | Description |
 |:----------------------------------|:---:|:------------|
 |![image][ref-e]:`laserGetTraceAllSolid`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] all solid flag|
-|![image][ref-e]:`laserGetTraceContents`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit surface [`CONTENTS`][ref-14-CONTENTS] enums|
+|![image][ref-e]:`laserGetTraceContents`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit [`surface contents enums`][ref-14-surface contents enums]|
 |![image][ref-e]:`laserGetTraceDispFlags`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] hit [`surface displacement flag enums`][ref-11-surface displacement flag enums]|
 |![image][ref-e]:`laserGetTraceEntity`(![image][ref-n])|![image][ref-e]|Returns the [`last trace`][ref-1-last trace] [`entity`][ref-2-entity]|
 |![image][ref-e]:`laserGetTraceFraction`(![image][ref-n])|![image][ref-n]|Returns the [`last trace`][ref-1-last trace] used hit fraction `[0-1]`|
@@ -146,7 +146,7 @@ Beware of the E2 [performance][ref_perfe2] though. You can create feedback loops
 [ref-11-surface displacement flag enums]: https://wiki.facepunch.com/gmod/Enums/DISPSURF
 [ref-12-dissolve]: https://developer.valvesoftware.com/wiki/Env_entity_dissolver
 [ref-13-refraction]: https://en.wikipedia.org/wiki/Refraction
-[ref-14-CONTENTS]: https://wiki.facepunch.com/gmod/Enums/CONTENTS
+[ref-14-surface contents enums]: https://wiki.facepunch.com/gmod/Enums/CONTENTS
 [ref-15-surface flags enums]: https://wiki.facepunch.com/gmod/Enums/SURF
 [ref-16-hit group enums]: https://wiki.facepunch.com/gmod/Enums/HITGROUP
 [ref-17-reflection]: https://en.wikipedia.org/wiki/Reflection_(physics)
