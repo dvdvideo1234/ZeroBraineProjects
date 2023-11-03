@@ -10,11 +10,26 @@ local dir = require("directories")
 
 local com = require("common")
 
-local sEXP = "trackasmlib"
+local sEXP = "laserbeam"
 
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)
 local DSC = wikilib.readDescriptions(API)
+
+if(not DSC and API.FILE.sors) then
+  local sors = API.FILE.sors
+  for i = 1, #sors do
+    API.FILE.base = sors[i]
+    DSC = wikilib.readDescriptions(API)
+    if(DSC) then
+      print("[V]["..i.."]Desscription: "..sors[i])
+      break
+    else
+      print("[X]["..i.."]Desscription: "..sors[i])
+    end
+  end
+end
+
 local sProj = "/ZeroBraineProjects/ExtractWireWiki"
 
 local YTK = "pl12yIDPm3M"

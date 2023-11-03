@@ -13,11 +13,13 @@ require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 
-local tst = nil
+local t = {["test"] = false}
 
-
-local function GetMinContraptionUndoDelay(def)
-	return (tonumber(tst) or def or 0)
+local function toNumber(src)
+  return (tonumber(src) or 0)
 end
 
-print(GetMinContraptionUndoDelay())
+local r = t["test"]
+local e = r and r.ID or 0
+
+print(toNumber(e))
