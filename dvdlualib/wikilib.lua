@@ -910,7 +910,7 @@ function wikilib.printDescriptionTable(API, DSC, iN)
       tsk[1], tsk[2] = wikilib.common.stringTrim(tsk[1]), wikilib.common.stringTrim(tsk[2])
       local k, len = 1, tsk[2]:len(); obj = sS..tsk[1]
       while(k <= len) do local sbc = tsk[2]:sub(k,k)
-        if(sbc == "x") then -- Wiremod type is three letters
+        if(wikiType.spec[sbc]) then -- Wiremod type is three letters
           sbc = tsk[2]:sub(k, k+2); k = (k + 2) -- The end of the current type
         end; k = (k + 1)
         vars = vars..sS..sbc

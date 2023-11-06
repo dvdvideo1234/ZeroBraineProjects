@@ -52,7 +52,18 @@ local wikiType =
     ["stcontrol"]  = 19,
     ["void"]       = 20,
     ["..."]        = 21
-  }
+  },
+  spec = {}
 }
+
+for idx = 1, #wikiType.list do
+  local v = wikiType.list[idx]
+  if(v[1]:len() > 1) then
+    local ty = v[1]:sub(1,1)
+    if(not wikiType.spec[ty]) then
+      wikiType.spec[ty] = true
+    end
+  end
+end
 
 return wikiType
