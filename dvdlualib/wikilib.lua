@@ -550,13 +550,7 @@ function wikilib.readDescriptions(API)
   if(fC) then local bS, fC = pcall(fC)
     if(bS) then bS, fC = pcall(fC)
       if(bS) then
-        if(wikilib.common.isDryTable(fC)) then
-          wikilib.common.logStatus("wikilib.readDescriptions[3]: Compilation chunk:\n")
-          wikilib.common.logStatus("--------------------------------------------\n")
-          wikilib.common.logStatus(sC)
-          wikilib.common.logStatus("--------------------------------------------\n")
-          error("wikilib.readDescriptions[3]: Description empty !")
-        elseif(not fC) then
+        if(not fC) then
           wikilib.common.logStatus("wikilib.readDescriptions[3]: Compilation chunk:\n")
           wikilib.common.logStatus("--------------------------------------------\n")
           wikilib.common.logStatus(sC)
@@ -707,9 +701,13 @@ function wikilib.convApiE2Description(API, sE2)
         sP = wikilib.common.stringTrim(tInfo.par[iD])
         if(sP ~= "void") then -- No parameter functions
           local nS, nE = sP:find("%s+")
+          local vS, vE = sP:find("...", 1, true)
           if(nS and nE) then
             sT = sP:sub(1, nS - 1)
             sP = sP:sub(nE + 1, -1)
+          elseif(vS and vE) then -- Vararg
+            sT = sP:sub(vS, vE)
+            sP = sP:sub(vE + 1, -1)
           else -- Thre is only a parameter name with no type
             if(bNfr) then -- Type defaults to number when enabled
               sT = "number"

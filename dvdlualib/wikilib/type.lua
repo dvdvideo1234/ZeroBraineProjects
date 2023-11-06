@@ -27,7 +27,8 @@ local wikiType =
     {"xwl", "WireLink"     , "[Wire link] class"       , "wirelink"  , "https://github.com/wiremod/wire/wiki/Expression-2#Wirelink"},
     {"xft", ""             , "[Flash tracer] class"    , "ftrace"    , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/FTracer"},
     {"xsc", ""             , "[State controller] class", "stcontrol" , "https://github.com/dvdvideo1234/ControlSystemsE2/wiki/StControl"},
-    {"xxx", ""             , "[Void] data type"        , "void"      , "https://en.wikipedia.org/wiki/Void_type"}
+    {"xxx", ""             , "[Void] data type"        , "void"      , "https://en.wikipedia.org/wiki/Void_type"},
+    {"...", ""             , "[Vararg] data type"      , "..."       , "https://www.lua.org/pil/5.2.html"}
   },
   idx = { -- Used for finding data type description by its wire internal E2 type name
     ["angle"]      = 1,
@@ -49,7 +50,8 @@ local wikiType =
     ["wirelink"]   = 17,
     ["ftrace"]     = 18,
     ["stcontrol"]  = 19,
-    ["void"]       = 20
+    ["void"]       = 20,
+    ["..."]        = 21
   }
 }
 

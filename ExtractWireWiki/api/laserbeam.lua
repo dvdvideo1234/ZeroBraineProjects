@@ -22,8 +22,8 @@ local API = {
   },
   FILE = {
     exts = "laserbeam",
-    sors = {"F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/LaserSTool", "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/LaserSTool"},
-    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/LaserSTool",
+    sors = {"D:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/LaserSTool", "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/LaserSTool"},
+    base = "D:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/LaserSTool",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     repo = "github.com/dvdvideo1234/LaserSTool",

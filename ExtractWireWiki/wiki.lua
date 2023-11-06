@@ -6,33 +6,31 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase()
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+
+local sEXP = "primitive"-- laserbeam, primitive, tanktracktool
 
 local com = require("common")
-
-local sEXP = "laserbeam"
-
 local wikilib = require("wikilib")
 local API = require("api/"..sEXP)
+local sProj = "/ZeroBraineProjects/ExtractWireWiki"
+local YTK = "pl12yIDPm3M"
+
 local DSC = wikilib.readDescriptions(API)
 
 if(not DSC and API.FILE.sors) then
   local sors = API.FILE.sors
   for i = 1, #sors do
-    API.FILE.base = sors[i]
+    API.FILE.base = tostring(sors[i] or "")
     DSC = wikilib.readDescriptions(API)
     if(DSC) then
-      print("[V]["..i.."]Desscription: "..sors[i])
+      print("[V]["..i.."]Description: "..API.FILE.base)
       break
     else
-      print("[X]["..i.."]Desscription: "..sors[i])
+      print("[X]["..i.."]Description: "..API.FILE.base)
     end
   end
 end
-
-local sProj = "/ZeroBraineProjects/ExtractWireWiki"
-
-local YTK = "pl12yIDPm3M"
 
 local sB = com.normFolder(dir.getBase()..sProj)
 local f, s = io.open(sB.."out/wiki.md", "wb")
