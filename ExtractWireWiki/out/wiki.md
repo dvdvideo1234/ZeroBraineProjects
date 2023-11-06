@@ -5,7 +5,7 @@ E2Helper.Descriptions["primitiveGetVars(e)"] = ""
 
 |        General functions         | Out | Description |
 |:---------------------------------|:---:|:------------|
-|`primitiveEdit`(![image][ref-e],![image][ref-s],![image][ref-.],![image][ref-.],![image][ref-.])|![image][ref-xxx]||
+|`primitiveEdit`(![image][ref-e],![image][ref-s],![image][ref-...])|![image][ref-xxx]||
 |`primitiveGetVars`(![image][ref-e])|![image][ref-t]||
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
