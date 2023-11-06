@@ -53,7 +53,17 @@ local wikiType =
     ["void"]       = 20,
     ["..."]        = 21
   },
-  spec = {}
+  spec = {}, -- Wiremod internal type being a special case start character
+  delm = { -- Patterns used for splitting parameters and types for functions
+    -- IN  (parameter info, pattern start, pattern end)
+    -- OUT (parameter type, parameter name)
+    ["%s"] = function(p, s, e) -- When having a space
+      return p:sub(1, s - 1), p:sub(e + 1, -1)
+    end,
+    ["%.%.%."] = function(p, s, e) -- When using varargs
+      return p:sub(s, e), p:sub(e + 1, -1)
+    end
+  }
 }
 
 for idx = 1, #wikiType.list do

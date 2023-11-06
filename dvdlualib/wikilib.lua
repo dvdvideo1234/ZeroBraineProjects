@@ -700,15 +700,18 @@ function wikilib.convApiE2Description(API, sE2)
       for iD = 1, nN do
         sP = wikilib.common.stringTrim(tInfo.par[iD])
         if(sP ~= "void") then -- No parameter functions
-          local nS, nE = sP:find("%s+")
-          local vS, vE = sP:find("...", 1, true)
-          if(nS and nE) then
-            sT = sP:sub(1, nS - 1)
-            sP = sP:sub(nE + 1, -1)
-          elseif(vS and vE) then -- Vararg
-            sT = sP:sub(vS, vE)
-            sP = sP:sub(vE + 1, -1)
-          else -- Thre is only a parameter name with no type
+          local bN = true -- Thre is only a parameter name with no type
+          for dP, dF in pairs(wikiType.delm) do
+            local vS, vE = sP:find(dP)
+            if(vS and vE) then -- Pattern is matched. Read borders
+              local suc, st, sn = pcall(dF, sP, vS, vE)
+              if(not suc) then -- Fail during the finction call
+                wikilib.common.logStatus("wikilib.convApiE2Description: API tokenize ["..dP.."]<"..sP.."> !")
+                wikilibError("Token convertor invalid ["..dP.."]<"..sP.."> !", bErr)
+              end; sT, sP, bN = st, sn, false; break -- Use the first pattern matched
+            end
+          end
+          if(bN) then -- Thre is only a parameter name with no type
             if(bNfr) then -- Type defaults to number when enabled
               sT = "number"
             else -- Generate error otherwise
