@@ -16,11 +16,24 @@ local col = require("colormap")
 local crm = require("chartmap")
 
 -------------------------------------
-local tS = {Act = {}, Tim = {}, Dat = {}, Cor ={}}
-local dX, dY = 1, 5
+-- https://en.wikipedia.org/wiki/List_of_refractive_indices
+-- http://hyperphysics.phy-astr.gsu.edu/hbase/geoopt/dispersion.html#c1
+local step = 10 -- Fused qartz
+local LaserLib, DATA = {}, {}
+
+DATA.WVIS = { 380, 750}      -- General wavelength limists for visible light
+DATA.WMAP = { 0.8, 3}        -- Dispersion wavelenght mapping for refractive index
+DATA.SODD = 589.29           -- General wavelength for sodium line used for dispersion
+DATA.SOMR = 100
+
+local nIndx = 1.458
+
+-------------------------------------
+
+local dX, dY = 0.1, 0.0025
 local W , H = 1000, 600
-local minX, maxX = -20, 80
-local minY, maxY = -5, 255
+local minX, maxX = DATA.WMAP[1], DATA.WMAP[2]
+local minY, maxY = 1.45, 1.47
 local greyLevel  = 200
 local intX  = crm.New("interval","WinX", minX, maxX, 0, W)
 local intY  = crm.New("interval","WinY", minY, maxY, H, 0)
@@ -29,56 +42,34 @@ local clB = colr(col.getColorBlueRGB())
 local clR = colr(col.getColorRedRGB())
 local clBlk = colr(col.getColorBlackRGB())
 local scOpe = crm.New("scope"):setInterval(intX, intY):setBorder(minX, maxX, minY, maxY)
-      scOpe:setSize(W, H):setColor(clBlk, clGry, clBlk, clBlk):setDelta(dX, dY)
-
--------------------------------------------------------
-local spd = 0.5
-local tT = {}; for i = 1, 10000 do tT[i] = (i-20) * 0.5 end
-
-local function SineBetween(from, to, speed, vtm)
-    return math.Clamp(math.Remap(math.sin(vtm*speed)+0.005, -1, 1, from, to), from, to)
-end
-
-local function RampBetween(from, to, speed, vtm)
-	local tim = speed * vtm 
-	local frc = tim - math.floor(tim)
-	local mco = math.abs(2 * (frc - 0.5))
-	return math.Remap(mco, 0, 1, from, to)
-end
-
-tS.Act[1] = function(t)
-  return SineBetween(0, 255, spd, t)
-end
-
-tS.Act[2] = function(t)
-  return RampBetween(0, 255, spd* 0.16, t)
-end
-
-tS.Cor[1] = clB
-tS.Cor[2] = clR
+      scOpe:setSize(W, H):setColor(clBlk, clGry):setDelta(dX, dY)
 
 -------------------------------------------------------
 
-for ifo = 1, #tS.Act do
-  local now = os.clock()
-  local foo = tS.Act[ifo]
-  for ism = 1, #tT do
-    local x = tT[ism]
-    local s, y = pcall(foo, x)
-    if(not s) then error("Error: ["..ifo.."]["..ism.."]: "..y) end
-    if(not y) then error("Value: ["..ifo.."]["..ism.."]: Empty sample!") end
-    if(not tS.Dat[ifo]) then tS.Dat[ifo] = {} end
-      tS.Dat[ifo][ism] = cpx.getNew(x,y)
-    if(ifo == 1) then tS.Dat.Siz = ism end
+function LaserLib.GetIndex(wave, nidx)
+  local wr, mr, ms = DATA.WVIS, DATA.WMAP, DATA.SOMR
+  local s = math.Remap(DATA.SODD, wr[1], wr[2], mr[1], mr[2])
+  local x = math.Remap(wave, wr[1], wr[2], mr[1], mr[2])
+  local h = -math.log(s) / ms -- Index `nidx` for sodium line
+  return (-math.log(x) / ms - h) + nidx
+end
+
+local tS, w = {}, DATA.WVIS[1] 
+
+while(w <= DATA.WVIS[2]) do
+  local wr, mr = DATA.WVIS, DATA.WMAP
+  local x = math.Remap(w, wr[1], wr[2], mr[1], mr[2])
+  local c = cpx.getNew(x, LaserLib.GetIndex(w, nIndx))
+  if(w == 700 or w == 590 or w == 400) then
+    print(c, w)
   end
-  tS.Tim[ifo] = 1000 * (os.clock() - now)
-  tS.Act.Siz = ifo
-  com.logStatus("Finish function ["..ifo.."] registration: "..tostring(foo))
+  w = w + step
+  table.insert(tS, c)
 end
+
+-------------------------------------------------------
 
 if(tS) then
-  com.logStatus("The amount of samples registered: "..tostring(tS.Dat.Siz))
-  com.logStatus("The amount of functions registered: "..tostring(tS.Act.Siz))
   com.logStatus("The distance between every grey line on X is: "..tostring(dX))
   com.logStatus("The distance between every grey line on Y is: "..tostring(dY))
   
@@ -90,20 +81,15 @@ if(tS) then
     pncl(Cl); line(x1, y1, x2, y2)
   end; cpx.setAction("ab", drawComplexLine)
 
-  open("Graph compare")
+  open("Complex Bezier curve")
   size(W,H); zero(0, 0); updt(false) -- disable auto updates
 
   scOpe:Draw(false, false, true, true)
 
-  for ifo = 1, tS.Act.Siz do
-    com.logStatus("Function time: "..tostring(tS.Tim[ifo]).."ms")
-    for ism = 1, tS.Dat.Siz-1 do
-      local c = tS.Dat[ifo][ism]
-      local n = tS.Dat[ifo][ism+1]
-      c:Action("ab",  n, tS.Cor[ifo] or clR)
-      scOpe:drawComplexPoint(c)
-      updt(); wait(0.001)
-    end
+  for iD = 1, (#tS-1) do
+    tS[iD]:Action("ab", tS[iD+1], clR)
+    scOpe:drawComplexPoint(tS[iD])
+    updt(); wait(0.05)
   end 
   
   wait()

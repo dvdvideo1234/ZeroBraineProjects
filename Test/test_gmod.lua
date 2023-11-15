@@ -5,7 +5,8 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/Programs/LuaIDE").setBase(1)
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 function SetNumSlider(cPanel, sVar, vDig, vMin, vMax, vDev)
   local nMin, nMax, nDev = tonumber(vMin), tonumber(vMax), tonumber(vDev)
