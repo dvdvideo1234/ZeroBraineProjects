@@ -6,9 +6,9 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
-local sEXP = "primitive"-- laserbeam, primitive, tanktracktool
+local sEXP = "tanktracktool"-- laserbeam, primitive, tanktracktool
 
 local com = require("common")
 local wikilib = require("wikilib")

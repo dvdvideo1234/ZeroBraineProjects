@@ -13,13 +13,13 @@ local API = {
     wdsc = true   -- (TRUE) Outputs the direct wire-based description in the markdown overhead
   },
   POOL = {
-    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13},algn={"<","|","<"}},
-    {name="APPLY",cols={"Crankshaft extensions", "Out", "Description"},size={46,5,13},algn={"<","|","<"}},
-    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13},algn={"<","|","<"}}
+    {name="MAKE",cols={"Instance creator", "Out", "Description"},size={34,5,13},algn={"|","|","|"}},
+    {name="APPLY",cols={"Entity extensions", "Out", "Description"},size={46,5,13},algn={"|","|","|"}},
+    {name="SETUP",cols={"General functions", "Out", "Description"},size={34,5,13},algn={"|","|","|"}}
   },
   FILE = {
     exts = "tanktracktool",
-    base = "F:/GIT/TankTrackTool",
+    base = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TankTrackTool-ME",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     repo = "https://github.com/shadowscion/Primitive",

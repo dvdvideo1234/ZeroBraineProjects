@@ -19,7 +19,7 @@ local API = {
   },
   FILE = {
     exts = "primitive",
-    base = "F:/GIT/Primitive",
+    base = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Primitive-ME",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     repo = "https://github.com/shadowscion/Primitive",

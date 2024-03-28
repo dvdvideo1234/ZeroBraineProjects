@@ -11,7 +11,14 @@ local drpath = require("directories")
 require("gmodlib")
 local common = require("common")
 
-local str = "local function TimerRestart   (oArea,tKeys,defTable,anyMessage)"
-local ptr = ""
+local str = "Volume in drive C is OS"
+local ptr = "drive.*$"
+local exp = str:match("drive.*$"):gsub("drive%s", "")
 
-print("P:", str:match(ptr))
+print("E:", exp)
+
+for w in exp:gmatch("([^/]+)") do
+  print("P:", w)
+end
+
+

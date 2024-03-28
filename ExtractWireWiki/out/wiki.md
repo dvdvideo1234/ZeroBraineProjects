@@ -1,12 +1,25 @@
-﻿E2Helper.Descriptions["primitiveEdit(es...)"] = ""
-E2Helper.Descriptions["primitiveGetVars(e)"] = ""
+﻿E2Helper.Descriptions["tanktracktoolCanUseValue()"] = "Checks the calm down whenever a value can be used"
+E2Helper.Descriptions["tanktracktoolCopyValues(e:e)"] = "Copies the track values from one entity to another"
+E2Helper.Descriptions["tanktracktoolCreate(nssva)"] = "Create an entity with given class by request"
+E2Helper.Descriptions["tanktracktoolGetLinkNames(e:)"] = "Returns an array containing the link names"
+E2Helper.Descriptions["tanktracktoolResetValues(e:)"] = "Resets the entity internal track values"
+E2Helper.Descriptions["tanktracktoolSetLinks(e:t)"] = "Updates the entity links from the table passed"
+E2Helper.Descriptions["tanktracktoolSetValue(e:s...)"] = "Updates the values under the specified index"
 
 ------------------------------------------------------------------------------------------------------------------------
 
+|              Entity extensions               | Out | Description |
+|:--------------------------------------------:|:---:|:-----------:|
+|![image][ref-e]:`tanktracktoolCopyValues`(![image][ref-e])|![image][ref-xxx]|Copies the track values from one entity to another|
+|![image][ref-e]:`tanktracktoolGetLinkNames`(![image][ref-xxx])|![image][ref-r]|Returns an array containing the link names|
+|![image][ref-e]:`tanktracktoolResetValues`(![image][ref-xxx])|![image][ref-xxx]|Resets the entity internal track values|
+|![image][ref-e]:`tanktracktoolSetLinks`(![image][ref-t])|![image][ref-xxx]|Updates the entity links from the table passed|
+|![image][ref-e]:`tanktracktoolSetValue`(![image][ref-s],![image][ref-...])|![image][ref-xxx]|Updates the values under the specified index|
+
 |        General functions         | Out | Description |
-|:---------------------------------|:---:|:------------|
-|`primitiveEdit`(![image][ref-e],![image][ref-s],![image][ref-...])|![image][ref-xxx]||
-|`primitiveGetVars`(![image][ref-e])|![image][ref-t]||
+|:--------------------------------:|:---:|:-----------:|
+|`tanktracktoolCanUseValue`(![image][ref-xxx])|![image][ref-n]|Checks the calm down whenever a value can be used|
+|`tanktracktoolCreate`(![image][ref-n],![image][ref-s],![image][ref-s],![image][ref-v],![image][ref-a])|![image][ref-e]|Create an entity with given class by request|
 
 [ref-a]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-a.png
 [ref-b]: https://raw.githubusercontent.com/dvdvideo1234/ZeroBraineProjects/master/ExtractWireWiki/types/type-b.png

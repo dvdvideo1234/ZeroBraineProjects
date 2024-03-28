@@ -5,7 +5,10 @@ local dir = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      dir.addBase("D:/Programs/LuaIDE").setBase(1)
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+
+local mathRandom = math.random
 
 local com = require("common")
 local cpx = require("complex")
@@ -14,56 +17,69 @@ require("dvdlualib/trackasmlib")
 local asmlib = trackasmlib
 asmlib.InitBase("track","assembly")
 asmlib.SetLogControl(1000, false)
-local mathMax = math.max
-local mathMin = math.min
-local mathCeil = math.ceil
-local mathFloor = math.floor
-local function IsHere(a) return a~= nil end
-local function GetBorder(a) return a~= nil end
-local function GetReport1(a) return "X1" end
-local function GetReport2(a) return "X2" end
-local function LogInstance(...) print(...) end
-local function languageGetPhrase(...) print(...) end
 
-function SetNumSlider(cPanel, sVar, vDig, vMin, vMax, vDev)
-  local nMin, nMax, nDev = tonumber(vMin), tonumber(vMax), tonumber(vDev)
-  local sTool, tConv = asmlib.GetOpVar("TOOLNAME_NL"), asmlib.GetOpVar("STORE_CONVARS") or {}
-  local sKey, sNam, bExa, nDum = asmlib.GetNameExp(sVar)
-  local sBase = (bExa and sNam or ("tool."..sTool.."."..sNam))
-  local iDig = mathFloor(mathMax(tonumber(vDig) or 0, 0))
-  -- Read minimum value form the first available
-  if(not IsHere(nMin)) then nMin, nDum = GetBorder(sKey)
-    if(not IsHere(nMin)) then nMin = asmlib.GetAsmConvar(sVar, "MIN")
-      if(not IsHere(nMin)) then -- Mininum bound is not located
-        nMin = -mathAbs(2 * mathFloor(asmlib.GetAsmConvar(sVar, "FLT")))
-        LogInstance("(L) Miss "..GetReport1(sKey))
-      else LogInstance("(L) Cvar "..GetReport2(sKey, nMin)) end
-    else LogInstance("(L) List "..GetReport2(sKey, nMin)) end
-  else LogInstance("(L) Args "..GetReport2(sKey, nMin)) end
-  -- Read maximum value form the first available
-  if(not IsHere(nMax)) then nDum, nMax = GetBorder(sKey)
-    if(not IsHere(nMax)) then nMax = asmlib.GetAsmConvar(sVar, "MAX")
-      if(not IsHere(nMax)) then -- Maximum bound is not located
-        nMax = mathAbs(2 * mathCeil(asmlib.GetAsmConvar(sVar, "FLT")))
-        LogInstance("(H) Miss "..GetReport1(sKey))
-      else LogInstance("(H) Cvar "..GetReport2(sKey, nMax)) end
-    else LogInstance("(H) List "..GetReport2(sKey, nMax)) end
-  else LogInstance("(H) Args "..GetReport2(sKey, nMax)) end
-  -- Read default value form the first available
-  if(not IsHere(nDev)) then nDev = tConv[sKey]
-    if(not IsHere(nDev)) then nDev = asmlib.GetAsmConvar(sVar, "DEF")
-      if(not IsHere(nDev)) then nDev = nMin + ((nMax - nMin) / 2)
-        LogInstance("(D) Miss "..GetReport1(sKey))
-      else LogInstance("(D) Cvar "..GetReport2(sKey, nDev)) end
-    else LogInstance("(D) List "..GetReport2(sKey, nDev)) end
-  else LogInstance("(D) Args "..GetReport2(sKey, nDev)) end
-  -- Create the slider control using the min, max and default
-  print(sMenu, sKey, nMin, nMax, iDig, nDev)
-  
-  
-  local sMenu, sTtip = languageGetPhrase(sBase.."_con"), languageGetPhrase(sBase)
-  local pItem = cPanel:NumSlider(sMenu, sKey, nMin, nMax, iDig)
-  pItem:SetTooltip(sTtip); pItem:SetDefaultValue(nDev); return pItem
+
+function QuickSort(tD, iL, iH)
+  if(not (iL and iH and (iL > 0) and (iL < iH))) then
+    print("Data dimensions mismatch"); return nil end
+  local iM = mathRandom(iH-iL-1)+iL-1
+  tD[iL], tD[iM] = tD[iM], tD[iL]; iM = iL
+  local vM, iC = tD[iL].Val, (iL + 1)
+  while(iC <= iH)do
+    if(tD[iC].Val < vM) then iM = iM + 1
+      tD[iM], tD[iC] = tD[iC], tD[iM]
+    end; iC = iC + 1
+  end; tD[iL], tD[iM] = tD[iM], tD[iL]
+  QuickSort(tD,iL,iM-1)
+  QuickSort(tD,iM+1,iH)
 end
 
-SetNumSlider(nil, "test", 3, -5, 5)
+function Sort(tTable, tCols)
+  local tS, iS = {Size = 0}, 0
+  local tC = tCols or {}; tC.Size = #tC
+  for key, rec in pairs(tTable) do
+    iS = (iS + 1); tS[iS] = {}
+    tS[iS].Key, tS[iS].Rec = key, rec
+    if(asmlib.IsTable(rec)) then tS[iS].Val = "" -- Allocate sorting value
+      if(tC.Size > 0) then -- When there are sorting column names provided
+        for iI = 1, tC.Size do local sC = tC[iI]; if(not asmlib.IsHere(rec[sC])) then
+          print("Key <"..sC.."> not found on the current record"); return nil end
+            tS[iS].Val = tS[iS].Val..tostring(rec[sC]) -- Concatenate sort value
+        end -- When no sort columns are provided sort by the keys instead
+      else tS[iS].Val = key end -- When column list not specified use the key
+    else tS[iS].Val = rec end -- When the element is not a table use the value
+  end; tS.Size = iS; QuickSort(tS,1,iS); return tS
+end
+
+local t = {
+    Name = function(a) return tostring(a or "") end, 
+    Age = function(a) return (tonumber(a) or 0) end,
+    {Name = "D", Age = 50},
+    {Name = "A", Age = 5},
+    {Name = "C"}, -- , Age = 15
+    {Name = "B", Age = 45}
+  }
+
+com.logTable(Sort(t, {"Age", "Name"}), "ORG")
+
+function sort_on_values(t,...)
+    local idx, cnt = {...}, select("#", ...)
+    for i = 1, cnt do idx[i] = idx[i] or 1 end
+    local a, b, c = unpack(idx)
+    table.sort(t, function (u, v)
+      return
+        (cnt >= 1 and  t[a](u[a])< t[a](v[a])) or
+        (cnt >= 2 and (t[a](u[a])==t[a](v[a]) and t[b](u[b])< t[b](v[b]))) or
+        (cnt >= 3 and (t[a](u[a])==t[a](v[a]) and t[b](u[b])==t[b](v[b]) and t[c](u[c])< t[c](v[c])))
+    end)
+end
+
+sort_on_values(t, "Name", "Age")
+
+com.logTable(t, "NEW")
+
+
+
+
+
+
