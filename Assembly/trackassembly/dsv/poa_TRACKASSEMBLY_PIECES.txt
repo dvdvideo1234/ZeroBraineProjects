@@ -1,5 +1,17 @@
 # SynchronizeDSV:(Anyone_s_Horrible_Trackpack@PIECES) 24-03-30 19:06:40 [ LUA ]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+#[1]	0,0,0	0,0,0	0,90,0
+#[2]	1,2,3	1,2,3	0,-90,0
+#[3]	1,2,3	1,2,3	0,90,0
+#[4]	4,5,6	0,0,0	0,-90,0
+#[5]	4,5,6	1,2,3	0,90,0
+#[6]	4,5,6	1,2,3	0,-90,0
+#[7]	0,0,0	0,0,0	0,90,0
+#[8]	1,2,3	1,2,3	0,-90,0
+#[9]	1,2,3	1,2,3	0,90,0
+#[10]	4,5,6	0,0,0	0,-90,0
+#[11]	4,5,6	1,2,3	0,90,0
+#[12]	4,5,6	1,2,3	0,-90,0
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	1	"NULL"	"!test1"	"0,90,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	2	"NULL"	"!1,2,3"	"0,-90,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	3	"NULL"	"1,2,3"	"0,90,0"	"NULL"
@@ -12,3 +24,4 @@ TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	9	"!
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	10	"!4,5,6"	"!test1"	"0,-90,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	11	"!4,5,6"	"!1,2,3"	"0,90,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/props_lab/blastdoor001b.mdl"	"POA Test"	"Door"	12	"!4,5,6"	"1,2,3"	"0,-90,0"	"NULL"
+

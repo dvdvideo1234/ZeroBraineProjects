@@ -48,7 +48,7 @@ for i = 1, oRec.Size do
   local sP = asmlib.StringPOA(tPOA.P, "V")
   local sO = asmlib.StringPOA(tPOA.O, "V")
   local sA = asmlib.StringPOA(tPOA.A, "A")
-  print(sP, sO, sA)
+  print("["..i.."]", sP, sO, sA)
 end
 
 
