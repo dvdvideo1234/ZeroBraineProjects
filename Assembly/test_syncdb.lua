@@ -6,7 +6,7 @@ local drpath = require("directories")
                      "ZeroBraineProjects/dvdlualib",
                      "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local common = require("common")
 

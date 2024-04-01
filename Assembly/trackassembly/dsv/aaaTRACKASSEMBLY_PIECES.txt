@@ -1,4 +1,4 @@
-# SynchronizeDSV:(aaa@PIECES) 21-12-20 14:23:22 [ LUA ]
+# SynchronizeDSV:(aaa@PIECES) 24-04-01 11:50:23 [ LUA ]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/props_phx/construct/metal_plate1x2.mdl"	"TEST"	"TEST-NAME"	1	"NULL"	"0,-47.455105,1.482965"	"0,-90,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/props_phx/construct/metal_plate1x2.mdl"	"TEST"	"TEST-NAME"	2	"NULL"	"0, 47.455105,1.482965"	"0, 90,0"	"NULL"

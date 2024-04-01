@@ -502,7 +502,7 @@ end
 function file.Open(n, m)
   local s, f, e = pcall(io.open, n, m)
   if(not (s and f)) then
-    return logStatus("fileOpen: "..tostring(e), nil)
+    return logStatus("file.Open: "..tostring(e), nil)
   end
   local mt = getmetatable(f)
   mt.Read  = mt.read
@@ -521,7 +521,7 @@ end
 function file.Exists(n)
   local a,b,c,d = pcall(os.execute, "cd "..n)
   if(a and b and c == "exit" and d == 0) then return true end
-  local s, f = pcall(fileOpen, n, "rb")
+  local s, f = pcall(file.Open, n, "rb")
   if(s and f) then f:close(); return true; end
   return false
 end
@@ -533,9 +533,9 @@ function file.Delete(n)
 end
 
 function file.Append(n, c)
-  local F = fileOpen(n, "ab")
+  local F = file.Open(n, "ab")
   if(not F) then
-    return logStatus("fileAppend: Nofile: "..tostring(n), nil)
+    return logStatus("file.Append: Nofile: "..tostring(n), nil)
   end
   F:seek("end")
   F:write(tostring(c))
