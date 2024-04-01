@@ -51,6 +51,22 @@ function Color(r,g,b,a)
   return {r=r,g=g,b=b,a=a}
 end
 
+local UselessModels = {
+	"_gesture", "_anim", "_gst", "_pst", "_shd", "_ss", "_posture", "_anm",
+	"ghostanim","_paths", "_shared", "anim_", "gestures_", "shared_ragdoll_"
+}
+
+function IsUselessModel( modelname )
+	modelname = modelname:lower()
+	if (not modelname:find( ".mdl", 1, true ) ) then return true end
+	for k, v in ipairs( UselessModels ) do
+		if ( modelname:find( v, 1, true ) ) then
+			return true
+		end
+	end
+	return false
+end
+
 function AddCSLuaFile(...)
   common.logStatus("AddCSLuaFile: {"..table.concat({...}, "|").."}")
 end
