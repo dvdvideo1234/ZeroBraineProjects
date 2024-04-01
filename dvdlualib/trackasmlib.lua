@@ -2289,11 +2289,7 @@ function LocatePOA(oRec, ivPoID)
       end -- Transform angle is decoded from the model and stored in the cache
       -------------------- Point --------------------
       if(sP) then -- There is still something to be processed after the registration
-        if(sP:sub(1,1) == sD) then -- Check whenever point is disabled
-          ReloadPOA(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ]) -- Override with the origin
-        elseif(IsNull(sP) or IsBlank(sP)) then -- In case of empty value or null use the origin
-          ReloadPOA(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ])  -- Override with the origin
-        elseif(sP:sub(1,1) == sE) then -- POA point must extracted from the model
+        if(sP:sub(1,1) == sE) then -- POA point must extracted from the model
           local sK = sP:sub(2, -1) -- Read point transform ID and try to index
           local vP = GetAttachmentByID(oRec.Slot, sK) -- Read transform point
           if(IsHere(vP)) then ReloadPOA(vP[cvX], vP[cvY], vP[cvZ]) -- Load point into POA
@@ -2301,6 +2297,10 @@ function LocatePOA(oRec, ivPoID)
             if(IsNull(sK) or IsBlank(sK)) then ReloadPOA(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ]) else
               if(not DecodePOA(sK)) then LogInstance("Point mismatch "..GetReport2(ID, oRec.Slot)) end
           end end -- Decode the transformation when is not null or empty string
+        elseif(sP:sub(1,1) == sD) then -- Check whenever point is disabled
+          ReloadPOA(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ]) -- Override with the origin
+        elseif(IsNull(sP) or IsBlank(sP)) then -- In case of empty value or null use the origin
+          ReloadPOA(tPOA.O[cvX], tPOA.O[cvY], tPOA.O[cvZ])  -- Override with the origin
         else -- When the point is empty use the origin otherwise decode the value
           if(not DecodePOA(sP)) then LogInstance("Point mismatch "..GetReport2(ID, oRec.Slot)) end
         end -- Try decoding the transform point when not applicable
@@ -3159,8 +3159,8 @@ end
 --------------------------- PIECE QUERY -----------------------------
 
 function CacheQueryPiece(sModel)
-  if(not IsModel(sModel)) then
-    LogInstance("Model invalid <"..sModel..">"); return nil end
+  --if(not IsModel(sModel)) then
+  --  LogInstance("Model invalid <"..sModel..">"); return nil end
   local makTab = GetBuilderNick("PIECES"); if(not IsHere(makTab)) then
     LogInstance("Missing table builder"); return nil end
   local defTab = makTab:GetDefinition(); if(not IsHere(defTab)) then
@@ -3861,7 +3861,6 @@ function ProcessDSV(sDelim)
       end local iD, makTab = 1, GetBuilderID(1)
       while(makTab) do local defTab = makTab:GetDefinition()
         if(not fileExists(sDv..fForm:format(irf, sNt..defTab.Nick), "DATA")) then
-            print(sDv..fForm:format(prf, sNt..defTab.Nick))
           if(fileExists(sDv..fForm:format(prf, sNt..defTab.Nick), "DATA")) then
             if(not ImportDSV(defTab.Nick, true, prf)) then
               LogInstance("Failed "..GetReport2(prf, defTab.Nick)) end
