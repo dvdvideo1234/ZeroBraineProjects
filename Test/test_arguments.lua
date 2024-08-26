@@ -7,19 +7,18 @@ local drpath = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/LuaIDE")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
-
-require("gmodlib")
-local common = require("common")
-
-local str = "Volume in drive C is OS"
-local ptr = "drive.*$"
-local exp = str:match("drive.*$"):gsub("drive%s", "")
-
-print("E:", exp)
-
-for w in exp:gmatch("([^/]+)") do
-  print("P:", w)
+      
+function GetReport(...)
+  local sD = GetOpVar("OPSYM_VERTDIV")
+  local tV, sV = {...}, sD
+  local nV = select("#", ...)
+  if(nV == 0) then return sV end
+  for iV = 1, nV do
+    sV = sD..tV[iV]
+  end; return sV
 end
 
 
-[fp][ur][no][%w]+%s+[%w_]+%s*%(.-%)
+print(GetReport(nil, nil, 4, 1, nil, 3))
+
+

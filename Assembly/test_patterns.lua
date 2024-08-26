@@ -6,6 +6,6 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki").addBase("D:/Programs/LuaIDE").setBase(1)
                 
-local p = "%s*asmlib%.WorkshopID%s*"
-local w = "asmlib.WorkshopID(myAddon , \"287012681\")"
+local p = "[fp][ur][no][%w]+%s+[%w_]+%s*%(.-%)"
+local w = "function istargetcolumnname(vctable in varchar2, vcname in varchar2) return boolean;"
 print(w:find(p))

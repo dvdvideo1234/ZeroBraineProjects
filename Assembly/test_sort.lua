@@ -79,7 +79,3 @@ sort_on_values(t, "Name", "Age")
 com.logTable(t, "NEW")
 
 
-
-
-
-

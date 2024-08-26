@@ -11,34 +11,28 @@ local drpath = require("directories")
 require("dvdlualib/gmodlib")
 local testexec = require("testexec")
 
-local mtc = "*" -- Fast check
-
-local function mat1(tab)
-  local mat = tab[1]
-  if(mat:sub(1,1) == mtc and mat:sub(-1,-1) == mtc) then
-    return true
-  end; return false
+function GetEmpty1(sBas, fEmp, iCnt, ...)
+  local tV = {...}
+  local iC = math.floor(tonumber(iCnt) or 0)
+  return iC
 end
 
-local function mat2(tab)
-  local mat = tab[1]
-  if(mat:find("%*.*%*")) then
-    return true
-  end; return false
+function GetEmpty2(sBas, fEmp, iCnt, ...)
+  local tV = {...}
+  local iC = select("#", ...)
+  return iC
 end
-
 t = testexec.New()
-t:setCase(mat1, "original")
-t:setCase(mat2, "modified")
+t:setCase(GetEmpty1, "original")
+t:setCase(GetEmpty2, "modified")
 t:setProgress(1, 0.1)
 t:setCount(12000, 12000)
-t:setCard({""}, false, "1")
-t:setCard({"asdf"}, false, "2")
-t:setCard({"*asdf"}, false , "3" )
-t:setCard({"asdf*"}, false , "4" )
-t:setCard({"*asdf*"}, true , "5" )
-t:setCard({"**asdf*"}, true , "6" )
-t:setCard({"*asdf**"}, true , "7" )
-t:setCard({"**asdf**"}, true , "8" )
-
+t:setCard({nil, nil, 3, 1, 2, 3}, 3, "0")
+t:setCard({nil, nil, 3, nil, 2, 3}, 3, "1")
+t:setCard({nil, nil, 3, 1, nil, 3}, 3, "2")
+t:setCard({nil, nil, 3, 1, 2, nil}, 3, "3")
+t:setCard({nil, nil, 3, nil, nil, 3}, 3, "1")
+t:setCard({nil, nil, 3, 1, nil, nil}, 3, "2")
+t:setCard({nil, nil, 3, nil, 2, nil}, 3, "3")
+t:setCard({nil, nil, 3, nil, nil, nil}, 3, "3")
 t:runMeasure()

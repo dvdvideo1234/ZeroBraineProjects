@@ -4,7 +4,10 @@ local dir = require("directories")
                   "CorporateProjects",
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
-                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/Programs/LuaIDE").setBase(1)
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE")
+      dir.setBase(2)
 
 require("gmodlib")
 require("trackasmlib")
@@ -13,10 +16,6 @@ local asmlib = trackasmlib
 
 if(asmlib.InitBase("track","assembly")) then
 local gaTimerSet = ("/"):Explode("CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1")
-asmlib.SetIndexes("V","x","y","z")
-asmlib.SetIndexes("A",1,2,3)
-asmlib.SetIndexes("WV",1,2,3)
-asmlib.SetIndexes("WA",1,2,3)
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
 asmlib.SetOpVar("LOG_DEBUGEN",true)
 asmlib.SetLogControl(10000, false)
@@ -24,7 +23,7 @@ asmlib.SetOpVar("TRACE_MARGIN", 0.5)
 asmlib.SetOpVar("DIRPATH_BAS","E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/Assembly/")
 local gtArgsLogs  = {"", false, 0}
 
-asmlib.CreateTable("PIECES",{
+asmlib.NewTable("PIECES",{
   Timer = gaTimerSet[1],
   Index = {{1},{4},{1,4}},
   Trigs = {
@@ -104,7 +103,7 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.CreateTable("PHYSPROPERTIES",{
+asmlib.NewTable("PHYSPROPERTIES",{
   Timer = gaTimerSet[3],
   Index = {{1},{2},{1,2}},
   Trigs = {
@@ -167,7 +166,7 @@ asmlib.CreateTable("PHYSPROPERTIES",{
   [3] = {"NAME"  , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-local a = asmlib.GetTable("PIECES"):Select():Where({1,"aaa"}):Order(-2)
+local a = asmlib.GetBuilderNick("PIECES"):Select():Where({1,"aaa"}):Order(-2)
 local d = a:GetDefinition()
 local c = a:GetCommand()
 a:Index({1,2},{3,4})

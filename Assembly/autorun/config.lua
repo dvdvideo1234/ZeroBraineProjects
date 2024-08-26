@@ -4,6 +4,8 @@ local pcall                         = pcall
 local Time                          = CurTime
 local IsValid                       = IsValid
 local tobool                        = tobool
+local istable                       = istable
+local isfunction                    = isfunction
 local tonumber                      = tonumber
 local tostring                      = tostring
 local SetClipboardText              = SetClipboardText
@@ -74,7 +76,6 @@ local spawnmenuAddToolMenuOption    = spawnmenu and spawnmenu.AddToolMenuOption
 if(SERVER) then
   AddCSLuaFile("trackassembly/trackasmlib.lua")
 end
---include("trackassembly/trackasmlib.lua")
 
 ------------ MODULE POINTER ------------
 
@@ -84,11 +85,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","8.746")
-asmlib.SetIndexes("V" ,1,2,3)
-asmlib.SetIndexes("A" ,1,2,3)
-asmlib.SetIndexes("WV",1,2,3)
-asmlib.SetIndexes("WA",1,2,3)
+asmlib.SetOpVar("TOOL_VERSION","8.775")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -156,40 +153,42 @@ asmlib.SetBorder(gsToolPrefL.."rtradmenu", -gnMaxRot, gnMaxRot)
 ------------ CONFIGURE LOGGING ------------
 
 asmlib.SetOpVar("LOG_DEBUGEN",false)
-asmlib.MakeAsmConvar("logsmax", 0, nil, gnIndependentUsed, "Maximum logging lines being written")
-asmlib.MakeAsmConvar("logfile", 0, nil, gnIndependentUsed, "File logging output flag control")
+asmlib.NewAsmConvar("logsmax", 1, nil, gnIndependentUsed, "Maximum logging lines being written")
+asmlib.NewAsmConvar("logfile", 0, nil, gnIndependentUsed, "File logging output flag control")
 asmlib.SetLogControl(asmlib.GetAsmConvar("logsmax","INT"), asmlib.GetAsmConvar("logfile","BUL"))
 asmlib.SettingsLogs("SKIP"); asmlib.SettingsLogs("ONLY")
 
 ------------ CONFIGURE NON-REPLICATED CVARS ------------ Client's got a mind of its own
 
-asmlib.MakeAsmConvar("modedb"   , "LUA", nil, gnIndependentUsed, "Database storage operating mode LUA or SQL")
-asmlib.MakeAsmConvar("devmode"  ,    0 , nil, gnIndependentUsed, "Toggle developer mode on/off server side")
-asmlib.MakeAsmConvar("maxtrmarg", 0.02 , nil, gnIndependentUsed, "Maximum time to avoid performing new traces")
-asmlib.MakeAsmConvar("maxmenupr",    5 , nil, gnIndependentUsed, "Maximum decimal places utilized in the control panel")
-asmlib.MakeAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
+asmlib.NewAsmConvar("modedb"   , "SQL", nil, gnIndependentUsed, "Database storage operating mode LUA or SQL")
+  asmlib.SetOpVar("MODE_DATABASE", asmlib.GetAsmConvar("modedb"   , "STR"))
+asmlib.NewAsmConvar("devmode"  ,    0 , nil, gnIndependentUsed, "Toggle developer mode on/off server side")
+asmlib.NewAsmConvar("maxtrmarg", 0.02 , nil, gnIndependentUsed, "Maximum time to avoid performing new traces")
+asmlib.NewAsmConvar("maxmenupr",    5 , nil, gnIndependentUsed, "Maximum decimal places utilized in the control panel")
+asmlib.NewAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
 
 ------------ CONFIGURE REPLICATED CVARS ------------ Server tells the client what value to use
 
-asmlib.MakeAsmConvar("maxmass"  , 50000 , nil, gnServerControled, "Maximum mass that can be applied on a piece")
-asmlib.MakeAsmConvar("maxlinear", 5000  , nil, gnServerControled, "Maximum linear offset of the piece")
-asmlib.MakeAsmConvar("maxforce" , 100000, nil, gnServerControled, "Maximum force limit when creating welds")
-asmlib.MakeAsmConvar("maxactrad", 200   , nil, gnServerControled, "Maximum active radius to search for a point ID")
-asmlib.MakeAsmConvar("maxstcnt" , 200   , nil, gnServerControled, "Maximum spawned pieces in stacking mode")
-asmlib.MakeAsmConvar("maxghcnt" , 1500  , nil, gnServerControled, "Maximum ghost pieces being spawned by client")
-asmlib.MakeAsmConvar("enwiremod", 1     , nil, gnServerControled, "Toggle the wire extension on/off server side")
-asmlib.MakeAsmConvar("enmultask", 1     , nil, gnServerControled, "Toggle the spawn multitasking on/off server side")
-asmlib.MakeAsmConvar("enctxmenu", 1     , nil, gnServerControled, "Toggle the context menu on/off in general")
-asmlib.MakeAsmConvar("enctxmall", 0     , nil, gnServerControled, "Toggle the context menu on/off for all props")
-asmlib.MakeAsmConvar("endsvlock", 0     , nil, gnServerControled, "Toggle the DSV external database file update on/off")
-asmlib.MakeAsmConvar("curvefact", 0.5   , nil, gnServerControled, "Parametric constant track curving factor")
-asmlib.MakeAsmConvar("curvsmple", 50    , nil, gnServerControled, "Amount of samples between two curve nodes")
-asmlib.MakeAsmConvar("spawnrate",  1    , nil, gnServerControled, "Maximum pieces spawned in every think tick")
-asmlib.MakeAsmConvar("bnderrmod","LOG"  , nil, gnServerControled, "Unreasonable position error handling mode")
-asmlib.MakeAsmConvar("maxfruse" ,  50   , nil, gnServerControled, "Maximum frequent pieces to be listed")
-asmlib.MakeAsmConvar("maxspmarg",  0    , nil, gnServerControled, "Maximum spawn distance new piece created margin")
-asmlib.MakeAsmConvar("dtmessage",  1    , nil, gnServerControled, "Time interval for server addressed messages")
-asmlib.MakeAsmConvar("*sbox_max"..gsLimitName, 1500, nil, gnServerControled, "Maximum number of tracks to be spawned")
+asmlib.NewAsmConvar("maxmass"  , 50000 , nil, gnServerControled, "Maximum mass that can be applied on a piece")
+asmlib.NewAsmConvar("maxlinear", 5000  , nil, gnServerControled, "Maximum linear offset of the piece")
+asmlib.NewAsmConvar("maxforce" , 100000, nil, gnServerControled, "Maximum force limit when creating welds")
+asmlib.NewAsmConvar("maxactrad", 200   , nil, gnServerControled, "Maximum active radius to search for a point ID")
+asmlib.NewAsmConvar("maxstcnt" , 200   , nil, gnServerControled, "Maximum spawned pieces in stacking mode")
+asmlib.NewAsmConvar("maxghcnt" , 1500  , nil, gnServerControled, "Maximum ghost pieces being spawned by client")
+asmlib.NewAsmConvar("enwiremod", 1     , nil, gnServerControled, "Toggle the wire extension on/off server side")
+asmlib.NewAsmConvar("enmultask", 1     , nil, gnServerControled, "Toggle the spawn multitasking on/off server side")
+asmlib.NewAsmConvar("enctxmenu", 1     , nil, gnServerControled, "Toggle the context menu on/off in general")
+asmlib.NewAsmConvar("enctxmall", 0     , nil, gnServerControled, "Toggle the context menu on/off for all props")
+asmlib.NewAsmConvar("endsvlock", 0     , nil, gnServerControled, "Toggle the DSV external database file update on/off")
+  asmlib.IsFlag("en_dsv_datalock", asmlib.GetAsmConvar("endsvlock", "BUL"))
+asmlib.NewAsmConvar("curvefact", 0.5   , nil, gnServerControled, "Parametric constant track curving factor")
+asmlib.NewAsmConvar("curvsmple", 50    , nil, gnServerControled, "Amount of samples between two curve nodes")
+asmlib.NewAsmConvar("spawnrate",  1    , nil, gnServerControled, "Maximum pieces spawned in every think tick")
+asmlib.NewAsmConvar("bnderrmod","LOG"  , nil, gnServerControled, "Unreasonable position error handling mode")
+asmlib.NewAsmConvar("maxfruse" ,  50   , nil, gnServerControled, "Maximum frequent pieces to be listed")
+asmlib.NewAsmConvar("maxspmarg",  0    , nil, gnServerControled, "Maximum spawn distance new piece created margin")
+asmlib.NewAsmConvar("dtmessage",  1    , nil, gnServerControled, "Time interval for server addressed messages")
+asmlib.NewAsmConvar("*sbox_max"..gsLimitName, 1500, nil, gnServerControled, "Maximum number of tracks to be spawned")
 
 ------------ CONFIGURE INTERNALS ------------
 
@@ -261,7 +260,7 @@ local conCallBack = asmlib.GetContainer("CALLBAC_FUNC")
         local mkTab, ID = asmlib.GetBuilderID(1), 1
         while(mkTab) do local sTim = arTim[ID]
           local defTab = mkTab:GetDefinition(); mkTab:TimerSetup(sTim)
-          asmlib.LogInstance("Timer apply "..asmlib.GetReport2(defTab.Nick,sTim),gtInitLogs)
+          asmlib.LogInstance("Timer apply "..asmlib.GetReport(defTab.Nick,sTim),gtInitLogs)
           ID = ID + 1; mkTab = asmlib.GetBuilderID(ID) -- Next table on the list
         end; asmlib.LogInstance("Timer update "..asmlib.GetReport(vN),gtInitLogs)
       end})
@@ -297,7 +296,7 @@ asmlib.SetOpVar("STRUCT_SPAWN",{
       local fmt = asmlib.GetOpVar("FORM_DRAWDBG")
       local fky = asmlib.GetOpVar("FORM_DRWSPKY")
       for iR = 1, 4 do
-        local out = asmlib.GetReport2(iR,tableConcat(tab[iR], ","))
+        local out = asmlib.GetReport(iR,tableConcat(tab[iR], ","))
         scr:DrawText(fmt:format(fky:format(key), typ, out, inf))
       end
     end,
@@ -509,11 +508,11 @@ if(CLIENT) then
   asmlib.ToIcon("bnderrmod_generic", "shape_square_link" )
   asmlib.ToIcon("bnderrmod_error"  , "shape_square_error")
   -- Workshop matching crap
-  asmlib.WorkshopID("SligWolf's Rerailers"        , "132843280")
-  asmlib.WorkshopID("SligWolf's Minitrains"       , "149759773")
+  asmlib.WorkshopID("SligWolf's Rerailer"         , "132843280")
+  asmlib.WorkshopID("SligWolf's Mini Trains"      , "149759773")
   asmlib.WorkshopID("SProps"                      , "173482196")
   asmlib.WorkshopID("Magnum's Rails"              , "290130567")
-  asmlib.WorkshopID("SligWolf's Railcar"          , "173717507")
+  asmlib.WorkshopID("SligWolf's Bodygroup Car"    , "173717507")
   asmlib.WorkshopID("Random Bridges"              , "343061215")
   asmlib.WorkshopID("StevenTechno's Buildings 1.0", "331192490")
   asmlib.WorkshopID("Mr.Train's M-Gauge"          , "517442747")
@@ -521,11 +520,11 @@ if(CLIENT) then
   asmlib.WorkshopID("Bobster's two feet rails"    , "489114511")
   asmlib.WorkshopID("G Scale Track Pack"          , "718239260")
   asmlib.WorkshopID("Ron's Minitrain Props"       , "728833183")
-  asmlib.WorkshopID("SligWolf's White Rails"      , "147812851")
-  asmlib.WorkshopID("SligWolf's Minihover"        , "147812851")
+  asmlib.WorkshopID("SligWolf's Modelpack"        , "147812851")
   asmlib.WorkshopID("Battleship's abandoned rails", "807162936")
   asmlib.WorkshopID("AlexCookie's 2ft track pack" , "740453553")
   asmlib.WorkshopID("CAP Walkway"                 , "180210973")
+  asmlib.WorkshopID("SligWolf's Tiny Hover Racer" , "1375275167")
   asmlib.WorkshopID("Joe's track pack"            , "1658816805")
   asmlib.WorkshopID("StevenTechno's Buildings 2.0", "1888013789")
   asmlib.WorkshopID("Modular Canals"              , "1336622735")
@@ -533,6 +532,7 @@ if(CLIENT) then
   asmlib.WorkshopID("Anyone's Horrible Trackpack" , "2194528273")
   asmlib.WorkshopID("Modular Sewer"               , "2340192251")
   asmlib.WorkshopID("RockMan's Fortification"     , "3071058065")
+  asmlib.WorkshopID("SligWolf's Suspension Train" , "3297918081")
 
   asmlib.SetAction("CLEAR_GHOSTS" , function() asmlib.ClearGhosts() end)
   asmlib.SetAction("CTXMENU_OPEN" , function() asmlib.IsFlag("tg_context_menu", true ) end)
@@ -594,21 +594,23 @@ if(CLIENT) then
 
   asmlib.SetAction("BIND_PRESS", -- Must have the same parameters as the hook
     function(oPly,sBind,bPress) local sLog = "*BIND_PRESS"
-      local oPly, actSwep, actTool = asmlib.GetHookInfo()
+      local oPly, acSw, acTo = asmlib.GetHookInfo()
       if(not asmlib.IsPlayer(oPly)) then
         asmlib.LogInstance("Hook mismatch",sLog); return nil end
+      if(not acTo) then -- Make sure we have a tool
+        asmlib.LogInstance("Tool missing",sLog); return nil end
       if(((sBind == "invnext") or (sBind == "invprev")) and bPress) then
         -- Switch functionality of the mouse wheel only for TA
         if(not inputIsKeyDown(KEY_LALT)) then
           asmlib.LogInstance("Active key missing",sLog); return nil end
-        if(not actTool:GetScrollMouse()) then
+        if(not acTo:GetScrollMouse()) then
           asmlib.LogInstance("(SCROLL) Scrolling disabled",sLog); return nil end
         local nDir = ((sBind == "invnext") and -1) or ((sBind == "invprev") and 1) or 0
-        actTool:SwitchPoint(nDir,inputIsKeyDown(KEY_LSHIFT))
+        acTo:SwitchPoint(nDir,inputIsKeyDown(KEY_LSHIFT))
         asmlib.LogInstance("("..sBind..") Processed",sLog); return true
       elseif((sBind == "+zoom") and bPress) then -- Work mode radial menu selection
         if(inputIsMouseDown(MOUSE_MIDDLE)) then -- Reserve the mouse middle for radial menu
-          if(not actTool:GetRadialMenu()) then -- Zoom is bind on the middle mouse button
+          if(not acTo:GetRadialMenu()) then -- Zoom is bind on the middle mouse button
             asmlib.LogInstance("("..sBind..") Menu disabled",sLog); return nil end
           asmlib.LogInstance("("..sBind..") Processed",sLog); return true
         end; return nil -- Need to disable the zoom when bind on the mouse middle
@@ -618,10 +620,12 @@ if(CLIENT) then
 
   asmlib.SetAction("DRAW_RADMENU", -- Must have the same parameters as the hook
     function() local sLog = "*DRAW_RADMENU"
-      local oPly, actSwep, actTool = asmlib.GetHookInfo()
+      local oPly, acSw, acTo = asmlib.GetHookInfo()
       if(not asmlib.IsPlayer(oPly)) then
         asmlib.LogInstance("Hook mismatch",sLog) return nil end
-      if(not actTool:GetRadialMenu()) then
+      if(not acTo) then -- Make sure we have a tool
+        asmlib.LogInstance("Tool missing",sLog); return nil end
+      if(not acTo:GetRadialMenu()) then
         asmlib.LogInstance("Menu disabled",sLog); return nil end
       if(inputIsMouseDown(MOUSE_MIDDLE)) then guiEnableScreenClicker(true) else
         guiEnableScreenClicker(false); asmlib.LogInstance("Release",sLog); return nil
@@ -631,8 +635,8 @@ if(CLIENT) then
       if(not actMonitor) then asmlib.LogInstance("Screen invalid",sLog); return nil end
       local nMd = asmlib.GetOpVar("MAX_ROTATION")
       local nDr, sM = asmlib.GetOpVar("DEG_RAD"), asmlib.GetOpVar("MISS_NOAV")
-      local nBr = (actTool:GetRadialAngle() * nDr)
-      local nK, nN = actTool:GetRadialSegm(), conWorkMode:GetSize()
+      local nBr = (acTo:GetRadialAngle() * nDr)
+      local nK, nN = acTo:GetRadialSegm(), conWorkMode:GetSize()
       local nR  = (mathMin(scrW, scrH) / (2 * gnRatio))
       local mXY = asmlib.NewXY(guiMouseX(), guiMouseY())
       local vCn = asmlib.NewXY(mathFloor(scrW/2), mathFloor(scrH/2))
@@ -676,19 +680,21 @@ if(CLIENT) then
 
   asmlib.SetAction("DRAW_GHOSTS", -- Must have the same parameters as the hook
     function() local sLog = "*DRAW_GHOSTS"
-      local oPly, actSwep, actTool = asmlib.GetHookInfo()
+      local oPly, acSw, acTo = asmlib.GetHookInfo()
       if(not asmlib.IsPlayer(oPly)) then
         asmlib.LogInstance("Hook mismatch",sLog); return nil end
-      local model = actTool:GetModel()
-      local ghcnt = actTool:GetGhostsDepth()
+      if(not acTo) then -- Make sure we have a tool
+        asmlib.LogInstance("Tool missing",sLog); return nil end
+      local model = acTo:GetModel()
+      if(not asmlib.IsModel(model)) then asmlib.ClearGhosts()
+        asmlib.LogInstance("Invalid model",sLog); return nil end
+      local ghcnt = acTo:GetGhostsDepth()
       local atGho = asmlib.GetOpVar("ARRAY_GHOST")
-      if(asmlib.IsModel(model)) then
-        if(not (asmlib.HasGhosts() and ghcnt == atGho.Size and atGho.Slot == model)) then
-          if(not asmlib.MakeGhosts(ghcnt, model)) then
-            asmlib.LogInstance("Ghosting fail",sLog); return nil end
-          actTool:ElevateGhost(atGho[1], oPly) -- Elevate the properly created ghost
-        end; actTool:UpdateGhost(oPly) -- Update ghosts stack for the local player
-      end
+      if(not (asmlib.HasGhosts() and ghcnt == atGho.Size and atGho.Slot == model)) then
+        if(not asmlib.NewGhosts(ghcnt, model)) then
+          asmlib.LogInstance("Ghosting fail",sLog); return nil end
+        acTo:ElevateGhost(atGho[1], oPly) -- Elevate the properly created ghost
+      end; acTo:UpdateGhost(oPly) -- Update ghosts stack for the local player
     end) -- Read client configuration
 
   asmlib.SetAction("OPEN_EXTERNDB", -- Must have the same parameters as the hook
@@ -717,7 +723,6 @@ if(CLIENT) then
         asmlib.LogInstance("Sheet invalid",sLog); return nil end
       pnSheet:SetParent(pnFrame)
       pnSheet:Dock(FILL)
-      local sOff = asmlib.GetOpVar("OPSYM_DISABLE")
       local sMis = asmlib.GetOpVar("MISS_NOAV")
       local sLib = asmlib.GetOpVar("NAME_LIBRARY")
       local sBas = asmlib.GetOpVar("DIRPATH_BAS")
@@ -792,8 +797,8 @@ if(CLIENT) then
           tDat[3] = tostring(tDat[3] or ""):Trim()
           tDat[3] = (asmlib.IsBlank(tDat[3]) and sMis or tDat[3])
           if(not asmlib.IsBlank(tDat[1]) and not asmlib.IsBlank(tDat[2])) then
-          if(nID and nID > 0 and pnRow and not tpText[1].m_NewDSV) then local iU = 1
-            while(pnRow.Columns[iU]) do pnRow:SetColumnText(iU, tDat[iU]); iU = iU + 1 end
+          if(nID and nID > 0 and pnRow and not tpText[1].m_NewDSV) then
+            for iU = 1, tpText.Size do pnRow:SetColumnText(iU, tDat[iU]) end
           else pnListView:AddLine(tDat[1], tDat[2], tDat[3]):SetTooltip(tDat[3])
           end; end; for iV = 1, tpText.Size do tpText[iV]:SetValue(""); tpText[iV]:SetText("") end
         end
@@ -820,7 +825,7 @@ if(CLIENT) then
         while(not bEOF) do
           sLine, bEOF = asmlib.GetStringFile(oDSV)
           if(not asmlib.IsBlank(sLine)) then local sKey, sPrg
-            if(sLine:sub(1,1) ~= sOff) then bAct = true else
+            if(not asmlib.IsDisable(sLine)) then bAct = true else
               bAct, sLine = false, sLine:sub(2,-1):Trim() end
             local nS, nE = sLine:find("%s+")
             if(nS and nE) then
@@ -848,6 +853,7 @@ if(CLIENT) then
         if(not oDSV) then pnFrame:Close()
           asmlib.LogInstance("DSV list missing",sLog..".ListView"); return nil end
         local tLine = pnListView:GetLines()
+        local sOff  = asmlib.GetOpVar("OPSYM_DISABLE")
         for iK, pnCur in pairs(tLine) do
           local sAct = ((pnCur:GetColumnText(1) == "V") and "" or sOff)
           local sPrf = pnCur:GetColumnText(2)
@@ -877,23 +883,17 @@ if(CLIENT) then
           if(not IsValid(pnMenu)) then pnFrame:Close()
             asmlib.LogInstance("Menu invalid",sLog..".ListView"); return nil end
           local mX, mY = inputGetCursorPos()
-          local iO, tOptions = 1, {
-            function()
-              local cC, cX, cY = 0, pnSelf:ScreenToLocal(mX, mY)
-              while(cX > 0) do cC = (cC + 1); cX = (cX - pnSelf:ColumnWidth(cC))
-              end; local nID, pnRow = pnSelf:GetSelectedLine()
-              if(nID and nID > 0 and pnRow) then SetClipboardText(pnRow:GetColumnText(cC)) end
-            end,
+          local tOptions = {
+            function() asmlib.SetListViewClipboard(pnSelf) end,
             function() SetClipboardText(convRow(pnLine)) end,
             function() pnLine:SetColumnText(1, ((pnLine:GetColumnText(1) == "V") and "X" or "V")) end,
             function() excgRow(pnLine); tpText[1].m_NewDSV = false end,
             function() excgRow(pnLine); tpText[1].m_NewDSV = true  end,
             function() pnSelf:RemoveLine(nIndex) end
-          }
-          while(tOptions[iO]) do local sO = tostring(iO)
+          }; tOptions.Size = #tOptions
+          for iO = 1, tOptions.Size do local sO = tostring(iO)
             local sDescr = languageGetPhrase("tool."..gsToolNameL..".pn_externdb_cm"..sO)
             pnMenu:AddOption(sDescr, tOptions[iO]):SetIcon(asmlib.ToIcon("pn_externdb_cm"..sO))
-            iO = iO + 1 -- Loop trough the functions list and add to the menu
           end; pnMenu:Open()
         end -- Process only the right mouse button
       end -- Populate the tables for every database
@@ -910,7 +910,7 @@ if(CLIENT) then
         local tInfo = pnSheet:AddSheet(defTab.Nick, pnTable, asmlib.ToIcon(defTab.Name))
         tInfo.Tab:SetTooltip(languageGetPhrase("tool."..gsToolNameL..".pn_externdb").." "..defTab.Nick)
         local tFile = fileFind(fDSV:format("*", defTab.Nick), "DATA")
-        if(asmlib.IsTable(tFile) and tFile[1]) then
+        if(istable(tFile) and tFile[1]) then
           local nF, nW, nH = #tFile, pnFrame:GetSize()
           xySiz.x, xyPos.x, xyPos.y = (nW - 6 * xyDsz.x), xyDsz.x, xyDsz.y
           xySiz.y = (((nH - 6 * xyDsz.y) - ((nF -1) * xyDsz.y) - 52) / nF)
@@ -932,40 +932,38 @@ if(CLIENT) then
                 local pnMenu = vguiCreate("DMenu")
                 if(not IsValid(pnMenu)) then pnFrame:Close()
                   asmlib.LogInstance("Menu invalid",sLog..".Button"); return nil end
-                local iO, tOptions = 1, {
+                local tOptions = {
                   function() SetClipboardText(pnSelf:GetText()) end,
                   function() SetClipboardText(sDsv) end,
                   function() SetClipboardText(defTab.Nick) end,
                   function() SetClipboardText(sFile) end,
                   function() SetClipboardText(asmlib.GetDateTime(fileTime(sFile, "DATA"))) end,
                   function() SetClipboardText(tostring(fileSize(sFile, "DATA")).."B") end,
-                  function()
-                    if(luapad) then
-                      asmlib.LogInstance("Edit "..asmlib.GetReport1(sFile), sLog..".Button")
-                      if(luapad.Frame) then luapad.Frame:SetVisible(true)
-                      else asmlib.SetAsmConvar(oPly, "*luapad", gsToolNameL) end
-                      luapad.AddTab("["..defTab.Nick.."]"..pnSelf:GetText(), fileRead(sFile, "DATA"), sDsv);
-                      if(defTab.Nick == "PIECES") then -- Load the categoty provider for this DSV
-                        local sCat = fDSV:format(sPref, "CATEGORY"); if(fileExists(sCat,"DATA")) then
-                          luapad.AddTab("[CATEGORY]"..pnSelf:GetText(), fileRead(sCat, "DATA"), sDsv);
-                        end -- This is done so we can distinguish between luapad and other panels
-                      end -- Luapad is designed not to be closed so we need to make it invisible
-                      luapad.Frame:SetVisible(true); luapad.Frame:Center()
-                      luapad.Frame:MakePopup(); conElements:Push({luapad.Frame})
-                    end
+                  function() -- Edit the database contents using the Luapad addon
+                    if(not luapad) then return end -- Luapad is not installed do nothing
+                    asmlib.LogInstance("Edit "..asmlib.GetReport(sFile), sLog..".Button")
+                    if(luapad.Frame) then luapad.Frame:SetVisible(true)
+                    else asmlib.SetAsmConvar(oPly, "*luapad", gsToolNameL) end
+                    luapad.AddTab("["..defTab.Nick.."]"..pnSelf:GetText(), fileRead(sFile, "DATA"), sDsv);
+                    if(defTab.Nick == "PIECES") then -- Load the category provider for this DSV
+                      local sCat = fDSV:format(sPref, "CATEGORY"); if(fileExists(sCat,"DATA")) then
+                        luapad.AddTab("[CATEGORY]"..pnSelf:GetText(), fileRead(sCat, "DATA"), sDsv);
+                      end -- This is done so we can distinguish between luapad and other panels
+                    end -- Luapad is designed not to be closed so we need to make it invisible
+                    luapad.Frame:SetVisible(true); luapad.Frame:Center()
+                    luapad.Frame:MakePopup(); conElements:Push({luapad.Frame})
                   end,
                   function() fileDelete(sFile)
-                    asmlib.LogInstance("Delete "..asmlib.GetReport1(sFile), sLog..".Button")
+                    asmlib.LogInstance("Delete "..asmlib.GetReport(sFile), sLog..".Button")
                     if(defTab.Nick == "PIECES") then local sCat = fDSV:format(sPref, "CATEGORY")
                       if(fileExists(sCat,"DATA")) then fileDelete(sCat) -- Delete category when present
-                        asmlib.LogInstance("Deleted "..asmlib.GetReport1(sCat), sLog..".Button") end
+                        asmlib.LogInstance("Deleted "..asmlib.GetReport(sCat), sLog..".Button") end
                     end; pnManage:Remove()
                   end
-                }
-                while(tOptions[iO]) do local sO = tostring(iO)
+                }; tOptions.Size = #tOptions
+                for iO = 1, tOptions.Size do local sO = tostring(iO)
                   local sDescr = languageGetPhrase("tool."..gsToolNameL..".pn_externdb_bt"..sO)
                   pnMenu:AddOption(sDescr, tOptions[iO]):SetIcon(asmlib.ToIcon("pn_externdb_bt"..sO))
-                  iO = iO + 1 -- Loop trough the functions list and add them to the menu
                 end; pnMenu:Open()
               end
             else asmlib.LogInstance("File missing ["..tostring(iP).."]",sLog..".Button") end
@@ -1050,7 +1048,7 @@ if(CLIENT) then
       pnComboBox:AddChoice(languageGetPhrase("tool."..gsToolNameL..".pn_srchcol_lb3"), makTab:GetColumnName(3), false, asmlib.ToIcon("pn_srchcol_lb3"))
       pnComboBox:AddChoice(languageGetPhrase("tool."..gsToolNameL..".pn_srchcol_lb4"), makTab:GetColumnName(4), false, asmlib.ToIcon("pn_srchcol_lb4"))
       pnComboBox.OnSelect = function(pnSelf, nInd, sVal, anyData)
-        asmlib.LogInstance("Selected "..asmlib.GetReport3(nInd,sVal,anyData),sLog..".ComboBox")
+        asmlib.LogInstance("Selected "..asmlib.GetReport(nInd,sVal,anyData),sLog..".ComboBox")
         pnSelf:SetValue(sVal)
       end
       ------------ ModelPanel ------------
@@ -1155,40 +1153,36 @@ if(CLIENT) then
         asmlib.SetAsmConvar(oPly, "model" , uiMod)
       end -- Copy the line model to the clipboard so it can be pasted with Ctrl+V
       pnListView.OnRowRightClick = function(pnSelf, nIndex, pnLine)
-        local cC, cX, cY = 0, inputGetCursorPos(); cX, cY = pnSelf:ScreenToLocal(cX, cY)
-        while(cX > 0) do cC = (cC + 1); cX = (cX - pnSelf:ColumnWidth(cC)) end
-        SetClipboardText(pnLine:GetColumnText(cC))
+        asmlib.SetListViewClipboard(pnSelf)
       end
       if(not asmlib.UpdateListView(pnListView,frUsed,nCount)) then
         asmlib.LogInstance("Populate the list view failed",sLog); return nil end
       -- The button database export by type uses the current active type in the ListView line
       pnButton.DoClick = function(pnSelf)
         asmlib.LogInstance("Click "..asmlib.GetReport(pnSelf:GetText()), sLog..".Button")
-        if(asmlib.GetAsmConvar("exportdb", "BUL")) then
-          if(inputIsKeyDown(KEY_LSHIFT)) then local sType
-            local iD, pnLine = pnListView:GetSelectedLine()
-            if(asmlib.IsHere(iD)) then sType = pnLine:GetColumnText(3)
-            else local model = asmlib.GetAsmConvar("model", "STR")
-              local oRec = asmlib.CacheQueryPiece(model)
-              if(asmlib.IsHere(oRec)) then sType = oRec.Type
-              else LogInstance("Not piece <"..model..">") end
-            end
-            asmlib.ExportTypeAR(sType)
-            asmlib.LogInstance("Export type "..asmlib.GetReport(sType), sLog..".Button")
-          else
-            asmlib.ExportCategory(3)
-            asmlib.ExportDSV("PIECES")
-            asmlib.ExportDSV("ADDITIONS")
-            asmlib.ExportDSV("PHYSPROPERTIES")
-            asmlib.LogInstance("Export instance", sLog..".Button")
+        if(not asmlib.GetAsmConvar("exportdb", "BUL")) then return end
+        if(inputIsKeyDown(KEY_LSHIFT)) then local sType
+          local iD, pnLine = pnListView:GetSelectedLine()
+          if(asmlib.IsHere(iD)) then sType = pnLine:GetColumnText(3)
+          else local model = asmlib.GetAsmConvar("model", "STR")
+            local oRec = asmlib.CacheQueryPiece(model)
+            if(asmlib.IsHere(oRec)) then sType = oRec.Type
+            else LogInstance("Not piece <"..model..">") end
           end
-          asmlib.SetAsmConvar(oPly, "exportdb", 0)
+          asmlib.ExportTypeAR(sType)
+          asmlib.LogInstance("Export type "..asmlib.GetReport(sType), sLog..".Button")
         else
-          if(inputIsKeyDown(KEY_LSHIFT)) then
-            local fW = asmlib.GetOpVar("FORM_GITWIKI")
-            guiOpenURL(fW:format("Additional-features"))
-          end
+          asmlib.ExportCategory(3)
+          asmlib.ExportDSV("PIECES")
+          asmlib.ExportDSV("ADDITIONS")
+          asmlib.ExportDSV("PHYSPROPERTIES")
+          asmlib.LogInstance("Export instance", sLog..".Button")
         end
+        asmlib.SetAsmConvar(oPly, "exportdb", 0)
+      end
+      pnButton.DoRightClick = function(pnSelf)
+        local fW = asmlib.GetOpVar("FORM_GITWIKI")
+        guiOpenURL(fW:format("Additional-features"))
       end
       -- Leave the TextEntry here so it can access and update the local ListView reference
       pnTextEntry.OnEnter = function(pnSelf)
@@ -1196,7 +1190,7 @@ if(CLIENT) then
         local sAbr, sCol = pnComboBox:GetSelected() -- Returns two values
               sAbr, sCol = tostring(sAbr or ""), tostring(sCol or "")
         if(not asmlib.UpdateListView(pnListView,frUsed,nCount,sCol,sPat)) then
-          asmlib.LogInstance("Update ListView fail"..asmlib.GetReport3(sAbr,sCol,sPat,sLog..".TextEntry")); return nil
+          asmlib.LogInstance("Update ListView fail"..asmlib.GetReport(sAbr,sCol,sPat,sLog..".TextEntry")); return nil
         end
       end
       pnFrame:SetVisible(true); pnFrame:Center(); pnFrame:MakePopup()
@@ -1210,7 +1204,7 @@ if(CLIENT) then
         asmlib.LogInstance("Extension disabled",sLog); return nil end
       if(not asmlib.GetAsmConvar("adviser", "BUL")) then
         asmlib.LogInstance("Adviser disabled",sLog); return nil end
-      local oPly, actSwep = asmlib.GetHookInfo("weapon_physgun")
+      local oPly, acSw = asmlib.GetHookInfo("weapon_physgun")
       if(not oPly) then asmlib.LogInstance("Hook mismatch",sLog); return nil end
       local hasghost = asmlib.HasGhosts(); asmlib.FadeGhosts(true)
       if(not inputIsMouseDown(MOUSE_LEFT)) then
@@ -1261,7 +1255,7 @@ if(CLIENT) then
                 if(asmlib.IsModel(trRec.Slot)) then -- The model has valid pre-cache
                   if(ghostcnt > 0) then -- The ghosting is enabled
                     if(not (hasghost and atGhosts.Size == 1 and trRec.Slot == atGhosts.Slot)) then
-                      if(not asmlib.MakeGhosts(1, trRec.Slot)) then
+                      if(not asmlib.NewGhosts(1, trRec.Slot)) then
                         asmlib.LogInstance("Ghosting fail",sLog); return nil end
                     end local eGho = atGhosts[1]; eGho:SetNoDraw(false)
                     eGho:SetPos(actSpawn.SPos); eGho:SetAngles(actSpawn.SAng)
@@ -1317,25 +1311,25 @@ if(CLIENT) then
         local fFoo, sLog = tArg[3], "*TWEAK_PANEL"
         local sDir, sSub = tostring(tArg[1]):lower(), tostring(tArg[2]):lower()
         local bS, lDir = pcall(tDat.Foo, sDir); if(not bS) then
-          asmlib.LogInstance("Fail folder "..asmlib.GetReport2(sDir, lDir), sLog); return end
+          asmlib.LogInstance("Fail folder "..asmlib.GetReport(sDir, lDir), sLog); return end
         local bS, lSub = pcall(tDat.Foo, sSub); if(not bS) then
-          asmlib.LogInstance("Fail subfolder "..asmlib.GetReport2(sSub, lSub), sLog); return end
+          asmlib.LogInstance("Fail subfolder "..asmlib.GetReport(sSub, lSub), sLog); return end
         local sKey = tDat.Key:format(sDir, sSub)
         if(asmlib.IsHere(fFoo)) then
-          if(not asmlib.IsFunction(fFoo)) then
-            asmlib.LogInstance("Miss function "..asmlib.GetReport3(sDir, sSub, fFoo), sLog); return end
+          if(not isfunction(fFoo)) then
+            asmlib.LogInstance("Miss function "..asmlib.GetReport(sDir, sSub, fFoo), sLog); return end
           if(not asmlib.IsHere(tDat.Bar[sDir])) then tDat.Bar[sDir] = {} end; tDat.Bar[sDir][sSub] = fFoo
-          asmlib.LogInstance("Store "..asmlib.GetReport3(sDir, sSub, fFoo), sLog)
+          asmlib.LogInstance("Store "..asmlib.GetReport(sDir, sSub, fFoo), sLog)
           hookRemove(tDat.Hoo, sKey); hookAdd(tDat.Hoo, sKey, function()
             spawnmenuAddToolMenuOption(lDir, lSub, sKey, languageGetPhrase(tDat.Nam), "", "", fFoo) end)
         else
           if(not asmlib.IsHere(tDat.Bar[sDir])) then
-            asmlib.LogInstance("Miss folder "..asmlib.GetReport1(sDir), sLog); return end
+            asmlib.LogInstance("Miss folder "..asmlib.GetReport(sDir), sLog); return end
           fFoo = tDat.Bar[sDir][sSub]; if(not asmlib.IsHere(fFoo)) then
-            asmlib.LogInstance("Miss subfolder "..asmlib.GetReport2(sDir, sSub), sLog); return end
-          if(not asmlib.IsFunction(fFoo)) then
-            asmlib.LogInstance("Miss function "..asmlib.GetReport3(sDir, sSub, fFoo), sLog); return end
-          asmlib.LogInstance("Cache "..asmlib.GetReport3(sDir, sSub, fFoo), sLog); return fFoo
+            asmlib.LogInstance("Miss subfolder "..asmlib.GetReport(sDir, sSub), sLog); return end
+          if(not isfunction(fFoo)) then
+            asmlib.LogInstance("Miss function "..asmlib.GetReport(sDir, sSub, fFoo), sLog); return end
+          asmlib.LogInstance("Cache "..asmlib.GetReport(sDir, sSub, fFoo), sLog); return fFoo
         end
       end,
       {
@@ -1461,7 +1455,7 @@ local conContextMenu = asmlib.GetContainer("CONTEXT_MENU")
               local bSuc, cnW, cnN, cnG = asmlib.ApplyPhysicalAnchor(ePiece,eBase,true,false,false,forcelim)
               if(bSuc and cnW and cnW:IsValid()) then
                 local sIde = ePiece:EntIndex()..gsSymDir..eBase:EntIndex()
-                asmlib.UndoCrate("TA Weld > "..asmlib.GetReport2(sIde,cnW:GetClass()))
+                asmlib.UndoCrate("TA Weld > "..asmlib.GetReport(sIde,cnW:GetClass()))
                 asmlib.UndoAddEntity(cnW); asmlib.UndoFinish(oPly); return true
               end; return false
             end
@@ -1490,7 +1484,7 @@ local conContextMenu = asmlib.GetContainer("CONTEXT_MENU")
               local bSuc, cnW, cnN, cnG = asmlib.ApplyPhysicalAnchor(ePiece,eBase,false,true,false,forcelim)
               if(bSuc and cnN and cnN:IsValid()) then
                 local sIde = ePiece:EntIndex()..gsSymDir..eBase:EntIndex()
-                asmlib.UndoCrate("TA NoCollide > "..asmlib.GetReport2(sIde,cnN:GetClass()))
+                asmlib.UndoCrate("TA NoCollide > "..asmlib.GetReport(sIde,cnN:GetClass()))
                 asmlib.UndoAddEntity(cnN); asmlib.UndoFinish(oPly); return true
               end; return false
             end
@@ -1512,7 +1506,7 @@ local conContextMenu = asmlib.GetContainer("CONTEXT_MENU")
               local forcelim = mathClamp(oPly:GetInfoNum(gsToolPrefL.."forcelim", 0), 0, maxforce)
               local bSuc, cnW, cnN, cnG = asmlib.ApplyPhysicalAnchor(ePiece,nil,false,false,true,forcelim)
               if(bSuc and cnG and cnG:IsValid()) then
-                asmlib.UndoCrate("TA NoCollideWorld > "..asmlib.GetReport2(ePiece:EntIndex(),cnG:GetClass()))
+                asmlib.UndoCrate("TA NoCollideWorld > "..asmlib.GetReport(ePiece:EntIndex(),cnG:GetClass()))
                 asmlib.UndoAddEntity(cnG); asmlib.UndoFinish(oPly); return true
               end; return false
             end
@@ -1543,9 +1537,9 @@ if(SERVER) then
         if(type(wDraw) == "function") then      -- Check when the value is function
           local bS, vO = pcall(wDraw, oEnt); vO = tostring(vO) -- Always being string
           if(not bS) then oEnt:SetNWString(sKey, sNoA)
-            asmlib.LogInstance("Populate:"..asmlib.GetReport2(sKey,iD).." fail: "..vO, sLog)
+            asmlib.LogInstance("Populate:"..asmlib.GetReport(sKey,iD).." fail: "..vO, sLog)
           else
-            asmlib.LogInstance("Populate:"..asmlib.GetReport3(sKey,iD,vO), sLog)
+            asmlib.LogInstance("Populate:"..asmlib.GetReport(sKey,iD,vO), sLog)
             oEnt:SetNWString(sKey, vO) -- Write networked value to the hover entity
           end
         end
@@ -1577,7 +1571,7 @@ if(CLIENT) then
         if(not asmlib.IsHere(oRec)) then return nil end
       end -- If the menu is not enabled for all props ged-a-ud!
       netStart(gsOptionsCV); netWriteEntity(oEnt); netSendToServer() -- Love message
-      asmlib.LogInstance("Entity "..asmlib.GetReport2(oEnt:GetClass(),oEnt:EntIndex()), sLog)
+      asmlib.LogInstance("Entity "..asmlib.GetReport(oEnt:GetClass(),oEnt:EntIndex()), sLog)
     end) -- Read client configuration
 end
 
@@ -1603,15 +1597,15 @@ gtOptionsCM.MenuOpen = function(self, opt, ent, tr)
     local sKey , fDraw = tLine[1], tLine[4]
     local wDraw, sIcon = tLine[5], sKey:match(fHash)
     local sName = languageGetPhrase(sKey.."_con"):Trim():Trim(":")
-    if(asmlib.IsFunction(fDraw)) then
+    if(isfunction(fDraw)) then
       local bS, vE = pcall(fDraw, ent, oPly, tr, sKey); if(not bS) then
-        asmlib.LogInstance("Request "..asmlib.GetReport2(sKey,iD).." fail: "..vE,gsOptionsLG); return end
+        asmlib.LogInstance("Request "..asmlib.GetReport(sKey,iD).." fail: "..vE,gsOptionsLG); return end
       sName = sName..": "..tostring(vE)          -- Attach client value ( CLIENT )
-    elseif(asmlib.IsFunction(wDraw)) then
+    elseif(isfunction(wDraw)) then
       sName = sName..": "..ent:GetNWString(sKey) -- Attach networked value ( SERVER )
     end; local fEval = function() self:Evaluate(ent,iD,tr,sKey) end
     local pnOpt = pnSub:AddOption(sName, fEval); if(not IsValid(pnOpt)) then
-      asmlib.LogInstance("Invalid "..asmlib.GetReport2(sKey,iD),gsOptionsLG); return end
+      asmlib.LogInstance("Invalid "..asmlib.GetReport(sKey,iD),gsOptionsLG); return end
     if(not asmlib.IsBlank(sIcon)) then pnOpt:SetIcon(asmlib.ToIcon(sIcon)) end
   end
 end
@@ -1631,8 +1625,8 @@ gtOptionsCM.Evaluate = function(self, ent, idx, key)
     local oPly = LocalPlayer()
     local oTr  = oPly:GetEyeTrace()
     local bS, vE = pcall(fHandle,ent,oPly,oTr,key); if(not bS) then
-      asmlib.LogInstance("Request "..asmlib.GetReport2(sKey,idx).." fail: "..vE,gsOptionsLG); return end
-    if(bS and not vE) then asmlib.LogInstance("Failure "..asmlib.GetReport2(sKey,idx),gsOptionsLG); return end
+      asmlib.LogInstance("Request "..asmlib.GetReport(sKey,idx).." fail: "..vE,gsOptionsLG); return end
+    if(bS and not vE) then asmlib.LogInstance("Failure "..asmlib.GetReport(sKey,idx),gsOptionsLG); return end
   end
 end
 -- What to happen on the server with our entity
@@ -1646,15 +1640,15 @@ gtOptionsCM.Receive = function(self, len, ply)
   if(not propertiesCanBeTargeted(ent, ply)) then return end
   local sKey, fHandle = tLine[1], tLine[3] -- Menu function handler
   local bS, vE = pcall(fHandle, ent, ply, oTr, sKey); if(not bS) then
-    asmlib.LogInstance("Request "..asmlib.GetReport2(sKey,idx).." fail: "..vE,gsOptionsLG); return end
-  if(bS and not vE) then asmlib.LogInstance("Failure "..asmlib.GetReport2(sKey,idx),gsOptionsLG); return end
+    asmlib.LogInstance("Request "..asmlib.GetReport(sKey,idx).." fail: "..vE,gsOptionsLG); return end
+  if(bS and not vE) then asmlib.LogInstance("Failure "..asmlib.GetReport(sKey,idx),gsOptionsLG); return end
 end
 -- Register the track assembly setup options in the context menu
 propertiesAdd(gsOptionsCM, gtOptionsCM)
 
 ------------ INITIALIZE DB------------
 
-asmlib.CreateTable("PIECES",{
+asmlib.NewTable("PIECES",{
   Timer = gaTimerSet[1],
   Index = {{1},{4},{1,4}},
   Trigs = {
@@ -1663,11 +1657,12 @@ asmlib.CreateTable("PIECES",{
       local noTY  = asmlib.GetOpVar("MISS_NOTP")
       local noSQL = asmlib.GetOpVar("MISS_NOSQL")
       local trCls = asmlib.GetOpVar("TRACE_CLASS")
-      arLine[2] = asmlib.GetTerm(arLine[2], noTY, asmlib.Categorize())
-      arLine[3] = asmlib.GetTerm(arLine[3], noMD, asmlib.ModelToName(arLine[1]))
-      arLine[8] = asmlib.GetTerm(arLine[8], noSQL, noSQL)
-      if(not (asmlib.IsNull(arLine[8]) or trCls[arLine[8]] or asmlib.IsBlank(arLine[8]))) then
-        asmlib.LogInstance("Register trace "..asmlib.GetReport2(arLine[8],arLine[1]),vSrc)
+      local emFva = asmlib.GetOpVar("EMPTYSTR_BLDS")
+      arLine[2] = asmlib.GetEmpty(arLine[2], emFva, asmlib.Categorize(), noTY)
+      arLine[3] = asmlib.GetEmpty(arLine[3], emFva, asmlib.ModelToName(arLine[1]), noMD)
+      arLine[8] = asmlib.GetEmpty(arLine[8], emFva, noSQL)
+      if(not (asmlib.IsNull(arLine[8]) or asmlib.IsBlank(arLine[8]) or trCls[arLine[8]])) then
+        asmlib.LogInstance("Register trace "..asmlib.GetReport(arLine[8],arLine[1]),vSrc)
         trCls[arLine[8]] = true; -- Register the class provided to the trace hit list
       end; return true
     end
@@ -1683,35 +1678,40 @@ asmlib.CreateTable("PIECES",{
       if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
       local nOffsID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(nOffsID)) then
-        asmlib.LogInstance("Cannot match "..asmlib.GetReport3(4,arLine[4],snPK),vSrc); return false end
+        asmlib.LogInstance("Cannot match "..asmlib.GetReport(4,arLine[4],snPK),vSrc); return false end
+      if(nOffsID ~= (stData.Size + 1)) then
+        asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(nOffsID,snPK),vSrc); return false end
       local stPOA = asmlib.RegisterPOA(stData,nOffsID,arLine[5],arLine[6],arLine[7])
-        if(not asmlib.IsHere(stPOA)) then
-        asmlib.LogInstance("Cannot process offset #"..tostring(nOffsID).." for "..
-          tostring(snPK),vSrc); return false end
-      if(nOffsID > stData.Size) then stData.Size = nOffsID else
-        asmlib.LogInstance("Offset #"..tostring(nOffsID)..
-          " sequential mismatch",vSrc); return false end
-      return true
+      if(not asmlib.IsHere(stPOA)) then
+        asmlib.LogInstance("Cannot process "..asmlib.GetReport(nOffsID, snPK),vSrc); return false end
+      stData.Size = stData.Size + 1; return true
     end,
     ExportDSV = function(oFile, makTab, tCache, fPref, sDelim, vSrc)
       local tData, defTab = {}, makTab:GetDefinition()
       for mod, rec in pairs(tCache) do
         tData[mod] = {KEY = (rec.Type..rec.Name..mod)} end
-      local tSort = asmlib.Sort(tData,{"KEY"})
+      local tSort = asmlib.Sort(tData, "KEY")
       if(not tSort) then oFile:Flush(); oFile:Close()
         asmlib.LogInstance("("..fPref..") Cannot sort cache data",vSrc); return false end
-      for iIdx = 1, tSort.Size do local stRec = tSort[iIdx]
+      local noSQL = asmlib.GetOpVar("MISS_NOSQL")
+      local symOff = asmlib.GetOpVar("OPSYM_DISABLE")
+      local sClass = asmlib.GetOpVar("ENTITY_DEFCLASS")
+      for iR = 1, tSort.Size do
+        local stRec = tSort[iR]
         local tData = tCache[stRec.Key]
         local sData, tOffs = defTab.Name, tData.Offs
               sData = sData..sDelim..makTab:Match(stRec.Key,1,true,"\"")..sDelim..
                 makTab:Match(tData.Type,2,true,"\"")..sDelim..
-                makTab:Match(((asmlib.ModelToName(stRec.Key) == tData.Name) and symOff or tData.Name),3,true,"\"")
+                makTab:Match(tData.Name,3,true,"\"")
         -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
-        for iInd = 1, #tOffs do local stPnt = tData.Offs[iInd]
-          local sP, sO, sA = asmlib.ExportPOA(stPnt, "")
-          local sC = (tData.Unit and tostring(tData.Unit or "") or "")
-          oFile:Write(sData..sDelim..makTab:Match(iInd,4,true,"\"")..sDelim..
-            "\""..sP.."\""..sDelim.."\""..sO.."\""..sDelim.."\""..sA.."\""..sDelim.."\""..sC.."\"\n")
+        for iD = 1, #tOffs do
+          local stPnt = tOffs[iD] -- Read current offsets from the model
+          local sP, sO, sA = stPnt.P:Export(stPnt.O), stPnt.O:Export(), stPnt.A:Export()
+          local sC = (asmlib.IsHere(tData.Unit) and tostring(tData.Unit) or noSQL)
+                sC = ((sC == sClass) and noSQL or sC) -- Export default class as noSQL
+          oFile:Write(sData..sDelim..makTab:Match(iD,4,true,"\"")..sDelim)
+          oFile:Write("\""..sP.."\""..sDelim.."\""..sO.."\""..sDelim)
+          oFile:Write("\""..sA.."\""..sDelim.."\""..sC.."\"\n")
         end
       end; return true
     end,
@@ -1731,7 +1731,7 @@ asmlib.CreateTable("PIECES",{
   [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
 },true,true)
 
-asmlib.CreateTable("ADDITIONS",{
+asmlib.NewTable("ADDITIONS",{
   Timer = gaTimerSet[2],
   Index = {{1},{4},{1,4}},
   Query = {
@@ -1745,15 +1745,15 @@ asmlib.CreateTable("ADDITIONS",{
         tCache[snPK] = {}; stData = tCache[snPK] end
       if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
-      local nCnt, iID = 2, makTab:Match(arLine[4],4); if(not asmlib.IsHere(iID)) then
-        asmlib.LogInstance("Cannot match "..asmlib.GetReport3(4,arLine[4],snPK),vSrc); return false end
+      local iID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(iID)) then
+        asmlib.LogInstance("Cannot match "..asmlib.GetReport(4,arLine[4],snPK),vSrc); return false end
+      if(iID ~= (stData.Size + 1)) then
+        asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(iID,snPK),vSrc); return false end
       stData[iID] = {} -- LineID has to be set properly
-      while(nCnt <= defTab.Size) do sCol = makTab:GetColumnName(nCnt)
-        stData[iID][sCol] = makTab:Match(arLine[nCnt],nCnt)
-        if(not asmlib.IsHere(stData[iID][sCol])) then -- Check data conversion output
-          asmlib.LogInstance("Cannot match "..asmlib.GetReport3(nCnt,arLine[nCnt],snPK),vSrc); return false
-        end; nCnt = (nCnt + 1)
-      end; stData.Size = iID; return true
+      for iCnt = 2, defTab.Size do local sC = makTab:GetColumnName(iCnt) -- Check data conversion output
+        stData[iID][sC] = makTab:Match(arLine[iCnt],iCnt); if(not asmlib.IsHere(stData[iID][sC])) then
+          asmlib.LogInstance("Cannot match "..asmlib.GetReport(iCnt,arLine[iCnt],snPK),vSrc); return false end
+      end; stData.Size = stData.Size + 1; return true
     end,
     ExportDSV = function(oFile, makTab, tCache, fPref, sDelim, vSrc)
       local defTab = makTab:GetDefinition()
@@ -1762,7 +1762,7 @@ asmlib.CreateTable("ADDITIONS",{
         for iIdx = 1, #rec do local tData = rec[iIdx]; oFile:Write(sData)
           for iID = 2, defTab.Size do local vData = tData[makTab:GetColumnName(iID)]
             local vM = makTab:Match(vData,iID,true,"\""); if(not asmlib.IsHere(vM)) then
-              asmlib.LogInstance("Cannot match "..asmlib.GetReport3()); return false
+              asmlib.LogInstance("Cannot match "..asmlib.GetReport(iID,vData)); return false
             end; oFile:Write(sDelim..tostring(vM or ""))
           end; oFile:Write("\n") -- Data is already inserted, there will be no crash
         end
@@ -1784,13 +1784,14 @@ asmlib.CreateTable("ADDITIONS",{
   [12] = {"SETSOLID" , "INTEGER", "FLR",  nil },
 },true,true)
 
-asmlib.CreateTable("PHYSPROPERTIES",{
+asmlib.NewTable("PHYSPROPERTIES",{
   Timer = gaTimerSet[3],
   Index = {{1},{2},{1,2}},
   Trigs = {
     Record = function(arLine, vSrc)
       local noTY = asmlib.GetOpVar("MISS_NOTP")
-      arLine[1] = asmlib.GetTerm(arLine[1],noTY,asmlib.Categorize()); return true
+      local emFva = asmlib.GetOpVar("EMPTYSTR_BLDS")
+      arLine[1] = asmlib.GetEmpty(arLine[1], emFva, asmlib.Categorize(), noTY); return true
     end
   },
   Cache = {
@@ -1803,13 +1804,15 @@ asmlib.CreateTable("PHYSPROPERTIES",{
       local tNames = tCache[skName]; if(not tNames) then
         tCache[skName] = {}; tNames = tCache[skName] end
       local iNameID = makTab:Match(arLine[2],2); if(not asmlib.IsHere(iNameID)) then
-        asmlib.LogInstance("Cannot match "..asmlib.GetReport3(2,arLine[2],snPK),vSrc); return false end
+        asmlib.LogInstance("Cannot match "..asmlib.GetReport(2,arLine[2],snPK),vSrc); return false end
       if(not asmlib.IsHere(tNames[snPK])) then -- If a new type is inserted
         tTypes.Size = (tTypes.Size + 1)
         tTypes[tTypes.Size] = snPK; tNames[snPK] = {}
         tNames[snPK].Size, tNames[snPK].Slot = 0, snPK
       end -- Data matching crashes only on numbers
-      tNames[snPK].Size = iNameID
+      if(iNameID ~= (tNames[snPK].Size + 1)) then
+        asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(iNameID,snPK),vSrc); return false end
+      tNames[snPK].Size = tNames[snPK].Size + 1
       tNames[snPK][iNameID] = makTab:Match(arLine[3],3); return true
     end,
     ExportDSV = function(oFile, makTab, tCache, fPref, sDelim, vSrc)
@@ -1820,7 +1823,7 @@ asmlib.CreateTable("PHYSPROPERTIES",{
         asmlib.LogInstance("("..fPref..") No data found",vSrc); return false end
       for iInd = 1, tTypes.Size do local sType = tTypes[iInd]
         local tType = tNames[sType]; if(not tType) then F:Flush(); F:Close()
-          asmlib.LogInstance("("..fPref..") Missing index #"..iInd.." on type <"..sType..">",vSrc); return false end
+          asmlib.LogInstance("("..fPref..") Missing index "..asmlib.GetReport(iInd, sType),vSrc); return false end
         for iCnt = 1, tType.Size do local vType = tType[iCnt]
           oFile:Write(defTab.Name..sDelim..makTab:Match(sType,1,true,"\"")..
                                    sDelim..makTab:Match(iCnt ,2,true,"\"")..
@@ -1886,165 +1889,6 @@ else
     PIECES:Record({"models/props_c17/furniturewashingmachine001a.mdl", "#", "#", 1, "#", "-0.05,0.006, 21.934", "-90,  0,180"})
     PIECES:Record({"models/props_c17/furniturewashingmachine001a.mdl", "#", "#", 2, "", "-0.05,0.006,-21.922", "90,180,180"})
   end
-  asmlib.Categorize("SligWolf's Rerailers")
-  PIECES:Record({"models/props_phx/trains/sw_rerailer_1.mdl", "#", "Short Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
-  PIECES:Record({"models/props_phx/trains/sw_rerailer_2.mdl", "#", "Middle Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
-  PIECES:Record({"models/props_phx/trains/sw_rerailer_3.mdl", "#", "Long Single", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_3.mdl", "#", "Long Double", 1, "-258.249, -0.01, -0.002", "219.415, 0, -5.409"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_3.mdl", "#", "Long Double", 2, "-3124.199, -0.01, 2.997", "-3601.869, -0.377, -5.416", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_2.mdl", "#", "Middle Double", 1, "-265.554, 0, 3.031", "219.412, 0, -5.407"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_2.mdl", "#", "Middle Double", 2, "-1882.106, 0, 3.031", "-2367.072, 0, -5.412", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Short Double", 1, "-221.409, 0, 3.031", "219.412, 0, -5.411"})
-  PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Short Double", 2, "-1103.05, 0, 0.009", "-1543.871, 0, -5.411", "0,-180,0"})
-  asmlib.Categorize("SligWolf's Minitrains",[[function(m)
-    local r = m:gsub("models/minitrains/",""):gsub("%W.+$","")
-    if(r == "sw") then r = "buffer" end; return r; end]])
-  PIECES:Record({"models/minitrains/straight_16.mdl",   "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_16.mdl",   "#", "#", 2, "", "-16,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_32.mdl",   "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_32.mdl",   "#", "#", 2, "", "-32,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_64.mdl",   "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_64.mdl",   "#", "#", 2, "", "-64,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_128.mdl",  "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_128.mdl",  "#", "#", 2, "", "-128,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_256.mdl",  "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_256.mdl",  "#", "#", 2, "", "-256,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_512.mdl",  "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_512.mdl",  "#", "#", 2, "", "-512,-8.5065,1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_1024.mdl", "#", "#", 1, "", "0,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_1024.mdl", "#", "#", 2, "", "-1024,-8.5065,1", "0,-180,0"})
-  asmlib.ModelToNameRule("SET",nil,{"diagonal_","ramp_"},nil)
-  PIECES:Record({"models/minitrains/straight_diagonal_128.mdl", "#", "#", 1, "", "8,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_diagonal_128.mdl", "#", "#", 2, "", "-136,-8.5065,33", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_diagonal_256.mdl", "#", "#", 1, "", "8,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_diagonal_256.mdl", "#", "#", 2, "", "-264,-8.5065,33", "0,-180,0"})
-  PIECES:Record({"models/minitrains/straight_diagonal_512.mdl", "#", "#", 1, "", "8,-8.5065,1"})
-  PIECES:Record({"models/minitrains/straight_diagonal_512.mdl", "#", "#", 2, "", "-520,-8.5065,33", "0,-180,0"})
-  asmlib.ModelToNameRule("CLR")
-  PIECES:Record({"models/minitrains/curve_1_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_1_90.mdl", "#", "#", 2, "", "-138.51, 130, 1", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_2_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_2_90.mdl", "#", "#", 2, "", "-168.51, 160, 0.996", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_3_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_3_90.mdl", "#", "#", 2, "", "-198.51, 190, 0.995", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_4_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_4_90.mdl", "#", "#", 2, "", "-228.51, 220, 0.994", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_5_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_5_90.mdl", "#", "#", 2, "", "-258.51, 250, 0.994", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_6_90.mdl", "#", "#", 1, "", "-0.011, -8.5, 1"})
-  PIECES:Record({"models/minitrains/curve_6_90.mdl", "#", "#", 2, "", "-288.51, 280, 0.993", "0,90,0"})
-  PIECES:Record({"models/minitrains/curve_1_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_1_45.mdl", "#", "#", 2, "", "-97.956, 32.044, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_2_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_2_45.mdl", "#", "#", 2, "", "-119.15, 40.853, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_3_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_3_45.mdl", "#", "#", 2, "", "-140.368, 49.631, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_4_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_4_45.mdl", "#", "#", 2, "", "-161.567, 58.434, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_5_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_5_45.mdl", "#", "#", 2, "", "-182.769, 67.232, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_6_45.mdl", "#", "#", 1, "", "-0.004, -8.506, 1"})
-  PIECES:Record({"models/minitrains/curve_6_45.mdl", "#", "#", 2, "", "-203.983, 76.019, 1", "0,135,0"})
-  PIECES:Record({"models/minitrains/curve_1_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_1_22-5.mdl", "#", "#", 2, "", "-53.014, 2.013, 1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_2_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_2_22-5.mdl", "#", "#", 2, "", "-64.492, 4.307, 1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_3_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_3_22-5.mdl", "#", "#", 2, "", "-75.965, 6.599, 1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_4_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_4_22-5.mdl", "#", "#", 2, "", "-87.437, 8.904, 1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_5_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_5_22-5.mdl", "#", "#", 2, "", "-98.913, 11.205,1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_6_22-5.mdl", "#", "#", 1, "", "-0.005, -8.505, 1"})
-  PIECES:Record({"models/minitrains/curve_6_22-5.mdl", "#", "#", 2, "", "-110.405, 13.455, 1", "0,157.5,0"})
-  PIECES:Record({"models/minitrains/curve_1_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_1_s_small.mdl", "#", "#", 2, "", "-105.994, 12.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_2_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_2_s_small.mdl", "#", "#", 2, "", "-128.994, 17.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_3_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_3_s_small.mdl", "#", "#", 2, "", "-151.994, 21.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_4_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_4_s_small.mdl", "#", "#", 2, "", "-174.994, 26.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_5_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_5_s_small.mdl", "#", "#", 2, "", "-197.994, 31.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_6_s_small.mdl", "#", "#", 1, "", "-0.007, -8.507, 1"})
-  PIECES:Record({"models/minitrains/curve_6_s_small.mdl", "#", "#", 2, "", "-220.994, 35.497, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_1_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_1_s_medium.mdl", "#", "#", 2, "", "-195.966, 72.51, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_2_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_2_s_medium.mdl", "#", "#", 2, "", "-237.966, 90.51, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_3_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_3_s_medium.mdl", "#", "#", 2, "", "-280.966, 107.51, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_4_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_4_s_medium.mdl", "#", "#", 2, "", "-322.966, 125.51, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_5_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_5_s_medium.mdl", "#", "#", 2, "", "-365.991, 142.507, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_6_s_medium.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_6_s_medium.mdl", "#", "#", 2, "", "-407.99, 160.51, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_1_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_1_s_big.mdl", "#", "#", 2, "", "-277.01, 268.511, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_2_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_2_s_big.mdl", "#", "#", 2, "", "-336.99, 328.521, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_3_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_3_s_big.mdl", "#", "#", 2, "", "-397.033, 388.521, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_4_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_4_s_big.mdl", "#", "#", 2, "", "-456.991, 448.521, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_5_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_5_s_big.mdl", "#", "#", 2, "", "-516.985, 508.521, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/curve_6_s_big.mdl", "#", "#", 1, "", "-0.007, -8.504, 1"})
-  PIECES:Record({"models/minitrains/curve_6_s_big.mdl", "#", "#", 2, "", "-576.985, 568.521, 1", "0,180,0"})
-  PIECES:Record({"models/minitrains/rerailer.mdl", "#", "Rerailer Double", 1, "", "190, 0, 1.01758"})
-  PIECES:Record({"models/minitrains/rerailer.mdl", "#", "Rerailer Double", 2, "", "-190, 0, 1.01758", "0,180,0"})
-  PIECES:Record({"models/minitrains/sw_buffer_stop.mdl", "#", "Buffer Stop", 1, "", "9.43, -8.011, -1", "0,-180,0"})
-  PIECES:Record({"models/minitrains/switch.mdl", "#", "Switch Y", 1, "", "0, -8.509, 1", "", "gmod_sw_minitrain_switch"})
-  PIECES:Record({"models/minitrains/switch.mdl", "#", "Switch Y", 2, "", "-128, 6.493, 1", "0,-180,0", "gmod_sw_minitrain_switch"})
-  PIECES:Record({"models/minitrains/switch.mdl", "#", "Switch Y", 3, "", "-128, -23.512, 1", "0,-180,0","gmod_sw_minitrain_switch"})
-  PIECES:Record({"models/minitrains/switch_double.mdl", "#", "#", 1, "", "16,21.5135,1", "", "gmod_sw_minitrain_doubleswitch"})
-  PIECES:Record({"models/minitrains/switch_double.mdl", "#", "#", 2, "", "-144,21.5135,1", "0,180,0", "gmod_sw_minitrain_doubleswitch"})
-  PIECES:Record({"models/minitrains/switch_double.mdl", "#", "#", 3, "", "16,-8.51317,1", "", "gmod_sw_minitrain_doubleswitch"})
-  PIECES:Record({"models/minitrains/switch_double.mdl", "#", "#", 4, "", "-144,-8.51317,1", "0,180,0", "gmod_sw_minitrain_doubleswitch"})
-  PIECES:Record({"models/minitrains/switch_w_1_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w1"})
-  PIECES:Record({"models/minitrains/switch_w_1_128.mdl", "#", "#", 2, "", "-97.94826,32.05148,1", "0,135,0", "gmod_sw_minitrain_switch_w1"})
-  PIECES:Record({"models/minitrains/switch_w_1_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_w1"})
-  PIECES:Record({"models/minitrains/switch_w_1_128.mdl", "#", "#", 4, "", "-97.94826,-49.05152,1", "0,-135,0", "gmod_sw_minitrain_switch_w1"})
-  PIECES:Record({"models/minitrains/switch_w_2_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w2"})
-  PIECES:Record({"models/minitrains/switch_w_2_128.mdl", "#", "#", 2, "", "-119.15060, 40.84935,1", "0, 135,0", "gmod_sw_minitrain_switch_w2"})
-  PIECES:Record({"models/minitrains/switch_w_2_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,-180,0", "gmod_sw_minitrain_switch_w2"})
-  PIECES:Record({"models/minitrains/switch_w_2_128.mdl", "#", "#", 4, "", "-119.15061,-57.84934,1", "0,-135,0", "gmod_sw_minitrain_switch_w2"})
-  PIECES:Record({"models/minitrains/switch_w_3_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w3"})
-  PIECES:Record({"models/minitrains/switch_w_3_128.mdl", "#", "#", 2, "", "-140.36781,49.63218,1", "0,135,0", "gmod_sw_minitrain_switch_w3"})
-  PIECES:Record({"models/minitrains/switch_w_3_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_w3"})
-  PIECES:Record({"models/minitrains/switch_w_3_128.mdl", "#", "#", 4, "", "-140.36781,-66.63219,1", "0,-135,0", "gmod_sw_minitrain_switch_w3"})
-  PIECES:Record({"models/minitrains/switch_w_4_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w4"})
-  PIECES:Record({"models/minitrains/switch_w_4_128.mdl", "#", "#", 2, "", "-87.45033,8.87626,1", "0,157.5,0", "gmod_sw_minitrain_switch_w4"})
-  PIECES:Record({"models/minitrains/switch_w_4_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_w4"})
-  PIECES:Record({"models/minitrains/switch_w_4_128.mdl", "#", "#", 4, "", "-87.45378,-25.86791,1", "0,-157.5,0", "gmod_sw_minitrain_switch_w4"})
-  PIECES:Record({"models/minitrains/switch_w_5_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w5"})
-  PIECES:Record({"models/minitrains/switch_w_5_128.mdl", "#", "#", 2, "", "-98.92384,11.17581,1", "0,157.5,0", "gmod_sw_minitrain_switch_w5"})
-  PIECES:Record({"models/minitrains/switch_w_5_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_w5"})
-  PIECES:Record({"models/minitrains/switch_w_5_128.mdl", "#", "#", 4, "", "-98.92188,-28.17954,1", "0,-157.5,0", "gmod_sw_minitrain_switch_w5"})
-  PIECES:Record({"models/minitrains/switch_w_6_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_w6"})
-  PIECES:Record({"models/minitrains/switch_w_6_128.mdl", "#", "#", 2, "", "-110.40305,13.45934,1", "0,157.5,0", "gmod_sw_minitrain_switch_w6"})
-  PIECES:Record({"models/minitrains/switch_w_6_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_w6"})
-  PIECES:Record({"models/minitrains/switch_w_6_128.mdl", "#", "#", 4, "", "-110.40065,-30.46272,1", "0,-157.5,0", "gmod_sw_minitrain_switch_w6"})
-  PIECES:Record({"models/minitrains/switch_y_1_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y1"})
-  PIECES:Record({"models/minitrains/switch_y_1_128.mdl", "#", "#", 2, "", "-97.94826,32.05148,1", "0,135,0", "gmod_sw_minitrain_switch_y1"})
-  PIECES:Record({"models/minitrains/switch_y_1_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y1"})
-  PIECES:Record({"models/minitrains/switch_y_2_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y2"})
-  PIECES:Record({"models/minitrains/switch_y_2_128.mdl", "#", "#", 2, "", "-119.15060, 40.84935,1", "0, 135,0", "gmod_sw_minitrain_switch_y2"})
-  PIECES:Record({"models/minitrains/switch_y_2_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,-180,0", "gmod_sw_minitrain_switch_y2"})
-  PIECES:Record({"models/minitrains/switch_y_3_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y3"})
-  PIECES:Record({"models/minitrains/switch_y_3_128.mdl", "#", "#", 2, "", "-140.36781,49.63218,1", "0,135,0", "gmod_sw_minitrain_switch_y3"})
-  PIECES:Record({"models/minitrains/switch_y_3_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y3"})
-  PIECES:Record({"models/minitrains/switch_y_4_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y4"})
-  PIECES:Record({"models/minitrains/switch_y_4_128.mdl", "#", "#", 2, "", "-87.45033,8.87626,1", "0,157.5,0", "gmod_sw_minitrain_switch_y4"})
-  PIECES:Record({"models/minitrains/switch_y_4_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y4"})
-  PIECES:Record({"models/minitrains/switch_y_5_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y5"})
-  PIECES:Record({"models/minitrains/switch_y_5_128.mdl", "#", "#", 2, "", "-98.92384,11.17581,1", "0,157.5,0", "gmod_sw_minitrain_switch_y5"})
-  PIECES:Record({"models/minitrains/switch_y_5_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y5"})
-  PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 1, "", "0,-8.5,1", "", "gmod_sw_minitrain_switch_y6"})
-  PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 2, "", "-110.40305,13.45934,1", "0,157.5,0", "gmod_sw_minitrain_switch_y6"})
-  PIECES:Record({"models/minitrains/switch_y_6_128.mdl", "#", "#", 3, "", "-128,-8.5,1", "0,180,0", "gmod_sw_minitrain_switch_y6"})
   asmlib.Categorize("PHX Monorail")
   PIECES:Record({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 1, "", "229.885559,0.23999,13.87915"})
   PIECES:Record({"models/props_phx/trains/monorail1.mdl", "#", "Straight Short", 2, "", "-228.885254,0.239726,13.87915", "0,-180,0"})
@@ -2523,23 +2367,6 @@ else
   PIECES:Record({"models/magtrains1ga/switch_straight.mdl", "#", "#", 2, "", "-384,0,0.01599", "0,-180,0"})
   PIECES:Record({"models/magtrains1ga/switch_curve.mdl", "#", "#", 1, "", "0,0,0.01563"})
   PIECES:Record({"models/magtrains1ga/switch_curve.mdl", "#", "#", 2, "", "-373.42453,-45.55976,0.01562", "0,-166.08,0"})
-  asmlib.Categorize("SligWolf's Railcar")
-  PIECES:Record({"models/swrcs/swrccross.mdl", "#", "Switcher Cross", 1, "", "500,0,0"})
-  PIECES:Record({"models/swrcs/swrccross.mdl", "#", "Switcher Cross", 2, "", "-2673,0,0", "0,180,0"})
-  PIECES:Record({"models/swrcs/swrccurve001.mdl", "#", "U-Turn", 1, "", "890, 748.009, 2.994"})
-  PIECES:Record({"models/swrcs/swrccurve001.mdl", "#", "U-Turn", 2, "", "890, 451.998, 2.994"})
-  PIECES:Record({"models/swrcs/swrccurve001.mdl", "#", "U-Turn", 3, "", "890, -452.001, 2.974"})
-  PIECES:Record({"models/swrcs/swrccurve001.mdl", "#", "U-Turn", 4, "", "890, -748.027, 2.974"})
-  PIECES:Record({"models/swrcs/swrclooping.mdl", "#", "Loop 180", 1, "", "810, -252.447, -0.005"})
-  PIECES:Record({"models/swrcs/swrclooping.mdl", "#", "Loop 180", 2, "", "-809.999, 136.997, -0.002", "0,180,0"})
-  PIECES:Record({"models/swrcs/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 1, "", "927.001, -194.403, -0.036"})
-  PIECES:Record({"models/swrcs/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 2, "", "-809.999, 137.003, 350.984", "0,-180,0"})
-  PIECES:Record({"models/swrcs/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 3, "", "-809.999, -527.972, 350.984", "0,-180,0"})
-  PIECES:Record({"models/swrcs/swrcramp.mdl", "#", "Ramp 45", 1, "", "1000, 0, 0"})
-  PIECES:Record({"models/swrcs/swrcramp.mdl", "#", "Ramp 45", 2, "", "-641.92, 0, 269.672", "-45,-180,0"})
-  PIECES:Record({"models/swrcs/swrctraffic_lights.mdl", "#", "Start Lights", 1, "", "0, -152.532, 0"})
-  PIECES:Record({"models/swrcs/swrctraffic_lights.mdl", "#", "Start Lights", 2, "", "0, 152.554, 0"})
-  PIECES:Record({"models/swrcs/swrctraffic_lights.mdl", "#", "Start Lights", 3, "", "0, 0, 0.042"})
   asmlib.Categorize("Random Bridges")
   PIECES:Record({"models/props_canal/canal_bridge01.mdl", "#", "#", 1, "", "455.345, -6.815, 201.73"})
   PIECES:Record({"models/props_canal/canal_bridge01.mdl", "#", "#", 2, "", "-456.655, -6.815, 201.73", "0,-180,0"})
@@ -3654,134 +3481,6 @@ else
   PIECES:Record({"models/ron/minitrains/elevations/ramps/elevation_ramp_512.mdl", "#", "#", 2, "", "0,528,33", "0, 90,0"})
   PIECES:Record({"models/ron/minitrains/elevations/straight/bridge.mdl", "#", "#", 1, "", "0, 64,33", "0, 90,0"})
   PIECES:Record({"models/ron/minitrains/elevations/straight/bridge.mdl", "#", "#", 2, "", "0,-64,33", "0,-90,0"})
-  asmlib.Categorize("SligWolf's White Rails",[[function(m)
-    local g = m:gsub("models/sligwolf/rails/",""):gsub("/","_")
-    local r = g:match(".-_"):sub(1, -2); g = g:gsub(r.."_", "")
-    local t, n = g:match(".-_"), g:gsub("%.mdl","")
-    if(t) then t = t:sub(1, -2); g = g:gsub(r.."_", "")
-      if(r:find(t)) then n = n:gsub(t.."_", "") end
-    end; return r, n; end]])
-  PIECES:Record({"models/sligwolf/rails/straight_128.mdl" , "#", "#", 1, "", "   0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/straight_128.mdl" , "#", "#", 2, "", "-128,-46,6.625", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rails/straight_256.mdl" , "#", "#", 1, "", "   0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/straight_256.mdl" , "#", "#", 2, "", "-256,-46,6.625", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rails/straight_512.mdl" , "#", "#", 1, "", "   0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/straight_512.mdl" , "#", "#", 2, "", "-512,-46,6.625", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rails/straight_1024.mdl", "#", "#", 1, "", "   0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/straight_1024.mdl", "#", "#", 2, "", "-1024,-46,6.625", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/rails/buffer.mdl"   , "#", "#", 1, "", "-82,0,6.28418"})
-  PIECES:Record({"models/sligwolf/rails/curve_225.mdl", "#", "#", 1, "", "0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/curve_225.mdl", "#", "#", 2, "", "-766.13226318359,-198.39318847656,6.625", "0,-157.5,0"})
-  PIECES:Record({"models/sligwolf/rails/curve_45.mdl" , "#", "#", 1, "", "0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/curve_45.mdl" , "#", "#", 2, "", "-1415.6279296875,-632.37231445313,6.625", "0,-135,0"})
-  PIECES:Record({"models/sligwolf/rails/curve_90.mdl" , "#", "#", 1, "", "0,-46,6.625"})
-  PIECES:Record({"models/sligwolf/rails/curve_90.mdl" , "#", "#", 2, "", "-2002,-2048,6.625", "0,-90,0"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_y.mdl", "#", "#", 1, "", "0,-46,6.625", "","gmod_sw_modelpack_switch_y"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_y.mdl", "#", "#", 2, "", "-766.132,-198.393, 6.625", "0,-157.5,0","gmod_sw_modelpack_switch_y"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_y.mdl", "#", "#", 3, "", "-766.122, 106.393, 6.625", "0, 157.5,0","gmod_sw_modelpack_switch_y"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_r.mdl", "#", "#", 1, "", "0,-46,6.625", "","gmod_sw_modelpack_switch_r"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_r.mdl", "#", "#", 2, "", "-768,-46,6.625", "0,-180,0","gmod_sw_modelpack_switch_r"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_r.mdl", "#", "#", 3, "", "-766.122, 106.393, 6.625", "0, 157.5,0","gmod_sw_modelpack_switch_r"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_l.mdl", "#", "#", 1, "", "0,-46,6.625", "","gmod_sw_modelpack_switch_l"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_l.mdl", "#", "#", 2, "", "-768,-46,6.625", "0,-180,0","gmod_sw_modelpack_switch_l"})
-  PIECES:Record({"models/sligwolf/rails/switch_225_l.mdl", "#", "#", 3, "", "-766.132,-198.393, 6.625", "0,-157.5,0","gmod_sw_modelpack_switch_l"})
-  asmlib.Categorize("SligWolf's Minihover",[[function(m)
-    local n = m:gsub("models/sligwolf/minihover/hover_","")
-    local r = n:match("%a+"); n = n:gsub("%.mdl",""); return r, n; end]])
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_small.mdl"     , "#", "#", 1, "", " 104, 32,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_small.mdl"     , "#", "#", 2, "", "-104, 32,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_mid.mdl"       , "#", "#", 1, "", " 208, 32,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_mid.mdl"       , "#", "#", 2, "", "-208, 32,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_long.mdl"      , "#", "#", 1, "", " 312, 32,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x4_long.mdl"      , "#", "#", 2, "", "-312, 32,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_small.mdl"     , "#", "#", 1, "", " 104,-16,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_small.mdl"     , "#", "#", 2, "", "-104,-16,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_mid.mdl"       , "#", "#", 1, "", " 208,-16,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_mid.mdl"       , "#", "#", 2, "", "-208,-16,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_long.mdl"      , "#", "#", 1, "", " 312,-16,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_long.mdl"      , "#", "#", 2, "", "-312,-16,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter.mdl"  , "#", "#", 1, "", "-104, 80 ,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter.mdl"  , "#", "#", 2, "", " 312, 30 ,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter.mdl"  , "#", "#", 3, "", " 312, 130,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter_i.mdl", "#", "#", 1, "", " 104,-80 ,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter_i.mdl", "#", "#", 2, "", "-312,-30 ,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_splitter_i.mdl", "#", "#", 3, "", "-312,-130,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_to_x4.mdl"     , "#", "#", 1, "", " 104, 16 ,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_to_x4.mdl"     , "#", "#", 2, "", "-312, 16 ,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_to_x4_i.mdl"   , "#", "#", 1, "", " 104, 16 ,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_straight_x8_to_x4_i.mdl"   , "#", "#", 2, "", "-312, 16 ,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x4.mdl"           , "#", "#", 1, "", " 52, 32,1.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x4.mdl"           , "#", "#", 2, "", "-52, 32,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x4_i.mdl"         , "#", "#", 1, "", " 52, 32,1.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x4_i.mdl"         , "#", "#", 2, "", "-52, 32,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x8.mdl"           , "#", "#", 1, "", " 52,-16,1.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x8.mdl"           , "#", "#", 2, "", "-52,-16,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x8_i.mdl"         , "#", "#", 1, "", " 52,-16,1.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_trackend_x8_i.mdl"         , "#", "#", 2, "", "-52,-16,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_small.mdl"            , "#", "#", 1, "", "-26, 28, 5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_small.mdl"            , "#", "#", 2, "", "157.1996,28,83.378784", "-52.5,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_small_i.mdl"          , "#", "#", 1, "", "-26, 28, 5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_small_i.mdl"          , "#", "#", 2, "", "157.1996,28,83.378784", "-52.5,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp.mdl"                  , "#", "#", 1, "", "-26,-20,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp.mdl"                  , "#", "#", 2, "", "157.184906,-20,83.365128", "-52.5,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_i.mdl"                , "#", "#", 1, "", "-26,-20,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_ramp_i.mdl"                , "#", "#", 2, "", "157.184906,-20,83.365128", "-52.5,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop_quarter.mdl"          , "#", "#", 1, "", "-25.99988,-19.999998,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop_quarter.mdl"          , "#", "#", 2, "", "198.190018,-20,229.959763", "-90,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop_quarter_i.mdl"        , "#", "#", 1, "", "-25.99988,-19.999998,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop_quarter_i.mdl"        , "#", "#", 2, "", "198.190018,-20,229.959763", "-90,0,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_small.mdl"             , "#", "#", 1, "", "157.982788,27.999634,83.837219"  })
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_small.mdl"             , "#", "#", 2, "", "-27.439621,28.012085,5.100098"   , "52.5,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_small_i.mdl"           , "#", "#", 1, "", "157.982788,27.999634,83.837219"  })
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_small_i.mdl"           , "#", "#", 2, "", "-27.439621,28.012085,5.100098"   , "52.5,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_bow.mdl"                   , "#", "#", 1, "", "157.982285,-19.999878,83.837341" })
-  PIECES:Record({"models/sligwolf/minihover/hover_bow.mdl"                   , "#", "#", 2, "", "-27.427399,-19.999756,5.118835"  , "52.5,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_i.mdl"                 , "#", "#", 1, "", "157.982285,-19.999878,83.837341" })
-  PIECES:Record({"models/sligwolf/minihover/hover_bow_i.mdl"                 , "#", "#", 2, "", "-27.427399,-19.999756,5.118835"  , "52.5,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop1.mdl"                 , "#", "#", 1, "", "104.00061,136.000061 ,5.81"   })
-  PIECES:Record({"models/sligwolf/minihover/hover_loop1.mdl"                 , "#", "#", 2, "", "-103.999908,32.000008,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop1i.mdl"                , "#", "#", 1, "", "103.999817,-136,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop1i.mdl"                , "#", "#", 2, "", "-103.999939,-32,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop2.mdl"                 , "#", "#", 1, "", "103.999878,227.998291,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop2.mdl"                 , "#", "#", 2, "", "-103.999939,19.998779,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop2i.mdl"                , "#", "#", 1, "", "103.999939,-227.999084,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_loop2i.mdl"                , "#", "#", 2, "", "-103.999878,-19.999634,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45.mdl"            , "#", "#", 1, "", "0.000114,-95.999878,5.81"  , "0, 180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45.mdl"            , "#", "#", 2, "", "101.823112,-53.823227,5.81", "0,  45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_i.mdl"          , "#", "#", 1, "", "0.000144, 95.999756,5.81"  , "0, 180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_i.mdl"          , "#", "#", 2, "", "101.823288,53.82341,5.81"  , "0, -45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_s.mdl"          , "#", "#", 1, "", "203.999496,-12.000174,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_s.mdl"          , "#", "#", 2, "", "0.000535,-95.999512,5.81"  , "0, 180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_s_i.mdl"        , "#", "#", 1, "", "203.999725,12.000124,5.81" })
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_45_s_i.mdl"        , "#", "#", 2, "", "0.000274,96.000008,5.81"   , "0, 180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_90.mdl"            , "#", "#", 1, "", "144,47.999947,5.81", "0,90,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_90.mdl"            , "#", "#", 2, "", "0.000122,-95.999756,5.81" , "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_90_i.mdl"          , "#", "#", 1, "", "144,-47.999886,5.81", "0,-90,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_1_90_i.mdl"          , "#", "#", 2, "", "6.1e-005,95.999756,5.81", "0, 180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45.mdl"            , "#", "#", 1, "", "237.587524,2.412376,5.81", "0,45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45.mdl"            , "#", "#", 2, "", "0.000122,-95.999756,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_i.mdl"          , "#", "#", 1, "", "237.587646,-2.412163,5.81", "0,-45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_i.mdl"          , "#", "#", 2, "", "6.1e-005,95.999756  ,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_s.mdl"          , "#", "#", 1, "", "475.999939,99.999634,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_s.mdl"          , "#", "#", 2, "", "0.000108,-95.999756,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_s_i.mdl"        , "#", "#", 1, "", "475.999908,-99.999756,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_45_s_i.mdl"        , "#", "#", 2, "", "0.0001,95.999756,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_90.mdl"            , "#", "#", 1, "", "335.999756,239.999954,5.81", "0,90,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_90.mdl"            , "#", "#", 2, "", "0.000122,-95.999756,5.81"  , "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_90_i.mdl"          , "#", "#", 1, "", "335.999756,-239.999954,5.81", "0,-90,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_2_90_i.mdl"          , "#", "#", 2, "", "6.9e-005,95.999756,5.81"    , "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45.mdl"            , "#", "#", 1, "", "373.352264,58.647644,5.81", "0,45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45.mdl"            , "#", "#", 2, "", "0.000107,-95.999756,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_i.mdl"          , "#", "#", 1, "", "373.352448,-58.647461,5.81", "0,-45,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_i.mdl"          , "#", "#", 2, "", "9.2e-005,96,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_s.mdl"          , "#", "#", 1, "", "745.999939,214.000244,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_s.mdl"          , "#", "#", 2, "", "0.000107,-95.999756,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_s_i.mdl"        , "#", "#", 1, "", "745.999939,-214,5.81"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_45_s_i.mdl"        , "#", "#", 2, "", "9.2e-005,96,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_90.mdl"            , "#", "#", 1, "", "0.000107,-95.999756,5.81", "0,-180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_90.mdl"            , "#", "#", 2, "", "528,431.999939,5.81", "0,90,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_90_i.mdl"          , "#", "#", 1, "", "9.2e-005,95.999756,5.81", "0,180,0"})
-  PIECES:Record({"models/sligwolf/minihover/hover_curve_3_90_i.mdl"          , "#", "#", 2, "", "527.999756,-431.999878,5.81", "0,-90,0"})
   asmlib.Categorize("Transrapid",[[function(m)
       local g = m:gsub("models/ron/maglev/",""):gsub("/","_")
             g = g:gsub("[\\/]([^\\/]+)$",""):gsub("%.mdl","")
@@ -4631,6 +4330,33 @@ else
   PIECES:Record({"models/fortification collection/small_bunker1a.mdl", "#", "#", 1, "", "0,-156,-24", "0,-90,0"})
   PIECES:Record({"models/fortification collection/small_bunker2.mdl", "#", "#", 1, "", "0,-100,-24", "0,-90,0"})
   PIECES:Record({"models/fortification collection/small_bunker2a.mdl", "#", "#", 1, "", "0,-156,-24", "0,-90,0"})
+  asmlib.Categorize("SligWolf's Bodygroup Car")
+  PIECES:Record({"models/sligwolf/bgcar/swrccross.mdl", "#", "Switcher Cross", 1, "", "500,0,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrccross.mdl", "#", "Switcher Cross", 2, "", "-2673,0,0", "0,180,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrccurve001.mdl", "#", "U-Turn", 1, "", "890, 748.009, 2.994"})
+  PIECES:Record({"models/sligwolf/bgcar/swrccurve001.mdl", "#", "U-Turn", 2, "", "890, 451.998, 2.994"})
+  PIECES:Record({"models/sligwolf/bgcar/swrccurve001.mdl", "#", "U-Turn", 3, "", "890, -452.001, 2.974"})
+  PIECES:Record({"models/sligwolf/bgcar/swrccurve001.mdl", "#", "U-Turn", 4, "", "890, -748.027, 2.974"})
+  PIECES:Record({"models/sligwolf/bgcar/swrclooping.mdl", "#", "Loop 180", 1, "", "810, -252.447, -0.005"})
+  PIECES:Record({"models/sligwolf/bgcar/swrclooping.mdl", "#", "Loop 180", 2, "", "-809.999, 136.997, -0.002", "0,180,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 1, "", "927.001, -194.403, -0.036"})
+  PIECES:Record({"models/sligwolf/bgcar/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 2, "", "-809.999, 137.003, 350.984", "0,-180,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrcloopingspecial.mdl", "#", "LoopSwitch 180", 3, "", "-809.999, -527.972, 350.984", "0,-180,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrcramp.mdl", "#", "Ramp 45", 1, "", "1000, 0, 0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrcramp.mdl", "#", "Ramp 45", 2, "", "-641.92, 0, 269.672", "-45,-180,0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrctraffic_lights.mdl", "#", "Start Lights", 1, "", "0, -152.532, 0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrctraffic_lights.mdl", "#", "Start Lights", 2, "", "0, 152.554, 0"})
+  PIECES:Record({"models/sligwolf/bgcar/swrctraffic_lights.mdl", "#", "Start Lights", 3, "", "0, 0, 0.042"})
+  asmlib.Categorize("SligWolf's Rerailer")
+  PIECES:Record({"models/sligwolf/rerailer/sw_rerailer_1.mdl", "#", "Single Short", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
+  PIECES:Record({"models/sligwolf/rerailer/sw_rerailer_2.mdl", "#", "Single Middle", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
+  PIECES:Record({"models/sligwolf/rerailer/sw_rerailer_3.mdl", "#", "Single Long", 1, "-190.553,0,25.193", "211.414,0.015,-5.395"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Double Short", 1, "-221.409, 0, 3.031", "219.412, 0, -5.411"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_1.mdl", "#", "Double Short", 2, "-1103.05, 0, 0.009", "-1543.871, 0, -5.411", "0,-180,0"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_2.mdl", "#", "Double Middle", 1, "-265.554, 0, 3.031", "219.412, 0, -5.407"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_2.mdl", "#", "Double Middle", 2, "-1882.106, 0, 3.031", "-2367.072, 0, -5.412", "0,-180,0"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_3.mdl", "#", "Double Long", 1, "-258.249, -0.01, -0.002", "219.415, 0, -5.409"})
+  PIECES:Record({"models/sligwolf/rerailer/rerailer_3.mdl", "#", "Double Long", 2, "-3124.199, -0.01, 2.997", "-3601.869, -0.377, -5.416", "0,-180,0"})
   if(gsMoDB == "SQL") then sqlCommit() end
 end
 

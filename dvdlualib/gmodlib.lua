@@ -19,6 +19,7 @@ local __nermsg = {}
 local __lang   = {}
 local Msg      = print
 local __type   = type
+local __typedt = {{"number"}, {"string"}, {"boolean", "bool"},{"function"},{"table"}}
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 
 game = {__single = true}
@@ -90,8 +91,9 @@ type = function(any)
   else return __type(any) end
 end
 
-function istable(t)
-  return (type(t) == "table")
+for i = 1, #__typedt do
+  local v = __typedt[i]
+  rawset(_G, "is"..(v[2] or v[1]), function(x) return type(x) == v[1] end or false)
 end
 
 local mtMatrix = {__type = "Matrix"}
@@ -654,6 +656,8 @@ end
 
 function sql.TableExists(anyTable) return true end
 function sql.Query(sQ) return {} end
+function sql.Begin() return nil end
+function sql.Commit() return nil end
 
 function game.SinglePlayer(vS)
   if(vS ~= nil) then game.__single = common.toBool(vS) end

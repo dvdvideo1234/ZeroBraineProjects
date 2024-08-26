@@ -1,12 +1,20 @@
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/?.lua"
-package.path = package.path..";".."E:/Documents/Lua-Projs/ZeroBraineIDE/ZeroBraineProjects/?.lua"
+local drpath = require("directories")
+      drpath.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      drpath.addBase("D:/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local tableConcat = table and table.concat
 
 local common = require("common")
-require("dvdlualib/gmodlib")
-require("dvdlualib/asmlib")
-require("dvdlualib/common")
+
+require("gmodlib")
+require("trackasmlib")
+require("common")
 
 local asmlib     = trackasmlib
 local gaTimerSet = {} -- ("/"):Explode("CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1")
@@ -36,6 +44,21 @@ asmlib.SetLogControl(1000,false)
       end 
     end
   end
+
+function GetReport(...)
+  local sD = asmlib.GetOpVar("OPSYM_VERTDIV")
+  local tV, sV = {...}, sD -- Use vertical divider
+  local nV = select("#", ...) -- Read report count
+  if(nV == 0) then return sV end -- Nothing to report
+  if(nV == 1) then sV = "{"..type(tV[1]).."}"..sV end
+  for iV = 1, nV do sV = sV..tostring(tV[iV])..sD end
+  return sV -- Concatenate vararg and return a string
+end
+
+local a = false
+
+print(tostring(a or "X"))
+
 
 
 
