@@ -85,7 +85,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","8.775")
+asmlib.SetOpVar("TOOL_VERSION","8.782")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -153,7 +153,7 @@ asmlib.SetBorder(gsToolPrefL.."rtradmenu", -gnMaxRot, gnMaxRot)
 ------------ CONFIGURE LOGGING ------------
 
 asmlib.SetOpVar("LOG_DEBUGEN",false)
-asmlib.NewAsmConvar("logsmax", 1, nil, gnIndependentUsed, "Maximum logging lines being written")
+asmlib.NewAsmConvar("logsmax", 0, nil, gnIndependentUsed, "Maximum logging lines being written")
 asmlib.NewAsmConvar("logfile", 0, nil, gnIndependentUsed, "File logging output flag control")
 asmlib.SetLogControl(asmlib.GetAsmConvar("logsmax","INT"), asmlib.GetAsmConvar("logfile","BUL"))
 asmlib.SettingsLogs("SKIP"); asmlib.SettingsLogs("ONLY")
@@ -161,7 +161,6 @@ asmlib.SettingsLogs("SKIP"); asmlib.SettingsLogs("ONLY")
 ------------ CONFIGURE NON-REPLICATED CVARS ------------ Client's got a mind of its own
 
 asmlib.NewAsmConvar("modedb"   , "SQL", nil, gnIndependentUsed, "Database storage operating mode LUA or SQL")
-  asmlib.SetOpVar("MODE_DATABASE", asmlib.GetAsmConvar("modedb"   , "STR"))
 asmlib.NewAsmConvar("devmode"  ,    0 , nil, gnIndependentUsed, "Toggle developer mode on/off server side")
 asmlib.NewAsmConvar("maxtrmarg", 0.02 , nil, gnIndependentUsed, "Maximum time to avoid performing new traces")
 asmlib.NewAsmConvar("maxmenupr",    5 , nil, gnIndependentUsed, "Maximum decimal places utilized in the control panel")
@@ -180,7 +179,6 @@ asmlib.NewAsmConvar("enmultask", 1     , nil, gnServerControled, "Toggle the spa
 asmlib.NewAsmConvar("enctxmenu", 1     , nil, gnServerControled, "Toggle the context menu on/off in general")
 asmlib.NewAsmConvar("enctxmall", 0     , nil, gnServerControled, "Toggle the context menu on/off for all props")
 asmlib.NewAsmConvar("endsvlock", 0     , nil, gnServerControled, "Toggle the DSV external database file update on/off")
-  asmlib.IsFlag("en_dsv_datalock", asmlib.GetAsmConvar("endsvlock", "BUL"))
 asmlib.NewAsmConvar("curvefact", 0.5   , nil, gnServerControled, "Parametric constant track curving factor")
 asmlib.NewAsmConvar("curvsmple", 50    , nil, gnServerControled, "Amount of samples between two curve nodes")
 asmlib.NewAsmConvar("spawnrate",  1    , nil, gnServerControled, "Maximum pieces spawned in every think tick")
@@ -1649,8 +1647,8 @@ propertiesAdd(gsOptionsCM, gtOptionsCM)
 ------------ INITIALIZE DB------------
 
 asmlib.NewTable("PIECES",{
-  Timer = gaTimerSet[1],
-  Index = {{1},{4},{1,4}},
+  Timer =Angle(6,2,3),--gaTimerSet[1],
+  Index = {{1},{4},{1,4,Un=true}},
   Trigs = {
     Record = function(arLine, vSrc)
       local noMD  = asmlib.GetOpVar("MISS_NOMD")
@@ -1733,7 +1731,7 @@ asmlib.NewTable("PIECES",{
 
 asmlib.NewTable("ADDITIONS",{
   Timer = gaTimerSet[2],
-  Index = {{1},{4},{1,4}},
+  Index = {{1},{4},{1,4,Un=true}},
   Query = {
     Record = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"},
     ExportDSV = {1,4}
@@ -1786,7 +1784,7 @@ asmlib.NewTable("ADDITIONS",{
 
 asmlib.NewTable("PHYSPROPERTIES",{
   Timer = gaTimerSet[3],
-  Index = {{1},{2},{1,2}},
+  Index = {{1},{2},{1,2,Un=true}},
   Trigs = {
     Record = function(arLine, vSrc)
       local noTY = asmlib.GetOpVar("MISS_NOTP")

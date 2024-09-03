@@ -1,441 +1,268 @@
-﻿Directory: [F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/settings/presets]
+﻿Directory: [C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT]
 
-`╔`[`gstp`][ref-1-gstp]  
-`╠═══`[`axis`][ref-2-axis]  
-`╠═══`[`axiscenter`][ref-3-axiscenter]  
-`╠═══`[`axiscenteradv`][ref-4-axiscenteradv]  
-`╠═══`[`axiscentre`][ref-5-axiscentre]  
-`╠═══`[`ballsocket`][ref-6-ballsocket]  
-`╠═══`[`ballsocket_advanced`][ref-7-ballsocket%5Fadvanced]  
-`║   ╠═══`[`1-nocollide.txt`][ref-8-1%2Dnocollide.txt] [424B]  
-`║   ╠═══`[`10-xz lock.txt`][ref-9-10%2Dxz%20lock.txt] [442B]  
-`║   ╠═══`[`11-xyz lock.txt`][ref-10-11%2Dxyz%20lock.txt] [453B]  
-`║   ╠═══`[`12-uplock.txt`][ref-11-12%2Duplock.txt] [412B]  
-`║   ╠═══`[`13-wheelstabilizery2.txt`][ref-12-13%2Dwheelstabilizery2.txt] [452B]  
-`║   ╠═══`[`14-wheelstabilizery1.txt`][ref-13-14%2Dwheelstabilizery1.txt] [452B]  
-`║   ╠═══`[`15-wheelstabilizerx2.txt`][ref-14-15%2Dwheelstabilizerx2.txt] [452B]  
-`║   ╠═══`[`16-z lock.txt`][ref-15-16%2Dz%20lock.txt] [431B]  
-`║   ╠═══`[`17-xy lock.txt`][ref-16-17%2Dxy%20lock.txt] [442B]  
-`║   ╠═══`[`18-frontlock.txt`][ref-17-18%2Dfrontlock.txt] [415B]  
-`║   ╠═══`[`19-x lock.txt`][ref-18-19%2Dx%20lock.txt] [431B]  
-`║   ╠═══`[`2-wheelstabilizerz1.txt`][ref-19-2%2Dwheelstabilizerz1.txt] [452B]  
-`║   ╠═══`[`3-wheelstabilizerz2.txt`][ref-20-3%2Dwheelstabilizerz2.txt] [452B]  
-`║   ╠═══`[`4-y lock.txt`][ref-21-4%2Dy%20lock.txt] [431B]  
-`║   ╠═══`[`5-solidaxelfront.txt`][ref-22-5%2Dsolidaxelfront.txt] [435B]  
-`║   ╠═══`[`6-sidelock.txt`][ref-23-6%2Dsidelock.txt] [414B]  
-`║   ╠═══`[`7-wheelstabilizerx1.txt`][ref-24-7%2Dwheelstabilizerx1.txt] [452B]  
-`║   ╠═══`[`8-zeros+free.txt`][ref-25-8%2Dzeros%2Bfree.txt] [41B]  
-`║   ╚═══`[`9-yz lock.txt`][ref-26-9%2Dyz%20lock.txt] [442B]  
-`╠═══`[`ballsocket_easy`][ref-27-ballsocket%5Feasy]  
-`╠═══`[`ballsocketcenter`][ref-28-ballsocketcenter]  
-`╠═══`[`ballsocketcenteradv`][ref-29-ballsocketcenteradv]  
-`╠═══`[`ballsocketcentre`][ref-30-ballsocketcentre]  
-`╠═══`[`bloom`][ref-31-bloom]  
-`║   ╠═══`[`1-really sunny.txt`][ref-32-1%2Dreally%20sunny.txt] [285B]  
-`║   ╠═══`[`2-snow day.txt`][ref-33-2%2Dsnow%20day.txt] [281B]  
-`║   ╠═══`[`3-dusk.txt`][ref-34-3%2Ddusk.txt] [275B]  
-`║   ╠═══`[`4-bad eyes.txt`][ref-35-4%2Dbad%20eyes.txt] [281B]  
-`║   ╠═══`[`5-cold.txt`][ref-36-5%2Dcold.txt] [27B]  
-`║   ╚═══`[`6-sunshine.txt`][ref-37-6%2Dsunshine.txt] [282B]  
-`╠═══`[`camera`][ref-38-camera]  
-`╠═══`[`colormod`][ref-39-colormod]  
-`║   ╠═══`[`1-degree in graphic design.txt`][ref-40-1%2Ddegree%20in%20graphic%20design.txt] [309B]  
-`║   ╠═══`[`2-trinity dies.txt`][ref-41-2%2Dtrinity%20dies.txt] [29B]  
-`║   ╠═══`[`3-black and white 2.txt`][ref-42-3%2Dblack%20and%20white%202.txt] [287B]  
-`║   ╠═══`[`4-cartoon land.txt`][ref-43-4%2Dcartoon%20land.txt] [297B]  
-`║   ╠═══`[`5-re-coloured.txt`][ref-44-5%2Dre%2Dcoloured.txt] [302B]  
-`║   ╠═══`[`6-really old photo.txt`][ref-45-6%2Dreally%20old%20photo.txt] [304B]  
-`║   ╠═══`[`7-old red tint.txt`][ref-46-7%2Dold%20red%20tint.txt] [292B]  
-`║   ╚═══`[`8-black and white.txt`][ref-47-8%2Dblack%20and%20white.txt] [285B]  
-`╠═══`[`colour`][ref-48-colour]  
-`║   ╠═══`[`1-black.txt`][ref-49-1%2Dblack.txt] [12B]  
-`║   ╠═══`[`10-default.txt`][ref-50-10%2Ddefault.txt] [142B]  
-`║   ╠═══`[`2-green.txt`][ref-51-2%2Dgreen.txt] [122B]  
-`║   ╠═══`[`3-blue.txt`][ref-52-3%2Dblue.txt] [121B]  
-`║   ╠═══`[`4-cyan.txt`][ref-53-4%2Dcyan.txt] [123B]  
-`║   ╠═══`[`5-invisible.txt`][ref-54-5%2Dinvisible.txt] [142B]  
-`║   ╠═══`[`6-yellow.txt`][ref-55-6%2Dyellow.txt] [125B]  
-`║   ╠═══`[`7-red.txt`][ref-56-7%2Dred.txt] [12B]  
-`║   ╠═══`[`8-white.txt`][ref-57-8%2Dwhite.txt] [126B]  
-`║   ╚═══`[`9-margenta.txt`][ref-58-9%2Dmargenta.txt] [11B]  
-`╠═══`[`dhinline_elements_depthhud_classic`][ref-59-dhinline%5Felements%5Fdepthhud%5Fclassic]  
-`║   ╚═══`[`1-minimalistic elements.txt`][ref-60-1%2Dminimalistic%20elements.txt] [2kB]  
-`╠═══`[`dhinline_themes_depthhud_classic`][ref-61-dhinline%5Fthemes%5Fdepthhud%5Fclassic]  
-`║   ╠═══`[`1-minimalistic theme.txt`][ref-62-1%2Dminimalistic%20theme.txt] [125B]  
-`║   ╠═══`[`2-shiny default.txt`][ref-63-2%2Dshiny%20default.txt] [102B]  
-`║   ╠═══`[`3-black and white.txt`][ref-64-3%2Dblack%20and%20white.txt] [113B]  
-`║   ╠═══`[`4-xray.txt`][ref-65-4%2Dxray.txt] [105B]  
-`║   ╠═══`[`5-labs.txt`][ref-66-5%2Dlabs.txt] [104B]  
-`║   ╚═══`[`6-shiny default (moderate).txt`][ref-67-6%2Dshiny%20default%20%28moderate%29.txt] [120B]  
-`╠═══`[`dynamite`][ref-68-dynamite]  
-`╠═══`[`easyprecision`][ref-69-easyprecision]  
-`║   ╚═══`[`1-wheelbaserope.txt`][ref-70-1%2Dwheelbaserope.txt] [5B]  
-`╠═══`[`elastic`][ref-71-elastic]  
-`║   ╚═══`[`1-train.txt`][ref-72-1%2Dtrain.txt] [181B]  
-`╠═══`[`face`][ref-73-face]  
-`║   ╠═══`[`1-i don_t care anyway.txt`][ref-74-1%2Di%20don%5Ft%20care%20anyway.txt] [2kB]  
-`║   ╠═══`[`2-quite annoyed.txt`][ref-75-2%2Dquite%20annoyed.txt] [2kB]  
-`║   ╠═══`[`3-blowing.txt`][ref-76-3%2Dblowing.txt] [2kB]  
-`║   ╠═══`[`4-i_m sorry.txt`][ref-77-4%2Di%5Fm%20sorry.txt] [2kB]  
-`║   ╠═══`[`5-joker.txt`][ref-78-5%2Djoker.txt] [2kB]  
-`║   ╠═══`[`6-can_t believe it.txt`][ref-79-6%2Dcan%5Ft%20believe%20it.txt] [2kB]  
-`║   ╠═══`[`6-happy.txt`][ref-80-6%2Dhappy.txt] [2kB]  
-`║   ╠═══`[`7-can_t believe it.txt`][ref-81-7%2Dcan%5Ft%20believe%20it.txt] [2kB]  
-`║   ╚═══`[`7-happy.txt`][ref-82-7%2Dhappy.txt] [2kB]  
-`╠═══`[`finger`][ref-83-finger]  
-`║   ╠═══`[`1-flat.txt`][ref-84-1%2Dflat.txt] [4B]  
-`║   ╠═══`[`2-point.txt`][ref-85-2%2Dpoint.txt] [412B]  
-`║   ╚═══`[`3-thumbs up.txt`][ref-86-3%2Dthumbs%20up.txt] [425B]  
-`╠═══`[`fog`][ref-87-fog]  
-`║   ╠═══`[`1-heaven.txt`][ref-88-1%2Dheaven.txt] [241B]  
-`║   ╚═══`[`2-radioactive man.txt`][ref-89-2%2Dradioactive%20man.txt] [232B]  
-`╠═══`[`hovermoduletool`][ref-90-hovermoduletool]  
-`║   ╚═══`[`presets`][ref-91-presets]  
-`║       ╚═══`[`1-asd.txt`][ref-92-1%2Dasd.txt] [9B]  
-`╠═══`[`hydraulic`][ref-93-hydraulic]  
-`╠═══`[`jediforce`][ref-94-jediforce]  
-`╠═══`[`lamp`][ref-95-lamp]  
-`╠═══`[`laseremitter`][ref-96-laseremitter]  
-`╠═══`[`light`][ref-97-light]  
-`╠═══`[`maglevspawner`][ref-98-maglevspawner]  
-`║   ╚═══`[`1-test.txt`][ref-99-1%2Dtest.txt] [859B]  
-`╠═══`[`magnetdipole`][ref-100-magnetdipole]  
-`╠═══`[`magnetise`][ref-101-magnetise]  
-`╠═══`[`motor`][ref-102-motor]  
-`╠═══`[`muscle`][ref-103-muscle]  
-`╠═══`[`nail`][ref-104-nail]  
-`╠═══`[`nailadv`][ref-105-nailadv]  
-`╠═══`[`pewpew`][ref-106-pewpew]  
-`╠═══`[`physgun_buildmode`][ref-107-physgun%5Fbuildmode]  
-`║   ╠═══`[`1-phx course 45 deg.txt`][ref-108-1%2Dphx%20course%2045%20deg.txt] [573B]  
-`║   ╠═══`[`2-no snap.txt`][ref-109-2%2Dno%20snap.txt] [563B]  
-`║   ╚═══`[`3-phx fine 45 deg.txt`][ref-110-3%2Dphx%20fine%2045%20deg.txt] [571B]  
-`╠═══`[`physprop`][ref-111-physprop]  
-`╠═══`[`precision`][ref-112-precision]  
-`║   ╠═══`[`1-bs-x-lock.txt`][ref-113-1%2Dbs%2Dx%2Dlock.txt] [996B]  
-`║   ╚═══`[`2-rot-x-lock.txt`][ref-114-2%2Drot%2Dx%2Dlock.txt] [973B]  
-`╠═══`[`precision_align`][ref-115-precision%5Falign]  
-`╠═══`[`propcannon`][ref-116-propcannon]  
-`╠═══`[`pulley`][ref-117-pulley]  
-`╠═══`[`pulleyadv`][ref-118-pulleyadv]  
-`╠═══`[`ragoll blood settings`][ref-119-ragoll%20blood%20settings]  
-`╠═══`[`rb655_lightsaber`][ref-120-rb655%5Flightsaber]  
-`║   ╠═══`[`1-master yoda lightsaber.txt`][ref-121-1%2Dmaster%20yoda%20lightsaber.txt] [535B]  
-`║   ╠═══`[`10-[ep3] anakin skywalker lightsaber.txt`][ref-122-10%2D%5Bep3%5D%20anakin%20skywalker%20lightsaber.txt] [552B]  
-`║   ╠═══`[`11-darth tyrannus lightsaber (count dooku).txt`][ref-123-11%2Ddarth%20tyrannus%20lightsaber%20%28count%20dooku%29.txt] [544B]  
-`║   ╠═══`[`12-common jedi lightsaber.txt`][ref-124-12%2Dcommon%20jedi%20lightsaber.txt] [448B]  
-`║   ╠═══`[`13-darth maul lightsaber.txt`][ref-125-13%2Ddarth%20maul%20lightsaber.txt] [537B]  
-`║   ╠═══`[`14-mace windu lightsaber.txt`][ref-126-14%2Dmace%20windu%20lightsaber.txt] [533B]  
-`║   ╠═══`[`15-[ep1] obi-wan kenobi lightsaber.txt`][ref-127-15%2D%5Bep1%5D%20obi%2Dwan%20kenobi%20lightsaber.txt] [55B]  
-`║   ╠═══`[`2-darth maul saberstaff.txt`][ref-128-2%2Ddarth%20maul%20saberstaff.txt] [538B]  
-`║   ╠═══`[`3-[ep3] obi-wan kenobi lightsaber.txt`][ref-129-3%2D%5Bep3%5D%20obi%2Dwan%20kenobi%20lightsaber.txt] [55B]  
-`║   ╠═══`[`4-qui-gon jinn lightsaber.txt`][ref-130-4%2Dqui%2Dgon%20jinn%20lightsaber.txt] [542B]  
-`║   ╠═══`[`5-darth vader lightsaber.txt`][ref-131-5%2Ddarth%20vader%20lightsaber.txt] [534B]  
-`║   ╠═══`[`6-[ep6] luke skywalker lightsaber.txt`][ref-132-6%2D%5Bep6%5D%20luke%20skywalker%20lightsaber.txt] [548B]  
-`║   ╠═══`[`7-darth sidious lightsaber.txt`][ref-133-7%2Ddarth%20sidious%20lightsaber.txt] [538B]  
-`║   ╠═══`[`8-[ep2] anakin skywalker lightsaber.txt`][ref-134-8%2D%5Bep2%5D%20anakin%20skywalker%20lightsaber.txt] [552B]  
-`║   ╚═══`[`9-dark saber.txt`][ref-135-9%2Ddark%20saber.txt] [386B]  
-`╠═══`[`rope`][ref-136-rope]  
-`║   ╠═══`[`1-commonrope.txt`][ref-137-1%2Dcommonrope.txt] [142B]  
-`║   ╚═══`[`2-suspension.txt`][ref-138-2%2Dsuspension.txt] [142B]  
-`╠═══`[`simfphys_miscsound`][ref-139-simfphys%5Fmiscsound]  
-`║   ╠═══`[`1-horn 7.txt`][ref-140-1%2Dhorn%207.txt] [83B]  
-`║   ╠═══`[`2-horn 3.txt`][ref-141-2%2Dhorn%203.txt] [83B]  
-`║   ╠═══`[`3-horn 0 - out of my way.txt`][ref-142-3%2Dhorn%200%20%2D%20out%20of%20my%20way.txt] [99B]  
-`║   ╠═══`[`4-horn 4.txt`][ref-143-4%2Dhorn%204.txt] [83B]  
-`║   ╠═══`[`5-horn 6 - vote daniels.txt`][ref-144-5%2Dhorn%206%20%2D%20vote%20daniels.txt] [98B]  
-`║   ╠═══`[`6-horn 1.txt`][ref-145-6%2Dhorn%201.txt] [83B]  
-`║   ╠═══`[`7-horn 5.txt`][ref-146-7%2Dhorn%205.txt] [83B]  
-`║   ╚═══`[`8-horn 2.txt`][ref-147-8%2Dhorn%202.txt] [83B]  
-`╠═══`[`simfphys_sound`][ref-148-simfphys%5Fsound]  
-`║   ╠═══`[`1-apc.txt`][ref-149-1%2Dapc.txt] [738B]  
-`║   ╚═══`[`2-jalopy.txt`][ref-150-2%2Djalopy.txt] [757B]  
-`╠═══`[`slider`][ref-151-slider]  
-`╠═══`[`smartsnap`][ref-152-smartsnap]  
-`║   ╠═══`[`1-v20.txt`][ref-153-1%2Dv20.txt] [478B]  
-`║   ╚═══`[`2-default.txt`][ref-154-2%2Ddefault.txt] [489B]  
-`╠═══`[`spawner`][ref-155-spawner]  
-`╠═══`[`spinner`][ref-156-spinner]  
-`╠═══`[`stacker`][ref-157-stacker]  
-`║   ╠═══`[`1-monorail short backward.txt`][ref-158-1%2Dmonorail%20short%20backward.txt] [383B]  
-`║   ╠═══`[`10-monorail 45 left down.txt`][ref-159-10%2Dmonorail%2045%20left%20down.txt] [395B]  
-`║   ╠═══`[`11-phx track 225 down.txt`][ref-160-11%2Dphx%20track%20225%20down.txt] [388B]  
-`║   ╠═══`[`12-phx track 45 down.txt`][ref-161-12%2Dphx%20track%2045%20down.txt] [38B]  
-`║   ╠═══`[`13-phx track forward.txt`][ref-162-13%2Dphx%20track%20forward.txt] [369B]  
-`║   ╠═══`[`14-monorail 45 right down.txt`][ref-163-14%2Dmonorail%2045%20right%20down.txt] [398B]  
-`║   ╠═══`[`15-monorail 45 right right.txt`][ref-164-15%2Dmonorail%2045%20right%20right.txt] [387B]  
-`║   ╠═══`[`16-phx track 90 turn left.txt`][ref-165-16%2Dphx%20track%2090%20turn%20left.txt] [386B]  
-`║   ╠═══`[`17-monorail long forward.txt`][ref-166-17%2Dmonorail%20long%20forward.txt] [374B]  
-`║   ╠═══`[`18-monorail 45 left left.txt`][ref-167-18%2Dmonorail%2045%20left%20left.txt] [392B]  
-`║   ╠═══`[`19-monorail 45 left up.txt`][ref-168-19%2Dmonorail%2045%20left%20up.txt] [394B]  
-`║   ╠═══`[`2-phx track 90 turn right.txt`][ref-169-2%2Dphx%20track%2090%20turn%20right.txt] [388B]  
-`║   ╠═══`[`20-monorail 45 right up.txt`][ref-170-20%2Dmonorail%2045%20right%20up.txt] [395B]  
-`║   ╠═══`[`21-phx track 45 turn left.txt`][ref-171-21%2Dphx%20track%2045%20turn%20left.txt] [384B]  
-`║   ╠═══`[`22-default.txt`][ref-172-22%2Ddefault.txt] [351B]  
-`║   ╠═══`[`3-phx track 45 turn right.txt`][ref-173-3%2Dphx%20track%2045%20turn%20right.txt] [388B]  
-`║   ╠═══`[`4-monorail short forward.txt`][ref-174-4%2Dmonorail%20short%20forward.txt] [382B]  
-`║   ╠═══`[`5-monorail 45 right left.txt`][ref-175-5%2Dmonorail%2045%20right%20left.txt] [398B]  
-`║   ╠═══`[`6-phx track 45 up.txt`][ref-176-6%2Dphx%20track%2045%20up.txt] [372B]  
-`║   ╠═══`[`7-phx track 225 up.txt`][ref-177-7%2Dphx%20track%20225%20up.txt] [385B]  
-`║   ╠═══`[`8-monorail 45 left right.txt`][ref-178-8%2Dmonorail%2045%20left%20right.txt] [396B]  
-`║   ╚═══`[`9-phx track backward.txt`][ref-179-9%2Dphx%20track%20backward.txt] [37B]  
-`╠═══`[`stacker_adv`][ref-180-stacker%5Fadv]  
-`║   ╠═══`[`1-magranlr.txt`][ref-181-1%2Dmagranlr.txt] [564B]  
-`║   ╠═══`[`10-difer3_1x1_base.txt`][ref-182-10%2Ddifer3%5F1x1%5Fbase.txt] [529B]  
-`║   ╠═══`[`11-rollerengine.txt`][ref-183-11%2Drollerengine.txt] [552B]  
-`║   ╠═══`[`12-magranudlong.txt`][ref-184-12%2Dmagranudlong.txt] [561B]  
-`║   ╠═══`[`13-difer3_2x2_plan.txt`][ref-185-13%2Ddifer3%5F2x2%5Fplan.txt] [564B]  
-`║   ╠═══`[`14-track225up.txt`][ref-186-14%2Dtrack225up.txt] [572B]  
-`║   ╠═══`[`15-magrancoaster.txt`][ref-187-15%2Dmagrancoaster.txt] [559B]  
-`║   ╠═══`[`16-track45down.txt`][ref-188-16%2Dtrack45down.txt] [567B]  
-`║   ╠═══`[`17-difer3_2x2_base.txt`][ref-189-17%2Ddifer3%5F2x2%5Fbase.txt] [564B]  
-`║   ╠═══`[`18-difer4_1x2_base.txt`][ref-190-18%2Ddifer4%5F1x2%5Fbase.txt] [564B]  
-`║   ╠═══`[`19-magranudshort.txt`][ref-191-19%2Dmagranudshort.txt] [557B]  
-`║   ╠═══`[`2-st3_r.txt`][ref-192-2%2Dst3%5Fr.txt] [578B]  
-`║   ╠═══`[`3-difer3_1x1_plan.txt`][ref-193-3%2Ddifer3%5F1x1%5Fplan.txt] [564B]  
-`║   ╠═══`[`4-monorail_turn_90.txt`][ref-194-4%2Dmonorail%5Fturn%5F90.txt] [565B]  
-`║   ╠═══`[`5-st3_l.txt`][ref-195-5%2Dst3%5Fl.txt] [577B]  
-`║   ╠═══`[`6-difer4_1x2_plan.txt`][ref-196-6%2Ddifer4%5F1x2%5Fplan.txt] [535B]  
-`║   ╠═══`[`7-monorail_turn_45.txt`][ref-197-7%2Dmonorail%5Fturn%5F45.txt] [565B]  
-`║   ╠═══`[`8-track45up.txt`][ref-198-8%2Dtrack45up.txt] [559B]  
-`║   ╚═══`[`9-track225down.txt`][ref-199-9%2Dtrack225down.txt] [575B]  
-`╠═══`[`stacker_improved`][ref-200-stacker%5Fimproved]  
-`╠═══`[`thruster`][ref-201-thruster]  
-`╠═══`[`trackassembly`][ref-202-trackassembly]  
-`║   ╚═══`[`1-test.txt`][ref-203-1%2Dtest.txt] [42B]  
-`╠═══`[`turret`][ref-204-turret]  
-`╠═══`[`weight`][ref-205-weight]  
-`╠═══`[`weld`][ref-206-weld]  
-`╠═══`[`weld_easy`][ref-207-weld%5Feasy]  
-`╠═══`[`wheel`][ref-208-wheel]  
-`╠═══`[`wire`][ref-209-wire]  
-`╠═══`[`wire_adv`][ref-210-wire%5Fadv]  
-`║   ╚═══`[`1-inwallscable.txt`][ref-211-1%2Dinwallscable.txt] [147B]  
-`╠═══`[`wire_dual_input`][ref-212-wire%5Fdual%5Finput]  
-`╠═══`[`wire_input`][ref-213-wire%5Finput]  
-`╠═══`[`wire_joystick`][ref-214-wire%5Fjoystick]  
-`╠═══`[`wire_joystick_multi`][ref-215-wire%5Fjoystick%5Fmulti]  
-`╠═══`[`wire_ranger`][ref-216-wire%5Franger]  
-`╠═══`[`wire_screen`][ref-217-wire%5Fscreen]  
-`╠═══`[`wire_servo`][ref-218-wire%5Fservo]  
-`╚═══`[`wire_value`][ref-219-wire%5Fvalue]  
+`╔`[`TrackAssemblyTool`][ref-1-TrackAssemblyTool]  
+`╠═══`[`data`][ref-2-data]  
+`║   ╠═══`[`advdupe2`][ref-3-advdupe2] --> Extension testing duplications  
+`║   ║   ╚═══`[`wire_extension_test.txt`][ref-4-wire%5Fextension%5Ftest.txt] [2kB]  
+`║   ╠═══`[`expression2`][ref-5-expression2]  
+`║   ║   ╠═══`[`TA_Active_point_scanner.txt`][ref-6-TA%5FActive%5Fpoint%5Fscanner.txt] [2kB]  
+`║   ║   ╠═══`[`TA_Exporter_Generator.txt`][ref-7-TA%5FExporter%5FGenerator.txt] [3kB]  
+`║   ║   ╠═══`[`TA_ExtensionTest.txt`][ref-8-TA%5FExtensionTest.txt] [2kB]  
+`║   ║   ╠═══`[`TA_Scan_Export_Generator.txt`][ref-9-TA%5FScan%5FExport%5FGenerator.txt] [6kB]  
+`║   ║   ╠═══`[`TA_Scan_Generator.txt`][ref-10-TA%5FScan%5FGenerator.txt] [7kB]  
+`║   ║   ╠═══`[`TA_Wire_Test.txt`][ref-11-TA%5FWire%5FTest.txt] [2kB]  
+`║   ║   ╠═══`[`TA_curve_rotator.txt`][ref-12-TA%5Fcurve%5Frotator.txt] [55B]  
+`║   ║   ╚═══`[`Test_Rail_Angler.txt`][ref-13-Test%5FRail%5FAngler.txt] [906B]  
+`║   ╚═══`[`trackassembly`][ref-14-trackassembly]  
+`║       ╠═══`[`dsv`][ref-15-dsv]  
+`║       ║   ╠═══`[`LUA`][ref-16-LUA]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_additions.txt`][ref-17-cl%5Ftrackassembly%5Fadditions.txt] [103B]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_category.txt`][ref-18-cl%5Ftrackassembly%5Fcategory.txt] [9kB]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_physproperties.txt`][ref-19-cl%5Ftrackassembly%5Fphysproperties.txt] [4kB]  
+`║       ║   ║   ╚═══`[`cl_trackassembly_pieces.txt`][ref-20-cl%5Ftrackassembly%5Fpieces.txt] [541kB]  
+`║       ║   ╠═══`[`PlarailTRACKASSEMBLY_CATEGORY.txt`][ref-21-PlarailTRACKASSEMBLY%5FCATEGORY.txt] [55B]  
+`║       ║   ╠═══`[`PlarailTRACKASSEMBLY_PIECES.txt`][ref-22-PlarailTRACKASSEMBLY%5FPIECES.txt] [3kB]  
+`║       ║   ╠═══`[`Ron_s_2ft_track_packTRACKASSEMBLY_CATEGORY.txt`][ref-23-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [513B]  
+`║       ║   ╠═══`[`Ron_s_2ft_track_packTRACKASSEMBLY_PIECES.txt`][ref-24-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [3kB]  
+`║       ║   ╠═══`[`Ron_s_G_Scale_Track_packTRACKASSEMBLY_CATEGORY.txt`][ref-25-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [353B]  
+`║       ║   ╠═══`[`Ron_s_G_Scale_Track_packTRACKASSEMBLY_PIECES.txt`][ref-26-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [5kB]  
+`║       ║   ╠═══`[`SQL`][ref-27-SQL]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_additions.txt`][ref-28-cl%5Ftrackassembly%5Fadditions.txt] [200B]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_category.txt`][ref-29-cl%5Ftrackassembly%5Fcategory.txt] [9kB]  
+`║       ║   ║   ╠═══`[`cl_trackassembly_physproperties.txt`][ref-30-cl%5Ftrackassembly%5Fphysproperties.txt] [5kB]  
+`║       ║   ║   ╚═══`[`cl_trackassembly_pieces.txt`][ref-31-cl%5Ftrackassembly%5Fpieces.txt] [543kB]  
+`║       ║   ╠═══`[`Test_s_track_packTRACKASSEMBLY_CATEGORY.txt`][ref-32-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt] [505B]  
+`║       ║   ╠═══`[`Test_s_track_packTRACKASSEMBLY_PIECES.txt`][ref-33-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt] [694B]  
+`║       ║   ╠═══`[`joe_s_2ft_track_pack2trackassembly_pieces.txt`][ref-34-joe%5Fs%5F2ft%5Ftrack%5Fpack2trackassembly%5Fpieces.txt] [3kB]  
+`║       ║   ╠═══`[`joe_s_2ft_track_packtrackassembly_category.txt`][ref-35-joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fcategory.txt] [417B]  
+`║       ║   ╠═══`[`joe_s_2ft_track_packtrackassembly_pieces.txt`][ref-36-joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fpieces.txt] [76B]  
+`║       ║   ╠═══`[`shinji85_s_railstrackassembly_additions.txt`][ref-37-shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt] [13B]  
+`║       ║   ╠═══`[`shinji85_s_railstrackassembly_category.txt`][ref-38-shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt] [534B]  
+`║       ║   ╚═══`[`shinji85_s_railstrackassembly_pieces.txt`][ref-39-shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt] [7kB]  
+`║       ╠═══`[`exp`][ref-40-exp]  
+`║       ║   ╠═══`[`cl_TRACKASSEMBLY_ADDITIONS.txt`][ref-41-cl%5FTRACKASSEMBLY%5FADDITIONS.txt] [952B]  
+`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-42-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [6kB]  
+`║       ║   ╠═══`[`cl_TRACKASSEMBLY_PIECES.txt`][ref-43-cl%5FTRACKASSEMBLY%5FPIECES.txt] [342kB]  
+`║       ║   ╠═══`[`sv_TRACKASSEMBLY_ADDITIONS.txt`][ref-44-sv%5FTRACKASSEMBLY%5FADDITIONS.txt] [952B]  
+`║       ║   ╠═══`[`sv_TRACKASSEMBLY_PHYSPROPERTIES.txt`][ref-45-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt] [6kB]  
+`║       ║   ╠═══`[`sv_TRACKASSEMBLY_PIECES.txt`][ref-46-sv%5FTRACKASSEMBLY%5FPIECES.txt] [342kB]  
+`║       ║   ╚═══`[`z_autorun_[anyone_s_horrible_trackpack].txt`][ref-47-z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt] [21kB]  
+`║       ╠═══`[`set`][ref-48-set]  
+`║       ║   ╠═══`[`trackasmlib_dsv.txt`][ref-49-trackasmlib%5Fdsv.txt] [18B]  
+`║       ║   ╠═══`[`trackasmlib_slskip.txt`][ref-50-trackasmlib%5Fslskip.txt] [74B]  
+`║       ║   ╠═══`[`z_autorun_[trackassembly].txt`][ref-51-z%5Fautorun%5F%5Btrackassembly%5D.txt] [7kB]  
+`║       ║   ╚═══`[`z_autoset_[trackassembly].txt`][ref-52-z%5Fautoset%5F%5Btrackassembly%5D.txt] [23kB]  
+`║       ╠═══`[`tools`][ref-53-tools]  
+`║       ║   ╠═══`[`discontinued`][ref-54-discontinued]  
+`║       ║   ║   ╠═══`[`author-converted`][ref-55-author%2Dconverted]  
+`║       ║   ║   ║   ╚═══`[`Shinji85's Rails.txt`][ref-56-Shinji85%27s%20Rails.txt] [7kB]  
+`║       ║   ║   ╠═══`[`owner-discontinued`][ref-57-owner%2Ddiscontinued]  
+`║       ║   ║   ║   ╠═══`[`Ron's 2ft track pack.txt`][ref-58-Ron%27s%202ft%20track%20pack.txt] [2kB]  
+`║       ║   ║   ║   ╠═══`[`Ron's 56 gauge rails.txt`][ref-59-Ron%27s%2056%20gauge%20rails.txt] [48kB]  
+`║       ║   ║   ║   ╚═══`[`SligWolf's minitrains.txt`][ref-60-SligWolf%27s%20minitrains.txt] [892B]  
+`║       ║   ║   ╚═══`[`owner-maintained`][ref-61-owner%2Dmaintained]  
+`║       ║   ║       ╠═══`[`Anyone's Horrible Trackpack.lua`][ref-62-Anyone%27s%20Horrible%20Trackpack.lua] [3kB]  
+`║       ║   ║       ╠═══`[`Ron's 2ft track pack.lua`][ref-63-Ron%27s%202ft%20track%20pack.lua] [61kB]  
+`║       ║   ║       ╠═══`[`SligWolf's Minihover.lua`][ref-64-SligWolf%27s%20Minihover.lua] [2kB]  
+`║       ║   ║       ╠═══`[`SligWolf's Minitrains.lua`][ref-65-SligWolf%27s%20Minitrains.lua] [6kB]  
+`║       ║   ║       ╚═══`[`SligWolf's White Rails.lua`][ref-66-SligWolf%27s%20White%20Rails.lua] [3kB]  
+`║       ║   ╠═══`[`hooks`][ref-67-hooks]  
+`║       ║   ║   ╠═══`[`pre-commit.bat`][ref-68-pre%2Dcommit.bat] [360B]  
+`║       ║   ║   ╚═══`[`pre-commit.lua`][ref-69-pre%2Dcommit.lua] [2kB]  
+`║       ║   ╠═══`[`peaces_manager`][ref-70-peaces%5Fmanager]  
+`║       ║   ║   ╠═══`[`common.h`][ref-71-common.h] [4kB]  
+`║       ║   ║   ╠═══`[`emd.bat`][ref-72-emd.bat] [7kB]  
+`║       ║   ║   ╠═══`[`main.cpp`][ref-73-main.cpp] [476B]  
+`║       ║   ║   ╠═══`[`main.h`][ref-74-main.h] [277B]  
+`║       ║   ║   ╠═══`[`models_ignored.txt`][ref-75-models%5Fignored.txt] [284kB]  
+`║       ║   ║   ╠═══`[`peaces_manager.cbp`][ref-76-peaces%5Fmanager.cbp] [849B]  
+`║       ║   ║   ╠═══`[`string_stack.h`][ref-77-string%5Fstack.h] [4kB]  
+`║       ║   ║   ╠═══`[`struct_entry.h`][ref-78-struct%5Fentry.h] [6kB]  
+`║       ║   ║   ╚═══`[`struct_match.h`][ref-79-struct%5Fmatch.h] [5kB]  
+`║       ║   ╠═══`[`pictures`][ref-80-pictures] --> Contains addon pictures  
+`║       ║   ║   ╠═══`[`BOM.jpg`][ref-81-BOM.jpg] [55kB]  
+`║       ║   ║   ╠═══`[`UTF-8.jpg`][ref-82-UTF%2D8.jpg] [78kB]  
+`║       ║   ║   ╠═══`[`dsv_manager.jpg`][ref-83-dsv%5Fmanager.jpg] [92kB]  
+`║       ║   ║   ╠═══`[`frequent_pieces.jpg`][ref-84-frequent%5Fpieces.jpg] [94kB]  
+`║       ║   ║   ╠═══`[`icon.jpg`][ref-85-icon.jpg] [67kB]  
+`║       ║   ║   ╠═══`[`pointassist.jpg`][ref-86-pointassist.jpg] [41kB]  
+`║       ║   ║   ╠═══`[`rollercoaster_assist.jpg`][ref-87-rollercoaster%5Fassist.jpg] [290kB]  
+`║       ║   ║   ╠═══`[`screenshot.jpg`][ref-88-screenshot.jpg] [521kB]  
+`║       ║   ║   ╠═══`[`snapadvaiser.jpg`][ref-89-snapadvaiser.jpg] [47kB]  
+`║       ║   ║   ╠═══`[`surfsnap.jpg`][ref-90-surfsnap.jpg] [328kB]  
+`║       ║   ║   ╚═══`[`track_addon.jpg`][ref-91-track%5Faddon.jpg] [71kB]  
+`║       ║   ╠═══`[`todo.txt`][ref-92-todo.txt] [0B]  
+`║       ║   ╚═══`[`workshop`][ref-93-workshop] --> Workshop related stuff  
+`║       ║       ╠═══`[`addon.json`][ref-94-addon.json] [315B]  
+`║       ║       ╠═══`[`addon.txt`][ref-95-addon.txt] [124B]  
+`║       ║       ╚═══`[`description.txt`][ref-96-description.txt] [6kB]  
+`║       ╠═══`[`trackasmlib_db.txt`][ref-97-trackasmlib%5Fdb.txt] [32kB]  
+`║       ╚═══`[`trackasmlib_log.txt`][ref-98-trackasmlib%5Flog.txt] [76kB]  
+`╠═══`[`license`][ref-99-license] [34kB]  
+`╠═══`[`lua`][ref-100-lua] --> Contains all GLua sub-addons files  
+`║   ╠═══`[`autorun`][ref-101-autorun]  
+`║   ║   ╠═══`[`trackassembly_init.lua`][ref-102-trackassembly%5Finit.lua] [383kB]  
+`║   ║   ╚═══`[`z_autorun_[shinji85_s_rails].lua`][ref-103-z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua] [24kB]  
+`║   ╠═══`[`entities`][ref-104-entities]  
+`║   ║   ╚═══`[`gmod_wire_expression2`][ref-105-gmod%5Fwire%5Fexpression2] --> Contains all the wire expression 2 extensions  
+`║   ║       ╚═══`[`core`][ref-106-core]  
+`║   ║           ╚═══`[`custom`][ref-107-custom]  
+`║   ║               ╠═══`[`cl_trackasmlib_wire.lua`][ref-108-cl%5Ftrackasmlib%5Fwire.lua] [4kB]  
+`║   ║               ╚═══`[`trackasmlib_wire.lua`][ref-109-trackasmlib%5Fwire.lua] [6kB]  
+`║   ╠═══`[`trackassembly`][ref-110-trackassembly]  
+`║   ║   ╚═══`[`trackasmlib.lua`][ref-111-trackasmlib.lua] [261kB]  
+`║   ╠═══`[`vgui`][ref-112-vgui]  
+`║   ║   ╚═══`[`dasminsliderbutton.lua`][ref-113-dasminsliderbutton.lua] [8kB]  
+`║   ╚═══`[`weapons`][ref-115-weapons] --> Contains all the dedicated [`MASK`][ref-114-MASK] tool objects information [`MASK`][ref-114-MASK]  
+`║       ╚═══`[`gmod_tool`][ref-116-gmod%5Ftool]  
+`║           ╚═══`[`stools`][ref-117-stools]  
+`║               ╚═══`[`trackassembly.lua`][ref-118-trackassembly.lua] [31kB]  
+`╠═══`[`readme.md`][ref-119-readme.md] [38kB]  
+`╚═══`[`resource`][ref-120-resource]  
+`    ╚═══`[`localization`][ref-121-localization]  
+`        ╠═══`[`bg`][ref-122-bg]  
+`        ║   ╚═══`[`trackassembly.properties`][ref-123-trackassembly.properties] [28kB]  
+`        ╠═══`[`en`][ref-124-en]  
+`        ║   ╚═══`[`trackassembly.properties`][ref-125-trackassembly.properties] [7kB]  
+`        ╠═══`[`fr`][ref-126-fr]  
+`        ║   ╚═══`[`trackassembly.properties`][ref-127-trackassembly.properties] [7kB]  
+`        ╠═══`[`ja`][ref-128-ja]  
+`        ║   ╚═══`[`trackassembly.properties`][ref-129-trackassembly.properties] [8kB]  
+`        ╠═══`[`ru`][ref-130-ru]  
+`        ║   ╚═══`[`trackassembly.properties`][ref-131-trackassembly.properties] [57B]  
+`        ╚═══`[`zh-cn`][ref-132-zh%2Dcn]  
+`            ╚═══`[`trackassembly.properties`][ref-133-trackassembly.properties] [6kB]  
 
-[ref-1-gstp]: https://github.com/mbqwertyaaa/gstp
-[ref-2-axis]: https://github.com/mbqwertyaaa/gstp/blob/master/axis
-[ref-3-axiscenter]: https://github.com/mbqwertyaaa/gstp/blob/master/axiscenter
-[ref-4-axiscenteradv]: https://github.com/mbqwertyaaa/gstp/blob/master/axiscenteradv
-[ref-5-axiscentre]: https://github.com/mbqwertyaaa/gstp/blob/master/axiscentre
-[ref-6-ballsocket]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket
-[ref-7-ballsocket%5Fadvanced]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced
-[ref-8-1%2Dnocollide.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/1%2Dnocollide.txt
-[ref-9-10%2Dxz%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/10%2Dxz%20lock.txt
-[ref-10-11%2Dxyz%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/11%2Dxyz%20lock.txt
-[ref-11-12%2Duplock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/12%2Duplock.txt
-[ref-12-13%2Dwheelstabilizery2.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/13%2Dwheelstabilizery2.txt
-[ref-13-14%2Dwheelstabilizery1.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/14%2Dwheelstabilizery1.txt
-[ref-14-15%2Dwheelstabilizerx2.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/15%2Dwheelstabilizerx2.txt
-[ref-15-16%2Dz%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/16%2Dz%20lock.txt
-[ref-16-17%2Dxy%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/17%2Dxy%20lock.txt
-[ref-17-18%2Dfrontlock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/18%2Dfrontlock.txt
-[ref-18-19%2Dx%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/19%2Dx%20lock.txt
-[ref-19-2%2Dwheelstabilizerz1.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/2%2Dwheelstabilizerz1.txt
-[ref-20-3%2Dwheelstabilizerz2.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/3%2Dwheelstabilizerz2.txt
-[ref-21-4%2Dy%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/4%2Dy%20lock.txt
-[ref-22-5%2Dsolidaxelfront.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/5%2Dsolidaxelfront.txt
-[ref-23-6%2Dsidelock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/6%2Dsidelock.txt
-[ref-24-7%2Dwheelstabilizerx1.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/7%2Dwheelstabilizerx1.txt
-[ref-25-8%2Dzeros%2Bfree.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/8%2Dzeros%2Bfree.txt
-[ref-26-9%2Dyz%20lock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Fadvanced/9%2Dyz%20lock.txt
-[ref-27-ballsocket%5Feasy]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocket%5Feasy
-[ref-28-ballsocketcenter]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocketcenter
-[ref-29-ballsocketcenteradv]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocketcenteradv
-[ref-30-ballsocketcentre]: https://github.com/mbqwertyaaa/gstp/blob/master/ballsocketcentre
-[ref-31-bloom]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom
-[ref-32-1%2Dreally%20sunny.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/1%2Dreally%20sunny.txt
-[ref-33-2%2Dsnow%20day.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/2%2Dsnow%20day.txt
-[ref-34-3%2Ddusk.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/3%2Ddusk.txt
-[ref-35-4%2Dbad%20eyes.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/4%2Dbad%20eyes.txt
-[ref-36-5%2Dcold.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/5%2Dcold.txt
-[ref-37-6%2Dsunshine.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/bloom/6%2Dsunshine.txt
-[ref-38-camera]: https://github.com/mbqwertyaaa/gstp/blob/master/camera
-[ref-39-colormod]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod
-[ref-40-1%2Ddegree%20in%20graphic%20design.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/1%2Ddegree%20in%20graphic%20design.txt
-[ref-41-2%2Dtrinity%20dies.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/2%2Dtrinity%20dies.txt
-[ref-42-3%2Dblack%20and%20white%202.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/3%2Dblack%20and%20white%202.txt
-[ref-43-4%2Dcartoon%20land.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/4%2Dcartoon%20land.txt
-[ref-44-5%2Dre%2Dcoloured.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/5%2Dre%2Dcoloured.txt
-[ref-45-6%2Dreally%20old%20photo.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/6%2Dreally%20old%20photo.txt
-[ref-46-7%2Dold%20red%20tint.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/7%2Dold%20red%20tint.txt
-[ref-47-8%2Dblack%20and%20white.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colormod/8%2Dblack%20and%20white.txt
-[ref-48-colour]: https://github.com/mbqwertyaaa/gstp/blob/master/colour
-[ref-49-1%2Dblack.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/1%2Dblack.txt
-[ref-50-10%2Ddefault.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/10%2Ddefault.txt
-[ref-51-2%2Dgreen.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/2%2Dgreen.txt
-[ref-52-3%2Dblue.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/3%2Dblue.txt
-[ref-53-4%2Dcyan.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/4%2Dcyan.txt
-[ref-54-5%2Dinvisible.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/5%2Dinvisible.txt
-[ref-55-6%2Dyellow.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/6%2Dyellow.txt
-[ref-56-7%2Dred.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/7%2Dred.txt
-[ref-57-8%2Dwhite.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/8%2Dwhite.txt
-[ref-58-9%2Dmargenta.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/colour/9%2Dmargenta.txt
-[ref-59-dhinline%5Felements%5Fdepthhud%5Fclassic]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Felements%5Fdepthhud%5Fclassic
-[ref-60-1%2Dminimalistic%20elements.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Felements%5Fdepthhud%5Fclassic/1%2Dminimalistic%20elements.txt
-[ref-61-dhinline%5Fthemes%5Fdepthhud%5Fclassic]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic
-[ref-62-1%2Dminimalistic%20theme.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/1%2Dminimalistic%20theme.txt
-[ref-63-2%2Dshiny%20default.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/2%2Dshiny%20default.txt
-[ref-64-3%2Dblack%20and%20white.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/3%2Dblack%20and%20white.txt
-[ref-65-4%2Dxray.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/4%2Dxray.txt
-[ref-66-5%2Dlabs.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/5%2Dlabs.txt
-[ref-67-6%2Dshiny%20default%20%28moderate%29.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/dhinline%5Fthemes%5Fdepthhud%5Fclassic/6%2Dshiny%20default%20%28moderate%29.txt
-[ref-68-dynamite]: https://github.com/mbqwertyaaa/gstp/blob/master/dynamite
-[ref-69-easyprecision]: https://github.com/mbqwertyaaa/gstp/blob/master/easyprecision
-[ref-70-1%2Dwheelbaserope.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/easyprecision/1%2Dwheelbaserope.txt
-[ref-71-elastic]: https://github.com/mbqwertyaaa/gstp/blob/master/elastic
-[ref-72-1%2Dtrain.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/elastic/1%2Dtrain.txt
-[ref-73-face]: https://github.com/mbqwertyaaa/gstp/blob/master/face
-[ref-74-1%2Di%20don%5Ft%20care%20anyway.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/1%2Di%20don%5Ft%20care%20anyway.txt
-[ref-75-2%2Dquite%20annoyed.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/2%2Dquite%20annoyed.txt
-[ref-76-3%2Dblowing.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/3%2Dblowing.txt
-[ref-77-4%2Di%5Fm%20sorry.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/4%2Di%5Fm%20sorry.txt
-[ref-78-5%2Djoker.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/5%2Djoker.txt
-[ref-79-6%2Dcan%5Ft%20believe%20it.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/6%2Dcan%5Ft%20believe%20it.txt
-[ref-80-6%2Dhappy.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/6%2Dhappy.txt
-[ref-81-7%2Dcan%5Ft%20believe%20it.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/7%2Dcan%5Ft%20believe%20it.txt
-[ref-82-7%2Dhappy.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/face/7%2Dhappy.txt
-[ref-83-finger]: https://github.com/mbqwertyaaa/gstp/blob/master/finger
-[ref-84-1%2Dflat.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/finger/1%2Dflat.txt
-[ref-85-2%2Dpoint.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/finger/2%2Dpoint.txt
-[ref-86-3%2Dthumbs%20up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/finger/3%2Dthumbs%20up.txt
-[ref-87-fog]: https://github.com/mbqwertyaaa/gstp/blob/master/fog
-[ref-88-1%2Dheaven.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/fog/1%2Dheaven.txt
-[ref-89-2%2Dradioactive%20man.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/fog/2%2Dradioactive%20man.txt
-[ref-90-hovermoduletool]: https://github.com/mbqwertyaaa/gstp/blob/master/hovermoduletool
-[ref-91-presets]: https://github.com/mbqwertyaaa/gstp/blob/master/hovermoduletool/presets
-[ref-92-1%2Dasd.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/hovermoduletool/presets/1%2Dasd.txt
-[ref-93-hydraulic]: https://github.com/mbqwertyaaa/gstp/blob/master/hydraulic
-[ref-94-jediforce]: https://github.com/mbqwertyaaa/gstp/blob/master/jediforce
-[ref-95-lamp]: https://github.com/mbqwertyaaa/gstp/blob/master/lamp
-[ref-96-laseremitter]: https://github.com/mbqwertyaaa/gstp/blob/master/laseremitter
-[ref-97-light]: https://github.com/mbqwertyaaa/gstp/blob/master/light
-[ref-98-maglevspawner]: https://github.com/mbqwertyaaa/gstp/blob/master/maglevspawner
-[ref-99-1%2Dtest.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/maglevspawner/1%2Dtest.txt
-[ref-100-magnetdipole]: https://github.com/mbqwertyaaa/gstp/blob/master/magnetdipole
-[ref-101-magnetise]: https://github.com/mbqwertyaaa/gstp/blob/master/magnetise
-[ref-102-motor]: https://github.com/mbqwertyaaa/gstp/blob/master/motor
-[ref-103-muscle]: https://github.com/mbqwertyaaa/gstp/blob/master/muscle
-[ref-104-nail]: https://github.com/mbqwertyaaa/gstp/blob/master/nail
-[ref-105-nailadv]: https://github.com/mbqwertyaaa/gstp/blob/master/nailadv
-[ref-106-pewpew]: https://github.com/mbqwertyaaa/gstp/blob/master/pewpew
-[ref-107-physgun%5Fbuildmode]: https://github.com/mbqwertyaaa/gstp/blob/master/physgun%5Fbuildmode
-[ref-108-1%2Dphx%20course%2045%20deg.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/physgun%5Fbuildmode/1%2Dphx%20course%2045%20deg.txt
-[ref-109-2%2Dno%20snap.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/physgun%5Fbuildmode/2%2Dno%20snap.txt
-[ref-110-3%2Dphx%20fine%2045%20deg.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/physgun%5Fbuildmode/3%2Dphx%20fine%2045%20deg.txt
-[ref-111-physprop]: https://github.com/mbqwertyaaa/gstp/blob/master/physprop
-[ref-112-precision]: https://github.com/mbqwertyaaa/gstp/blob/master/precision
-[ref-113-1%2Dbs%2Dx%2Dlock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/precision/1%2Dbs%2Dx%2Dlock.txt
-[ref-114-2%2Drot%2Dx%2Dlock.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/precision/2%2Drot%2Dx%2Dlock.txt
-[ref-115-precision%5Falign]: https://github.com/mbqwertyaaa/gstp/blob/master/precision%5Falign
-[ref-116-propcannon]: https://github.com/mbqwertyaaa/gstp/blob/master/propcannon
-[ref-117-pulley]: https://github.com/mbqwertyaaa/gstp/blob/master/pulley
-[ref-118-pulleyadv]: https://github.com/mbqwertyaaa/gstp/blob/master/pulleyadv
-[ref-119-ragoll%20blood%20settings]: https://github.com/mbqwertyaaa/gstp/blob/master/ragoll%20blood%20settings
-[ref-120-rb655%5Flightsaber]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber
-[ref-121-1%2Dmaster%20yoda%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/1%2Dmaster%20yoda%20lightsaber.txt
-[ref-122-10%2D%5Bep3%5D%20anakin%20skywalker%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/10%2D%5Bep3%5D%20anakin%20skywalker%20lightsaber.txt
-[ref-123-11%2Ddarth%20tyrannus%20lightsaber%20%28count%20dooku%29.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/11%2Ddarth%20tyrannus%20lightsaber%20%28count%20dooku%29.txt
-[ref-124-12%2Dcommon%20jedi%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/12%2Dcommon%20jedi%20lightsaber.txt
-[ref-125-13%2Ddarth%20maul%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/13%2Ddarth%20maul%20lightsaber.txt
-[ref-126-14%2Dmace%20windu%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/14%2Dmace%20windu%20lightsaber.txt
-[ref-127-15%2D%5Bep1%5D%20obi%2Dwan%20kenobi%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/15%2D%5Bep1%5D%20obi%2Dwan%20kenobi%20lightsaber.txt
-[ref-128-2%2Ddarth%20maul%20saberstaff.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/2%2Ddarth%20maul%20saberstaff.txt
-[ref-129-3%2D%5Bep3%5D%20obi%2Dwan%20kenobi%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/3%2D%5Bep3%5D%20obi%2Dwan%20kenobi%20lightsaber.txt
-[ref-130-4%2Dqui%2Dgon%20jinn%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/4%2Dqui%2Dgon%20jinn%20lightsaber.txt
-[ref-131-5%2Ddarth%20vader%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/5%2Ddarth%20vader%20lightsaber.txt
-[ref-132-6%2D%5Bep6%5D%20luke%20skywalker%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/6%2D%5Bep6%5D%20luke%20skywalker%20lightsaber.txt
-[ref-133-7%2Ddarth%20sidious%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/7%2Ddarth%20sidious%20lightsaber.txt
-[ref-134-8%2D%5Bep2%5D%20anakin%20skywalker%20lightsaber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/8%2D%5Bep2%5D%20anakin%20skywalker%20lightsaber.txt
-[ref-135-9%2Ddark%20saber.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rb655%5Flightsaber/9%2Ddark%20saber.txt
-[ref-136-rope]: https://github.com/mbqwertyaaa/gstp/blob/master/rope
-[ref-137-1%2Dcommonrope.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rope/1%2Dcommonrope.txt
-[ref-138-2%2Dsuspension.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/rope/2%2Dsuspension.txt
-[ref-139-simfphys%5Fmiscsound]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound
-[ref-140-1%2Dhorn%207.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/1%2Dhorn%207.txt
-[ref-141-2%2Dhorn%203.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/2%2Dhorn%203.txt
-[ref-142-3%2Dhorn%200%20%2D%20out%20of%20my%20way.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/3%2Dhorn%200%20%2D%20out%20of%20my%20way.txt
-[ref-143-4%2Dhorn%204.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/4%2Dhorn%204.txt
-[ref-144-5%2Dhorn%206%20%2D%20vote%20daniels.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/5%2Dhorn%206%20%2D%20vote%20daniels.txt
-[ref-145-6%2Dhorn%201.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/6%2Dhorn%201.txt
-[ref-146-7%2Dhorn%205.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/7%2Dhorn%205.txt
-[ref-147-8%2Dhorn%202.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fmiscsound/8%2Dhorn%202.txt
-[ref-148-simfphys%5Fsound]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fsound
-[ref-149-1%2Dapc.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fsound/1%2Dapc.txt
-[ref-150-2%2Djalopy.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/simfphys%5Fsound/2%2Djalopy.txt
-[ref-151-slider]: https://github.com/mbqwertyaaa/gstp/blob/master/slider
-[ref-152-smartsnap]: https://github.com/mbqwertyaaa/gstp/blob/master/smartsnap
-[ref-153-1%2Dv20.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/smartsnap/1%2Dv20.txt
-[ref-154-2%2Ddefault.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/smartsnap/2%2Ddefault.txt
-[ref-155-spawner]: https://github.com/mbqwertyaaa/gstp/blob/master/spawner
-[ref-156-spinner]: https://github.com/mbqwertyaaa/gstp/blob/master/spinner
-[ref-157-stacker]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker
-[ref-158-1%2Dmonorail%20short%20backward.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/1%2Dmonorail%20short%20backward.txt
-[ref-159-10%2Dmonorail%2045%20left%20down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/10%2Dmonorail%2045%20left%20down.txt
-[ref-160-11%2Dphx%20track%20225%20down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/11%2Dphx%20track%20225%20down.txt
-[ref-161-12%2Dphx%20track%2045%20down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/12%2Dphx%20track%2045%20down.txt
-[ref-162-13%2Dphx%20track%20forward.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/13%2Dphx%20track%20forward.txt
-[ref-163-14%2Dmonorail%2045%20right%20down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/14%2Dmonorail%2045%20right%20down.txt
-[ref-164-15%2Dmonorail%2045%20right%20right.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/15%2Dmonorail%2045%20right%20right.txt
-[ref-165-16%2Dphx%20track%2090%20turn%20left.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/16%2Dphx%20track%2090%20turn%20left.txt
-[ref-166-17%2Dmonorail%20long%20forward.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/17%2Dmonorail%20long%20forward.txt
-[ref-167-18%2Dmonorail%2045%20left%20left.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/18%2Dmonorail%2045%20left%20left.txt
-[ref-168-19%2Dmonorail%2045%20left%20up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/19%2Dmonorail%2045%20left%20up.txt
-[ref-169-2%2Dphx%20track%2090%20turn%20right.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/2%2Dphx%20track%2090%20turn%20right.txt
-[ref-170-20%2Dmonorail%2045%20right%20up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/20%2Dmonorail%2045%20right%20up.txt
-[ref-171-21%2Dphx%20track%2045%20turn%20left.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/21%2Dphx%20track%2045%20turn%20left.txt
-[ref-172-22%2Ddefault.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/22%2Ddefault.txt
-[ref-173-3%2Dphx%20track%2045%20turn%20right.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/3%2Dphx%20track%2045%20turn%20right.txt
-[ref-174-4%2Dmonorail%20short%20forward.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/4%2Dmonorail%20short%20forward.txt
-[ref-175-5%2Dmonorail%2045%20right%20left.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/5%2Dmonorail%2045%20right%20left.txt
-[ref-176-6%2Dphx%20track%2045%20up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/6%2Dphx%20track%2045%20up.txt
-[ref-177-7%2Dphx%20track%20225%20up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/7%2Dphx%20track%20225%20up.txt
-[ref-178-8%2Dmonorail%2045%20left%20right.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/8%2Dmonorail%2045%20left%20right.txt
-[ref-179-9%2Dphx%20track%20backward.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker/9%2Dphx%20track%20backward.txt
-[ref-180-stacker%5Fadv]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv
-[ref-181-1%2Dmagranlr.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/1%2Dmagranlr.txt
-[ref-182-10%2Ddifer3%5F1x1%5Fbase.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/10%2Ddifer3%5F1x1%5Fbase.txt
-[ref-183-11%2Drollerengine.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/11%2Drollerengine.txt
-[ref-184-12%2Dmagranudlong.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/12%2Dmagranudlong.txt
-[ref-185-13%2Ddifer3%5F2x2%5Fplan.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/13%2Ddifer3%5F2x2%5Fplan.txt
-[ref-186-14%2Dtrack225up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/14%2Dtrack225up.txt
-[ref-187-15%2Dmagrancoaster.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/15%2Dmagrancoaster.txt
-[ref-188-16%2Dtrack45down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/16%2Dtrack45down.txt
-[ref-189-17%2Ddifer3%5F2x2%5Fbase.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/17%2Ddifer3%5F2x2%5Fbase.txt
-[ref-190-18%2Ddifer4%5F1x2%5Fbase.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/18%2Ddifer4%5F1x2%5Fbase.txt
-[ref-191-19%2Dmagranudshort.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/19%2Dmagranudshort.txt
-[ref-192-2%2Dst3%5Fr.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/2%2Dst3%5Fr.txt
-[ref-193-3%2Ddifer3%5F1x1%5Fplan.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/3%2Ddifer3%5F1x1%5Fplan.txt
-[ref-194-4%2Dmonorail%5Fturn%5F90.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/4%2Dmonorail%5Fturn%5F90.txt
-[ref-195-5%2Dst3%5Fl.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/5%2Dst3%5Fl.txt
-[ref-196-6%2Ddifer4%5F1x2%5Fplan.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/6%2Ddifer4%5F1x2%5Fplan.txt
-[ref-197-7%2Dmonorail%5Fturn%5F45.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/7%2Dmonorail%5Fturn%5F45.txt
-[ref-198-8%2Dtrack45up.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/8%2Dtrack45up.txt
-[ref-199-9%2Dtrack225down.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fadv/9%2Dtrack225down.txt
-[ref-200-stacker%5Fimproved]: https://github.com/mbqwertyaaa/gstp/blob/master/stacker%5Fimproved
-[ref-201-thruster]: https://github.com/mbqwertyaaa/gstp/blob/master/thruster
-[ref-202-trackassembly]: https://github.com/mbqwertyaaa/gstp/blob/master/trackassembly
-[ref-203-1%2Dtest.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/trackassembly/1%2Dtest.txt
-[ref-204-turret]: https://github.com/mbqwertyaaa/gstp/blob/master/turret
-[ref-205-weight]: https://github.com/mbqwertyaaa/gstp/blob/master/weight
-[ref-206-weld]: https://github.com/mbqwertyaaa/gstp/blob/master/weld
-[ref-207-weld%5Feasy]: https://github.com/mbqwertyaaa/gstp/blob/master/weld%5Feasy
-[ref-208-wheel]: https://github.com/mbqwertyaaa/gstp/blob/master/wheel
-[ref-209-wire]: https://github.com/mbqwertyaaa/gstp/blob/master/wire
-[ref-210-wire%5Fadv]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fadv
-[ref-211-1%2Dinwallscable.txt]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fadv/1%2Dinwallscable.txt
-[ref-212-wire%5Fdual%5Finput]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fdual%5Finput
-[ref-213-wire%5Finput]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Finput
-[ref-214-wire%5Fjoystick]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fjoystick
-[ref-215-wire%5Fjoystick%5Fmulti]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fjoystick%5Fmulti
-[ref-216-wire%5Franger]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Franger
-[ref-217-wire%5Fscreen]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fscreen
-[ref-218-wire%5Fservo]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fservo
-[ref-219-wire%5Fvalue]: https://github.com/mbqwertyaaa/gstp/blob/master/wire%5Fvalue
+[ref-1-TrackAssemblyTool]: https://github.com/dvdvideo1234/TrackAssemblyTool
+[ref-2-data]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data
+[ref-3-advdupe2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/advdupe2
+[ref-4-wire%5Fextension%5Ftest.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/advdupe2/wire%5Fextension%5Ftest.txt
+[ref-5-expression2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2
+[ref-6-TA%5FActive%5Fpoint%5Fscanner.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FActive%5Fpoint%5Fscanner.txt
+[ref-7-TA%5FExporter%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FExporter%5FGenerator.txt
+[ref-8-TA%5FExtensionTest.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FExtensionTest.txt
+[ref-9-TA%5FScan%5FExport%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FScan%5FExport%5FGenerator.txt
+[ref-10-TA%5FScan%5FGenerator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FScan%5FGenerator.txt
+[ref-11-TA%5FWire%5FTest.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5FWire%5FTest.txt
+[ref-12-TA%5Fcurve%5Frotator.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/TA%5Fcurve%5Frotator.txt
+[ref-13-Test%5FRail%5FAngler.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/expression2/Test%5FRail%5FAngler.txt
+[ref-14-trackassembly]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly
+[ref-15-dsv]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv
+[ref-16-LUA]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/LUA
+[ref-17-cl%5Ftrackassembly%5Fadditions.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/LUA/cl%5Ftrackassembly%5Fadditions.txt
+[ref-18-cl%5Ftrackassembly%5Fcategory.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/LUA/cl%5Ftrackassembly%5Fcategory.txt
+[ref-19-cl%5Ftrackassembly%5Fphysproperties.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/LUA/cl%5Ftrackassembly%5Fphysproperties.txt
+[ref-20-cl%5Ftrackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/LUA/cl%5Ftrackassembly%5Fpieces.txt
+[ref-21-PlarailTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/PlarailTRACKASSEMBLY%5FCATEGORY.txt
+[ref-22-PlarailTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/PlarailTRACKASSEMBLY%5FPIECES.txt
+[ref-23-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
+[ref-24-Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5F2ft%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt
+[ref-25-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
+[ref-26-Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Ron%5Fs%5FG%5FScale%5FTrack%5FpackTRACKASSEMBLY%5FPIECES.txt
+[ref-27-SQL]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/SQL
+[ref-28-cl%5Ftrackassembly%5Fadditions.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/SQL/cl%5Ftrackassembly%5Fadditions.txt
+[ref-29-cl%5Ftrackassembly%5Fcategory.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/SQL/cl%5Ftrackassembly%5Fcategory.txt
+[ref-30-cl%5Ftrackassembly%5Fphysproperties.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/SQL/cl%5Ftrackassembly%5Fphysproperties.txt
+[ref-31-cl%5Ftrackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/SQL/cl%5Ftrackassembly%5Fpieces.txt
+[ref-32-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FCATEGORY.txt
+[ref-33-Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/Test%5Fs%5Ftrack%5FpackTRACKASSEMBLY%5FPIECES.txt
+[ref-34-joe%5Fs%5F2ft%5Ftrack%5Fpack2trackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/joe%5Fs%5F2ft%5Ftrack%5Fpack2trackassembly%5Fpieces.txt
+[ref-35-joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fcategory.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fcategory.txt
+[ref-36-joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/joe%5Fs%5F2ft%5Ftrack%5Fpacktrackassembly%5Fpieces.txt
+[ref-37-shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fadditions.txt
+[ref-38-shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fcategory.txt
+[ref-39-shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/dsv/shinji85%5Fs%5Frailstrackassembly%5Fpieces.txt
+[ref-40-exp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp
+[ref-41-cl%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FADDITIONS.txt
+[ref-42-cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
+[ref-43-cl%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/cl%5FTRACKASSEMBLY%5FPIECES.txt
+[ref-44-sv%5FTRACKASSEMBLY%5FADDITIONS.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FADDITIONS.txt
+[ref-45-sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FPHYSPROPERTIES.txt
+[ref-46-sv%5FTRACKASSEMBLY%5FPIECES.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/sv%5FTRACKASSEMBLY%5FPIECES.txt
+[ref-47-z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/exp/z%5Fautorun%5F%5Banyone%5Fs%5Fhorrible%5Ftrackpack%5D.txt
+[ref-48-set]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set
+[ref-49-trackasmlib%5Fdsv.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/trackasmlib%5Fdsv.txt
+[ref-50-trackasmlib%5Fslskip.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/trackasmlib%5Fslskip.txt
+[ref-51-z%5Fautorun%5F%5Btrackassembly%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/z%5Fautorun%5F%5Btrackassembly%5D.txt
+[ref-52-z%5Fautoset%5F%5Btrackassembly%5D.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/set/z%5Fautoset%5F%5Btrackassembly%5D.txt
+[ref-53-tools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools
+[ref-54-discontinued]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued
+[ref-55-author%2Dconverted]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/author%2Dconverted
+[ref-56-Shinji85%27s%20Rails.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/author%2Dconverted/Shinji85%27s%20Rails.txt
+[ref-57-owner%2Ddiscontinued]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued
+[ref-58-Ron%27s%202ft%20track%20pack.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/Ron%27s%202ft%20track%20pack.txt
+[ref-59-Ron%27s%2056%20gauge%20rails.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/Ron%27s%2056%20gauge%20rails.txt
+[ref-60-SligWolf%27s%20minitrains.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Ddiscontinued/SligWolf%27s%20minitrains.txt
+[ref-61-owner%2Dmaintained]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained
+[ref-62-Anyone%27s%20Horrible%20Trackpack.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/Anyone%27s%20Horrible%20Trackpack.lua
+[ref-63-Ron%27s%202ft%20track%20pack.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/Ron%27s%202ft%20track%20pack.lua
+[ref-64-SligWolf%27s%20Minihover.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/SligWolf%27s%20Minihover.lua
+[ref-65-SligWolf%27s%20Minitrains.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/SligWolf%27s%20Minitrains.lua
+[ref-66-SligWolf%27s%20White%20Rails.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/discontinued/owner%2Dmaintained/SligWolf%27s%20White%20Rails.lua
+[ref-67-hooks]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks
+[ref-68-pre%2Dcommit.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks/pre%2Dcommit.bat
+[ref-69-pre%2Dcommit.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/hooks/pre%2Dcommit.lua
+[ref-70-peaces%5Fmanager]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager
+[ref-71-common.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/common.h
+[ref-72-emd.bat]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/emd.bat
+[ref-73-main.cpp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/main.cpp
+[ref-74-main.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/main.h
+[ref-75-models%5Fignored.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/models%5Fignored.txt
+[ref-76-peaces%5Fmanager.cbp]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/peaces%5Fmanager.cbp
+[ref-77-string%5Fstack.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/string%5Fstack.h
+[ref-78-struct%5Fentry.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/struct%5Fentry.h
+[ref-79-struct%5Fmatch.h]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/peaces%5Fmanager/struct%5Fmatch.h
+[ref-80-pictures]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures
+[ref-81-BOM.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/BOM.jpg
+[ref-82-UTF%2D8.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/UTF%2D8.jpg
+[ref-83-dsv%5Fmanager.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/dsv%5Fmanager.jpg
+[ref-84-frequent%5Fpieces.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/frequent%5Fpieces.jpg
+[ref-85-icon.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/icon.jpg
+[ref-86-pointassist.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/pointassist.jpg
+[ref-87-rollercoaster%5Fassist.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/rollercoaster%5Fassist.jpg
+[ref-88-screenshot.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/screenshot.jpg
+[ref-89-snapadvaiser.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/snapadvaiser.jpg
+[ref-90-surfsnap.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/surfsnap.jpg
+[ref-91-track%5Faddon.jpg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/pictures/track%5Faddon.jpg
+[ref-92-todo.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/todo.txt
+[ref-93-workshop]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop
+[ref-94-addon.json]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/addon.json
+[ref-95-addon.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/addon.txt
+[ref-96-description.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/tools/workshop/description.txt
+[ref-97-trackasmlib%5Fdb.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib%5Fdb.txt
+[ref-98-trackasmlib%5Flog.txt]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/data/trackassembly/trackasmlib%5Flog.txt
+[ref-99-license]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/license
+[ref-100-lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua
+[ref-101-autorun]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun
+[ref-102-trackassembly%5Finit.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun/trackassembly%5Finit.lua
+[ref-103-z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/autorun/z%5Fautorun%5F%5Bshinji85%5Fs%5Frails%5D.lua
+[ref-104-entities]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities
+[ref-105-gmod%5Fwire%5Fexpression2]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2
+[ref-106-core]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core
+[ref-107-custom]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom
+[ref-108-cl%5Ftrackasmlib%5Fwire.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/cl%5Ftrackasmlib%5Fwire.lua
+[ref-109-trackasmlib%5Fwire.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/entities/gmod%5Fwire%5Fexpression2/core/custom/trackasmlib%5Fwire.lua
+[ref-110-trackassembly]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly
+[ref-111-trackasmlib.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/trackassembly/trackasmlib.lua
+[ref-112-vgui]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/vgui
+[ref-113-dasminsliderbutton.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/vgui/dasminsliderbutton.lua
+[ref-114-MASK]: https://wiki.garrysmod.com/page/Enums/MASK
+[ref-115-weapons]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons
+[ref-116-gmod%5Ftool]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool
+[ref-117-stools]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools
+[ref-118-trackassembly.lua]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/lua/weapons/gmod%5Ftool/stools/trackassembly.lua
+[ref-119-readme.md]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/readme.md
+[ref-120-resource]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource
+[ref-121-localization]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization
+[ref-122-bg]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/bg
+[ref-123-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/bg/trackassembly.properties
+[ref-124-en]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/en
+[ref-125-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/en/trackassembly.properties
+[ref-126-fr]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/fr
+[ref-127-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/fr/trackassembly.properties
+[ref-128-ja]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/ja
+[ref-129-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/ja/trackassembly.properties
+[ref-130-ru]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/ru
+[ref-131-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/ru/trackassembly.properties
+[ref-132-zh%2Dcn]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/zh%2Dcn
+[ref-133-trackassembly.properties]: https://github.com/dvdvideo1234/TrackAssemblyTool/blob/master/resource/localization/zh%2Dcn/trackassembly.properties

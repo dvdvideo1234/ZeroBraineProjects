@@ -6,15 +6,15 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
       
 local common = require("common")
 local wikilib = require("wikilib")
 
 local sSubs = ""
-local sDirs = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/settings/presets"
-local sName = "gstp"
-local sUser = "mbqwertyaaa"
+local sDirs = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT"
+local sName = "TrackAssemblyTool"
+local sUser = "dvdvideo1234"
 local sRepo = "github.com/"..sUser.."/"..sName
 local sBlob = "blob/master"..sSubs; sDirs = sDirs..sSubs
 

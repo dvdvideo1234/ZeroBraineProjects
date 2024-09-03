@@ -19,7 +19,8 @@ local __nermsg = {}
 local __lang   = {}
 local Msg      = print
 local __type   = type
-local __typedt = {{"number"}, {"string"}, {"boolean", "bool"},{"function"},{"table"}}
+local __typedt = {{"number"}, {"string"}, {"boolean", "bool"},{"function"},{"table"},
+                  {"Vector", "vector"},{"Angle", "angle"},{"Matrix", "matrix"}}
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 
 game = {__single = true}
@@ -93,7 +94,10 @@ end
 
 for i = 1, #__typedt do
   local v = __typedt[i]
-  rawset(_G, "is"..(v[2] or v[1]), function(x) return type(x) == v[1] end or false)
+  local n =("is"..(v[2] or v[1])) 
+  local f = function(x) return type(x) == v[1] end
+  print("Type:", n, v[1])
+  rawset(_G, n, f)
 end
 
 local mtMatrix = {__type = "Matrix"}
@@ -105,8 +109,6 @@ local mtMatrix = {__type = "Matrix"}
         end; return sM
       end
       mtMatrix.__index = mtMatrix
-
-local function ismatrix(a) return (getmetatable(a) == mtMatrix) end
 
 function Matrix()
   local self = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; setmetatable(self, mtMatrix)
@@ -139,8 +141,6 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0}
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
       end
-
-local function isvector(v) return (getmetatable(v) == mtVector) end
 
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
@@ -272,21 +272,23 @@ mtVector.__mul = function(o1,o2)
   return ov
 end
 
-local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}}
-      mtAngle.__tostring = function(self) return ("ANG{"..self.p..","..self.y..","..self.r.."}") end
+local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0}
+      mtAngle.__tostring = function(self) return ("["..self.ID.."]ANG{"..self.p..","..self.y..","..self.r.."}") end
       mtAngle.__index = function(self, aK)
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
       end
 
-local function isangle(a) return (getmetatable(a) == mtAngle) end
-
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
+  self.ID = mtVector.__ID; mtVector.__ID = mtVector.__ID + 1
   self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0
   function self:Set(p,y,r)
     if(getmetatable(p) == mtAngle) then self.p, self.y, self.r = p.p, p.y, p.r;
     else self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0; end
+  end
+  function self:Unpack()
+    return self.p, self.y, self.r
   end
   return self
 end

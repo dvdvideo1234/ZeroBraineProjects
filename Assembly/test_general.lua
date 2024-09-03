@@ -8,8 +8,12 @@ local dir = require("directories")
                 .addBase("D:/Programs/LuaIDE")
                 .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
+
+
 require("gmodlib")
+
 require("trackasmlib")
+
 asmlib = trackasmlib
 local com = require("common")
 
@@ -25,13 +29,21 @@ print("TM:", asmlib.GetAsmConvar("timermode","STR"))
 
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
+tR = {}
 
-local r = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl")
-
-com.logTable(r, "REC")
-com.logTable(asmlib.GetBuilderNick("PIECES"):GetDefinition(), "DEF_PIECES")
-com.logTable(asmlib.GetBuilderNick("PIECES"):GetCommand(), "CMD_PIECES")
-com.logTable(asmlib.GetOpVar("QUERY_STORE"), "QUERY_STORE")
+tR[1] = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl", 2)
+tR[2] = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl2", 77)
+tR[3] = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl3", 1)
+tR[4] = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl4", 77)
 
 
+--com.logTable(tR, "REC")
+--com.logTable(asmlib.GetBuilderNick("PIECES"):GetDefinition(), "DEF_PIECES")
+--com.logTable(asmlib.GetBuilderNick("PIECES"):GetCommand(), "CMD_PIECES")
+--com.logTable(asmlib.GetOpVar("QUERY_STORE"), "QUERY_STORE")
+com.logTable(asmlib.GetBuilderNick("PIECES"):GetCommand().Timer, "CMD_TIMER")
+
+local a = {1,2,3,C=4}
+
+print(">>", table.concat(a,'|'))
 
