@@ -5605,14 +5605,3 @@ function GetToolInformation()
     end
   end; return tO
 end
-
-function RegisterBranch(o, v, p, b)
-  if(v:find(p)) then
-    local e = v:gsub("%W*"..p.."%W*", "_")
-    if(b and o.Base) then return e end
-    if(b and not o.Base) then o.Base = p end
-    tableInsert(o, p)
-    return e
-  end
-  return v
-end
