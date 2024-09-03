@@ -139,17 +139,27 @@ local tD = {
 local fnc = [[
   function(m)
     local o = {}
+    function setBranch(v, p, b)
+      if(v:find(p)) then
+        local e = v:gsub("%W*"..p.."%W*", "_")
+        if(b and o.Base) then return e end
+        if(b and not o.Base) then o.Base = p end
+        table.insert(o, p)
+        return e
+      end
+      return v
+    end
     local r = m:gsub("models/propper/dingles_modular_streets/",""):gsub("%.mdl$","")
-    r = trackasmlib.RegisterBranch(o, r, "highway", true)
-    r = trackasmlib.RegisterBranch(o, r, "street" , true)
-    r = trackasmlib.RegisterBranch(o, r, "endcap")
-    r = trackasmlib.RegisterBranch(o, r, "turn")
-    r = trackasmlib.RegisterBranch(o, r, "ramp")
-    r = trackasmlib.RegisterBranch(o, r, "connector")
-    r = trackasmlib.RegisterBranch(o, r, "tjunction")
-    r = trackasmlib.RegisterBranch(o, r, "intersection")
-    r = trackasmlib.RegisterBranch(o, r, "elevated")
-    return o, r:gsub("^_+", ""):gsub("_+$", "")
+    r = setBranch(r, "highway", true)
+    r = setBranch(r, "street" , true)
+    r = setBranch(r, "endcap")
+    r = setBranch(r, "turn")
+    r = setBranch(r, "ramp")
+    r = setBranch(r, "connector")
+    r = setBranch(r, "tjunction")
+    r = setBranch(r, "intersection")
+    r = setBranch(r, "elevated")
+    o.Base = nil; return o, r:gsub("^_+", ""):gsub("_+$", "")
   end
 ]]
 
