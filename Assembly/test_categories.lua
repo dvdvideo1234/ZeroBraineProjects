@@ -8,10 +8,21 @@ local dir = require("directories")
                 .addBase("D:/Programs/LuaIDE")
                 .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
-require("gmodlib")
 local com = require("common")
-local cpx = require("complex")
-local asmlib = require("trackasmlib")
+
+rawset(_G, "CLIENT", true)
+
+require("gmodlib")
+require("trackasmlib")
+
+asmlib = trackasmlib
+local com = require("common")
+if(not asmlib) then error("No library") end
+asmlib.IsModel = function(m) return isstring(m) end
+if(not asmlib.InitBase("track","assembly")) then error("Init fail") end
+asmlib.NewAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
+CreateConVar("gmod_language")
+require("Assembly/autorun/config")
 
 local tD = {
 "models/propper/dingles_modular_streets/highway_ramp_street1024x768.mdl",
@@ -84,8 +95,19 @@ local tD = {
 "models/propper/dingles_modular_streets/street_turn512x512.mdl",
 "models/propper/dingles_modular_streets/street_turn768x768.mdl"
 }
+-- function self:TimerSetup(vTim)
+asmlib.Categorize("Modular city street",{ "@highway",
+                                          "@street" ,
+                                          "endcap"       ,
+                                          "turn"         ,
+                                          "ramp"         ,
+                                          "connector"    ,
+                                          "tjunction"    ,
+                                          "intersection" ,
+                                          "elevated"     }, "models/propper/dingles_modular_streets/")
 
-local fnc = [[
+--[===[
+asmlib.Categorize("Modular city street",[[
   function(m)
     local o = {}
     function setBranch(v, p, b)
@@ -110,13 +132,44 @@ local fnc = [[
     r = setBranch(r, "elevated")
     o.Base = nil; return o, r:gsub("^_+", ""):gsub("_+$", "")
   end
-]]
+]])
 
-local new, err = load("return ("..fnc..")")
-if not new then error("Compile error: "..err) end
+asmlib.Categorize("Modular city street",[[
+  function(m)
+    local o = {}
+    function setBranch(v, p, b)
+      if(v:find(p)) then
+        local e = v:gsub("%W*"..p.."%W*", "_")
+        if(b and o.Base) then return e end
+        if(b and not o.Base) then o.Base = p end
+        table.insert(o, p)
+        return e
+      end
+      return v
+    end
+    local r = m:gsub("models/propper/dingles_modular_streets/",""):gsub("%.mdl$","")
+    r = setBranch(r, "highway", true)
+    r = setBranch(r, "street" , true)
+    r = setBranch(r, "endcap")
+    r = setBranch(r, "turn")
+    r = setBranch(r, "ramp")
+    r = setBranch(r, "connector")
+    r = setBranch(r, "tjunction")
+    r = setBranch(r, "intersection")
+    r = setBranch(r, "elevated")
+    o.Base = nil; return o, r:gsub("^_+", ""):gsub("_+$", "")
+  end
+]])
 
-local suc, new = pcall(new)
-if not suc then error("Factory error: "..new) end
+
+asmlib.Categorize("Modular city street", 3, "models/propper/dingles_modular_", "_", "/")
+]===]
+
+local dat = asmlib.GetOpVar("TABLE_CATEGORIES")["Modular city street"]
+
+com.logTable(dat, "CAT")
+
+local new = dat.Cmp
 
 local out = assert(io.open("Assembly/trackassembly/trackasmlib_nodes.txt", "wb"))
 
@@ -124,7 +177,7 @@ for i = 1, #tD do
   local mod = tD[i]
   local cat, nam = new(mod)
   if(istable(cat)) then cat = "("..table.concat(cat,"|")..")" end
-  out:write(com.stringPadR(mod, 100, " "), com.stringPadR(cat, 35, " "), nam, "\n")
+  out:write(com.stringPadR(mod, 100, " ").." > "..com.stringPadR(cat, 35, " ").." > "..nam.."\n")
 end
 
 out:flush()

@@ -153,7 +153,7 @@ asmlib.SetBorder(gsToolPrefL.."rtradmenu", -gnMaxRot, gnMaxRot)
 ------------ CONFIGURE LOGGING ------------
 
 asmlib.SetOpVar("LOG_DEBUGEN",false)
-asmlib.NewAsmConvar("logsmax", 0, nil, gnIndependentUsed, "Maximum logging lines being written")
+asmlib.NewAsmConvar("logsmax", 1, nil, gnIndependentUsed, "Maximum logging lines being written")
 asmlib.NewAsmConvar("logfile", 0, nil, gnIndependentUsed, "File logging output flag control")
 asmlib.SetLogControl(asmlib.GetAsmConvar("logsmax","INT"), asmlib.GetAsmConvar("logfile","BUL"))
 asmlib.SettingsLogs("SKIP"); asmlib.SettingsLogs("ONLY")
