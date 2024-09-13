@@ -6,7 +6,7 @@ metaexec.secto = "%02d:%02d:%02d"
 metaexec.outfi = "Output set to: %s"
 metaexec.start = "Started %d tast cases for %d functions..."
 metaexec.ffins = "Test finished all %d cases successfully!"
-metaexec.ffina = "Test finished %d of %d cases successfully!"
+metaexec.ffinc = "Test finished %d of %d cases successfully!"
 metaexec.ffina = "Test case <%s> with fail rate: %d%%"
 metaexec.ffspc = {"Estimation for [%", "s]: %s"}
 metaexec.nocnt = "No test card count `stCard.%s` for test ID # %d!"
@@ -143,7 +143,7 @@ function testexec.Run(stCard, stEstim)
   if(tstFail.Cnt == 0) then
     logStatus(metaexec.ffins:format(iCard).."\n", nil)
   else
-    logStatus(metaexec.ffina:format(iCard-tstFail.Cnt, iCard).."\n", nil)
+    logStatus(metaexec.ffinc:format(iCard-tstFail.Cnt, iCard).."\n", nil)
     logStatus(metaexec.tfail.."\n", nil)
     for k, v in pairs(tstFail.Hash) do
       if(v[1]) then logStatus(metaexec.ffina:format(k, v[2]).."\n", nil) end
