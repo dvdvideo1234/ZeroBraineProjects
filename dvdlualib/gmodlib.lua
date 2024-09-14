@@ -96,7 +96,6 @@ for i = 1, #__typedt do
   local v = __typedt[i]
   local n =("is"..(v[2] or v[1])) 
   local f = function(x) return type(x) == v[1] end
-  print("Type:", n, v[1])
   rawset(_G, n, f)
 end
 
