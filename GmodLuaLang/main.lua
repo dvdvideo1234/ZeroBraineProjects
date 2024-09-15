@@ -29,6 +29,7 @@ end
 fM:close()
 
 if(tAb.Size > 0) then tAb.ID = 1
+  print("Base translation present. Processing...")
   local fI = assert(io.open(ser.."in.txt"))
   local fO = assert(io.open(ser.."out.txt", "w"))
   local rI = fI:read("*line")
@@ -36,7 +37,6 @@ if(tAb.Size > 0) then tAb.ID = 1
     fO:write(rI..sNL)
     if(rI:find("^%s*%[\"en\"%]")) then
       local sI = tostring(rI:match("^%s+"))
-      print(tAb.ID, "<"..sI..">: ", rI)
       fO:write(sI..tAb[tAb.ID]..sNL)
       tAb.ID = tAb.ID + 1
     end
@@ -45,4 +45,19 @@ if(tAb.Size > 0) then tAb.ID = 1
   fI:close()
   fO:flush()
   fO:close()
+else
+  print("Base translation are missing. Generating...")
+  local fI = assert(io.open(ser.."in.txt"))
+  local fM = assert(io.open(ser.."mix.txt", "w"))
+  local rI = fI:read("*line")
+  while(rI) do
+    if(rI:find("^%s*%[\"en\"%]")) then
+      local sT = com.stringTrim(rI)
+      fM:write(sT..sNL)
+    end
+    rI = fI:read("*line")
+  end
+  fI:close()
+  fM:flush()
+  fM:close()
 end
