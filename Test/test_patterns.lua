@@ -5,21 +5,16 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
 
 require("gmodlib")
 local common = require("common")
 
-local str = "Volume in drive C is OS"
-local ptr = "drive.*$"
-local exp = str:match("drive.*$"):gsub("drive%s", "")
+local str = "[\"en\"] = \"Dedizierter Spawnpunkt für Feinde\","
+local ptr = "%[\"en\"%]"
+local exp = str:match(ptr, 1, true)
 
-print("E:", exp)
+print("S:", str)
+print("E:", "<"..exp..">")
 
-for w in exp:gmatch("([^/]+)") do
-  print("P:", w)
-end
-
-
-[fp][ur][no][%w]+%s+[%w_]+%s*%(.-%)
