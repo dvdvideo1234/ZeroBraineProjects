@@ -9,13 +9,15 @@ local dir = require("directories")
       dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
 
 local com = require("common")
-local ser = "GmodLuaLang/"
+local ser = "GmodLanguage/Lua/"
 local tAb = {Size = 0, ID = 0}
 local sNL = "\n"
 --[[
-  1. Populate the source file as input
-  2. Update the mix file with your translations
-  3. Write mixed content in the output file
+  1. Copy the file being translated into IN
+  2. Empty the MIX file traslation sources
+  3. Run the program to generate the MIX file
+  4. Translate the MIX file by known methods
+  5. Run the program again to generate the OUT file
 ]]
 
 local fM = assert(io.open(ser.."mix.txt"))

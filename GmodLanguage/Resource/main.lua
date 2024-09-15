@@ -6,12 +6,14 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
-      drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
       
 -- Constant stuff
 local com = require("common")
 local bom = {0xEF, 0xBB, 0xBF}
+local pth = dir.getNorm(com.stringGetChunkPath())
+local rep = "GmodLanguage/Resource"
 
 -- Manual stuff
 local tam = {
@@ -28,9 +30,8 @@ for idn = 1, #tam do
   print("Processing: "..nam)
   
   -- Automatic stuff
-  local inf = require(nam.."/info")
+  local inf = require(rep.."/"..nam.."/info")
   local bas, key = inf.lang[1]
-  local pth = dir.getNorm(com.stringGetChunkPath())
   local res = pth.."/"..nam.."/resource/localization"
 
   dir.ersDir("resource", pth.."/"..nam)
@@ -44,6 +45,7 @@ for idn = 1, #tam do
     local eng = inf.lang[ing]
     local I = io.open(inf.sors:format(pth, eng), "rb")
     if(I) then
+      print("  Input status [V]: "..eng)
       local F = assert(load(I:read("*all"))); I:seek("set", 0)
       if(not F) then return end; S, F = pcall(F)
       if(not S) then error(F) end  
@@ -95,12 +97,11 @@ for idn = 1, #tam do
         end
         r = I:read("*line")
       end
-
       O:flush()
       O:close()
       I:close()
     else
-      print("  Input missing: "..eng)
+      print("  Input status [X]: "..eng)
     end
   end
 end
