@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
       
 -- Constant stuff
 local com = require("common")
