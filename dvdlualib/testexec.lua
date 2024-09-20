@@ -17,7 +17,7 @@ metaexec.tfail = "The following tests have failed. Please check!"
 metaexec.ffail = "%10.3f Time: %10.3f (%10.3f[s]) %15.3f[c/s] Failed: %d"
 metaexec.upcnt = "Updating input count to `N=%d`!"
 metaexec.tcase = "Testing case [%d]: <%s>"
-metaexec.alsum = {"[%15.3f]: %s", " +%5.2f"}
+metaexec.alsum = {"[%15.3f]: %s", " +%6.3f"}
 
 local function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg)); return ...
@@ -87,7 +87,7 @@ function testexec.Run(stCard, stEstim)
     else logStatus("Output: {"..tostring(fooRes).."}\n", nil) end
     logStatus(" Tests: {"..tostring(fooCnt)..", "..tostring(fooCyc).."}\n", nil)
     if(stCard.ExPercn) then nStar = fooCnt*iEstm; iStar = stCard.ExPercn*nStar
-      logStatus("Process: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)
+      logStatus(" Rates: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)
     end
     local idx, mrkCnt = 1, 0 -- Current iteration
     for idx = 1, fooCnt do -- Repeat each test
@@ -115,10 +115,14 @@ function testexec.Run(stCard, stEstim)
         if(stCard.ExPercn) then mrkCnt = mrkCnt + 1
           if(mrkCnt % iStar == 0) then logStatus(((mrkCnt/nStar)*100).."% ") end
         end
-        if(bStar) then local iTimn = fnc.Tm[tstNam]; bStar = false;
+        if(bStar) then
+          local iTim = fnc.Tm[tstNam]; bStar = false
           logStatus("TimNow: {"..os.date(metaexec.ftime).."}\n", nil)
-          logStatus("TimCnt: {"..testexec.Time(iTimn).."} ("..iTimn..")\n", nil)
-          logStatus("TimCyc: {"..testexec.Time(iTimn * fooCnt).."} ("..(iTimn * fooCnt)..")\n", nil)
+          if(iTim > 0) then
+            logStatus("TimFnc: {"..testexec.Time(iTim).."} ("..iTim..")\n", nil)
+            logStatus("TimCar: {"..testexec.Time(iTim * iEstm * fooCnt).."} ("..(iTim * iEstm * fooCnt)..")\n", nil)
+            logStatus("TimAll: {"..testexec.Time(iTim * iEstm * iCard * fooCnt).."} ("..(iTim * iEstm * iCard * fooCnt)..")\n", nil)
+          end
         end
         if(stCard.AcTime and (os.clock() - iTime) > stCard.AcTime) then iTime = os.clock(); logStatus(".") end
       end
@@ -157,7 +161,6 @@ function testexec.Run(stCard, stEstim)
   for k, v in pairs(tFoo.Da) do
     if(not tFoo.Sz) then tFoo.Sz = 0 end
     if(not tFoo.Mn or tFoo.Mn > v) then tFoo.Mn = v end
-    if(not tFoo.Kx or tFoo.Kx < k:len()) then tFoo.Kx = k:len() end
     tFoo.Sz = tFoo.Sz + 1; tFoo[tFoo.Sz] = k
   end
   table.sort(tFoo, function(u, v) return tFoo.Da[u] < tFoo.Da[v] end)
@@ -168,7 +171,7 @@ function testexec.Run(stCard, stEstim)
     if(math.abs(nP) < 1e-10) then
       logStatus(metaexec.alsum[1]:format(nV, sK).."\n")
     else
-      local sP = string.rep(" ", tFoo.Kx - sK:len())
+      local sP = string.rep(" ", iMaxL - sK:len())
       logStatus(metaexec.alsum[1]:format(nV, sK)..sP..metaexec.alsum[2]:format(nP).."%\n")
     end
   end

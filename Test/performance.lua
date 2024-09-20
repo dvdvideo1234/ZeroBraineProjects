@@ -28,9 +28,6 @@ function GetWrap2(nV,nL,nH)
 end
 
 function GetWrap3(nV,_,nS)
-  if(nV >= 0 and nV <= nS) then
-    return (nV == 0) and nS or nV
-  end
   local nC = nV % nS
   return (nC == 0) and nS or nC
 end
@@ -53,7 +50,7 @@ t:setCase(GetEmpty1, "original")
 t:setCase(GetEmpty2, "modify")
 t:setCase(GetEmpty3, "mod")
 t:setProgress(1, 0.1)
-t:setCount(1000, 1000)
+t:setCount(10000, 10000)
 t:setCard({-6, nF, nT}, 3, "1 ")
 t:setCard({-5, nF, nT}, 1, "2 ")
 t:setCard({-4, nF, nT}, 2, "3 ")
