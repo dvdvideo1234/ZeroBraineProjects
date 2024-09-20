@@ -1,5 +1,5 @@
 local testexec = {}
-local com = require("common")
+
 local metaexec = {}
 metaexec.ftime = "%H:%M:%S"
 metaexec.secto = "%02d:%02d:%02d"
@@ -155,18 +155,21 @@ function testexec.Run(stCard, stEstim)
   end
   logStatus(metaexec.sumry.."\n")
   for k, v in pairs(tFoo.Da) do
-    if(not tFoo.ID) then tFoo.ID = 1 end; tFoo[tFoo.ID] = k
+    if(not tFoo.Sz) then tFoo.Sz = 0 end
     if(not tFoo.Mn or tFoo.Mn > v) then tFoo.Mn = v end
     if(not tFoo.Kx or tFoo.Kx < k:len()) then tFoo.Kx = k:len() end
+    tFoo.Sz = tFoo.Sz + 1; tFoo[tFoo.Sz] = k
   end
   table.sort(tFoo, function(u, v) return tFoo.Da[u] < tFoo.Da[v] end)
-  for k, v in pairs(tFoo.Da) do
-    local nP = ((100 * v / tFoo.Mn) - 100)
+  for iD = 1, tFoo.Sz do
+    local sK = tFoo[iD]
+    local nV = tFoo.Da[sK]
+    local nP = ((100 * nV / tFoo.Mn) - 100)
     if(math.abs(nP) < 1e-10) then
-      logStatus(metaexec.alsum[1]:format(v, k).."\n")
+      logStatus(metaexec.alsum[1]:format(nV, sK).."\n")
     else
-      local sP = string.rep(" ", tFoo.Kx - k:len())
-      logStatus(metaexec.alsum[1]:format(v, k)..sP..metaexec.alsum[2]:format(nP).."%\n")
+      local sP = string.rep(" ", tFoo.Kx - sK:len())
+      logStatus(metaexec.alsum[1]:format(nV, sK)..sP..metaexec.alsum[2]:format(nP).."%\n")
     end
   end
 end
