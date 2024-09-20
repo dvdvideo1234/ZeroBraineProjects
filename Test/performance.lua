@@ -27,6 +27,11 @@ function GetWrap2(nV,nL,nH)
   return (nC == 0) and nH or nC
 end
 
+function GetWrap3(nV,_,nS)
+  local nC = nV % nS
+  return (nC == 0) and nS or nC
+end
+
 
 function GetEmpty1(tArg)
   return GetWrap(unpack(tArg))
@@ -36,9 +41,14 @@ function GetEmpty2(tArg)
   return GetWrap2(unpack(tArg))
 end
 
+function GetEmpty3(tArg)
+  return GetWrap3(unpack(tArg))
+end
+
 t = testexec.New()
 t:setCase(GetEmpty1, "original")
-t:setCase(GetEmpty2, "modified")
+t:setCase(GetEmpty2, "modify")
+t:setCase(GetEmpty3, "mod")
 t:setProgress(1, 0.1)
 t:setCount(10000, 10000)
 t:setCard({-6, nF, nT}, 3, "1 ")
@@ -59,5 +69,3 @@ t:setCard({8 , nF, nT}, 2, "15")
 t:setCard({9 , nF, nT}, 3, "16")
 t:setCard({10, nF, nT}, 1, "17")
 t:runMeasure()
-
-print(-7 % 5, 7 % 5)

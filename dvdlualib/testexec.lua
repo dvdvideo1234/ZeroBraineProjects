@@ -1,10 +1,10 @@
 local testexec = {}
-
+local com = require("common")
 local metaexec = {}
 metaexec.ftime = "%H:%M:%S"
 metaexec.secto = "%02d:%02d:%02d"
 metaexec.outfi = "Output set to: %s"
-metaexec.start = "Started %d tast cases for %d functions..."
+metaexec.start = "Started %d test cases for %d functions..."
 metaexec.ffins = "Test finished all %d cases successfully!"
 metaexec.ffinc = "Test finished %d of %d cases successfully!"
 metaexec.ffina = "Test case <%s> with fail rate: %d%%"
@@ -15,7 +15,10 @@ metaexec.nocas = "Test case name <%s> already done under ID # %s!"
 metaexec.sumry = "Overall testing rank list summary:"
 metaexec.tfail = "The following tests have failed. Please check!"
 metaexec.ffail = "%10.3f Time: %10.3f (%10.3f[s]) %15.3f[c/s] Failed: %d"
- 
+metaexec.upcnt = "Updating input count to `N=%d`!"
+metaexec.tcase = "Testing case [%d]: <%s>"
+metaexec.alsum = {"[%15.3f]: %s", " +%5.2f"}
+
 local function logStatus(anyMsg, ...)
   io.write(tostring(anyMsg)); return ...
 end
@@ -51,7 +54,7 @@ function testexec.Run(stCard, stEstim)
     io.output(stCard.OuFile)
   end
   local iTime, bStar = os.clock(), true
-  local iCard, tFoo, iStar, nStar = #stCard, {}
+  local iCard, tFoo, iStar, nStar = #stCard, {Da = {}}
   local iMaxL, iEstm = getMaxNameLength(stEstim)
   logStatus(metaexec.start:format(iCard, iEstm).."\n", nil)
   local ID, tCase, tstFail = 1, {}, {Cnt = 0, Hash = {}} -- No tests have hailed
@@ -65,11 +68,11 @@ function testexec.Run(stCard, stEstim)
     if(fooCnt < 1) then logStatus(metaexec.nocnt:format("FnCount",ID).."\n", nil); return end
     if(fooCyc < 1) then logStatus(metaexec.nocyc:format("FnCycle",ID).."\n", nil); return end
     if(tCase[tstNam]) then logStatus(metaexec.nocas:format(tstNam, tostring(tCase[tstNam])).."\n", nil); return; end
-    logStatus("Testing case ["..tostring(ID).."]: <"..tostring(tstNam)..">\n", nil)
+    logStatus(metaexec.tcase:format(ID, tstNam).."\n", nil)
     if(type(fooVal) == "table") then
       local sA = ""; fooVal.N = tonumber(fooVal.N)
       if(not fooVal.N) then fooVal.N = #fooVal
-        logStatus("Updating input count to `N="..#fooVal.."`!\n", nil) end
+        logStatus(metaexec.upcnt:format(#fooVal).."\n", nil) end
       for iV = 1, fooVal.N do sA = sA..tostring(fooVal[iV])
         if(iV ~= fooVal.N) then sA = sA.."," end
       end; logStatus(" Input: {"..sA.."}\n", nil)
@@ -77,14 +80,14 @@ function testexec.Run(stCard, stEstim)
     if(type(fooRes) == "table") then
       local sA = ""; fooRes.N = tonumber(fooRes.N)
       if(not fooRes.N) then fooRes.N = #fooRes
-        logStatus("Updating output count to `N="..#fooRes.."`!\n", nil) end
+        logStatus(metaexec.upcnt:format(#fooRes).."\n", nil) end
       for iR = 1, fooRes.N do sA = sA..tostring(fooRes[iR])
         if(iR ~= fooRes.N) then sA = sA.."," end
       end; logStatus("Output: {"..sA.."}\n", nil)
     else logStatus("Output: {"..tostring(fooRes).."}\n", nil) end
     logStatus(" Tests: {"..tostring(fooCnt)..", "..tostring(fooCyc).."}\n", nil)
     if(stCard.ExPercn) then nStar = fooCnt*iEstm; iStar = stCard.ExPercn*nStar
-      logStatus("Proces: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)
+      logStatus("Process: {"..tostring(stCard.ExPercn*100).."%, "..tostring(fooCnt*stCard.ExPercn).."}\n", nil)
     end
     local idx, mrkCnt = 1, 0 -- Current iteration
     for idx = 1, fooCnt do -- Repeat each test
@@ -98,7 +101,7 @@ function testexec.Run(stCard, stEstim)
         end
         local tRoll = fnc.Ro[tstNam]
         local nTime = os.clock()
-        for Ind = 1, fooCyc do -- N Cycles
+        for inx = 1, fooCyc do -- N Cycles
           local Rez = fnc.Func(fooVal)
           if(Rez == fooRes) then tRoll["PASS"] = tRoll["PASS"] + 1 else
             if(not tstFail.Hash[tstNam][1]) then
@@ -127,13 +130,14 @@ function testexec.Run(stCard, stEstim)
     end
     for cnt = 1, iEstm do  -- For all functions
       local fnc = stEstim[cnt]
+      local nTim = fnc.Tm[tstNam]
       local nAll = (fooCnt * fooCyc)
       local nPas = ((100 * fnc.Ro[tstNam]["PASS"]) / nAll)
       local nFal = ((100 * fnc.Ro[tstNam]["FAIL"]) / nAll)
-      local nTim = fnc.Tm[tstNam]
       local nTip =  (nMin ~= 0) and (100 * (nTim / nMin)) or 0
       local sDat = metaexec.ffail:format(nPas,nTip,nTim,(fooCnt*fooCyc/nTim),nFal)
-      if(not tFoo[fnc.Na]) then tFoo[fnc.Na] = 0 end; tFoo[fnc.Na] = tFoo[fnc.Na] + nTim
+      if(not tFoo.Da[fnc.Na]) then tFoo.Da[fnc.Na] = 0 end
+      tFoo.Da[fnc.Na] = tFoo.Da[fnc.Na] + nTim
       tstFail.Hash[tstNam][2] = nFal
       logStatus((metaexec.ffspc[1]..iMaxL..metaexec.ffspc[2]):format(fnc.Na, sDat).."\n", nil)
     end; tCase[tstNam] = ID;
@@ -150,8 +154,21 @@ function testexec.Run(stCard, stEstim)
     end
   end
   logStatus(metaexec.sumry.."\n")
-  for Key, Val in pairs(tFoo) do 
-    logStatus("["..("%15.3f"):format(Val).."]: "..tostring(Key).."\n") end
+  for k, v in pairs(tFoo.Da) do
+    if(not tFoo.ID) then tFoo.ID = 1 end; tFoo[tFoo.ID] = k
+    if(not tFoo.Mn or tFoo.Mn > v) then tFoo.Mn = v end
+    if(not tFoo.Kx or tFoo.Kx < k:len()) then tFoo.Kx = k:len() end
+  end
+  table.sort(tFoo, function(u, v) return tFoo.Da[u] < tFoo.Da[v] end)
+  for k, v in pairs(tFoo.Da) do
+    local nP = ((100 * v / tFoo.Mn) - 100)
+    if(math.abs(nP) < 1e-10) then
+      logStatus(metaexec.alsum[1]:format(v, k).."\n")
+    else
+      local sP = string.rep(" ", tFoo.Kx - k:len())
+      logStatus(metaexec.alsum[1]:format(v, k)..sP..metaexec.alsum[2]:format(nP).."%\n")
+    end
+  end
 end
 
 local mtExec = {}
