@@ -160,7 +160,7 @@ asmlib.SettingsLogs("SKIP"); asmlib.SettingsLogs("ONLY")
 
 ------------ CONFIGURE NON-REPLICATED CVARS ------------ Client's got a mind of its own
 
-asmlib.NewAsmConvar("modedb"   , "SQL", nil, gnIndependentUsed, "Database storage operating mode LUA or SQL")
+asmlib.NewAsmConvar("modedb"   , "LUA", nil, gnIndependentUsed, "Database storage operating mode LUA or SQL")
 asmlib.NewAsmConvar("devmode"  ,    0 , nil, gnIndependentUsed, "Toggle developer mode on/off server side")
 asmlib.NewAsmConvar("maxtrmarg", 0.02 , nil, gnIndependentUsed, "Maximum time to avoid performing new traces")
 asmlib.NewAsmConvar("maxmenupr",    5 , nil, gnIndependentUsed, "Maximum decimal places utilized in the control panel")

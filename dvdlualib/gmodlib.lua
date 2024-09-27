@@ -34,6 +34,7 @@ ents = {}
 properties = {__data= {}}
 sql = {}
 net = {}
+vgui = {}
 constraint = {}
 surface = {__fonts = {}}
 
@@ -690,6 +691,64 @@ function constraint.NoCollide(e1, e2, b1, b2)
   n.E1, n.E2 = e1, e2
   n.B1, n.B2 = b1, b2
   return n
+end
+
+function vgui.Create(sTyp, pPar)
+  local self = {__type = tostring(sTyp or "")}
+        self.PX = 0; self.PY = 0
+        self.SX = 0; self.SY = 0
+        self.TTip = nil
+        self.Icon = {}
+        self.Name = ""
+        self.Node = {}
+        self.Item = {Size = 0}
+        self.Expander = {}
+        self.Skin = nil
+  function self:Dock(nD)
+    common.logStatus("VGUI["..self.__type.."]:Dock("..tostring(nD)..")")
+  end
+  function self:SetTall(nS)
+    self.SY = tonumber(nS) or 0
+  end
+  function self:SetWide(nS)
+    self.SX = tonumber(nS) or 0
+  end
+  function self:SetToolTip(sT)
+    common.logStatus("VGUI["..self.__type.."]:SetToolTip("..tostring(sT)..")")
+  end
+  function self:SetIndentSize(nS)
+    common.logStatus("VGUI["..self.__type.."]:SetIndentSize("..tostring(nS)..")")
+  end
+  function self:UpdateColours(tS)
+    if(tS == nil) then
+      common.logStatus("VGUI["..self.__type.."]:UpdateColours(nil)"); return end
+    self.Skin = tS
+  end  
+  function self:SetTooltip(sT)
+    if(sT == nil) then
+      common.logStatus("VGUI["..self.__type.."]:SetTooltip(nil)"); return end
+    self.TTip = tostring(sT)
+  end
+  function self:AddItem(vI)
+    if(vI == nil) then
+      common.logStatus("VGUI["..self.__type.."]:AddItem(nil)"); return end
+    table.insert(self.Item, vI); self.Item.Size = self.Item.Size + 1
+    common.logStatus("VGUI["..self.__type.."]:AddItem(["..(vI.__type or type(vI)).."]"..tostring(vI)..")")
+  end
+  function self:AddNode(sN)
+    if(sN == nil) then
+      common.logStatus("VGUI["..self.__type.."]:AddNode(nil)"); return end
+    local pN = vgui.Create("NODE"); self.Node[sN] = pN; return pN
+  end
+  function self.Icon.SetImage(sI)
+    if(sI == nil) then
+      common.logStatus("VGUI["..self.__type.."].Icon.SetImage(nil)"); return end
+    self.Icon.IMG = tostring(sI)
+  end
+  function self:GetSkin()
+    return self.Skin
+  end
+  return self
 end
 
 --- INITIALIZATION ---
