@@ -51,6 +51,7 @@ local isnumber                       = isnumber
 local isstring                       = isstring
 local isvector                       = isvector
 local isangle                        = isangle
+local ismatrix                       = ismatrix
 local isfunction                     = isfunction
 local Vector                         = Vector
 local Matrix                         = Matrix
@@ -507,19 +508,6 @@ function LogTable(tT, sS, vSrc, bCon, iDbg, tDbg)
 end
 
 ------------- VALUE ---------------
---[[
- * When requested wraps the first value according to
- * the interval described by the other two values
- * Inp: -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10
- * Out:  3  1  2  3  1  2 3 1 2 3 1 2 3 1 2 3  1
- * This is an example call for the input between 1 and 3
-]]
-function GetWrap(nVal,nMin,nMax) local nVal = nVal
-  while(nVal < nMin or nVal > nMax) do
-    nVal = ((nVal < nMin) and (nMax - (nMin - nVal) + 1) or nVal)
-    nVal = ((nVal > nMax) and (nMin + (nVal - nMax) - 1) or nVal)
-  end; return nVal -- Returns the N-stepped value
-end
 
 --[[
  * Applies border if exists to the input value
@@ -702,7 +690,7 @@ function InitBase(sName, sPurp)
   SetOpVar("TOOLNAME_NU",(GetOpVar("NAME_INIT")..GetOpVar("NAME_PERP")):upper())
   SetOpVar("TOOLNAME_PL",GetOpVar("TOOLNAME_NL").."_")
   SetOpVar("TOOLNAME_PU",GetOpVar("TOOLNAME_NU").."_")
-  SetOpVar("DIRPATH_BAS","Assembly/"..GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
+  SetOpVar("DIRPATH_BAS",GetOpVar("TOOLNAME_NL")..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_EXP","exp"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_DSV","dsv"..GetOpVar("OPSYM_DIRECTORY"))
   SetOpVar("DIRPATH_SET","set"..GetOpVar("OPSYM_DIRECTORY"))
@@ -724,7 +712,27 @@ function InitBase(sName, sPurp)
   SetOpVar("FORM_NTFGAME", "notification.AddLegacy(\"%s\", NOTIFY_%s, 6)")
   SetOpVar("FORM_NTFPLAY", "surface.PlaySound(\"ambient/water/drip%d.wav\")")
   SetOpVar("MODELNAM_FILE","%.mdl")
-  SetOpVar("VCOMPARE_SORT", function(u, v) return (u.Val < v.Val) end)
+  SetOpVar("VCOMPARE_SPAN", function(u, v)
+    if(u.T ~= v.T) then return u.T < v.T end
+    local uC = (u.C or {})
+    local vC = (v.C or {})
+    local uM, vM = #uC, #vC
+    for i = 1, mathMax(uM, vM) do
+      local uS = tostring(uC[i] or "")
+      local vS = tostring(vC[i] or "")
+      if(uS ~= vS) then return uS < vS end
+    end
+    if(u.N ~= v.N) then return u.N < v.N end
+    if(u.M ~= v.M) then return u.M < v.M end
+    return false end)
+  SetOpVar("VCOMPARE_SDAT", function(u, v, c)
+    for iD = 1, c.Size do local iR = c[iD]
+      local uR, vR = u.Rec, v.Rec
+      if(uR[iR] < vR[iR]) then return true end
+      if(uR[iR] > vR[iR]) then return false end
+    end; return false; end)
+  SetOpVar("VCOMPARE_SKEY", function(u, v) return (u.Key < v.Key) end)
+  SetOpVar("VCOMPARE_SREC", function(u, v) return (u.Rec < v.Rec) end)
   SetOpVar("MODELNAM_FUNC", function(x) return " "..x:sub(2,2):upper() end)
   SetOpVar("EMPTYSTR_BLNU", function(x) return (IsBlank(x) or IsNull(x)) end)
   SetOpVar("EMPTYSTR_BLDS", function(x) return (IsBlank(x) or IsDisable(x)) end)
@@ -1591,7 +1599,7 @@ function NewPOA(vA, vB, vC)
         end -- Decode the transformation when is not null or empty string
       else -- When the value is empty use zero otherwise process the value
         self:Import(sB, sM, ...) -- Try to process the value when present
-        LogInstance("Missing "..GetReport(sB, sM)) -- No Attachment call
+        LogInstance("Regular "..GetReport(sB, sM)) -- No Attachment call
       end -- Try to decode the entry when present
     end; return self
   end; if(vA or vB or vC) then self:Set(vA, vB, vC) end
@@ -2060,10 +2068,12 @@ end
 function SwitchID(vID,vDir,oRec)
   local stPOA, ID = LocatePOA(oRec,vID); if(not IsHere(stPOA)) then
     LogInstance("ID missing "..GetReport(vID)); return 1 end
-  local nDir = (tonumber(vDir) or 0); nDir = (((nDir > 0) and 1) or ((nDir < 0) and -1) or 0)
-  if(nDir == 0) then LogInstance("Direction mismatch"); return ID end
-  ID = GetWrap(ID + nDir,1,oRec.Size) -- Move around the snap location selected
-  stPOA = LocatePOA(oRec,ID); if(not IsHere(stPOA)) then
+  local nDir = mathFloor(tonumber(vDir) or 0)
+  local iDir = (((nDir > 0) and 1) or ((nDir < 0) and -1) or 0)
+  if(iDir == 0) then LogInstance("Direction mismatch"); return ID end
+  local nC = (ID + iDir) % oRec.Size -- Reminder of ID increment
+  local ID = (nC == 0) and oRec.Size or nC -- Zero default to size
+  local stPOA = LocatePOA(oRec,ID); if(not IsHere(stPOA)) then
     LogInstance("Offset missing "..GetReport(ID)); return 1 end
   return ID
 end
@@ -2269,22 +2279,19 @@ function RegisterPOA(stData, ivID, sP, sO, sA)
   return tOffs -- On success return the populated POA offset
 end
 
-function Sort(tTable, ...)
-  local tS, iS = {Size = 0}, 0
-  local fS = GetOpVar("VCOMPARE_SORT")
-  local tC = {...}; tC.Size = select("#", ...)
-  for key, rec in pairs(tTable) do -- Scan the entire table
-    iS = (iS + 1); tS[iS] = {} -- Allocate key/record and store
-    local rS = tS[iS]; rS.Key, rS.Rec = key, rec -- Local reference
-    if(istable(rec)) then rS.Val = "" -- Allocate sorting value
-      if(tC.Size > 0) then -- When there are sorting column names provided
-        for iC = 1, tC.Size do local sC = tC[iC]; if(not IsHere(rec[sC])) then
-          LogInstance("Key missing "..GetReport(sC)); return nil end
-            rS.Val = rS.Val..tostring(rec[sC]) -- Concatenate sort value
-        end -- When no sort columns are provided sort by the keys instead
-      else rS.Val = key end -- When column list not specified use the key
-    else rS.Val = rec end -- When the element is not a table use the value
-  end; tS.Size = iS; tableSort(tS, fS); return tS
+function PrioritySort(tSrc, vPrn, ...)
+  local tC = (istable(vPrn) and vPrn or {vPrn, ...})
+  local tS = {Size = 0}; tC.Size = #tC
+  for key, rec in pairs(tSrc) do -- Scan the entire table
+    tS.Size = tS.Size + 1 -- Allocate key/record and store
+    tableInsert(tS, {Key = key, Rec = rec}) -- New table
+  end -- The table keys are converted to integers
+  if(istable(tS[1].Rec)) then -- Data is table
+    if(tC.Size > 0) then -- Sorting column names provided
+      local fC = GetOpVar("VCOMPARE_SDAT")
+      tableSort(tS, function(u, v) return fC(u, v, tC) end)
+    else tableSort(tS, GetOpVar("VCOMPARE_SKEY")) end
+  else tableSort(tS, GetOpVar("VCOMPARE_SREC")) end; return tS
 end
 
 ------------- VARIABLE INTERFACES --------------
@@ -3004,8 +3011,7 @@ function NewTable(sTable,defTab,bDelete,bReload)
       LogInstance("Statement deny "..GetReport(nA,qtCmd.STMT), tabDef.Nick); return self:Deny() end
     if(not isstring(sStmt)) then
       LogInstance("Previous mismatch "..GetReport(nA,qtCmd.STMT,sStmt),tabDef.Nick); return self:Deny() end
-    local qtDef = self:GetDefinition()
-    local tA = {...}; sStmt = sStmt:Trim("%s"):Trim(";")
+    local tA, qtDef = {...}, self:GetDefinition(); sStmt = sStmt:Trim("%s"):Trim(";")
     for iCnt = 1, nA do
       local vA, sW = tA[iCnt], ((iCnt == 1) and " WHERE " or " AND "); if(not istable(vA)) then
         LogInstance("Argument not table "..GetReport(nA,iCnt), tabDef.Nick); return self:Deny() end
@@ -3030,12 +3036,11 @@ function NewTable(sTable,defTab,bDelete,bReload)
       LogInstance("Statement deny "..GetReport(nA,qtCmd.STMT), tabDef.Nick); return self:Deny() end
     if(not isstring(sStmt)) then
       LogInstance("Previous mismatch "..GetReport(nA,qtCmd.STMT,sStmt),tabDef.Nick); return self:Deny() end
-    local qtDef, sDir, tA = self:GetDefinition(), "", {...}
-    sStmt = sStmt:Trim("%s"):Trim(";").." ORDER BY "
+    local qtDef, tA = self:GetDefinition(), {...}; sStmt = sStmt:Trim("%s"):Trim(";").." ORDER BY "
     for iCnt = 1, nA do
       local vA = mathFloor(tonumber(tA[iCnt]) or 0); if(vA == 0) then
         LogInstance("Column undefined "..GetReport(nA,iCnt,vA),tabDef.Nick); return self:Deny() end
-      sDir = ((vA > 0) and " ASC" or " DESC"); vA = mathAbs(vA)
+      local sDir = ((vA > 0) and " ASC" or " DESC"); vA = mathAbs(vA)
       local tC = qtDef[vA]; if(not tC) then
         LogInstance("Column missing "..GetReport(nA,iCnt,vA), tabDef.Nick); return self:Deny() end
       local sC = tostring(tC[1] or ""); if(IsBlank(sC)) then
@@ -3048,7 +3053,7 @@ function NewTable(sTable,defTab,bDelete,bReload)
     local qtCmd, nA = self:GetCommand(), select("#", ...)
     local qtDef = self:GetDefinition(); qtCmd.STMT = "INSERT"
     local sStmt = qtCmd.STMT.." INTO "..qtDef.Name.." ( "
-    if(nA > 0) then tA = {...}
+    if(nA > 0) then local tA = {...}
       for iCnt = 1, nA do -- Assume the user wants to build custom insert
         local vA = mathFloor(tonumber(tA[iCnt]) or 0); if(vA == 0) then
           LogInstance("Column undefined "..GetReport(nA,iCnt,vA),tabDef.Nick); return self:Deny() end
@@ -3060,16 +3065,18 @@ function NewTable(sTable,defTab,bDelete,bReload)
       end
     else nA = qtDef.Size -- When called with no arguments is the same as picking all columns
       for iCnt = 1, nA do
-        sStmt = sStmt..qtDef[iCnt][1]..(iCnt ~= nA and ", " or " )")
+        local tC = qtDef[iCnt]; if(not tC) then
+          LogInstance("Column missing "..GetReport(nA,iCnt), tabDef.Nick); return self:Deny() end
+        local sC = tostring(tC[1] or ""); if(IsBlank(sC)) then
+          LogInstance("Column mismatch "..GetReport(nA,iCnt),tabDef.Nick); return self:Deny() end
+        sStmt = sStmt..sC..(iCnt ~= nA and ", " or " )")
       end
     end; qtCmd[qtCmd.STMT] = sStmt; return self
   end
   -- Add values clause to the current statement
   function self:Values(...)
-    local qtCmd = self:GetCommand()
-    local qtDef = self:GetDefinition()
-    local sStmt = qtCmd[qtCmd.STMT]
-    local tA, nA = {...}, select("#", ...)
+    local qtCmd, qtDef = self:GetCommand(), self:GetDefinition()
+    local tA, nA, sStmt = {...}, select("#", ...), qtCmd[qtCmd.STMT]
     if(not sStmt and isbool(sStmt)) then
       LogInstance("Statement deny "..GetReport(nA,qtCmd.STMT), tabDef.Nick); return self:Deny() end
     if(not isstring(sStmt)) then
@@ -3243,7 +3250,7 @@ function CacheQueryPiece(sModel)
       local coO , coA = makTab:GetColumnName(6), makTab:GetColumnName(7)
       for iCnt = 1, stData.Size do
         local qRec = qData[iCnt]; if(iCnt ~= qRec[coID]) then
-          asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(iCnt,sModel)); return nil end
+          LogInstance("Sequential mismatch "..GetReport(iCnt,sModel)); return nil end
         if(not IsHere(RegisterPOA(stData,iCnt, qRec[coP], qRec[coO], qRec[coA]))) then
           LogInstance("Cannot process offset "..GetReport(iCnt, sModel)); return nil
         end
@@ -3287,7 +3294,7 @@ function CacheQueryAdditions(sModel)
       local coMo, coID = makTab:GetColumnName(1), makTab:GetColumnName(4)
       for iCnt = 1, stData.Size do
         local qRec = qData[iCnt]; qRec[coMo] = nil; if(iCnt ~= qRec[coID]) then
-          asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(iCnt,sModel)); return nil end
+          LogInstance("Sequential mismatch "..GetReport(iCnt,sModel)); return nil end
         stData[iCnt] = {}; for col, val in pairs(qRec) do stData[iCnt][col] = val end
       end; stData = makTab:TimerAttach(sFunc, defTab.Name, sModel); return stData
     elseif(sMoDB == "LUA") then LogInstance("Record missing"); return nil
@@ -3298,39 +3305,66 @@ end
 ----------------------- PANEL QUERY -------------------------------
 
 --[[
- * Exports panel information to dedicated DB file
- * stPanel > The actual panel information to export
- * bExp    > Export panel data into a DB file
- * makTab  > Table maker object
+ * Export tool panel contents as a sync file
+ * stPanel > The actual tool panel information handled
  * sFunc   > Export requestor ( CacheQueryPanel )
+ * bExp    > Control flag. Export when enabled
 ]]
-function ExportPanelDB(stPanel, bExp, makTab, sFunc)
-  if(bExp) then
-    local sMiss = GetOpVar("MISS_NOAV")
-    local sBase = GetOpVar("DIRPATH_BAS")
-    local sExpo = GetOpVar("DIRPATH_EXP")
-    local sMoDB = GetOpVar("MODE_DATABASE")
-    local symSep, cT = GetOpVar("OPSYM_SEPARATOR")
-    if(not fileExists(sBase, "DATA")) then fileCreateDir(sBase) end
-    local fName = (sBase..sExpo..GetOpVar("NAME_LIBRARY").."_db.txt")
-    local F = fileOpen(fName, "wb" ,"DATA"), sMiss; if(not F) then
-      LogInstance("Open fail "..GetReport(fName)); return stPanel end
-    F:Write("# "..sFunc..":("..tostring(bExp)..") "..GetDateTime().." [ "..sMoDB.." ]\n")
-    local coMo = makTab:GetColumnName(1)
-    local coTy = makTab:GetColumnName(2)
-    local coNm = makTab:GetColumnName(3)
-    for iCnt = 1, stPanel.Size do
-      local vPanel = stPanel[iCnt]
-      local sM, sT, sN = vPanel[coMo], vPanel[coTy], vPanel[coNm]
-      if(not cT or cT ~= sT) then -- Category has been changed
-        F:Write("# Categorize [ "..sMoDB.." ]("..sT.."): "..tostring(WorkshopID(sT) or sMiss))
-        F:Write("\n"); cT = sT -- Cache category name
-      end -- Otherwise just write down the piece active point
-      F:Write("\""..sM.."\""..symSep)
-      F:Write("\""..sT.."\""..symSep)
-      F:Write("\""..sN.."\""); F:Write("\n")
-    end; F:Flush(); F:Close()
-  end; return stPanel
+local function ExportSync(stPanel, sFunc, bExp)
+  if(SERVER) then return stPanel end
+  if(not bExp) then return stPanel end
+  local sFunc  = tostring(sFunc or "")
+  local sMiss = GetOpVar("MISS_NOAV")
+  local sBase = GetOpVar("DIRPATH_BAS")
+  local sExpo = GetOpVar("DIRPATH_EXP")
+  local sMoDB = GetOpVar("MODE_DATABASE")
+  local symSep, cT = GetOpVar("OPSYM_SEPARATOR")
+  if(not fileExists(sBase, "DATA")) then fileCreateDir(sBase) end
+  local fName = (sBase..sExpo..GetOpVar("NAME_LIBRARY").."_db.txt")
+  local F = fileOpen(fName, "wb" ,"DATA"), sMiss; if(not F) then
+    LogInstance("Open fail "..GetReport(fName)); return stPanel end
+  F:Write("# "..sFunc..":("..stPanel.Size..") "..GetDateTime().." [ "..sMoDB.." ]\n")
+  for iCnt = 1, stPanel.Size do
+    local vRec = stPanel[iCnt]
+    local sM, sT, sN = vRec.M, vRec.T, vRec.N
+    if(not cT or cT ~= sT) then -- Category has been changed
+      F:Write("# Categorize [ "..sMoDB.." ]("..sT.."): "..tostring(WorkshopID(sT) or sMiss))
+      F:Write("\n"); cT = sT -- Cache category name
+    end -- Otherwise just write down the piece active point
+    F:Write("\""..sM.."\""..symSep)
+    F:Write("\""..sT.."\""..symSep)
+    F:Write("\""..sN.."\""); F:Write("\n")
+  end; F:Flush(); F:Close(); return stPanel
+end
+
+--[[
+ * Updates panel category to dedicated hash
+ * stPanel > The actual panel information to populate
+]]
+local function SortCategory(stPanel)
+  local tCat = GetOpVar("TABLE_CATEGORIES")
+  for iCnt = 1, stPanel.Size do local vRec = stPanel[iCnt]
+    -- Register the category if definition functional is given
+    if(tCat[vRec.T]) then -- There is a category definition
+      local bS, vC, vN = pcall(tCat[vRec.T].Cmp, vRec.M)
+      if(bS) then -- When the call is successful in protected mode
+        if(vN and not IsBlank(vN)) then vRec.N = GetBeautifyName(vN) end
+        -- Custom name override when the addon requests
+        if(IsBlank(vC)) then vC = nil end
+        if(IsHere(vC)) then
+          if(not istable(vC)) then vC = {tostring(vC or "")} end
+          vRec.C = vC; vC.Size = #vC -- Make output category to point to local one
+          for iD = 1, vC.Size do -- Create category tree path
+            vC[iD] = tostring(vC[iD] or ""):lower():Trim()
+            if(IsBlank(vC[iD])) then vC[iD] = "other" end
+            vC[iD] = GetBeautifyName(vC[iD]) -- Beautify the category
+          end -- When the category has at least one element
+        end -- Is there is any category apply it. When available process it now
+      else -- When there is an error in the category execution report it
+        LogInstance("Process "..GetReport(vRec.T, vRec.M).." [[["..tCat[vRec.T].Txt.."]]] execution error: "..vC,sLog)
+      end -- Category factory has been executed and sub-folders are created
+    end -- Category definition has been processed and nothing more to be done
+  end; tableSort(stPanel, GetOpVar("VCOMPARE_SPAN")); return stPanel
 end
 
 --[[
@@ -3349,10 +3383,13 @@ function CacheQueryPanel(bExp)
   if(IsHere(stPanel) and IsHere(stPanel.Size)) then LogInstance("Retrieve")
     if(stPanel.Size <= 0) then stPanel = nil else
       stPanel = makTab:TimerRestart(sFunc, keyPan) end
-    return ExportPanelDB(stPanel, bExp, makTab, sFunc)
+    return stPanel
   else
-    libCache[keyPan] = {}; stPanel = libCache[keyPan]
+    local coMo = makTab:GetColumnName(1)
+    local coTy = makTab:GetColumnName(2)
+    local coNm = makTab:GetColumnName(3)
     local sMoDB = GetOpVar("MODE_DATABASE")
+    libCache[keyPan] = {}; stPanel = libCache[keyPan]
     if(sMoDB == "SQL") then
       local qIndx = qsKey:format(sFunc,"")
       local Q = makTab:Get(qIndx, 1); if(not IsHere(Q)) then
@@ -3364,23 +3401,22 @@ function CacheQueryPanel(bExp)
       if(not IsHere(qData) or IsEmpty(qData)) then
         LogInstance("No data found "..GetReport(Q)); return nil end
       stPanel.Size = #qData -- Store the amount of SQL rows
-      for iCnt = 1, stPanel.Size do stPanel[iCnt] = qData[iCnt] end
-      stPanel = makTab:TimerAttach(sFunc, keyPan)
-      return ExportPanelDB(stPanel, bExp, makTab, sFunc)
+      for iCnt = 1, stPanel.Size do local qRow = qData[iCnt]
+        stPanel[iCnt] = {M = qRow[coMo], T = qRow[coTy], N = qRow[coNm]}
+      end
+      SortCategory(stPanel)
+      ExportSync(stPanel, sFunc, bExp)
+      return makTab:TimerAttach(sFunc, keyPan)
     elseif(sMoDB == "LUA") then
-      local tCache = libCache[defTab.Name] -- Sort directly by the model
-      local tSort  = Sort(tCache, "Type", "Slot"); if(not tSort) then
-        LogInstance("Cannot sort cache data"); return nil end
-      local coMo = makTab:GetColumnName(1)
-      local coTy = makTab:GetColumnName(2)
-      local coNm = makTab:GetColumnName(3)
-      for iCnt = 1, tSort.Size do stPanel[iCnt] = {}
-        local vSort, vPanel = tSort[iCnt], stPanel[iCnt]
-        vPanel[coMo] = vSort.Key
-        vPanel[coTy] = vSort.Rec.Type
-        vPanel[coNm] = vSort.Rec.Name
-      end; stPanel.Size = tSort.Size -- Store the amount sort rows
-      return ExportPanelDB(stPanel, bExp, makTab, sFunc)
+      local tCache, stPanel = libCache[defTab.Name], {Size = 0}
+      for mod, rec in pairs(tCache) do
+        local iCnt = stPanel.Size; iCnt = iCnt + 1
+        stPanel[iCnt] = {M = rec.Slot, T = rec.Type, N = rec.Name}
+        stPanel.Size = iCnt -- Store the amount of rows
+      end
+      SortCategory(stPanel)
+      ExportSync(stPanel, sFunc, bExp)
+      return stPanel
     else LogInstance("Unsupported mode "..GetReport(sMoDB)); return nil end
   end
 end
@@ -3427,7 +3463,7 @@ function CacheQueryProperty(sType)
         stName.Slot, stName.Size = sType, #qData
         for iCnt = 1, stName.Size do
           local qRec = qData[iCnt]; if(iCnt ~= qRec[coID]) then
-            asmlib.LogInstance("Sequential mismatch "..asmlib.GetReport(iCnt,sType)); return nil end
+            LogInstance("Sequential mismatch "..GetReport(iCnt,sType)); return nil end
           stName[iCnt] = qRec[coNm] -- Properties are stored as arrays of strings
         end
         LogInstance("Save >> "..GetReport(sType, keyName))
@@ -3725,13 +3761,13 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
         fData[vK] = tRec; fData[vK].Size = #tRec end
     end
   end
-  local tSort = Sort(tableGetKeys(fData)); if(not tSort) then
+  local tSort = PrioritySort(fData); if(not tSort) then
     LogInstance("("..fPref.."@"..sTable..") Sorting failed"); return false end
   local O = fileOpen(fName, "wb" ,"DATA"); if(not O) then
     LogInstance("("..fPref.."@"..sTable..")("..fName..") Open fail"); return false end
   O:Write("# "..sFunc..":("..fPref.."@"..sTable..") "..GetDateTime().." [ "..sMoDB.." ]\n")
   O:Write("# "..sTable..":("..makTab:GetColumnList(sDelim)..")\n")
-  for iKey = 1, tSort.Size do local key = tSort[iKey].Val
+  for iKey = 1, tSort.Size do local key = tSort[iKey].Rec
     local vK = makTab:Match(key,1,true,"\"",true); if(not IsHere(vK)) then
       O:Flush(); O:Close(); LogInstance("("..fPref.."@"..sTable.."@"..tostring(key)..") Write matching PK failed"); return false end
     local fRec, sCash, sData = fData[key], defTab.Name..sDelim..vK, ""
@@ -3944,7 +3980,7 @@ function SetAdditionsAR(sModel, makTab, qList)
         end
       end
     end
-    local tSort = Sort(qData, coMo, coLn); if(not tSort) then
+    local tSort = PrioritySort(qData, coMo, coLn); if(not tSort) then
         LogInstance("Sort cache mismatch"); return end; tableEmpty(qData)
     for iD = 1, tSort.Size do qData[iD] = tSort[iD].Rec end
   else
@@ -4087,7 +4123,7 @@ function ExportTypeAR(sType)
         end
       end
     end
-    local tSort = Sort(qPieces, coMo, coLn)
+    local tSort = PrioritySort(qPieces, coMo, coLn)
     if(not tSort) then
       LogInstance("Sort cache mismatch")
       fE:Flush(); fE:Close(); fS:Close(); return
@@ -4603,24 +4639,19 @@ function AttachAdditions(ePiece)
     local sCass = GetEmpty(arRec[coEN], nil, dCass)
     local eBonus = entsCreate(sCass); LogInstance("ents.Create("..sCass..")")
     if(eBonus and eBonus:IsValid()) then
-      local sMoa = tostring(arRec[coMA])
-      if(not IsModel(sMoa, true)) then
+      local sMoa = tostring(arRec[coMA]); if(not IsModel(sMoa, true)) then
         LogInstance("Invalid attachment "..GetReport(iCnt, sMoc, sMoa)); return false end
       eBonus:SetModel(sMoa) LogInstance("ENT:SetModel("..sMoa..")")
       local sPos = arRec[coPO]; if(not isstring(sPos)) then
         LogInstance("Position mismatch "..GetReport(iCnt, sMoc, sPos)); return false end
-      if(not GetEmpty(sPos)) then
-        oPOA:Decode(sPos, eBonus, "Pos")
-        vPos:SetUnpacked(oPOA:Get())
-        vPos:Set(ePiece:LocalToWorld(vPos))
+      if(not GetEmpty(sPos)) then oPOA:Decode(sPos, eBonus, "Pos")
+        local vPos = oPOA:Vector(); vPos:Set(ePiece:LocalToWorld(vPos))
         eBonus:SetPos(vPos); LogInstance("ENT:SetPos(DB)")
       else eBonus:SetPos(ePos); LogInstance("ENT:SetPos(PIECE:POS)") end
       local sAng = arRec[coAN]; if(not isstring(sAng)) then
         LogInstance("Angle mismatch "..GetReport(iCnt, sMoc, sAng)); return false end
-      if(not GetEmpty(sAng)) then
-        oPOA:Decode(sAng, eBonus, "Ang")
-        aAng:SetUnpacked(oPOA:Get())
-        aAng:Set(ePiece:LocalToWorldAngles(aAng))
+      if(not GetEmpty(sAng)) then oPOA:Decode(sAng, eBonus, "Ang")
+        local aAng = oPOA:Angle(); aAng:Set(ePiece:LocalToWorldAngles(aAng))
         eBonus:SetAngles(aAng); LogInstance("ENT:SetAngles(DB)")
       else eBonus:SetAngles(eAng); LogInstance("ENT:SetAngles(PIECE:ANG)") end
       local nMo = (tonumber(arRec[coMO]) or -1)
@@ -4648,8 +4679,7 @@ function AttachAdditions(ePiece)
       if(nSo >= 0) then eBonus:SetSolid(nSo)
         LogInstance("ENT:SetSolid("..tostring(nSo)..")") end
     else
-      local mA = stData[iCnt][coMA]
-      local mC = stData[iCnt][coEN]
+      local mA, mC = arRec[coMA], arRec[coEN]
       LogInstance("Entity invalid "..GetReport(iCnt, sMoc, mA, mC)); return false
     end
   end; LogInstance("Success"); return true
@@ -4714,7 +4744,7 @@ function AttachBodyGroups(ePiece,sBgID)
   while(tBG[iCnt] and IDs[iCnt]) do local vBG = tBG[iCnt]
     local maxID = (ePiece:GetBodygroupCount(vBG.id) - 1)
     local curID = mathClamp(mathFloor(tonumber(IDs[iCnt]) or 0), 0, maxID)
-    LogInstance("SetBodygroup "..GetReport(iCnt, maxID, vBG.id, curID))
+    LogInstance("SetBodygroup "..GetReport(iCnt, vBG.id, maxID, curID))
     ePiece:SetBodygroup(vBG.id, curID); iCnt = iCnt + 1
   end; LogInstance("Success "..GetReport(sBgID)); return true
 end

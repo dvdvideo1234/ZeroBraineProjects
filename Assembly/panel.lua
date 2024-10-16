@@ -10,7 +10,7 @@ local dir = require("directories")
       dir.setBase(2)
 
 CLIENT = true
-SERVER = true
+SERVER = false
 
 require("gmodlib")
 require("trackasmlib")
@@ -28,13 +28,15 @@ local tableInsert = table.insert
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
+
+
 local drmSkin = 0
 local CPanel = vguiCreate("Panel")
 local gsToolNameL = asmlib.GetOpVar("TOOLNAME_NL")
 
 function asmlib.IsModel(m) return true end
 
-local qPanel = asmlib.CacheQueryPanel(devmode); if(not qPanel) then
+local qPanel = asmlib.CacheQueryPanel(true); if(not qPanel) then
   asmlib.LogInstance("Panel population empty",sLog); return end
 local makTab = asmlib.GetBuilderNick("PIECES"); if(not asmlib.IsHere(makTab)) then
   asmlib.LogInstance("Missing builder table",sLog); return end
@@ -47,17 +49,11 @@ pTree:SetIndentSize(0) -- All track types are closed
 pTree:UpdateColours(drmSkin) -- Apply current skin
 CPanel:AddItem(pTree) -- Register it to the panel
 local defTable = makTab:GetDefinition()
-local catTypes = asmlib.GetOpVar("TABLE_CATEGORIES")
-local pRows, pTypes, pCateg, pNode = {}, {}, {}
-local coMo = makTab:GetColumnName(1)
-local coTy = makTab:GetColumnName(2)
-local coNm = makTab:GetColumnName(3)
+local pTypes, pCateg, pNode = {}, {}, {}
 for iC = 1, qPanel.Size do
   local vRec, bNow = qPanel[iC], true
-  local sMod, sTyp, sNam = vRec[coMo], vRec[coTy], vRec[coNm]
-  pRows[iC] = {V = false, M = sMod, T = sTyp, N = sNam}
+  local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
   if(asmlib.IsModel(sMod)) then
-    pRows[iC].V = true
     if(not (asmlib.IsBlank(sTyp) or pTypes[sTyp])) then
       local pRoot = pTree:AddNode(sTyp) -- No type folder made already
             pRoot:SetTooltip(languageGetPhrase("tool."..gsToolNameL..".type"))
@@ -74,41 +70,21 @@ for iC = 1, qPanel.Size do
       pTypes[sTyp] = pRoot
     end -- Reset the primary tree node pointer
     if(pTypes[sTyp]) then pItem = pTypes[sTyp] else pItem = pTree end
-    -- Register the category if definition functional is given
-    if(catTypes[sTyp]) then -- There is a category definition
-      local bSuc, vCat, vNam = pcall(catTypes[sTyp].Cmp, sMod)
-      if(bSuc) then -- When the call is successful in protected mode
-        if(vNam and not asmlib.IsBlank(vNam)) then
-          sNam = asmlib.GetBeautifyName(vNam)
-        end -- Custom name override when the addon requests
-        local pCur = pCateg[sTyp]
-        if(not asmlib.IsHere(pCur)) then
-          pCateg[sTyp] = {}; pCur = pCateg[sTyp] end
-        if(asmlib.IsBlank(vCat)) then vCat = nil end
-        if(asmlib.IsHere(vCat)) then
-          if(not istable(vCat)) then vCat = {vCat} end
-          
-          pRows[iC].C = vCat
-          pRows[iC].N = sNam
-          
-          for iD = 1, #vCat do -- Create category tree path
-            local sCat = tostring(vCat[iD] or ""):lower():Trim()
-            if(asmlib.IsBlank(sCat)) then sCat = "other" end
-            sCat = asmlib.GetBeautifyName(sCat) -- Beautify the category
-            if(pCur[sCat]) then -- Jump next if already created
-              pCur, pItem = asmlib.GetDirectory(pCur, sCat)
-            else -- Create a new sub-category for the incoming content
-              pCur, pItem = asmlib.SetDirectory(pItem, pCur, sCat)
-            end -- Create the last needed node regarding pItem
-          end -- When the category has at least one element
-        else -- Store the creation information of the ones without category for later
-          tableInsert(pCateg[sTyp], {sNam, sMod}); bNow = false
-        end -- Is there is any category apply it. When available process it now
-      else -- When there is an error in the category execution report it
-        asmlib.LogInstance("Category "..asmlib.GetReport(sTyp, sMod).." execution error: "..vCat,sLog)
-      end -- Category factory has been executed and sub-folders are created
-    end -- Category definition has been processed and nothing more to be done
     -- Register the node associated with the track piece when is intended for later
+    local pCur = pCateg[sTyp]; if(not asmlib.IsHere(pCur)) then
+      pCateg[sTyp] = {}; pCur = pCateg[sTyp] end -- Create category tree path
+    if(vRec.C) then -- When category for the track type is available
+      for iD = 1, vRec.C.Size do -- Generate the path to the track piece
+        local sCat = vRec.C[iD] -- Read the category name
+        if(pCur[sCat]) then -- Jump next if already created
+          pCur, pItem = asmlib.GetDirectory(pCur, sCat)
+        else -- Create a new sub-category for the incoming content
+          pCur, pItem = asmlib.SetDirectory(pItem, pCur, sCat)
+        end -- Create the last needed node regarding pItem
+      end -- When the category has at least one element
+    else
+      tableInsert(pCateg[sTyp], {sNam, sMod}); bNow = false
+    end
     if(bNow) then asmlib.SetDirectoryNode(pItem, sNam, sMod) end
     -- SnapReview is ignored because a query must be executed for points count
   else asmlib.LogInstance("Ignoring item "..asmlib.GetReport(sTyp, sNam, sMod),sLog) end
@@ -123,57 +99,3 @@ for typ, val in pairs(pCateg) do
   end
 end -- Process all the items without category defined
 asmlib.LogInstance("Found items #"..qPanel.Size, sLog)
-
-table.sort(pRows, function(u, v)
-  if(u.T < v.T) then return true end
-  if(u.M < v.M) then return true end
-  return false
-end)
-
-local fb = assert(io.open("Assembly/data/pan_before.txt", "wb"))
-if(not fb) then return end; io.output(fb)
-common.logTable(pRows, "pRows")
-fb:flush()
-fb:close()
-
-local function case_a(u, v)
-  if(u.T < v.T) then return true end
-  if(u.T > v.T) then return false end
-  local uC = (u.C or {})
-  local vC = (v.C or {})
-  local uM, vM = #uC, #vC
-  for i = 1, math.max(uM, vM) do
-    local uS = tostring(uC[i] or "")
-    local vS = tostring(vC[i] or "")
-    if(uS < vS) then return true end
-    if(uS > vS) then return false end
-  end 
-  if(u.N < v.N) then return true end
-  if(u.N > v.N) then return false end
-  if(u.M < v.M) then return true end
-  if(u.M > v.M) then return false end
-  return false
-end
-
-local function case_b(u, v)
-  if(u.T ~= v.T) then return u.T < v.T end
-  local uC = (u.C or {})
-  local vC = (v.C or {})
-  local uM, vM = #uC, #vC
-  for i = 1, math.max(uM, vM) do
-    local uS = tostring(uC[i] or "")
-    local vS = tostring(vC[i] or "")
-    if(uS ~= vS) then return uS < vS end
-  end 
-  if(u.N ~= v.N) then return u.N < v.N end
-  if(u.M ~= v.M) then return u.M < v.M end
-  return false
-end
-
-table.sort(pRows, case_b)
-
-local fa = assert(io.open("Assembly/data/pan_after.txt", "wb"))
-if(not fa) then return end; io.output(fa)
-common.logTable(pRows, "pRows")  
-fa:flush()
-fa:close()
