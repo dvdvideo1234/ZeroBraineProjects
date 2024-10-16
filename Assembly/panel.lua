@@ -36,7 +36,7 @@ local gsToolNameL = asmlib.GetOpVar("TOOLNAME_NL")
 
 function asmlib.IsModel(m) return true end
 
-local qPanel = asmlib.CacheQueryPanel(true); if(not qPanel) then
+local qPanel = asmlib.CacheQueryPanel(devmode); if(not qPanel) then
   asmlib.LogInstance("Panel population empty",sLog); return end
 local makTab = asmlib.GetBuilderNick("PIECES"); if(not asmlib.IsHere(makTab)) then
   asmlib.LogInstance("Missing builder table",sLog); return end
@@ -49,7 +49,7 @@ pTree:SetIndentSize(0) -- All track types are closed
 pTree:UpdateColours(drmSkin) -- Apply current skin
 CPanel:AddItem(pTree) -- Register it to the panel
 local defTable = makTab:GetDefinition()
-local pTypes, pCateg, pNode = {}, {}, {}
+local pTypes, pCateg, pNode = {}, {}, {Size = 0}
 for iC = 1, qPanel.Size do
   local vRec, bNow = qPanel[iC], true
   local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
@@ -83,19 +83,22 @@ for iC = 1, qPanel.Size do
         end -- Create the last needed node regarding pItem
       end -- When the category has at least one element
     else
-      tableInsert(pCateg[sTyp], {sNam, sMod}); bNow = false
+      pNode.Size = pNode.Size + 1
+      tableInsert(pNode, iC); bNow = false
     end
     if(bNow) then asmlib.SetDirectoryNode(pItem, sNam, sMod) end
     -- SnapReview is ignored because a query must be executed for points count
   else asmlib.LogInstance("Ignoring item "..asmlib.GetReport(sTyp, sNam, sMod),sLog) end
 end
+
 -- Attach the hanging items to the type root
-for typ, val in pairs(pCateg) do
-  for iD = 1, #val do
-    local pan = pTypes[typ]
-    local nam, mod = unpack(val[iD])
-    asmlib.SetDirectoryNode(pan, nam, mod)
-    asmlib.LogInstance("Rooting item "..asmlib.GetReport(typ, nam, mod),sLog)
-  end
+for iR = 1, pNode.Size do
+  local iRox = pNode[iR]
+  local vRec = qPanel[iRox]
+  local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
+  local pRoot = pTypes[sTyp]
+  asmlib.SetDirectoryNode(pRoot, sNam, sMod)
+  asmlib.LogInstance("Rooting item "..asmlib.GetReport(sTyp, sNam, sMod),sLog)
 end -- Process all the items without category defined
+
 asmlib.LogInstance("Found items #"..qPanel.Size, sLog)
