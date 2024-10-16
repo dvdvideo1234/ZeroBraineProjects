@@ -539,7 +539,7 @@ function file.Open(n, m)
 end
 
 function file.Exists(n)
-  local a,b,c,d = pcall(os.execute, "cd "..n)
+  local a,b,c,d = pcall(os.execute, "cd "..n.." >nul 2>&1")
   if(a and b and c == "exit" and d == 0) then return true end
   local s, f = pcall(io.open, n, "rb")
   if(s and f) then f:close(); return true; end
@@ -549,7 +549,7 @@ end
 function file.Delete(n)
   local p = common.stringGetFilePath(n)
   local n = common.stringGetFileName(n)
-  local a,b,c = os.execute("cd "..p.." && del /f "..n)
+  local a,b,c = os.execute("cd "..p.." && del /f "..n.." >nul 2>&1")
 end
 
 function file.Append(n, c)
@@ -564,7 +564,7 @@ function file.Append(n, c)
 end
 
 function file.CreateDir(sPath)
-  return os.execute("mkdir "..sPath)
+  return os.execute("mkdir "..sPath.." >nul 2>&1")
 end
 
 function file.Find(sName, sPath, sSort)
