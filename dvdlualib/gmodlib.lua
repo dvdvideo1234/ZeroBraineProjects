@@ -541,7 +541,7 @@ end
 function file.Exists(n)
   local a,b,c,d = pcall(os.execute, "cd "..n)
   if(a and b and c == "exit" and d == 0) then return true end
-  local s, f = pcall(file.Open, n, "rb")
+  local s, f = pcall(io.open, n, "rb")
   if(s and f) then f:close(); return true; end
   return false
 end
