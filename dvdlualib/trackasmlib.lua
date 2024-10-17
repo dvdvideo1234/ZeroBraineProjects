@@ -641,7 +641,7 @@ function SettingsLogs(sHash)
   local sLine, isEOF = "", false
   while(not isEOF) do sLine, isEOF = GetStringFile(S)
     if(not IsBlank(sLine)) then tableInsert(tLogs, sLine) end
-  end; S:Close(); LogInstance("Success "..GetReport(sKey, fName)); return false
+  end; S:Close(); LogInstance("Success "..GetReport(sKey, fName)); return true
 end
 
 function InitBase(sName, sPurp)
@@ -2303,6 +2303,7 @@ end
  * If these conditions are not met the function returns missing token
  * sBas > The string to check whenever it is disabled or missing
  * fEmp > Defines that the value is to be replaced by something else
+ * ...  > When missing acts like empty check otherwise picks a value
 ]]
 function GetEmpty(sBas, fEmp, ...)
   local sS, fE = tostring(sBas or ""), fEmp -- Default to string
@@ -3312,7 +3313,7 @@ end
  * sFunc   > Export requestor ( CacheQueryPanel )
  * bExp    > Control flag. Export when enabled
 ]]
-local function ExportSync(stPanel, sFunc, bExp)
+local function DumpCategory(stPanel, sFunc, bExp)
   if(SERVER) then return stPanel end
   if(not bExp) then return stPanel end
   local sFunc  = tostring(sFunc or "")
@@ -3407,7 +3408,7 @@ function CacheQueryPanel(bExp)
         stPanel[iCnt] = {M = qRow[coMo], T = qRow[coTy], N = qRow[coNm]}
       end
       SortCategory(stPanel)
-      ExportSync(stPanel, sFunc, bExp)
+      DumpCategory(stPanel, sFunc, bExp)
       return makTab:TimerAttach(sFunc, keyPan)
     elseif(sMoDB == "LUA") then
       local tCache, stPanel = libCache[defTab.Name], {Size = 0}
@@ -3417,7 +3418,7 @@ function CacheQueryPanel(bExp)
         stPanel.Size = iCnt -- Store the amount of rows
       end
       SortCategory(stPanel)
-      ExportSync(stPanel, sFunc, bExp)
+      DumpCategory(stPanel, sFunc, bExp)
       return stPanel
     else LogInstance("Unsupported mode "..GetReport(sMoDB)); return nil end
   end
