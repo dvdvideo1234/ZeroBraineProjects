@@ -35,6 +35,7 @@ local CPanel = vguiCreate("Panel")
 local gsToolNameL = asmlib.GetOpVar("TOOLNAME_NL")
 
 function asmlib.IsModel(m) return true end
+local mt = getmetatable(vguiCreate("BASE"))
 
   local qPanel = asmlib.CacheQueryPanel(devmode); if(not qPanel) then
     asmlib.LogInstance("Panel population empty",sLog); return end
@@ -49,7 +50,7 @@ function asmlib.IsModel(m) return true end
   pTree:UpdateColours(drmSkin) -- Apply current skin
   CPanel:AddItem(pTree) -- Register it to the panel
   local defTable = makTab:GetDefinition()
-  local tType, tCats, tRoot = {}, {}, {Size = 0}
+  local tType, tRoot = {}, {Size = 0}
   for iC = 1, qPanel.Size do
     local vRec, bNow = qPanel[iC], true
     local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
@@ -67,19 +68,23 @@ function asmlib.IsModel(m) return true end
                 else SetClipboardText(pRoot:GetText()) end
               end
               pRoot:UpdateColours(drmSkin)
-        tType[sTyp] = pRoot
+        tType[sTyp] = {Base = pRoot, Node = {}}
       end -- Reset the primary tree node pointer
-      if(tType[sTyp]) then pItem = tType[sTyp] else pItem = pTree end
+      if(tType[sTyp]) then pItem = tType[sTyp].Base else pItem = pTree end
       -- Register the node associated with the track piece when is intended for later
-      local pCur = tCats[sTyp]; if(not asmlib.IsHere(pCur)) then
-        tCats[sTyp] = {}; pCur = tCats[sTyp] end -- Create category tree path
-      if(vRec.C) then -- When category for the track type is available
+      if(vRec.C and vRec.C.Size > 0) then -- When category for the track type is available
+        local tNode = tType[sTyp].Node -- Index the contend for the track type
         for iD = 1, vRec.C.Size do -- Generate the path to the track piece
           local sCat = vRec.C[iD] -- Read the category name
-          if(pCur[sCat]) then -- Jump next if already created
-            pCur, pItem = asmlib.GetDirectory(pCur, sCat)
+          local tCat = tNode[sCat] -- Index the internal sub-category
+          if(tCat) then -- Jump next if already created
+            pItem = tCat.Base -- Addume that the category is allocated
+            tNode = tCat.Node -- Jump to the next set of base nodes
           else -- Create a new sub-category for the incoming content
-            pCur, pItem = asmlib.SetDirectory(pItem, pCur, sCat)
+            tNode[sCat] = {}; tCat = tNode[sCat]
+            pItem = asmlib.SetDirectory(pItem, sCat)
+            tCat.Base = pItem; tCat.Node = {}
+            tNode = tCat.Node -- Jimp to the next set of base nodes
           end -- Create the last needed node regarding pItem
         end -- When the category has at least one element
       else -- Panel cannot categorize the entry add it to the list
@@ -95,7 +100,10 @@ function asmlib.IsModel(m) return true end
     local iRox = tRoot[iR]
     local vRec = qPanel[iRox]
     local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
-    asmlib.SetDirectoryNode(tType[sTyp], sNam, sMod)
+    asmlib.SetDirectoryNode(tType[sTyp].Base, sNam, sMod)
     asmlib.LogInstance("Rooting item "..asmlib.GetReport(sTyp, sNam, sMod), sLog)
   end -- Process all the items without category defined
   asmlib.LogInstance("Found items #"..qPanel.Size, sLog)
+  
+  common.logTable(tType, "tType", nil, {[mt] = function(v) return tostring(v.__type) end})
+  

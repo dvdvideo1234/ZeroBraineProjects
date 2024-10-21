@@ -693,25 +693,28 @@ function constraint.NoCollide(e1, e2, b1, b2)
   return n
 end
 
+local mtVGUI = {__type = "VGUI"}
 function vgui.Create(sTyp, pPar)
-  local self = {__type = tostring(sTyp or "")}
-        self.PX = 0; self.PY = 0
-        self.SX = 0; self.SY = 0
-        self.TTip = nil
+  local self = {__type = mtVGUI.__type..":"..tostring(sTyp or "")}
         self.Icon = {}
-        self.Name = ""
-        self.Node = {}
-        self.Item = {Size = 0}
         self.Expander = {}
-        self.Skin = nil
+  local data = {
+    PX = 0, PY = 0,
+    SX = 0, SY = 0,
+    TTip = nil,
+    Name = "",
+    Node = {},
+    Item = {Size = 0},
+    Skin = nil
+  }; setmetatable(self, mtVGUI)
   function self:Dock(nD)
     common.logStatus("VGUI["..self.__type.."]:Dock("..tostring(nD)..")")
   end
   function self:SetTall(nS)
-    self.SY = tonumber(nS) or 0
+    data.SY = tonumber(nS) or 0
   end
   function self:SetWide(nS)
-    self.SX = tonumber(nS) or 0
+    data.SX = tonumber(nS) or 0
   end
   function self:SetToolTip(sT)
     common.logStatus("VGUI["..self.__type.."]:SetToolTip("..tostring(sT)..")")
@@ -722,23 +725,23 @@ function vgui.Create(sTyp, pPar)
   function self:UpdateColours(tS)
     if(tS == nil) then
       common.logStatus("VGUI["..self.__type.."]:UpdateColours(nil)"); return end
-    self.Skin = tS
+    data.Skin = tS
   end  
   function self:SetTooltip(sT)
     if(sT == nil) then
       common.logStatus("VGUI["..self.__type.."]:SetTooltip(nil)"); return end
-    self.TTip = tostring(sT)
+    data.TTip = tostring(sT)
   end
   function self:AddItem(vI)
     if(vI == nil) then
       common.logStatus("VGUI["..self.__type.."]:AddItem(nil)"); return end
-    table.insert(self.Item, vI); self.Item.Size = self.Item.Size + 1
+    table.insert(data.Item, vI); data.Item.Size = data.Item.Size + 1
     common.logStatus("VGUI["..self.__type.."]:AddItem(["..(vI.__type or type(vI)).."]"..tostring(vI)..")")
   end
   function self:AddNode(sN)
     if(sN == nil) then
       common.logStatus("VGUI["..self.__type.."]:AddNode(nil)"); return end
-    local pN = vgui.Create("NODE"); self.Node[sN] = pN; return pN
+    local pN = vgui.Create("NODE".."("..sN..")"); data.Node[sN] = pN; return pN
   end
   function self.Icon.SetImage(sI)
     if(sI == nil) then
@@ -746,7 +749,7 @@ function vgui.Create(sTyp, pPar)
     self.Icon.IMG = tostring(sI)
   end
   function self:GetSkin()
-    return self.Skin
+    return data.Skin
   end
   return self
 end
