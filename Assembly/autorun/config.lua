@@ -1713,11 +1713,54 @@ asmlib.NewTable("PIECES",{
         end
       end; return true
     end,
+    ExportTypeDSV = function(fP, makP, PCache, fA, makA, ACache, fPref, sDelim, vSrc)
+      local tSort = asmlib.Arrange(PCache, "Name", "Slot")
+      if(not tSort) then P:Flush(); P:Close(); A:Flush(); A:Close()
+        asmlib.LogInstance("("..fPref..") Cannot sort cache data",vSrc); return false end
+      local defP, defA = makP:GetDefinition(), makA:GetDefinition()
+      local noSQL = asmlib.GetOpVar("MISS_NOSQL")
+      local symOff = asmlib.GetOpVar("OPSYM_DISABLE")
+      local sClass = asmlib.GetOpVar("ENTITY_DEFCLASS")
+      for iP = 1, tSort.Size do
+        local stRec = tSort[iP]
+        local tData = PCache[stRec.Key]
+        local sPref = tData.Type:gsub("[^%w]","_"):lower()
+        if(sPref == fPref) then
+          local sData, tOffs = defP.Name, tData.Offs
+                sData = sData..sDelim..makP:Match(stRec.Key,1,true,"\"")..sDelim..
+                  makP:Match(tData.Type,2,true,"\"")..sDelim..
+                  makP:Match(tData.Name,3,true,"\"")
+          -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
+          for iD = 1, #tOffs do
+            local stPnt = tOffs[iD] -- Read current offsets from the model
+            local sP, sO, sA = stPnt.P:Export(stPnt.O), stPnt.O:Export(), stPnt.A:Export()
+            local sC = (asmlib.IsHere(tData.Unit) and tostring(tData.Unit) or noSQL)
+                  sC = ((sC == sClass) and noSQL or sC) -- Export default class as noSQL
+            fP:Write(sData..sDelim..makP:Match(iD,4,true,"\""))
+            fP:Write(sDelim.."\""..sP.."\""..sDelim.."\""..sO.."\"")
+            fP:Write(sDelim.."\""..sA.."\""..sDelim.."\""..sC.."\"\n")
+            if(iD == 1) then
+              local tA = ACache[stRec.Key]
+              if(tA and tA.Size and tA.Size > 0) then
+                local sRow = defA.Name..sDelim..makA:Match(stRec.Key,1,true,"\"")
+                for iA = 1, tA.Size do for iC = 2, defA.Size do
+                  local sC = defA[iC][1]
+                  local mA = makA:Match(tA[iA][sC],iC,true,"\""); if(not mA) then
+                    asmlib.LogInstance("Cannot match "..asmlib.GetReport(iA, sC, iC, tA[iA][iC]), vSrc); return false end
+                  fA:Write(sRow); fA:Write(sDelim..mA)
+                end end
+              end
+            end
+          end
+        end
+      end; return true
+    end,
     ExportAR = function(aRow) aRow[2], aRow[4] = "myType", "gsSymOff" end
   },
   Query = {
     Record = {"%s","%s","%s","%d","%s","%s","%s","%s"},
-    ExportDSV = {2,3,1,4}
+    ExportDSV = {2,3,1,4},
+    ExportTypeDSV = {3,1,4}
   },
   [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
   [2] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
@@ -1734,7 +1777,8 @@ asmlib.NewTable("ADDITIONS",{
   Index = {{1},{4},{1,4,Un=true}},
   Query = {
     Record = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"},
-    ExportDSV = {1,4}
+    ExportDSV = {1,4},
+    ExportTypeDSV = {1,4}
   },
   Cache = {
     Record = function(makTab, tCache, snPK, arLine, vSrc)
