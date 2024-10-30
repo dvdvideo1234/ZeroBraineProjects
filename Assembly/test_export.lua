@@ -29,8 +29,6 @@ local tableInsert = table.insert
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
---asmlib.ImportDSV("PIECES", true, "shinji85_s_rails")
---asmlib.ImportDSV("ADDITIONS", true, "shinji85_s_rails")
+asmlib.ImportDSV("PIECES", true, "shinji85_s_rails")
+asmlib.ImportDSV("ADDITIONS", true, "shinji85_s_rails")
 
-asmlib.ExportTypeDSV("Bobster's two feet rails")
-asmlib.ExportTypeDSV("shinji85_s_rails")

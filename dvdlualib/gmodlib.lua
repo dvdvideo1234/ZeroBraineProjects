@@ -522,7 +522,7 @@ end
 function file.Open(n, m)
   local s, f, e = pcall(io.open, n, m)
   if(not (s and f)) then
-    return logStatus("file.Open: "..tostring(e), nil)
+    return logStatus("file.Open("..m.."): "..tostring(e), nil)
   end
   local mt = getmetatable(f)
   mt.Read  = mt.read

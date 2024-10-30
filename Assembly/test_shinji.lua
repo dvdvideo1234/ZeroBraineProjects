@@ -10,7 +10,7 @@ local dir = require("directories")
       dir.setBase(2)
 
 CLIENT = true
-SERVER = true
+SERVER = false
 
 require("gmodlib")
 require("trackasmlib")
@@ -20,11 +20,22 @@ local asmlib = trackasmlib
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 asmlib.SetLogControl(10000, true)
+asmlib.IsModel = function(m) return true end
 
 require("Assembly/autorun/shinji")
 
-local sT = "shinji85_s_rails"
+local sT = "Shinji85's Rails"
 
-asmlib.ImportDSV("PIECES", true, sT)
-asmlib.ImportDSV("ADDITIONS", true, sT)
-asmlib.ExportTypeDSV(sT)
+local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
+local tS = {[sT] = tC[sT]}
+local sP = sT:gsub("[^%w]","_")
+
+asmlib.ImportDSV("PIECES", true, sP)
+asmlib.ImportDSV("ADDITIONS", true, sP)
+
+local oR = asmlib.CacheQueryPiece("models/shinji85/train/rail_16x.mdl")
+print(oR.Slot)
+
+--asmlib.ExportCategory(3, tS, sP)
+
+--asmlib.ExportTypeDSV(sT)
