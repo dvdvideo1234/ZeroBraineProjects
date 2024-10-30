@@ -627,6 +627,11 @@ function ents.Create(cla)
   return self
 end
 
+function Entity(id)
+  if(id == nil) then return end
+  return __entity[id]
+end
+
 function ents.GetAll()
   return __entity
 end

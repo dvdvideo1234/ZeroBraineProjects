@@ -4,7 +4,10 @@ local dir = require("directories")
                   "CorporateProjects",
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
-                  "ZeroBraineProjects/ExtractWireWiki").addBase("D:/Programs/LuaIDE").setBase(1)
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE")
+      dir.setBase(2)
 
 local common = require("common")
 
@@ -12,20 +15,22 @@ SERVER = true
 CLIENT = true
 
 require("gmodlib")
+function game.SinglePlayer() return false end
+
 require("trackasmlib")
 asmlib = trackasmlib
+asmlib.IsModel = function(m) return true end
 
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
-asmlib.SetOpVar("DIRPATH_BAS", dir.getBase(1).."/ZeroBraineProjects/Assembly/")
 asmlib.SetLogControl(1000,false)
 
-PIECES = asmlib.GetBuilderNick("PIECES")
-require("Assembly/data/pieces")
+local e = ents.Create("TEST")
 
-local mod = "models/sprops/trans/train/track_s01.mdl"
-local rec = asmlib.GetCache("TRACKASSEMBLY_PIECES")[mod]
-asmlib.LogInstance(asmlib.GetOpVar("DIRPATH_BAS"))
-asmlib.GetTransformOA("models/sprops/trans/train/track_s01.mdl", "test")
-asmlib.GetTransformOA("models/sprops/trans/train/track_s02.mdl", "test")
+local oR = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl")
+if(oR) then
+  print(oR.Slot)
+end
+
+asmlib.GetAttachmentByID(e:EntIndex(), "Pos")

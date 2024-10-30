@@ -1,6 +1,5 @@
 QuickSort
 SetNumSlider
-RegisterPOA
 ModelToName: Cut
 ModelToName: Sub
 ModelToName: App

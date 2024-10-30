@@ -21,7 +21,8 @@ local asmlib = trackasmlib
 
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
-asmlib.SetLogControl(10000, true)
+
+asmlib.SetLogControl(20000, true)
 
 asmlib.IsModel = function(m) return true end
 
@@ -37,11 +38,20 @@ local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
 local tS = {[sT] = tC[sT]}
 local sP = sT:gsub("[^%w]","_")
 
-asmlib.LogTable(tS, "tC-O")
+asmlib.LogTable(tS, "CATEGORY")
 
 local oR = asmlib.CacheQueryPiece("models/shinji85/train/rail_16x.mdl")
 if(oR) then
-  print(oR.Slot)
+  asmlib.LogTable(oR, "BEFORE")
+  local tO = asmlib.LocatePOA(oR, 1)
+  asmlib.LogTable(oR, "AFTER")
+end
+
+local oR = asmlib.CacheQueryPiece("models/props_phx/trains/monorail1.mdl")
+if(oR) then
+  asmlib.LogTable(oR, "BEFORE")
+  local tO = asmlib.LocatePOA(oR, 1)
+  asmlib.LogTable(oR, "AFTER")
 end
 
 asmlib.ExportCategory(3, tS, sP, true)
