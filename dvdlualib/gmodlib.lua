@@ -754,8 +754,17 @@ function vgui.Create(sTyp, pPar)
   return self
 end
 
+function include(sP)
+  require(common.stringStripExtension(common.stringGetFileName("trackassembly/trackasmlib.lua")))
+end
+
+function ErrorNoHaltWithStack(sM)
+  error(sM)
+end
+
 --- INITIALIZATION ---
 
 CreateConVar("gmod_language")
 
 require("gmodlib/math")
+require("gmodlib/constants")

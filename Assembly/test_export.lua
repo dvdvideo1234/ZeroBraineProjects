@@ -10,12 +10,13 @@ local dir = require("directories")
       dir.setBase(2)
 
 CLIENT = true
-SERVER = false
+SERVER = true
 
 require("gmodlib")
 require("trackasmlib")
 local common = require("common")
 local asmlib = trackasmlib
+
 
 local stringExplode = string.Explode
 local stringSub   =  string.sub
@@ -28,8 +29,8 @@ local tableInsert = table.insert
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
-asmlib.ImportDSV("PIECES", true, "shinji85_s_rails")
-asmlib.ImportDSV("ADDITIONS", true, "shinji85_s_rails")
+--asmlib.ImportDSV("PIECES", true, "shinji85_s_rails")
+--asmlib.ImportDSV("ADDITIONS", true, "shinji85_s_rails")
 
 asmlib.ExportTypeDSV("Bobster's two feet rails")
 asmlib.ExportTypeDSV("shinji85_s_rails")
