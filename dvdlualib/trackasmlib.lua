@@ -3562,9 +3562,10 @@ end
  * Save/Load the category generation
  * vEq    > Amount of internal comment depth
  * tData  > The local data table to be exported ( if given )
- * sPref  > Prefix used on exporting ( if not uses instance prefix )
+ * sPref  > Prefix used on exporting ( if none uses instance prefix )
+ * bExp   > Forces the output in the export folder.( defaults to DSV )
 ]]
-function ExportCategory(vEq, tData, sPref)
+function ExportCategory(vEq, tData, sPref, bExp)
   if(SERVER) then LogInstance("Working on server"); return true end
   local nEq = (tonumber(vEq) or 0); if(nEq <= 0) then
     LogInstance("Wrong equality "..GetReport(vEq)); return false end
@@ -3574,7 +3575,7 @@ function ExportCategory(vEq, tData, sPref)
     LogInstance("("..fPref..") User disabled"); return true end
   local fName, sFunc = GetOpVar("DIRPATH_BAS"), "ExportCategory"
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
-  fName = fName..GetOpVar("DIRPATH_DSV")
+  fName = fName..(bExp and GetOpVar("DIRPATH_EXP") or GetOpVar("DIRPATH_DSV"))
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
   local fForm, sTool = GetOpVar("FORM_PREFIXDSV"), GetOpVar("TOOLNAME_PU")
   fName = fName..fForm:format(fPref, sTool.."CATEGORY")
@@ -3593,13 +3594,20 @@ function ExportCategory(vEq, tData, sPref)
   end; F:Flush(); F:Close(); LogInstance("("..fPref..") Success"); return true
 end
 
-function ImportCategory(vEq, sPref)
+--[[
+ * Save/Load the category generation
+ * vEq    > Amount of internal comment depth
+ * sPref  > Prefix used on importing ( if none uses instance prefix )
+ * bExp   > Forces the input from the export folder.( defaults to DSV )
+]]
+function ImportCategory(vEq, sPref, bExp)
   if(SERVER) then LogInstance("Working on server"); return true end
   local nEq = (tonumber(vEq) or 0); if(nEq <= 0) then
     LogInstance("Wrong equality "..GetReport(vEq)); return false end
   local fPref = tostring(sPref or GetInstPref())
   local fForm, sTool = GetOpVar("FORM_PREFIXDSV"), GetOpVar("TOOLNAME_PU")
-  local fName = GetOpVar("DIRPATH_BAS")..GetOpVar("DIRPATH_DSV")
+  local fName = GetOpVar("DIRPATH_BAS") --Switch the import source
+        fName = fName..(bExp and GetOpVar("DIRPATH_EXP") or GetOpVar("DIRPATH_DSV"))
         fName = fName..fForm:format(fPref, sTool.."CATEGORY")
   local F = fileOpen(fName, "rb", "DATA")
   if(not F) then LogInstance("("..fName..") Open fail"); return false end
@@ -3910,25 +3918,25 @@ function RegisterDSV(sProg, sPref, sDelim, bSkip)
   local sDelim = tostring(sDelim or "\t"):sub(1,1)
   if(bSkip) then
     if(fileExists(fName, "DATA")) then
-      local fPool, isEOF, isAct = {}, false, true
+      local fPool, isEOF = {}, false
       local F, sLine = fileOpen(fName, "rb" ,"DATA"), ""; if(not F) then
         LogInstance("Skip fail "..GetReport(fPref, fName)); return false end
-      while(not isEOF) do sLine, isEOF = GetStringFile(F)
-        if(not IsBlank(sLine)) then
-          if(IsDisable(sLine)) then
-            isAct, sLine = false, sLine:sub(2,-1) else isAct = true end
+      while(not isEOF) do
+        sLine, isEOF = GetStringFile(F)
+        if(not IsBlank(sLine)) then local isAct = true
+          if(IsDisable(sLine)) then isAct, sLine = false, sLine:sub(2,-1) end
           local tab = sDelim:Explode(sLine)
-          local prf, src = tab[1]:Trim(), tab[2]:Trim()
+          local prf = tostring(tab[1]):Trim()
+          local src = tostring(tab[2] or sMiss):Trim()
           local inf = fPool[prf]; if(not inf) then
             fPool[prf] = {Size = 0}; inf = fPool[prf] end
-          inf.Size = inf.Size + 1; inf[inf.Size] = {src, isAct}
+          tableInsert(inf, {isAct and "V" or "X", src}); inf.Size = inf.Size + 1
         end
       end; F:Close()
       if(fPool[fPref]) then local inf = fPool[fPref]
-        for ID = 1, inf.Size do local tab = inf[ID]
-          local sta = (tab[2] and "On " or "Off")
-          LogInstance(GetReport(fPref, sta, tab[1])) end
-        LogInstance("Skip "..GetReport(fPref, sProg)); return true
+        for iP = 1, inf.Size do local tab = inf[iP]
+          LogInstance("Status "..GetReport(tab[1], fPref, tab[2]))
+        end; LogInstance("Skip "..GetReport(fPref, sProg)); return true
       end
     else LogInstance("Skip miss "..GetReport(fPref, fName)) end
   end

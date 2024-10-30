@@ -165,9 +165,9 @@ asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..",
 -- Register the addon to the workshop ID list
 asmlib.WorkshopID(myAddon, "326640186")
 
--- Register the addon to the plugable DSV list
+-- Register the addon to the pluggable DSV list
 local bS, vO = pcall(RegisterDSV, myFlag)
-if(not bS) then ThrowError("Retistration error: "..vO) end
+if(not bS) then ThrowError("Registration error: "..vO) end
 
 --[[
  * This is used if you want to make internal categories for your addon
@@ -193,7 +193,7 @@ local myCategory = {
   ]]}
 }
 
--- Register the addon category to the plugable DSV list
+-- Register the addon category to the pluggable DSV list
 local bS, vO = pcall(ExportCategory, myCategory)
 if(not bS) then ThrowError("Category error: "..vO) end
 
@@ -343,7 +343,7 @@ local myPieces = {
   }
 }
 
--- Register the addon PIECES to the plugable DSV list
+-- Register the addon PIECES to the pluggable DSV list
 local bS, vO = pcall(SyncTable, "PIECES", myPieces, true)
 if(not bS) then ThrowError("PIECES error: "..vO) end
 
@@ -353,14 +353,14 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
  * and then for every active point, you must have one array of
  * strings and numbers, where the elements match the following data settings.
  * {MODELBASE, MODELADD, ENTCLASS, LINEID, POSOFF, ANGOFF, MOVETYPE, PHYSINIT, DRSHADOW, PHMOTION, PHYSLEEP, SETSOLID}
- * MODELBASE > This string contains the path to your base /*.mdl/ file the additions are gonna be attached to.
+ * MODELBASE > This string contains the path to your base /*.mdl/ file the additions will be attached to.
  *             It is mandatory and taken in pairs with LINEID, it forms the unique identifier of every record.
- *             When used in /DSV/ mode ( like seen below ) is is used as a hash index.
+ *             When used in /DSV/ mode ( like seen below ) is used as a hash index.
  * MODELADD  > This is the /*.mdl/ path of the addition entity. It is mandatory and cannot be disabled.
  * ENTCLASS  > This is the class of the addition entity. When disabled or missing it defaults to a normal prop.
  * LINEID    > This is the ID of the point that can be selected for building. They must be
  *             sequential and mandatory. If provided, the ID must the same as the row index under
- *             a given model key. Disabling this, makes it use the the index of the current line.
+ *             a given model key. Disabling this, makes it use the index of the current line.
  *             Use that to swap the active points around by only moving the desired row up or down.
  *             For the example table definition below, the line ID in the database will be the same.
  * POSOFF    > This is the local position vector offset that TA uses to place the addition relative to MODELBASE.
@@ -392,7 +392,7 @@ local myAdditions = {
   }
 }
 
--- Register the addon ADDITIONS to the plugable DSV list
+-- Register the addon ADDITIONS to the pluggable DSV list
 local bS, vO = pcall(SyncTable, "ADDITIONS", myAdditions, true)
 if(not bS) then ThrowError("ADDITIONS error: "..vO) end
 
@@ -407,14 +407,14 @@ if(not bS) then ThrowError("ADDITIONS error: "..vO) end
  *          When used in /DSV/ mode ( like seen below ) is is used as a hash index.
  * LINEID > This is the ID of the point that can be selected for building. They must be
  *          sequential and mandatory. If provided, the ID must the same as the row index under
- *          a given model key. Disabling this, makes it use the the index of the current line.
+ *          a given model key. Disabling this, makes it use the index of the current line.
  *          Use that to swap the active points around by only moving the desired row up or down.
  *          For the example table definition below, the line ID in the database will be the same.
  * NAME   > This stores the name of the physical property. It must an actual physical property.
 ]]--
 local myPhysproperties = {}
 
--- Register the addon PHYSPROPERTIES to the plugable DSV list
+-- Register the addon PHYSPROPERTIES to the pluggable DSV list
 local bS, vO = pcall(SyncTable, "PHYSPROPERTIES", myPhysproperties, true)
 if(not bS) then ThrowError("PHYSPROPERTIES error: "..vO) end
 

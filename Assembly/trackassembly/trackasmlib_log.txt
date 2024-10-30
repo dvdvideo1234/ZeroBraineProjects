@@ -1,730 +1,99 @@
-    1 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] SetLogControl: (0,true)
-    2 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: >>> @Assembly/autorun/shinji.lua (true): {Shinji85's Rails, Shinji85_s_Rails}
-    3 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration START |Shinji85_s_Rails|true|
-    4 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration SKIP |Shinji85_s_Rails|true|
-    5 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export START |Shinji85_s_Rails|nil|
-    6 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
-    7 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export OK |Shinji85_s_Rails|nil|
-    8 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|PIECES|
-    9 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Success
-   10 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|PIECES|
-   11 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] PIECES.TranslateDSV: (Shinji85_s_Rails) Success
-   12 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|PIECES|
-   13 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|ADDITIONS|
-   14 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Success
-   15 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|ADDITIONS|
-   16 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.TranslateDSV: (Shinji85_s_Rails) Success
-   17 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|ADDITIONS|
-   18 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization EMPTY |Shinji85_s_Rails|PHYSPROPERTIES|
-   19 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: <<< @Assembly/autorun/shinji.lua
-   20 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   21 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   22 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   23 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   24 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   25 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-2048,0,7.346|
-   26 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   27 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   28 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   29 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   30 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   31 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   32 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   33 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-128,0,7.346|
-   34 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   35 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   36 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   37 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   38 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   39 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   40 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   41 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-256,0,7.346|
-   42 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   43 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   44 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   45 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   46 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   47 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   48 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   49 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   50 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   51 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   52 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   53 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   54 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   55 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   56 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   57 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   58 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   59 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   60 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   61 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   62 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   63 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   64 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   65 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-   66 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   67 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   68 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_bumper.mdl|
-   69 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   70 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   71 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   72 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   73 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   74 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   75 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   76 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   77 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   78 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   79 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   80 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   81 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-256,-256,7.346|
-   82 [24-10-30 10:19:19] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,270,0|
-   83 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-   84 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   85 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-256,256,7.346|
-   86 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,90,0|
-   87 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-   88 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   89 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   90 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   91 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   92 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   93 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-908.81165,0,7.346|
-   94 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   95 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   96 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-   97 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   98 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   99 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  100 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-  101 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-115.18847,0,7.346|
-  102 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  103 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  104 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  105 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  106 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  107 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  108 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  109 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-966.40515,128,7.346|
-  110 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  111 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  112 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  113 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  114 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  115 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  116 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  117 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1060.12341,139.56763,7.346|
-  118 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  119 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  120 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  121 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  122 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  123 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  124 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  125 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1086.11584,449.88458,7.346|
-  126 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  127 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  128 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  129 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  130 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  131 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  132 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  133 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-905.09656,374.90414,7.346|
-  134 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  135 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  136 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  137 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  138 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  139 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  140 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  141 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-724.07727,299.92276,7.346|
-  142 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  143 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  144 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  145 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  146 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  147 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  148 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  149 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-993.86572,130.84471,7.346|
-  150 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  151 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  152 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  153 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  154 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  155 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  156 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  157 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-927.60797,122.1218,7.346|
-  158 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  159 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  160 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  161 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  162 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  163 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  164 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  165 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-362.51361,0,7.346|
-  166 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  167 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  168 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  169 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  170 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  171 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  172 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  173 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-149.48648,0,7.346|
-  174 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  175 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  176 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  177 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  178 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  179 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  180 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  181 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,128,7.346|
-  182 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  183 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  184 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  185 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|0,-128,7.346|
-  186 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|NULL|
-  187 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  188 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  189 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-512,-128,7.346|
-  190 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,180,0|
-  191 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  192 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  193 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  194 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  195 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  196 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  197 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|0,-128,7.346|
-  198 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|NULL|
-  199 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  200 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  201 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  202 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  203 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  204 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  205 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  206 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  207 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  208 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  209 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,-128,7.346|
-  210 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,195,0|
-  211 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  212 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  213 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  214 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  215 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  216 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  217 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  218 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  219 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  220 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  221 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,128,7.346|
-  222 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,165,0|
-  223 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  224 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  225 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  226 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  227 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  228 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  229 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-494.55,0,7.346|
-  230 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  231 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  232 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  233 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-33.129,-123.63866,7.346|
-  234 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,-30,0|
-  235 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  236 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  237 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-461.42175,123.63649,7.346|
-  238 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,150,0|
-  239 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  240 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Shinji85_s_Rails) Success
-  241 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.ImportDSV: (Shinji85_s_Rails) Success
-  242 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] IsModel: File missing {string}|models/shinji85/train/rail_16x.mdl|
-  243 [24-10-30 10:19:20] CLIENT > TRACKASSEMBLY [LUA] CacheQueryPiece: Model invalid {string}|models/shinji85/train/rail_16x.mdl|
-    1 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] SetLogControl: (0,true)
-    2 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: >>> @Assembly/autorun/shinji.lua (true): {Shinji85's Rails, Shinji85_s_Rails}
-    3 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration START |Shinji85_s_Rails|true|
-    4 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration SKIP |Shinji85_s_Rails|true|
-    5 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export START |Shinji85_s_Rails|nil|
-    6 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
-    7 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export OK |Shinji85_s_Rails|nil|
-    8 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|PIECES|
-    9 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Success
-   10 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|PIECES|
-   11 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] PIECES.TranslateDSV: (Shinji85_s_Rails) Success
-   12 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|PIECES|
-   13 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|ADDITIONS|
-   14 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Success
-   15 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|ADDITIONS|
-   16 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.TranslateDSV: (Shinji85_s_Rails) Success
-   17 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|ADDITIONS|
-   18 [24-10-30 10:20:15] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization EMPTY |Shinji85_s_Rails|PHYSPROPERTIES|
-   19 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: <<< @Assembly/autorun/shinji.lua
-   20 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   21 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   22 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   23 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   24 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   25 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-2048,0,7.346|
-   26 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   27 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   28 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   29 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   30 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   31 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   32 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   33 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-128,0,7.346|
-   34 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   35 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   36 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   37 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   38 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   39 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   40 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   41 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-256,0,7.346|
-   42 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   43 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   44 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   45 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   46 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   47 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   48 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   49 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   50 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   51 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   52 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   53 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   54 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   55 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   56 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   57 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   58 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   59 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   60 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   61 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   62 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   63 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   64 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   65 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-   66 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   67 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   68 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_bumper.mdl|
-   69 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   70 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   71 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   72 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   73 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   74 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   75 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   76 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   77 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   78 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   79 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   80 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   81 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-256,-256,7.346|
-   82 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,270,0|
-   83 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-   84 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   85 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-256,256,7.346|
-   86 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,90,0|
-   87 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-   88 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   89 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   90 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   91 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   92 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   93 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-908.81165,0,7.346|
-   94 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   95 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   96 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-   97 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   98 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   99 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  100 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-  101 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-115.18847,0,7.346|
-  102 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  103 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  104 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  105 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  106 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  107 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  108 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  109 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-966.40515,128,7.346|
-  110 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  111 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  112 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  113 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  114 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  115 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  116 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  117 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1060.12341,139.56763,7.346|
-  118 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  119 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  120 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  121 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  122 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  123 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  124 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  125 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1086.11584,449.88458,7.346|
-  126 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  127 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  128 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  129 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  130 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  131 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  132 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  133 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-905.09656,374.90414,7.346|
-  134 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  135 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  136 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  137 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  138 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  139 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  140 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  141 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-724.07727,299.92276,7.346|
-  142 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  143 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  144 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  145 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  146 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  147 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  148 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  149 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-993.86572,130.84471,7.346|
-  150 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  151 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  152 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  153 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  154 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  155 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  156 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  157 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-927.60797,122.1218,7.346|
-  158 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  159 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  160 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  161 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  162 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  163 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  164 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  165 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-362.51361,0,7.346|
-  166 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  167 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  168 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  169 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  170 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  171 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  172 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  173 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-149.48648,0,7.346|
-  174 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  175 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  176 [24-10-30 10:20:16] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  177 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  178 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  179 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  180 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  181 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,128,7.346|
-  182 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  183 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  184 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  185 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|0,-128,7.346|
-  186 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|NULL|
-  187 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  188 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  189 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-512,-128,7.346|
-  190 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,180,0|
-  191 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  192 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  193 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  194 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  195 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  196 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  197 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|0,-128,7.346|
-  198 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|NULL|
-  199 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  200 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  201 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  202 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  203 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  204 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  205 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  206 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  207 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  208 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  209 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,-128,7.346|
-  210 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,195,0|
-  211 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  212 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  213 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  214 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  215 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  216 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  217 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  218 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  219 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  220 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  221 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,128,7.346|
-  222 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,165,0|
-  223 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  224 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  225 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  226 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  227 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  228 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  229 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-494.55,0,7.346|
-  230 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  231 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  232 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  233 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-33.129,-123.63866,7.346|
-  234 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,-30,0|
-  235 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  236 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  237 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-461.42175,123.63649,7.346|
-  238 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,150,0|
-  239 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  240 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Shinji85_s_Rails) Success
-  241 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.ImportDSV: (Shinji85_s_Rails) Success
-  242 [24-10-30 10:20:17] CLIENT > TRACKASSEMBLY [LUA] PIECES.TimerRestart: Memory manager skip
-    1 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] SetLogControl: (0,true)
-    2 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: >>> @Assembly/autorun/shinji.lua (false): {Shinji85's Rails, Shinji85_s_Rails}
-    3 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration START |Shinji85_s_Rails|false|
-    4 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterDSV: (Shinji85_s_Rails) Single client
-    5 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration OK |Shinji85_s_Rails|false|
-    6 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export START |Shinji85_s_Rails|nil|
-    7 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
-    8 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export OK |Shinji85_s_Rails|nil|
-    9 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|PIECES|
-   10 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Creating file {string}|Assembly/trackassembly/dsv/Shinji85_s_RailsTRACKASSEMBLY_PIECES.txt|
-   11 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Success
-   12 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|PIECES|
-   13 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] PIECES.TranslateDSV: (Shinji85_s_Rails) Success
-   14 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|PIECES|
-   15 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|ADDITIONS|
-   16 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Creating file {string}|Assembly/trackassembly/dsv/Shinji85_s_RailsTRACKASSEMBLY_ADDITIONS.txt|
-   17 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Success
-   18 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|ADDITIONS|
-   19 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.TranslateDSV: (Shinji85_s_Rails) Success
-   20 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|ADDITIONS|
-   21 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization EMPTY |Shinji85_s_Rails|PHYSPROPERTIES|
-   22 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: <<< @Assembly/autorun/shinji.lua
-   23 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   24 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   25 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   26 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   27 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_16x.mdl|
-   28 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-2048,0,7.346|
-   29 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   30 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   31 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   32 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   33 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   34 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   35 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_1x.mdl|
-   36 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-128,0,7.346|
-   37 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   38 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   39 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   40 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   41 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   42 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   43 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_2x.mdl|
-   44 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-256,0,7.346|
-   45 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   46 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   47 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   48 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   49 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   50 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   51 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x.mdl|
-   52 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   53 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   54 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   55 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   56 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   57 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   58 [24-10-30 10:20:35] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   59 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_4x_crossing.mdl|
-   60 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   61 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   62 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   63 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   64 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   65 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   66 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   67 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_8x.mdl|
-   68 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-   69 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   70 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   71 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_bumper.mdl|
-   72 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   73 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   74 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   75 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   76 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   77 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   78 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   79 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   80 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,0,7.346|
-   81 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   82 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   83 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   84 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-256,-256,7.346|
-   85 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,270,0|
-   86 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-   87 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cross_4x.mdl|
-   88 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-256,256,7.346|
-   89 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,90,0|
-   90 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-   91 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   92 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-   93 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-   94 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-   95 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cs.mdl|
-   96 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-908.81165,0,7.346|
-   97 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-   98 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-   99 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-  100 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  101 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  102 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  103 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_csfix.mdl|
-  104 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-115.18847,0,7.346|
-  105 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  106 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  107 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  108 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  109 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  110 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  111 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_cc.mdl|
-  112 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-966.40515,128,7.346|
-  113 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  114 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  115 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  116 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  117 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  118 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  119 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r1.mdl|
-  120 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1060.12341,139.56763,7.346|
-  121 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  122 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  123 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  124 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  125 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  126 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  127 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r11.mdl|
-  128 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1086.11584,449.88458,7.346|
-  129 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  130 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  131 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  132 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  133 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  134 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  135 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r12.mdl|
-  136 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-905.09656,374.90414,7.346|
-  137 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  138 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  139 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  140 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  141 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  142 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  143 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r13.mdl|
-  144 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-724.07727,299.92276,7.346|
-  145 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,135,0|
-  146 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  147 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  148 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  149 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  150 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  151 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r2.mdl|
-  152 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-993.86572,130.84471,7.346|
-  153 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  154 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  155 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  156 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  157 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  158 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  159 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_curve_r3.mdl|
-  160 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-927.60797,122.1218,7.346|
-  161 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,165,0|
-  162 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  163 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  164 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  165 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  166 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  167 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cx.mdl|
-  168 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-362.51361,0,7.346|
-  169 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  170 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  171 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  172 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  173 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  174 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  175 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_cxfix.mdl|
-  176 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-149.48648,0,7.346|
-  177 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  178 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  179 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  180 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  181 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  182 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  183 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  184 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-512,128,7.346|
-  185 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  186 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  187 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  188 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|0,-128,7.346|
-  189 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|NULL|
-  190 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  191 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_4x_crossing.mdl|
-  192 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-512,-128,7.346|
-  193 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,180,0|
-  194 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  195 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  196 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,128,7.346|
-  197 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  198 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  199 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_double_bumper.mdl|
-  200 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|0,-128,7.346|
-  201 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|NULL|
-  202 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  203 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  204 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  205 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  206 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  207 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  208 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  209 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  210 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  211 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_l_switch.mdl|
-  212 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,-128,7.346|
-  213 [24-10-30 10:20:36] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,195,0|
-  214 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  215 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  216 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  217 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  218 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  219 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  220 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-1024,0,7.346|
-  221 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  222 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  223 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_r_switch.mdl|
-  224 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-966.40515,128,7.346|
-  225 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,165,0|
-  226 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  227 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  228 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |1|0,0,7.346|
-  229 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |1|NULL|
-  230 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |1|NULL|
-  231 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  232 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |2|-494.55,0,7.346|
-  233 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |2|0,180,0|
-  234 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |2|NULL|
-  235 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  236 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |3|-33.129,-123.63866,7.346|
-  237 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |3|0,-30,0|
-  238 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |3|NULL|
-  239 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Default |NULL|models/shinji85/train/rail_x_junction.mdl|
-  240 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Origin init |4|-461.42175,123.63649,7.346|
-  241 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Angle init |4|0,150,0|
-  242 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] RegisterPOA: Point init |4|NULL|
-  243 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Shinji85_s_Rails) Success
-  244 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.ImportDSV: (Shinji85_s_Rails) Success
-  245 [24-10-30 10:20:37] CLIENT > TRACKASSEMBLY [LUA] PIECES.TimerRestart: Memory manager skip
+    1 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] SetLogControl: (0,true)
+    2 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: >>> @Assembly/autorun/shinji.lua (true): {Shinji85's Rails, Shinji85_s_Rails}
+    3 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration START |Shinji85_s_Rails|true|
+    4 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration SKIP |Shinji85_s_Rails|true|
+    5 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export START |Shinji85_s_Rails|nil|
+    6 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
+    7 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export OK |Shinji85_s_Rails|nil|
+    8 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|PIECES|
+    9 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Success
+   10 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|PIECES|
+   11 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] PIECES.TranslateDSV: (Shinji85_s_Rails) Success
+   12 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|PIECES|
+   13 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|ADDITIONS|
+   14 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Success
+   15 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|ADDITIONS|
+   16 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.TranslateDSV: (Shinji85_s_Rails) Success
+   17 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|ADDITIONS|
+   18 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization EMPTY |Shinji85_s_Rails|PHYSPROPERTIES|
+   19 [24-10-30 15:54:06] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: <<< @Assembly/autorun/shinji.lua
+   20 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] RegisterDSV: Status |V|Test_s_track_pack|GOG|
+   21 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] RegisterDSV: Skip |Test_s_track_pack|NEW|
+   22 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ImportCategory: Success
+   23 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Shinji85_s_Rails) Success
+   24 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.ImportDSV: (Shinji85_s_Rails) Success
+   25 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Shinji85_s_Rails|PHYSPROPERTIES|
+   26 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ImportCategory: Success
+   27 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Test_s_track_pack) Success
+   28 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Test_s_track_pack|ADDITIONS|
+   29 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Test_s_track_pack|PHYSPROPERTIES|
+   30 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Success
+   31 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: CATEGORY-OUTPUT = {}
+   32 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: CATEGORY-OUTPUT["Shinji85's Rails"] = {}
+   33 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: CATEGORY-OUTPUT["Shinji85's Rails"]["Txt"] = "function(m) local c
+local r = m:gsub("models/shinji85/train/rail_", "")
+if(r:find("cross")) then c = "crossing"
+elseif(r:find("switch")) then c = "switch"
+elseif(r:find("curve")) then c = "curve"
+elseif(r:find("bumper")) then c = "bumper"
+elseif(r:find("junction")) then c = "junction"
+elseif(r:find("%dx")) then c = "straight" end; return c end"
+   34 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: CATEGORY-OUTPUT["Shinji85's Rails"]["Cmp"] = function: 0x0133d860
+   35 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] PIECES.TimerRestart: Memory manager skip
+   36 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O = {}
+   37 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"] = {}
+   38 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"]["Txt"] = "function(m) local c
+local r = m:gsub("models/shinji85/train/rail_", "")
+if(r:find("cross")) then c = "crossing"
+elseif(r:find("switch")) then c = "switch"
+elseif(r:find("curve")) then c = "curve"
+elseif(r:find("bumper")) then c = "bumper"
+elseif(r:find("junction")) then c = "junction"
+elseif(r:find("%dx")) then c = "straight" end; return c end"
+   39 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"]["Cmp"] = function: 0x0133d860
+   40 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
+   41 [24-10-30 15:54:07] CLIENT > TRACKASSEMBLY [LUA] ExportTypeDSV: (shinji85_s_rails) Success
+    1 [24-10-30 15:58:32] CLIENT > TRACKASSEMBLY [LUA] SetLogControl: (0,true)
+    2 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: >>> @Assembly/autorun/shinji.lua (true): {Shinji85's Rails, Shinji85_s_Rails}
+    3 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration START |Shinji85_s_Rails|true|
+    4 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Registration SKIP |Shinji85_s_Rails|true|
+    5 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export START |Shinji85_s_Rails|nil|
+    6 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
+    7 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Category export OK |Shinji85_s_Rails|nil|
+    8 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|PIECES|
+    9 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@PIECES) Success
+   10 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|PIECES|
+   11 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] PIECES.TranslateDSV: (Shinji85_s_Rails) Success
+   12 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|PIECES|
+   13 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization START |Shinji85_s_Rails|ADDITIONS|
+   14 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] SynchronizeDSV: (Shinji85_s_Rails@ADDITIONS) Success
+   15 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation START |Shinji85_s_Rails|ADDITIONS|
+   16 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.TranslateDSV: (Shinji85_s_Rails) Success
+   17 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Translation OK |Shinji85_s_Rails|ADDITIONS|
+   18 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: Synchronization EMPTY |Shinji85_s_Rails|PHYSPROPERTIES|
+   19 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] DSV.Incognito: <<< @Assembly/autorun/shinji.lua
+   20 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] RegisterDSV: Status |V|Test_s_track_pack|GOG|
+   21 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] RegisterDSV: Skip |Test_s_track_pack|NEW|
+   22 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ImportCategory: Success
+   23 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Shinji85_s_Rails) Success
+   24 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ADDITIONS.ImportDSV: (Shinji85_s_Rails) Success
+   25 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Shinji85_s_Rails|PHYSPROPERTIES|
+   26 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ImportCategory: Success
+   27 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] PIECES.ImportDSV: (Test_s_track_pack) Success
+   28 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Test_s_track_pack|ADDITIONS|
+   29 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Missing |Test_s_track_pack|PHYSPROPERTIES|
+   30 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ProcessDSV: Success
+   31 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O = {}
+   32 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"] = {}
+   33 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"]["Txt"] = "function(m) local c
+local r = m:gsub("models/shinji85/train/rail_", "")
+if(r:find("cross")) then c = "crossing"
+elseif(r:find("switch")) then c = "switch"
+elseif(r:find("curve")) then c = "curve"
+elseif(r:find("bumper")) then c = "bumper"
+elseif(r:find("junction")) then c = "junction"
+elseif(r:find("%dx")) then c = "straight" end; return c end"
+   34 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] Incognito: tC-O["Shinji85's Rails"]["Cmp"] = function: 0x01603d58
+   35 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] PIECES.TimerRestart: Memory manager skip
+   36 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ExportCategory: (Shinji85_s_Rails) Success
+   37 [24-10-30 15:58:33] CLIENT > TRACKASSEMBLY [LUA] ExportTypeDSV: (shinji85_s_rails) Success

@@ -1,1 +1,2 @@
-Test_s_track_pack
+Test_s_track_pack	GOG
+Shinji85_s_Rails	@Assembly/autorun/shinji.lua
