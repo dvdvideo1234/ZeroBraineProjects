@@ -1,4 +1,4 @@
-#1 ExportTypeDSV:(shinji85_s_rails@PIECES) 24-10-30 17:25:44 [ LUA ]
+#1 ExportTypeDSV:(shinji85_s_rails@PIECES) 24-10-31 09:19:58 [ LUA ]
 #2 PIECES:(	MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_bumper.mdl"	"Shinji85's Rails"	"Bumper"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_double_bumper.mdl"	"Shinji85's Rails"	"Bumper Double"	1	"NULL"	"0,128,7.346"	"NULL"	"NULL"

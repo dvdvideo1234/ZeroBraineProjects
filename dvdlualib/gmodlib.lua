@@ -535,6 +535,12 @@ function file.Open(n, m)
     local t = f:read(); f:seek("set", p)
     return common.getPick(t, false, true)
   end
+  mt.Tell = function(f)
+    return f:seek()
+  end
+  mt.Seek = function(f, n)
+    return f:seek("set", n)
+  end
   return f
 end
 
