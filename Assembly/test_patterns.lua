@@ -14,7 +14,7 @@ local w = "function istargetcolumnname(vctable in varchar2, vcname in varchar2) 
 print(w:find(p))
 
 local a = "# ExportCategory:(3@cl_) 24-10-30 22:25:29 [ LUA ]"
-local p = a:match("^#%s*ExportCategory.*%(.+%)")
-      p = p:match("%(%d+@.+%)"):Trim():sub(2, -2):Trim()
+local p = a:match("^#.*ExportCategory.*%(.+%)")
+      p = p:match("%(.+@.+%)"):Trim():sub(2, -2):Trim()
 
 print(p)

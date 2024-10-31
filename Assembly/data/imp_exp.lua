@@ -17,17 +17,15 @@ require("gmodlib")
 require("trackasmlib")
 asmlib = trackasmlib
 if(not asmlib) then error("No library") end
-asmlib.IsModel = function(m) return isstring(m) end
 require("Assembly/autorun/config")
+
+asmlib.IsModel = function(m) return isstring(m) end
 asmlib.SetLogControl(20000, false)
 
 local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
 
-table.Empty(tC)
-com.logTable(tC, "BEFORE")
-
-asmlib.ImportCategory(0, "cl_", true)
-asmlib.ExportCategory(3, tC, "new_", true)
+asmlib.ImportDSV("PIECES", true, "tst_", nil, true)
+asmlib.ExportDSV("PIECES", "new_", nil, true)
 
 
   
