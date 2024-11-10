@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
                 .addBase("D:/Programs/LuaIDE")
-                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(1)
                 
 local com = require("common")
 
@@ -16,168 +16,145 @@ require("gmodlib")
 require("trackasmlib")
 
 asmlib = trackasmlib
-local com = require("common")
 if(not asmlib) then error("No library") end
+
 asmlib.IsModel = function(m) return isstring(m) end
+
 if(not asmlib.InitBase("track","assembly")) then error("Init fail") end
+
 asmlib.NewAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
+asmlib.SetLogControl(20000, false)
+
+local sT = "Plarail"
+
 local tD = {
-"models/propper/dingles_modular_streets/highway_ramp_street1024x768.mdl",
-"models/propper/dingles_modular_streets/highway_ramp_street2048x768_tall.mdl",
-"models/propper/dingles_modular_streets/highway_ramp_street768_short_tall_connector.mdl",
-"models/propper/dingles_modular_streets/highway_street1024x768.mdl",
-"models/propper/dingles_modular_streets/highway_street1024x768_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street2048x768.mdl",
-"models/propper/dingles_modular_streets/highway_street2048x768_overpass.mdl",
-"models/propper/dingles_modular_streets/highway_street2048x768_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street768x768.mdl",
-"models/propper/dingles_modular_streets/highway_street768x768_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector_double.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector_double_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector_mirrored.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector_mirrored_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street_768rampconnector_tall.mdl",
-"models/propper/dingles_modular_streets/highway_street_768turn.mdl",
-"models/propper/dingles_modular_streets/highway_street_768turn_tall.mdl",
-"models/propper/dingles_modular_streets/street1024x512.mdl",
-"models/propper/dingles_modular_streets/street1024x512_elevated128high.mdl",
-"models/propper/dingles_modular_streets/street1024x512_elevated192high.mdl",
-"models/propper/dingles_modular_streets/street1024x512_elevated256high.mdl",
-"models/propper/dingles_modular_streets/street1024x512_elevated64high.mdl",
-"models/propper/dingles_modular_streets/street1024x768.mdl",
-"models/propper/dingles_modular_streets/street1024x768_elevated128high.mdl",
-"models/propper/dingles_modular_streets/street1024x768_elevated192high.mdl",
-"models/propper/dingles_modular_streets/street1024x768_elevated256high.mdl",
-"models/propper/dingles_modular_streets/street1024x768_elevated64high.mdl",
-"models/propper/dingles_modular_streets/street128x512.mdl",
-"models/propper/dingles_modular_streets/street128x512_crosswalk.mdl",
-"models/propper/dingles_modular_streets/street128x768.mdl",
-"models/propper/dingles_modular_streets/street128x768_crosswalk.mdl",
-"models/propper/dingles_modular_streets/street2048x512.mdl",
-"models/propper/dingles_modular_streets/street2048x768.mdl",
-"models/propper/dingles_modular_streets/street256x512.mdl",
-"models/propper/dingles_modular_streets/street256x768.mdl",
-"models/propper/dingles_modular_streets/street512_endcap_fancy1.mdl",
-"models/propper/dingles_modular_streets/street512_endcap_fancy2.mdl",
-"models/propper/dingles_modular_streets/street512_endcap_simple1.mdl",
-"models/propper/dingles_modular_streets/street512_endcap_simple2.mdl",
-"models/propper/dingles_modular_streets/street512x512.mdl",
-"models/propper/dingles_modular_streets/street512x512_elevated128high.mdl",
-"models/propper/dingles_modular_streets/street512x512_elevated192high.mdl",
-"models/propper/dingles_modular_streets/street512x512_elevated256high.mdl",
-"models/propper/dingles_modular_streets/street512x512_elevated64high.mdl",
-"models/propper/dingles_modular_streets/street512x768.mdl",
-"models/propper/dingles_modular_streets/street512x768_elevated128high.mdl",
-"models/propper/dingles_modular_streets/street512x768_elevated192high.mdl",
-"models/propper/dingles_modular_streets/street512x768_elevated256high.mdl",
-"models/propper/dingles_modular_streets/street512x768_elevated64high.mdl",
-"models/propper/dingles_modular_streets/street64x512.mdl",
-"models/propper/dingles_modular_streets/street64x768.mdl",
-"models/propper/dingles_modular_streets/street768_endcap_fancy1.mdl",
-"models/propper/dingles_modular_streets/street768_endcap_fancy2.mdl",
-"models/propper/dingles_modular_streets/street768_endcap_simple1.mdl",
-"models/propper/dingles_modular_streets/street768_endcap_simple2.mdl",
-"models/propper/dingles_modular_streets/street768_fork.mdl",
-"models/propper/dingles_modular_streets/street768x512.mdl",
-"models/propper/dingles_modular_streets/street768x768.mdl",
-"models/propper/dingles_modular_streets/street768x768_concrete_to_stone_connector1.mdl",
-"models/propper/dingles_modular_streets/street768x768_concrete_to_stone_connector2.mdl",
-"models/propper/dingles_modular_streets/street_4wayintersection512x512.mdl",
-"models/propper/dingles_modular_streets/street_4wayintersection768x768.mdl",
-"models/propper/dingles_modular_streets/street_512_to_768_connector1.mdl",
-"models/propper/dingles_modular_streets/street_512_to_768_connector2.mdl",
-"models/propper/dingles_modular_streets/street_tjunction512x512.mdl",
-"models/propper/dingles_modular_streets/street_tjunction768x768.mdl",
-"models/propper/dingles_modular_streets/street_turn512x512.mdl",
-"models/propper/dingles_modular_streets/street_turn768x768.mdl"
+"models/ron/plarail/tracks/curve/r03_left.mdl",
+"models/ron/plarail/tracks/curve/r03_left.mdl",
+"models/ron/plarail/tracks/curve/r03_right.mdl",
+"models/ron/plarail/tracks/curve/r03_right.mdl",
+"models/ron/plarail/tracks/curve/r05_left.mdl",
+"models/ron/plarail/tracks/curve/r05_left.mdl",
+"models/ron/plarail/tracks/curve/r05_left.mdl",
+"models/ron/plarail/tracks/curve/r05_left.mdl",
+"models/ron/plarail/tracks/curve/r05_right.mdl",
+"models/ron/plarail/tracks/curve/r05_right.mdl",
+"models/ron/plarail/tracks/curve/r05_right.mdl",
+"models/ron/plarail/tracks/curve/r05_right.mdl",
+"models/ron/plarail/tracks/curve/r09_left.mdl",
+"models/ron/plarail/tracks/curve/r09_left.mdl",
+"models/ron/plarail/tracks/curve/r09_right.mdl",
+"models/ron/plarail/tracks/curve/r09_right.mdl",
+"models/ron/plarail/tracks/curve/r27_left.mdl",
+"models/ron/plarail/tracks/curve/r27_left.mdl",
+"models/ron/plarail/tracks/curve/r27_right.mdl",
+"models/ron/plarail/tracks/curve/r27_right.mdl",
+"models/ron/plarail/tracks/misc/aj01.mdl",
+"models/ron/plarail/tracks/misc/aj01.mdl",
+"models/ron/plarail/tracks/misc/aj01_2.mdl",
+"models/ron/plarail/tracks/misc/aj01_2.mdl",
+"models/ron/plarail/tracks/misc/aj02.mdl",
+"models/ron/plarail/tracks/misc/aj03.mdl",
+"models/ron/plarail/tracks/misc/aj03.mdl",
+"models/ron/plarail/tracks/misc/aj03_bridge.mdl",
+"models/ron/plarail/tracks/misc/aj03_top.mdl",
+"models/ron/plarail/tracks/misc/ar01.mdl",
+"models/ron/plarail/tracks/misc/ar01.mdl",
+"models/ron/plarail/tracks/misc/ar02.mdl",
+"models/ron/plarail/tracks/misc/ar02.mdl",
+"models/ron/plarail/tracks/misc/ar03.mdl",
+"models/ron/plarail/tracks/misc/ar03.mdl",
+"models/ron/plarail/tracks/misc/ar04_1.mdl",
+"models/ron/plarail/tracks/misc/ar04_1.mdl",
+"models/ron/plarail/tracks/misc/ar04_1.mdl",
+"models/ron/plarail/tracks/misc/ar04_2.mdl",
+"models/ron/plarail/tracks/misc/ar04_2.mdl",
+"models/ron/plarail/tracks/misc/ar04_2.mdl",
+"models/ron/plarail/tracks/misc/ar04_3.mdl",
+"models/ron/plarail/tracks/misc/ar04_3.mdl",
+"models/ron/plarail/tracks/misc/ar05_1.mdl",
+"models/ron/plarail/tracks/misc/ar05_1.mdl",
+"models/ron/plarail/tracks/misc/ar05_1.mdl",
+"models/ron/plarail/tracks/misc/ar05_2.mdl",
+"models/ron/plarail/tracks/misc/ar05_2.mdl",
+"models/ron/plarail/tracks/misc/ar05_2.mdl",
+"models/ron/plarail/tracks/misc/ar06.mdl",
+"models/ron/plarail/tracks/misc/ar06.mdl",
+"models/ron/plarail/tracks/misc/ar06_1.mdl",
+"models/ron/plarail/tracks/misc/ar06_2.mdl",
+"models/ron/plarail/tracks/misc/connector_female.mdl",
+"models/ron/plarail/tracks/misc/connector_female.mdl",
+"models/ron/plarail/tracks/misc/connector_male.mdl",
+"models/ron/plarail/tracks/misc/connector_male.mdl",
+"models/ron/plarail/tracks/misc/custom_1.mdl",
+"models/ron/plarail/tracks/misc/custom_1.mdl",
+"models/ron/plarail/tracks/misc/custom_16.mdl",
+"models/ron/plarail/tracks/misc/custom_16.mdl",
+"models/ron/plarail/tracks/misc/custom_2.mdl",
+"models/ron/plarail/tracks/misc/custom_2.mdl",
+"models/ron/plarail/tracks/misc/custom_4.mdl",
+"models/ron/plarail/tracks/misc/custom_4.mdl",
+"models/ron/plarail/tracks/misc/custom_8.mdl",
+"models/ron/plarail/tracks/misc/custom_8.mdl",
+"models/ron/plarail/tracks/misc/custom_s_curve_fix.mdl",
+"models/ron/plarail/tracks/misc/custom_s_curve_fix.mdl",
+"models/ron/plarail/tracks/misc/j14_grey.mdl",
+"models/ron/plarail/tracks/misc/j14_yellow.mdl",
+"models/ron/plarail/tracks/misc/j15_grey.mdl",
+"models/ron/plarail/tracks/misc/j15_yellow.mdl",
+"models/ron/plarail/tracks/misc/j22_grey.mdl",
+"models/ron/plarail/tracks/misc/j22_yellow.mdl",
+"models/ron/plarail/tracks/misc/pole.mdl",
+"models/ron/plarail/tracks/misc/r06.mdl",
+"models/ron/plarail/tracks/misc/r06.mdl",
+"models/ron/plarail/tracks/straight/r01.mdl",
+"models/ron/plarail/tracks/straight/r01.mdl",
+"models/ron/plarail/tracks/straight/r02.mdl",
+"models/ron/plarail/tracks/straight/r02.mdl",
+"models/ron/plarail/tracks/straight/r04.mdl",
+"models/ron/plarail/tracks/straight/r04.mdl",
+"models/ron/plarail/tracks/straight/r04.mdl",
+"models/ron/plarail/tracks/straight/r04.mdl",
+"models/ron/plarail/tracks/straight/r07.mdl",
+"models/ron/plarail/tracks/straight/r07.mdl",
+"models/ron/plarail/tracks/straight/r20_01.mdl",
+"models/ron/plarail/tracks/straight/r20_01.mdl",
+"models/ron/plarail/tracks/straight/r20_02.mdl",
+"models/ron/plarail/tracks/straight/r20_02.mdl",
+"models/ron/plarail/tracks/straight/r20_03.mdl",
+"models/ron/plarail/tracks/straight/r20_03.mdl",
+"models/ron/plarail/tracks/straight/r26.mdl",
+"models/ron/plarail/tracks/straight/r26.mdl"
 }
 -- function self:TimerSetup(vTim)
-asmlib.Categorize("Modular city street",{ "@highway",
-                                          "@street" ,
-                                          "endcap"       ,
-                                          "turn"         ,
-                                          "ramp"         ,
-                                          "connector"    ,
-                                          "tjunction"    ,
-                                          "intersection" ,
-                                          "elevated"     }, "models/propper/dingles_modular_streets/")
-
---[===[
-asmlib.Categorize("Modular city street",[[
-  function(m)
-    local o = {}
-    function setBranch(v, p, b)
-      if(v:find(p)) then
-        local e = v:gsub("%W*"..p.."%W*", "_")
-        if(b and o.Base) then return e end
-        if(b and not o.Base) then o.Base = p end
-        table.insert(o, p)
-        return e
-      end
-      return v
-    end
-    local r = m:gsub("models/propper/dingles_modular_streets/",""):gsub("%.mdl$","")
-    r = setBranch(r, "highway", true)
-    r = setBranch(r, "street" , true)
-    r = setBranch(r, "endcap")
-    r = setBranch(r, "turn")
-    r = setBranch(r, "ramp")
-    r = setBranch(r, "connector")
-    r = setBranch(r, "tjunction")
-    r = setBranch(r, "intersection")
-    r = setBranch(r, "elevated")
-    o.Base = nil; return o, r:gsub("^_+", ""):gsub("_+$", "")
-  end
-]])
-
-asmlib.Categorize("Modular city street",[[
-  function(m)
-    local o = {}
-    function setBranch(v, p, b)
-      if(v:find(p)) then
-        local e = v:gsub("%W*"..p.."%W*", "_")
-        if(b and o.Base) then return e end
-        if(b and not o.Base) then o.Base = p end
-        table.insert(o, p)
-        return e
-      end
-      return v
-    end
-    local r = m:gsub("models/propper/dingles_modular_streets/",""):gsub("%.mdl$","")
-    r = setBranch(r, "highway", true)
-    r = setBranch(r, "street" , true)
-    r = setBranch(r, "endcap")
-    r = setBranch(r, "turn")
-    r = setBranch(r, "ramp")
-    r = setBranch(r, "connector")
-    r = setBranch(r, "tjunction")
-    r = setBranch(r, "intersection")
-    r = setBranch(r, "elevated")
-    o.Base = nil; return o, r:gsub("^_+", ""):gsub("_+$", "")
-  end
-]])
+asmlib.Categorize(sT, [[function(m)
+  local g = m:gsub("models/ron/plarail/tracks/",""):gsub("%.mdl","")
+  local g, o = g:gsub("[0-9_]+.+",""), {}
+  for w in g:gmatch("[a-zA-Z0-9]+") do table.insert(o, w) end
+  local n = #o; local r = o[n]
+    if(r == "ar") then o[n] = "special"
+    elseif(r == "aj") then o[n] = "scenery"
+    elseif(r == "r") then o[n] = "plain"
+    elseif(r == "j") then o[n] = "junction"
+    elseif(r == "pole") then o[n] = nil
+    end; return o
+  end]])
 
 
-asmlib.Categorize("Modular city street", 3, "models/propper/dingles_modular_", "_", "/")
-]===]
-
-local dat = asmlib.GetOpVar("TABLE_CATEGORIES")["Modular city street"]
+local dat = asmlib.GetOpVar("TABLE_CATEGORIES")[sT]
 
 com.logTable(dat, "CAT")
-
-local new = dat.Cmp
 
 local out = assert(io.open("Assembly/trackassembly/trackasmlib_nodes.txt", "wb"))
 
 for i = 1, #tD do
   local mod = tD[i]
-  local cat, nam = new(mod)
+  local suc, cat, nam = pcall(dat.Cmp, mod)
+  if(not suc) then error(cat) end
   if(istable(cat)) then cat = "("..table.concat(cat,"|")..")" end
-  out:write(com.stringPadR(mod, 100, " ").." > "..com.stringPadR(cat, 35, " ").." > "..nam.."\n")
+  out:write(com.stringPadR(mod, 100, " ").." > "..com.stringPadR(cat, 35, " ").." > "..tostring(nam).."\n")
 end
 
 out:flush()
