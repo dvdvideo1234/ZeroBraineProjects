@@ -6,12 +6,12 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
 
 local com = require("common")
 io.stdout:setvbuf("no")
 
-local res = {__index = {}, __en = {}, __key = {}}
+local res = {__index = {}, __en = {}, __key = {}, __dupe = {}}
 local ssrc, isrc = dir.getBase()
 local pth = dir.getNorm(com.stringGetChunkPath())
 local prf = {"TrackAssemblyTool_GIT", "trackassembly"}
@@ -53,6 +53,27 @@ for iD = 1, #tF.Tree do
   end
 end
 
+do
+  for k, v in pairs(res["en"]) do
+    local dp = res.__dupe[v]
+    if(not dp) then
+      res.__dupe[v] = {}; dp = res.__dupe[v]
+    end; table.insert(dp, k)
+  end
+  local F = assert(io.open(pth.."/localization/en.txt", "wb"))
+  F:write("# Keys having the same value\n\n")
+  for k, v in pairs(res.__dupe) do
+    if(#v > 1) then
+      for i = 1, #v do
+        F:write(("%2d : %+60s : %s"):format(#v, v[i], k).."\n")
+      end
+      F:write("\n")
+    end
+  end
+  F:write("\n")
+  F:flush()
+  F:close()
+end
 
 for iL = 2, #res.__index do
   local N = res.__index[iL]
@@ -86,3 +107,5 @@ for iL = 2, #res.__index do
   F:flush()
   F:close()
 end
+
+com.logTable(res)
