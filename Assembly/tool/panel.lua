@@ -98,5 +98,5 @@ local mt = getmetatable(vguiCreate("DTree"))
   end -- Process all the items without category defined
   asmlib.LogInstance("Found items #"..qPanel.Size, sLog)
   
-  common.logTable(tType, "tType", nil, {[mt] = function(v) return tostring(v.__type) end})
+  common.logTable(tType, "tType", nil, {[mt] = function(v) return "VGUI:"..tostring(v.__type) end})
   
