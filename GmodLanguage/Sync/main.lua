@@ -61,7 +61,7 @@ for iL = 2, #res.__index do
   for iE = 1, #res.__en do
     local K = res.__en[iE]
     if(not res[N][K]) then
-      F:write(K.."=\"\"\n")
+      F:write(K.."="..res["en"][K].."\n")
     end
   end
   F:write("\n\n")
@@ -79,7 +79,7 @@ for iL = 2, #res.__index do
   for iE = 1, #res.__key do
     local K = res.__key[iE]
     if(not res["en"][K]) then
-      F:write(K.."=\"\"\n")
+      F:write(K.."="..res[N][K].."\n")
     end
   end
   F:write("\n\n")
