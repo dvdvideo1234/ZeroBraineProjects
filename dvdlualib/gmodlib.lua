@@ -727,8 +727,8 @@ function vgui.Create(sTyp, pPar)
   function self:SetWide(nS)
     data.SX = tonumber(nS) or 0
   end
-  function self:SetToolTip(sT)
-    common.logStatus("VGUI["..self.__type.."]:SetToolTip("..tostring(sT)..")")
+  function self:SetTooltip(sT)
+    common.logStatus("VGUI["..self.__type.."]:SetTooltip("..tostring(sT)..")")
   end
   function self:SetIndentSize(nS)
     common.logStatus("VGUI["..self.__type.."]:SetIndentSize("..tostring(nS)..")")
@@ -738,16 +738,15 @@ function vgui.Create(sTyp, pPar)
       common.logStatus("VGUI["..self.__type.."]:UpdateColours(nil)"); return end
     data.Skin = tS
   end  
-  function self:SetTooltip(sT)
-    if(sT == nil) then
-      common.logStatus("VGUI["..self.__type.."]:SetTooltip(nil)"); return end
-    data.TTip = tostring(sT)
+  function self:SetToolTip(sT)
+    self:SetTooltip(sT)
   end
   function self:AddItem(vI)
     if(vI == nil) then
       common.logStatus("VGUI["..self.__type.."]:AddItem(nil)"); return end
     table.insert(data.Item, vI); data.Item.Size = data.Item.Size + 1
     common.logStatus("VGUI["..self.__type.."]:AddItem(["..(vI.__type or type(vI)).."]"..tostring(vI)..")")
+    vI.Root = self
   end
   function self:AddNode(sN)
     if(sN == nil) then
@@ -758,6 +757,9 @@ function vgui.Create(sTyp, pPar)
     if(sI == nil) then
       common.logStatus("VGUI["..self.__type.."].Icon.SetImage(nil)"); return end
     self.Icon.IMG = tostring(sI)
+  end
+  function self:IsRootNode()
+    return (self.Root == nil)
   end
   function self:GetSkin()
     return data.Skin
@@ -778,4 +780,5 @@ end
 CreateConVar("gmod_language")
 
 require("gmodlib/math")
+require("gmodlib/vgui")
 require("gmodlib/constants")

@@ -1,0 +1,4 @@
+#1 ExportDSV:(cl_@PIECES) 24-10-30 22:25:29 [ LUA ]
+#2 PIECES:(	MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+TRACKASSEMBLY_PIECES	"models/alexcookie/2ft/curve/curve_90_5121111.mdl"	"TestCookie's 2ft track pack"	"Curve 90 512"	1	"NULL"	"0,0,13.04688"	"NULL"	"NULL"
+TRACKASSEMBLY_PIECES	"models/alexcookie/2ft/curve/curve_90_5121111.mdl"	"TestCookie's 2ft track pack"	"Curve 90 512"	2	"NULL"	"-480,-480,13.04688"	"0,-90,0"	"NULL"

@@ -28,14 +28,12 @@ local tableInsert = table.insert
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
-
-
 local drmSkin = 0
-local CPanel = vguiCreate("Panel")
+local CPanel = vguiCreate("DPanel")
 local gsToolNameL = asmlib.GetOpVar("TOOLNAME_NL")
 
 function asmlib.IsModel(m) return true end
-local mt = getmetatable(vguiCreate("BASE"))
+local mt = getmetatable(vguiCreate("DTree"))
 
   local qPanel = asmlib.CacheQueryPanel(devmode); if(not qPanel) then
     asmlib.LogInstance("Panel population empty",sLog); return end
@@ -59,14 +57,9 @@ local mt = getmetatable(vguiCreate("BASE"))
         local pRoot = pTree:AddNode(sTyp) -- No type folder made already
               pRoot:SetTooltip(languageGetPhrase("tool."..gsToolNameL..".type"))
               pRoot.Icon:SetImage(asmlib.ToIcon(defTable.Name))
-              pRoot.DoClick = function() asmlib.SetExpandNode(pRoot) end
-              pRoot.Expander.DoClick = function() asmlib.SetExpandNode(pRoot) end
-              pRoot.DoRightClick = function()
-                local sID = asmlib.WorkshopID(sTyp)
-                if(sID and sID:len() > 0 and inputIsKeyDown(KEY_LSHIFT)) then
-                  guiOpenURL(asmlib.GetOpVar("FORM_URLADDON"):format(sID))
-                else SetClipboardText(pRoot:GetText()) end
-              end
+              pRoot.DoClick = function() asmlib.SetNodeExpand(pRoot) end
+              pRoot.Expander.DoClick = function() asmlib.SetNodeExpand(pRoot) end
+              pRoot.DoRightClick = function() asmlib.OpenNodeMenu(pRoot) end
               pRoot:UpdateColours(drmSkin)
         tType[sTyp] = {Base = pRoot, Node = {}}
       end -- Reset the primary tree node pointer
@@ -78,20 +71,20 @@ local mt = getmetatable(vguiCreate("BASE"))
           local sCat = vRec.C[iD] -- Read the category name
           local tCat = tNode[sCat] -- Index the internal sub-category
           if(tCat) then -- Jump next if already created
-            pItem = tCat.Base -- Addume that the category is allocated
+            pItem = tCat.Base -- Assume that the category is allocated
             tNode = tCat.Node -- Jump to the next set of base nodes
           else -- Create a new sub-category for the incoming content
-            tNode[sCat] = {}; tCat = tNode[sCat]
-            pItem = asmlib.SetDirectory(pItem, sCat)
-            tCat.Base = pItem; tCat.Node = {}
-            tNode = tCat.Node -- Jimp to the next set of base nodes
+            tNode[sCat] = {}; tCat = tNode[sCat] -- Create node info
+            pItem = asmlib.SetNodeDirectory(pItem, sCat) -- Create category
+            tCat.Base = pItem; tCat.Node = {} -- Allocate node info
+            tNode = tCat.Node -- Jump to the allocated set of base nodes
           end -- Create the last needed node regarding pItem
         end -- When the category has at least one element
       else -- Panel cannot categorize the entry add it to the list
         tRoot.Size = tRoot.Size + 1 -- Increment count to avoid calling #
         tableInsert(tRoot, iC); bNow = false -- Attach row ID to rooted items
       end -- When needs to be processed now just attach it to the tree
-      if(bNow) then asmlib.SetDirectoryNode(pItem, sNam, sMod) end
+      if(bNow) then asmlib.SetNodeContent(pItem, sNam, sMod) end
       -- SnapReview is ignored because a query must be executed for points count
     else asmlib.LogInstance("Ignoring item "..asmlib.GetReport(sTyp, sNam, sMod),sLog) end
   end
@@ -100,7 +93,7 @@ local mt = getmetatable(vguiCreate("BASE"))
     local iRox = tRoot[iR]
     local vRec = qPanel[iRox]
     local sMod, sTyp, sNam = vRec.M, vRec.T, vRec.N
-    asmlib.SetDirectoryNode(tType[sTyp].Base, sNam, sMod)
+    asmlib.SetNodeContent(tType[sTyp].Base, sNam, sMod)
     asmlib.LogInstance("Rooting item "..asmlib.GetReport(sTyp, sNam, sMod), sLog)
   end -- Process all the items without category defined
   asmlib.LogInstance("Found items #"..qPanel.Size, sLog)
