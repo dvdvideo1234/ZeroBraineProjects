@@ -1,9 +1,11 @@
-local common = require("common")
+local common      = require("common")
+local directories = require("directories")
 
 local properties = {}
 
 local mtList = {}
       mtList.__index = mtList
+      
 function properties.newList()
   local self = {}; setmetatable(self, mtList)
         self.BOM = {0xEF, 0xBB, 0xBF} -- UTF-8-BOM
@@ -93,5 +95,142 @@ function mtList:isItems()
   end; return self
 end
 
-return properties
+function properties.syncLocalizations(par)
+  
+  local res = {__index = {}, __primary = {}, __key = {}, __dupe = {}}
+  
+  local function getResource(sL)
+    local sdir = par.run_src.."/"..par.prf_src[1].."/resource/localization/"..sL.."/"
+    local snam = par.prf_src[2]..".properties"
+    directories.cpyRec(snam, sL.."_ "..snam, sdir, par.run_pth.."/localization/")
+    local R = assert(io.open(sdir..snam, "rb"))
+    local L = R:read("*line"); res[sL] = {}; table.insert(res.__index, sL)
+    while(L) do
+      local M = L:find("=", 1, true)
+      if(M) then
+        local K = L:sub(1, M-1)
+        local V = L:sub(M+1,-1)
+        res[sL][K] = V
+        local dp = res.__dupe[sL]
+        if(not dp) then
+          res.__dupe[sL] = {}
+          dp = res.__dupe[sL]
+        end
+        if(not dp[K]) then
+          dp[K] = {}
+        end
+        table.insert(dp[K], V)
+      end
+      L = R:read("*line")
+    end; return res[sL]
+  end
 
+  directories.ersDir("localization", pth)
+  directories.newDir("localization", pth)
+
+  local tF = directories.conDir("localization", par.run_src.."/"..par.prf_src[1].."/resource/")
+
+  getResource(par.prm_lng)
+
+  for iD = 1, #tF.Tree do
+    local n = tF.Tree[iD].Name
+    if(n:sub(1,1) ~= "." and n ~= par.prm_lng) then
+      getResource(n)
+    end
+  end
+
+  for k, v in pairs(res[par.prm_lng]) do table.insert(res.__primary, k) end
+  table.sort(res.__primary)
+
+  do
+    local F = assert(io.open(par.run_pth.."/localization/k_dupe.txt", "wb"))
+    for l = 1, #res.__index do
+      local n = res.__index[l]
+      F:write("# Values having the same keys ["..n.."]\n\n")
+      for k, v in pairs(res.__dupe[n]) do
+        if(#v > 1) then
+          for i = 1, #v do
+            F:write(("%"..par.cnt_len.."d : %s : %s"):format(#v, common.stringPadR(k, par.key_len), v[i]).."\n")
+          end
+          F:write("\n")
+        end
+      end
+    end
+    F:write("\n")
+    F:flush()
+    F:close()
+  end
+
+  do
+    local F = assert(io.open(par.run_pth.."/localization/v_dupe.txt", "wb"))
+    for l = 1, #res.__index do
+      local n = res.__index[l]; res.__dupe[n] = {}
+      local dp = res.__dupe[n]
+      for k, v in pairs(res[n]) do
+        if(not dp[v]) then dp[v] = {} end
+        table.insert(dp[v], k)
+      end
+      F:write("# Keys having the same value ["..n.."]\n\n")
+      for k, v in pairs(dp) do
+        local nv = #v
+        if(nv > 1) then
+          local dup_ign = false
+          if(par.dup_ign.en) then
+            local cnt_ign = 0
+            for i = 1, nv do
+              for j = 1, #par.dup_ign do
+                if(v[i]:find(par.dup_ign[j])) then
+                  cnt_ign = cnt_ign + 1
+                end
+              end
+            end
+            dup_ign = (cnt_ign == nv)
+          end
+          if(not dup_ign) then
+            for i = 1, nv do
+              F:write(("%"..par.cnt_len.."d : %s : %s"):format(#v, common.stringPadR(v[i], par.key_len), k).."\n")
+            end
+            F:write("\n")
+          end
+        end
+      end
+    end
+    F:write("\n")
+    F:flush()
+    F:close()
+  end
+
+  for iL = 2, #res.__index do
+    local N = res.__index[iL]
+    local F = assert(io.open(par.run_pth.."/localization/"..par.prf_nam..N..".txt", "wb"))
+    F:write("# New translations to be added to ["..N.."]\n\n")
+    for iE = 1, #res.__primary do
+      local K = res.__primary[iE]
+      if(not res[N][K]) then
+        F:write(K.."="..res[par.prm_lng][K].."\n")
+      end
+    end
+    F:write("\n\n")
+    F:flush()
+    F:close()
+  end
+
+  for iL = 2, #res.__index do
+    local N = res.__index[iL]; res.__key = {}
+    local F = assert(io.open(par.run_pth.."/localization/"..par.prf_nam..N..".txt", "ab"))
+    F:write("# The translations to be removed from ["..N.."]\n\n")
+    for k, v in pairs(res[N]) do table.insert(res.__key, k) end
+    table.sort(res.__key)
+    for iE = 1, #res.__key do
+      local K = res.__key[iE]
+      if(not res[par.prm_lng][K]) then
+        F:write(K.."="..res[N][K].."\n")
+      end
+    end
+    F:write("\n\n")
+    F:flush()
+    F:close()
+  end
+end
+
+return properties
