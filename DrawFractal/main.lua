@@ -122,25 +122,34 @@ while true do
     logStatus("LFT: {"..tostring(lx)..","..tostring(ly).."}")
     logStatus("RGH: {"..tostring(rx)..","..tostring(ry).."}")
     logStatus("KEY: {"..tostring(key).."}")
-    if    (lx and ly) then
+    if(lx and ly) then
       S:SetCenter(lx,ly)
       S:Zoom( nZoom)
+      S:Draw(sfrac,spale,iTer)
     elseif(rx and ry) then
       S:SetCenter(rx,ry)
       S:Zoom(-nZoom)
-    end
-    if    (key == S:GetKey("dirU")) then S:MoveCenter(0,-nStep)
-    elseif(key == S:GetKey("dirD")) then S:MoveCenter(0, nStep)
-    elseif(key == S:GetKey("dirL")) then S:MoveCenter(-nStep,0)
-    elseif(key == S:GetKey("dirR")) then S:MoveCenter( nStep,0)
+      S:Draw(sfrac,spale,iTer)
+    elseif(key == S:GetKey("dirU")) then
+      S:MoveCenter(0,-nStep)
+      S:Draw(sfrac,spale,iTer)
+    elseif(key == S:GetKey("dirD")) then
+      S:MoveCenter(0, nStep)
+      S:Draw(sfrac,spale,iTer)
+    elseif(key == S:GetKey("dirL")) then
+      S:MoveCenter(-nStep,0)
+      S:Draw(sfrac,spale,iTer)
+    elseif(key == S:GetKey("dirR")) then
+      S:MoveCenter( nStep,0)
+      S:Draw(sfrac,spale,iTer)
     elseif(key == S:GetKey("resS")) then
       S:Zoom(1)
       S:SetCenter(0,0)
       S:SetArea(-szRe, szRe, -szIm, szIm)
+      S:Draw(sfrac,spale,iTer)
     elseif(key == S:GetKey("savE")) then
       save(comon.stringGetChunkPath().."/snapshot")
     end
-    S:Draw(sfrac,spale,iTer)
   end
-  wait(0.1)
+  wait(0.2)
 end
