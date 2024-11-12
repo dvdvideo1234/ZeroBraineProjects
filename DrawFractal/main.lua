@@ -1,7 +1,18 @@
-require("directories").setBase(1)
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+
 require("turtle")
 require("wx")
+
 -- require("ZeroBraineProjects/dvdlualib/common")
+local comon = require("common")
 local compl = require("complex")
 local fract = require("fractal")
 local clmap = require("colormap")
@@ -23,7 +34,7 @@ local szIm  = 2
 local nStep = 35
 local nZoom = 15
 local iTer  = 60
-local sfrac = "julia1"
+local sfrac = "mandelbrot"
 local spale = "wikipedia"
 local brdcl = nil -- colr(0, 250, 100)
 local brdup = nil -- true
@@ -31,7 +42,7 @@ local brdup = nil -- true
 --- Dinamic parameters and constants
 local cexp   = compl.getNew(math.exp(1))
 local w2, h2 = W/2, H/2
-local gr     = 1.681
+local gr     = 1.618
 
 -- https://upload.wikimedia.org/wikipedia/commons/b/b3/Mandel_zoom_07_satellite.jpg
 clmap.setColorMap("wikipedia",
@@ -67,13 +78,13 @@ Area: {-0.10109910300926,-0.10109447337963,-0.95628833912037,-0.95628370949074}
 
 local S = fract.New("z-plane",W,H,-szRe,szRe,-szIm,szIm,brdcl,brdup)
       S:SetControlWX(wx)
-   --    S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
+      -- S:SetArea(-1.406574048011,-1.406574042524,0.00025352709190672,0.00025353257887517)
       S:Register("FUNCTION","mandelbrot",
         function (Z, C, R) Z:Pow(2); Z:Add(C); R[1] = Z:getAngRad(); end )
       S:Register("FUNCTION","mandelbar",
         function (Z, C, R) Z:Pow(2); Z:NegIm(); Z:Add(C) end )
       S:Register("FUNCTION","julia1",
-        function (Z, C, R) Z:Pow(2); Z:Add(compl.getCnv("-0.8+0.156i")) end )
+        function (Z, C, R) Z:Pow(2); Z:Add(compl.cnvNew("-0.8+0.156i")) end )
       S:Register("FUNCTION","julia2",
         function (Z, C, R) Z:Set(cexp^(Z^3) - 0.621) end )
       S:Register("FUNCTION","julia3",
@@ -118,11 +129,18 @@ while true do
       S:SetCenter(rx,ry)
       S:Zoom(-nZoom)
     end
-    logStatus(S:GetKey("dirU"))
     if    (key == S:GetKey("dirU")) then S:MoveCenter(0,-nStep)
     elseif(key == S:GetKey("dirD")) then S:MoveCenter(0, nStep)
     elseif(key == S:GetKey("dirL")) then S:MoveCenter(-nStep,0)
-    elseif(key == S:GetKey("dirR")) then S:MoveCenter( nStep,0) end
+    elseif(key == S:GetKey("dirR")) then S:MoveCenter( nStep,0)
+    elseif(key == S:GetKey("resS")) then
+      S:Zoom(1)
+      S:SetCenter(0,0)
+      S:SetArea(-szRe, szRe, -szIm, szIm)
+    elseif(key == S:GetKey("savE")) then
+      save(comon.stringGetChunkPath().."/snapshot")
+    end
     S:Draw(sfrac,spale,iTer)
   end
+  wait(0.1)
 end
