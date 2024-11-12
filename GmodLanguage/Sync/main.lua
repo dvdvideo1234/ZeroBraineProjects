@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
 
 local com = require("common")
 local prop = require("gmodlib/custom/properties")
@@ -29,8 +29,7 @@ local par = {
   prf_src = {"TrackAssemblyTool_GIT", "trackassembly"},
   prm_lng = "en",    -- English is primary gmod language
   cnt_len = 2,       -- How many symbols to display dupes count
-  key_len = 60,      -- How many symbols to display keys
-  prf_nam ="sync_"  -- Syncronization files prefix
+  key_len = 60       -- How many symbols to display keys
 }
 
 prop.syncLocalizations(par)

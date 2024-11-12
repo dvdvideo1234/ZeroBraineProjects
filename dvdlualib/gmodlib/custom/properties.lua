@@ -97,12 +97,18 @@ end
 
 function properties.syncLocalizations(par)
   
-  local res = {__index = {}, __primary = {}, __key = {}, __dupe = {}}
+  local res = {__index = {}, __primary = {}, __key = {}, __dupK = {}, __dupV = {}}
+  
+  local function setDupe(t, i, k, v)
+    if(not t[i]) then t[i] = {} end -- Language wise
+    if(not t[i][k]) then t[i][k] = {} end -- Keys wise
+    table.insert(t[i][k], v)
+  end
   
   local function getResource(sL)
     local sdir = par.run_src.."/"..par.prf_src[1].."/resource/localization/"..sL.."/"
     local snam = par.prf_src[2]..".properties"
-    directories.cpyRec(snam, sL.."_ "..snam, sdir, par.run_pth.."/localization/")
+    directories.cpyRec(snam, sL.."_ "..snam, sdir, par.run_pth.."/localization/orig/")
     local R = assert(io.open(sdir..snam, "rb"))
     local L = R:read("*line"); res[sL] = {}; table.insert(res.__index, sL)
     while(L) do
@@ -111,22 +117,17 @@ function properties.syncLocalizations(par)
         local K = L:sub(1, M-1)
         local V = L:sub(M+1,-1)
         res[sL][K] = V
-        local dp = res.__dupe[sL]
-        if(not dp) then
-          res.__dupe[sL] = {}
-          dp = res.__dupe[sL]
-        end
-        if(not dp[K]) then
-          dp[K] = {}
-        end
-        table.insert(dp[K], V)
+        setDupe(res.__dupK, sL, K, V)
+        setDupe(res.__dupV, sL, V, K)
       end
       L = R:read("*line")
     end; return res[sL]
   end
 
-  directories.ersDir("localization", pth)
-  directories.newDir("localization", pth)
+  directories.ersDir("localization", par.run_pth)
+  directories.newDir("localization", par.run_pth)
+  directories.newDir("orig", par.run_pth.."/localization")
+  directories.newDir("sync", par.run_pth.."/localization")
 
   local tF = directories.conDir("localization", par.run_src.."/"..par.prf_src[1].."/resource/")
 
@@ -146,8 +147,8 @@ function properties.syncLocalizations(par)
     local F = assert(io.open(par.run_pth.."/localization/k_dupe.txt", "wb"))
     for l = 1, #res.__index do
       local n = res.__index[l]
-      F:write("# Values having the same keys ["..n.."]\n\n")
-      for k, v in pairs(res.__dupe[n]) do
+      F:write("\n# Values having the same keys ["..n.."]\n\n")
+      for k, v in pairs(res.__dupK[n]) do
         if(#v > 1) then
           for i = 1, #v do
             F:write(("%"..par.cnt_len.."d : %s : %s"):format(#v, common.stringPadR(k, par.key_len), v[i]).."\n")
@@ -164,13 +165,9 @@ function properties.syncLocalizations(par)
   do
     local F = assert(io.open(par.run_pth.."/localization/v_dupe.txt", "wb"))
     for l = 1, #res.__index do
-      local n = res.__index[l]; res.__dupe[n] = {}
-      local dp = res.__dupe[n]
-      for k, v in pairs(res[n]) do
-        if(not dp[v]) then dp[v] = {} end
-        table.insert(dp[v], k)
-      end
-      F:write("# Keys having the same value ["..n.."]\n\n")
+      local n = res.__index[l]
+      local dp = res.__dupV[n]
+      F:write("\n# Keys having the same value ["..n.."]\n\n")
       for k, v in pairs(dp) do
         local nv = #v
         if(nv > 1) then
@@ -202,23 +199,22 @@ function properties.syncLocalizations(par)
 
   for iL = 2, #res.__index do
     local N = res.__index[iL]
-    local F = assert(io.open(par.run_pth.."/localization/"..par.prf_nam..N..".txt", "wb"))
-    F:write("# New translations to be added to ["..N.."]\n\n")
+    local F = assert(io.open(par.run_pth.."/localization/sync/"..N..".txt", "wb"))
+    F:write("\n# New translations to be added to ["..N.."]\n\n")
     for iE = 1, #res.__primary do
       local K = res.__primary[iE]
       if(not res[N][K]) then
         F:write(K.."="..res[par.prm_lng][K].."\n")
       end
     end
-    F:write("\n\n")
     F:flush()
     F:close()
   end
 
   for iL = 2, #res.__index do
     local N = res.__index[iL]; res.__key = {}
-    local F = assert(io.open(par.run_pth.."/localization/"..par.prf_nam..N..".txt", "ab"))
-    F:write("# The translations to be removed from ["..N.."]\n\n")
+    local F = assert(io.open(par.run_pth.."/localization/sync/"..N..".txt", "ab"))
+    F:write("\n# The translations to be removed from ["..N.."]\n\n")
     for k, v in pairs(res[N]) do table.insert(res.__key, k) end
     table.sort(res.__key)
     for iE = 1, #res.__key do
@@ -227,7 +223,6 @@ function properties.syncLocalizations(par)
         F:write(K.."="..res[N][K].."\n")
       end
     end
-    F:write("\n\n")
     F:flush()
     F:close()
   end
