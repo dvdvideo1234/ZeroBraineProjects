@@ -16,7 +16,7 @@ local bas = sbs.."/ZeroBraineProjects/Test"
 
 local dsk = {  
   "C:/Users/DVD/Desktop",
-  "C:/Users/ddobromirov/Desktop/Test"
+  "C:/Users/ddobromirov/Desktop"
 }
 print("----------------------------------FOLDER----------------------------------")
 dir.newDir("New Folder", bas)
