@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
       dir.addBase("C:/Programs/ZeroBraineIDE")
-      dir.setBase(2)
+      dir.setBase(1)
 
 CLIENT = true
 SERVER = false
