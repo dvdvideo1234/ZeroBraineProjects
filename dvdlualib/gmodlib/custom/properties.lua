@@ -239,6 +239,8 @@ function properties.syncLocalizations(par)
     F:flush()
     F:close()
   end
+  
+  return res
 end
 
 return properties

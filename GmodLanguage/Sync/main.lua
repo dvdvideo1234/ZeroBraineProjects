@@ -35,4 +35,9 @@ local par = {
   key_len = 60       -- How many symbols to display keys
 }
 
-prop.syncLocalizations(par)
+local res = prop.syncLocalizations(par)
+
+local lst = prop.newList()
+      lst:setBase(par.run_src)
+      lst:recItem(par.prf_src[1], par.prf_src[2], unpack(res.__index))
+      lst:isItems()
