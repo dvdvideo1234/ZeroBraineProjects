@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local com = require("common")
 local prop = require("gmodlib/custom/properties")
@@ -20,9 +20,12 @@ local src = {
 
 local par = {
   -- Key patterns being ignored when searching dor dupes
-  dup_ign = { en = true, -- Enable ot disable the ignore
+  dup_all = { en = true, all = true,-- Enable ot disable the ignore
     "left%.%d", "right_use%.%d",
     "reload%.%d", "right%.%d", "reload_use%.%d"
+  }, -- Forlder prefixes for data source
+  dup_any = { en = true, any = false, -- Enable ot disable the ignore
+    "pn_contextm_"
   }, -- Forlder prefixes for data source
   run_pth = dir.getNorm(com.stringGetChunkPath()),
   run_src = src[isrc], -- Data source addon folder
@@ -33,5 +36,3 @@ local par = {
 }
 
 prop.syncLocalizations(par)
-
--- com.logTable(res)

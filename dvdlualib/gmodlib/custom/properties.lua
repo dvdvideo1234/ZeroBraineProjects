@@ -105,6 +105,31 @@ function properties.syncLocalizations(par)
     table.insert(t[i][k], v)
   end
   
+  local function isDupe(tV, tD, tt, k)
+    local dup = true
+    if(tD.en) then
+      local nvi = #tV
+      local cni = 0
+      for i = 1, nvi do
+        for j = 1, #tD do
+          if(tV[i]:find(tD[j])) then
+            cni = cni + 1
+            if(tD.any) then
+              dup = false
+              break
+            end
+          end
+        end
+        if(tD.any and not dup) then
+          break
+        end
+      end
+      if(tD.all) then
+        dup = (cni ~= nvi)
+      end
+    end; return dup
+  end
+  
   local function getResource(sL)
     local sdir = par.run_src.."/"..par.prf_src[1].."/resource/localization/"..sL.."/"
     local snam = par.prf_src[2]..".properties"
@@ -171,19 +196,7 @@ function properties.syncLocalizations(par)
       for k, v in pairs(dp) do
         local nv = #v
         if(nv > 1) then
-          local dup_ign = false
-          if(par.dup_ign.en) then
-            local cnt_ign = 0
-            for i = 1, nv do
-              for j = 1, #par.dup_ign do
-                if(v[i]:find(par.dup_ign[j])) then
-                  cnt_ign = cnt_ign + 1
-                end
-              end
-            end
-            dup_ign = (cnt_ign == nv)
-          end
-          if(not dup_ign) then
+          if(isDupe(v, par.dup_all) and isDupe(v, par.dup_any)) then
             for i = 1, nv do
               F:write(("%"..par.cnt_len.."d : %s : %s"):format(#v, common.stringPadR(v[i], par.key_len), k).."\n")
             end
