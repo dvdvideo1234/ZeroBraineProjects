@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local com = require("common")
 local ser = "GmodLanguage/Lua/"
@@ -20,15 +20,17 @@ local sNL = "\n"
   5. Run the program again to generate the OUT file
 ]]
 
-local fM = assert(io.open(ser.."mix.txt"))
-local rL = fM:read("*line")
-while(rL) do
-  tAb.Size = tAb.Size + 1
-  tAb[tAb.Size] = com.stringTrim(rL)
-  print(com.stringPadL(tostring(tAb.Size), 6, " "), tAb[tAb.Size])
-  rL = fM:read("*line")
+local fM = io.open(ser.."mix.txt")
+if(fM) then
+  local rL = fM:read("*line")
+  while(rL) do
+    tAb.Size = tAb.Size + 1
+    tAb[tAb.Size] = com.stringTrim(rL)
+    print(com.stringPadL(tostring(tAb.Size), 6, " "), tAb[tAb.Size])
+    rL = fM:read("*line")
+  end
+  fM:close()
 end
-fM:close()
 
 if(tAb.Size > 0) then tAb.ID = 1
   print("Base translation present. Processing...")
