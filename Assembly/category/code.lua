@@ -107,9 +107,12 @@ for i = 1, #tD do
   local nam = com.stringGetFileName(mod)
         nam = com.stringStripExtension(nam)
         nam = "# "..asmlib.GetBeautifyName(nam)
-  local suc, cat, ovr = pcall(dat.Cmp, mod)
-  if(not suc) then error(cat) end; if(not istable(cat)) then cat = {cat} end
-  for i = 1, #cat do cat[i] = asmlib.GetBeautifyName(cat[i]) end; cat = "("..table.concat(cat,"|")..")"
+  local suc, cat, ovr = pcall(dat.Cmp, mod)--; cat = nil
+  if(not suc) then error(cat) end; if(cat and not istable(cat)) then cat = {cat} end
+  if(not istable(cat)) then cat = "# ROOTING ITEM" else
+    for i = 1, #cat do cat[i] = asmlib.GetBeautifyName(cat[i]) end
+    cat = "("..table.concat(cat,"|")..")"
+  end
   out:write(com.stringPadR(mod, 80, " ").." > "..com.stringPadR(cat, 35, " ").." > "..tostring(ovr or nam).."\n")
 end
 
