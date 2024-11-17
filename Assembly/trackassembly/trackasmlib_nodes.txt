@@ -1,56 +1,56 @@
-models/scene_building/sewer_system/arch_hall_3way.mdl                            > sewer_system                        > # Arch Hall 3way
-models/scene_building/sewer_system/arch_hall_4way.mdl                            > sewer_system                        > # Arch Hall 4way
-models/scene_building/sewer_system/arch_hall_corner.mdl                          > sewer_system                        > # Arch Hall Corner
-models/scene_building/sewer_system/arch_small_door1.mdl                          > sewer_system                        > # Arch Small Door1
-models/scene_building/sewer_system/arch_small_door2.mdl                          > sewer_system                        > # Arch Small Door2
-models/scene_building/sewer_system/arch_small_hall.mdl                           > sewer_system                        > # Arch Small Hall
-models/scene_building/sewer_system/arch_small_hall_med.mdl                       > sewer_system                        > # Arch Small Hall Med
-models/scene_building/sewer_system/arch_small_hall_small.mdl                     > sewer_system                        > # Arch Small Hall Small
-models/scene_building/sewer_system/beam_door.mdl                                 > sewer_system                        > # Beam Door
-models/scene_building/sewer_system/beam_hall.mdl                                 > sewer_system                        > # Beam Hall
-models/scene_building/sewer_system/beam_hall_sky.mdl                             > sewer_system                        > # Beam Hall Sky
-models/scene_building/sewer_system/beam_hall_sky_dip.mdl                         > sewer_system                        > # Beam Hall Sky Dip
-models/scene_building/sewer_system/comp_roundroom.mdl                            > sewer_system                        > # Comp Roundroom
-models/scene_building/sewer_system/tunnel_2door.mdl                              > sewer_system                        > # Tunnel 2door
-models/scene_building/sewer_system/tunnel_2sec.mdl                               > sewer_system                        > # Tunnel 2sec
-models/scene_building/sewer_system/tunnel_3sec.mdl                               > sewer_system                        > # Tunnel 3sec
-models/scene_building/sewer_system/tunnel_big_bend.mdl                           > sewer_system                        > # Tunnel Big Bend
-models/scene_building/sewer_system/tunnel_door.mdl                               > sewer_system                        > # Tunnel Door
-models/scene_building/sewer_system/tunnel_pipe_2sec.mdl                          > sewer_system                        > # Tunnel Pipe 2sec
-models/scene_building/sewer_system/tunnel_pipe_3sec.mdl                          > sewer_system                        > # Tunnel Pipe 3sec
-models/scene_building/sewer_system/tunnel_pipe_bend.mdl                          > sewer_system                        > # Tunnel Pipe Bend
-models/scene_building/sewer_system/tunnel_pipe_bend_half.mdl                     > sewer_system                        > # Tunnel Pipe Bend Half
-models/scene_building/sewer_system/tunnel_pipe_ent.mdl                           > sewer_system                        > # Tunnel Pipe Ent
-models/scene_building/sewer_system/tunnel_pipe_ent_gate.mdl                      > sewer_system                        > # Tunnel Pipe Ent Gate
-models/scene_building/sewer_system/tunnel_pipe_long.mdl                          > sewer_system                        > # Tunnel Pipe Long
-models/scene_building/sewer_system/tunnel_pipe_mid.mdl                           > sewer_system                        > # Tunnel Pipe Mid
-models/scene_building/sewer_system/tunnel_pipe_short.mdl                         > sewer_system                        > # Tunnel Pipe Short
-models/scene_building/sewer_system/tunnel_straight.mdl                           > sewer_system                        > # Tunnel Straight
-models/scene_building/small_hallways/hall_1door.mdl                              > small_hallways                      > # Hall 1door
-models/scene_building/small_hallways/hall_1door_med.mdl                          > small_hallways                      > # Hall 1door Med
-models/scene_building/small_hallways/hall_1door_side.mdl                         > small_hallways                      > # Hall 1door Side
-models/scene_building/small_hallways/hall_1door_sml.mdl                          > small_hallways                      > # Hall 1door Sml
-models/scene_building/small_hallways/hall_2door_l.mdl                            > small_hallways                      > # Hall 2door L
-models/scene_building/small_hallways/hall_2door_opp.mdl                          > small_hallways                      > # Hall 2door Opp
-models/scene_building/small_hallways/hall_2door_opp_small.mdl                    > small_hallways                      > # Hall 2door Opp Small
-models/scene_building/small_hallways/hall_2door_r.mdl                            > small_hallways                      > # Hall 2door R
-models/scene_building/small_hallways/hall_2door_side.mdl                         > small_hallways                      > # Hall 2door Side
-models/scene_building/small_hallways/hall_3door.mdl                              > small_hallways                      > # Hall 3door
-models/scene_building/small_hallways/hall_connector.mdl                          > small_hallways                      > # Hall Connector
-models/scene_building/small_hallways/hall_connector_3way.mdl                     > small_hallways                      > # Hall Connector 3way
-models/scene_building/small_hallways/hall_connector_4way.mdl                     > small_hallways                      > # Hall Connector 4way
-models/scene_building/small_hallways/hall_connector_corner.mdl                   > small_hallways                      > # Hall Connector Corner
-models/scene_building/small_hallways/hall_connector_deadend.mdl                  > small_hallways                      > # Hall Connector Deadend
-models/scene_building/small_rooms/1door.mdl                                      > small_rooms                         > # 1door
-models/scene_building/small_rooms/1door_l.mdl                                    > small_rooms                         > # 1door L
-models/scene_building/small_rooms/1door_r.mdl                                    > small_rooms                         > # 1door R
-models/scene_building/small_rooms/2door_opp.mdl                                  > small_rooms                         > # 2door Opp
-models/scene_building/small_rooms/2door_opposites.mdl                            > small_rooms                         > # 2door Opposites
-models/scene_building/small_rooms/2door_opp_l.mdl                                > small_rooms                         > # 2door Opp L
-models/scene_building/small_rooms/2door_opp_ml.mdl                               > small_rooms                         > # 2door Opp Ml
-models/scene_building/small_rooms/2door_opp_mr.mdl                               > small_rooms                         > # 2door Opp Mr
-models/scene_building/small_rooms/2door_opp_r.mdl                                > small_rooms                         > # 2door Opp R
-models/scene_building/small_rooms/2door_sides.mdl                                > small_rooms                         > # 2door Sides
-models/scene_building/small_rooms/3door.mdl                                      > small_rooms                         > # 3door
-models/scene_building/small_rooms/4door.mdl                                      > small_rooms                         > # 4door
-models/scene_building/small_rooms/stairs_straight.mdl                            > small_rooms                         > # Stairs Straight
+models/scene_building/sewer_system/arch_hall_3way.mdl                            > (Sewer System)                      > # Arch Hall 3way
+models/scene_building/sewer_system/arch_hall_4way.mdl                            > (Sewer System)                      > # Arch Hall 4way
+models/scene_building/sewer_system/arch_hall_corner.mdl                          > (Sewer System)                      > # Arch Hall Corner
+models/scene_building/sewer_system/arch_small_door1.mdl                          > (Sewer System)                      > # Arch Small Door1
+models/scene_building/sewer_system/arch_small_door2.mdl                          > (Sewer System)                      > # Arch Small Door2
+models/scene_building/sewer_system/arch_small_hall.mdl                           > (Sewer System)                      > # Arch Small Hall
+models/scene_building/sewer_system/arch_small_hall_med.mdl                       > (Sewer System)                      > # Arch Small Hall Med
+models/scene_building/sewer_system/arch_small_hall_small.mdl                     > (Sewer System)                      > # Arch Small Hall Small
+models/scene_building/sewer_system/beam_door.mdl                                 > (Sewer System)                      > # Beam Door
+models/scene_building/sewer_system/beam_hall.mdl                                 > (Sewer System)                      > # Beam Hall
+models/scene_building/sewer_system/beam_hall_sky.mdl                             > (Sewer System)                      > # Beam Hall Sky
+models/scene_building/sewer_system/beam_hall_sky_dip.mdl                         > (Sewer System)                      > # Beam Hall Sky Dip
+models/scene_building/sewer_system/comp_roundroom.mdl                            > (Sewer System)                      > # Comp Roundroom
+models/scene_building/sewer_system/tunnel_2door.mdl                              > (Sewer System)                      > # Tunnel 2door
+models/scene_building/sewer_system/tunnel_2sec.mdl                               > (Sewer System)                      > # Tunnel 2sec
+models/scene_building/sewer_system/tunnel_3sec.mdl                               > (Sewer System)                      > # Tunnel 3sec
+models/scene_building/sewer_system/tunnel_big_bend.mdl                           > (Sewer System)                      > # Tunnel Big Bend
+models/scene_building/sewer_system/tunnel_door.mdl                               > (Sewer System)                      > # Tunnel Door
+models/scene_building/sewer_system/tunnel_pipe_2sec.mdl                          > (Sewer System)                      > # Tunnel Pipe 2sec
+models/scene_building/sewer_system/tunnel_pipe_3sec.mdl                          > (Sewer System)                      > # Tunnel Pipe 3sec
+models/scene_building/sewer_system/tunnel_pipe_bend.mdl                          > (Sewer System)                      > # Tunnel Pipe Bend
+models/scene_building/sewer_system/tunnel_pipe_bend_half.mdl                     > (Sewer System)                      > # Tunnel Pipe Bend Half
+models/scene_building/sewer_system/tunnel_pipe_ent.mdl                           > (Sewer System)                      > # Tunnel Pipe Ent
+models/scene_building/sewer_system/tunnel_pipe_ent_gate.mdl                      > (Sewer System)                      > # Tunnel Pipe Ent Gate
+models/scene_building/sewer_system/tunnel_pipe_long.mdl                          > (Sewer System)                      > # Tunnel Pipe Long
+models/scene_building/sewer_system/tunnel_pipe_mid.mdl                           > (Sewer System)                      > # Tunnel Pipe Mid
+models/scene_building/sewer_system/tunnel_pipe_short.mdl                         > (Sewer System)                      > # Tunnel Pipe Short
+models/scene_building/sewer_system/tunnel_straight.mdl                           > (Sewer System)                      > # Tunnel Straight
+models/scene_building/small_hallways/hall_1door.mdl                              > (Small Hallways)                    > # Hall 1door
+models/scene_building/small_hallways/hall_1door_med.mdl                          > (Small Hallways)                    > # Hall 1door Med
+models/scene_building/small_hallways/hall_1door_side.mdl                         > (Small Hallways)                    > # Hall 1door Side
+models/scene_building/small_hallways/hall_1door_sml.mdl                          > (Small Hallways)                    > # Hall 1door Sml
+models/scene_building/small_hallways/hall_2door_l.mdl                            > (Small Hallways)                    > # Hall 2door L
+models/scene_building/small_hallways/hall_2door_opp.mdl                          > (Small Hallways)                    > # Hall 2door Opp
+models/scene_building/small_hallways/hall_2door_opp_small.mdl                    > (Small Hallways)                    > # Hall 2door Opp Small
+models/scene_building/small_hallways/hall_2door_r.mdl                            > (Small Hallways)                    > # Hall 2door R
+models/scene_building/small_hallways/hall_2door_side.mdl                         > (Small Hallways)                    > # Hall 2door Side
+models/scene_building/small_hallways/hall_3door.mdl                              > (Small Hallways)                    > # Hall 3door
+models/scene_building/small_hallways/hall_connector.mdl                          > (Small Hallways)                    > # Hall Connector
+models/scene_building/small_hallways/hall_connector_3way.mdl                     > (Small Hallways)                    > # Hall Connector 3way
+models/scene_building/small_hallways/hall_connector_4way.mdl                     > (Small Hallways)                    > # Hall Connector 4way
+models/scene_building/small_hallways/hall_connector_corner.mdl                   > (Small Hallways)                    > # Hall Connector Corner
+models/scene_building/small_hallways/hall_connector_deadend.mdl                  > (Small Hallways)                    > # Hall Connector Deadend
+models/scene_building/small_rooms/1door.mdl                                      > (Small Rooms)                       > # 1door
+models/scene_building/small_rooms/1door_l.mdl                                    > (Small Rooms)                       > # 1door L
+models/scene_building/small_rooms/1door_r.mdl                                    > (Small Rooms)                       > # 1door R
+models/scene_building/small_rooms/2door_opp.mdl                                  > (Small Rooms)                       > # 2door Opp
+models/scene_building/small_rooms/2door_opposites.mdl                            > (Small Rooms)                       > # 2door Opposites
+models/scene_building/small_rooms/2door_opp_l.mdl                                > (Small Rooms)                       > # 2door Opp L
+models/scene_building/small_rooms/2door_opp_ml.mdl                               > (Small Rooms)                       > # 2door Opp Ml
+models/scene_building/small_rooms/2door_opp_mr.mdl                               > (Small Rooms)                       > # 2door Opp Mr
+models/scene_building/small_rooms/2door_opp_r.mdl                                > (Small Rooms)                       > # 2door Opp R
+models/scene_building/small_rooms/2door_sides.mdl                                > (Small Rooms)                       > # 2door Sides
+models/scene_building/small_rooms/3door.mdl                                      > (Small Rooms)                       > # 3door
+models/scene_building/small_rooms/4door.mdl                                      > (Small Rooms)                       > # 4door
+models/scene_building/small_rooms/stairs_straight.mdl                            > (Small Rooms)                       > # Stairs Straight
