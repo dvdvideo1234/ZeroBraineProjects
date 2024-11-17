@@ -19,7 +19,7 @@ local API = {
   },
   FILE = {
     exts = "stcontrol",
-    base = "F:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/ControlSystemsE2",
+    base = "D:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/ControlSystemsE2",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_stcontrol",
