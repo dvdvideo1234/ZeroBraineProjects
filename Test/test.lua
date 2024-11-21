@@ -13,13 +13,8 @@ require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 
-local t = {["test"] = false}
-
-local function toNumber(src)
-  return (tonumber(src) or 0)
+function a(...)
+print("A:", ...)
 end
 
-local r = t["test"]
-local e = r and r.ID or 0
-
-print(toNumber(e))
+a(unpack({}))
