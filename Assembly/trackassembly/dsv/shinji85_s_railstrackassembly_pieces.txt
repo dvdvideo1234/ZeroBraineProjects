@@ -1,5 +1,5 @@
-# SynchronizeDSV:(Shinji85_s_Rails@PIECES) 24-10-31 09:19:54 [ LUA ]
-# PIECES:(	MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+# SynchronizeDSV:(Shinji85_s_Rails@PIECES) 24-11-25 11:16:52 [ LUA ]
+# PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Shinji85's Rails"	"Straight 16x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Shinji85's Rails"	"Straight 16x"	2	"NULL"	"-2048,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_1x.mdl"	"Shinji85's Rails"	"Straight 1x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"

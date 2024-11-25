@@ -9,8 +9,9 @@ local dir = require("directories")
       dir.addBase("C:/Programs/ZeroBraineIDE")
       dir.setBase(2)
 
-CLIENT = true
-SERVER = false
+rawset(_G, "CLIENT", true)
+rawset(_G, "SERVER", false)
+rawset(_G, "ErrorNoHaltWithStack", error)
 
 require("gmodlib")
 function game.SinglePlayer() return false end
@@ -56,3 +57,4 @@ end
 
 asmlib.ExportCategory(3, tS, sP, true)
 asmlib.ExportTypeDSV(sT)
+asmlib.ExportTypeRun(sT)

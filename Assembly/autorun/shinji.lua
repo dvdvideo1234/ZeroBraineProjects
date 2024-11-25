@@ -40,6 +40,27 @@ local myScript = tostring(debug.getinfo(1).source or "N/A")
       myScript = "@"..myScript:gsub("^%W+", ""):gsub("\\","/")
       mySource = tostring(mySource or ""):gsub("^%W+", "")
       mySource = (asmlib.IsBlank(mySource) and "DSV" or mySource)
+
+-- Store a reference to disable symbol
+local gsMissDB = asmlib.GetOpVar("MISS_NOSQL")
+local gsDirDSV = asmlib.GetOpVar("DIRPATH_DSV")
+local gsToolPF = asmlib.GetOpVar("TOOLNAME_PU")
+local gsSymOff = asmlib.GetOpVar("OPSYM_DISABLE")
+
+-- This is the path to your DSV
+local myDsv = asmlib.GetLibraryPath(gsDirDSV, myPrefix, gsToolPF.."PIECES")
+
+--[[
+ * This flag is used when the track pieces list needs to be processed.
+ * It generally represents the locking file persistence flag. It is
+ * bound to finding a "PIECES" DSV external database for the prefix
+ * of your addon. You can use it for boolean value deciding whenever
+ * or not to run certain events. For example you can stop exporting
+ * your local database every time Gmod loads, but then the user will
+ * skip the available updates of your addon until he/she deletes the DSVs.
+]]--
+local myFlag = file.Exists(myDsv, "DATA")
+
 --[[
  * This function defines what happens when there is an error present
  * Usually you can tell Gmod that you want it to generate an error
@@ -52,9 +73,6 @@ local function ThrowError(vMesg)
   if(asmlib) then asmlib.LogInstance(sMesg, mySource) end -- Update the tool logs
   ErrorNoHaltWithStack(sMesg.."\n") -- Produce an error without breaking the stack
 end
-
--- There is something to error about stop the execution and report it
-if(not asmlib) then ThrowError("Failed loading the required module!"); return end
 
 --[[
  * This logic statement is needed for reporting the error
@@ -137,35 +155,13 @@ local function ExportCategory(tCatg)
   else asmlib.LogInstance("Category export SERVER "..sRep, mySource) end
 end
 
--- Store a reference to disable symbol
-local gsMissDB = asmlib.GetOpVar("MISS_NOSQL")
-local gsToolPF = asmlib.GetOpVar("TOOLNAME_PU")
-local gsSymOff = asmlib.GetOpVar("OPSYM_DISABLE")
-local gsFormPF = asmlib.GetOpVar("FORM_PREFIXDSV")
-
--- This is the path to your DSV
-local myDsv = asmlib.GetOpVar("DIRPATH_BAS")..
-              asmlib.GetOpVar("DIRPATH_DSV")..
-              gsFormPF:format(myPrefix, gsToolPF.."PIECES")
-
---[[
- * This flag is used when the track pieces list needs to be processed.
- * It generally represents the locking file persistence flag. It is
- * bound to finding a "PIECES" DSV external database for the prefix
- * of your addon. You can use it for boolean value deciding whenever
- * or not to run certain events. For example you can stop exporting
- * your local database every time Gmod loads, but then the user will
- * skip the available updates of your addon until he/she deletes the DSVs.
-]]--
-local myFlag = file.Exists(myDsv, "DATA")
-
 -- Tell TA what custom script we just called don't touch it
 asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..", "..myPrefix.."}", mySource)
 
 -- Register the addon to the workshop ID list
 asmlib.WorkshopID(myAddon, "326640186")
 
--- Register the addon to the pluggable DSV list
+-- Register the addon to the plugable DSV list
 local bS, vO = pcall(RegisterDSV, myFlag)
 if(not bS) then ThrowError("Registration error: "..vO) end
 
@@ -193,7 +189,7 @@ local myCategory = {
   ]]}
 }
 
--- Register the addon category to the pluggable DSV list
+-- Register the addon category to the plugable DSV list
 local bS, vO = pcall(ExportCategory, myCategory)
 if(not bS) then ThrowError("Category error: "..vO) end
 
@@ -220,7 +216,7 @@ if(not bS) then ThrowError("Category error: "..vO) end
  *          the model ( from the last slash to the file extension ).
  * LINEID > This is the ID of the point that can be selected for building. They must be
  *          sequential and mandatory. If provided, the ID must the same as the row index under
- *          a given model key. Disabling this, makes it use the the index of the current line.
+ *          a given model key. Disabling this, makes it use the index of the current line.
  *          Use that to swap the active points around by only moving the desired row up or down.
  *          For the example table definition below, the line ID in the database will be the same.
  * POINT  > This is the location vector that TA searches and selects the related ORIGIN for.
@@ -343,7 +339,7 @@ local myPieces = {
   }
 }
 
--- Register the addon PIECES to the pluggable DSV list
+-- Register the addon PIECES to the plugable DSV list
 local bS, vO = pcall(SyncTable, "PIECES", myPieces, true)
 if(not bS) then ThrowError("PIECES error: "..vO) end
 
@@ -355,7 +351,7 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
  * {MODELBASE, MODELADD, ENTCLASS, LINEID, POSOFF, ANGOFF, MOVETYPE, PHYSINIT, DRSHADOW, PHMOTION, PHYSLEEP, SETSOLID}
  * MODELBASE > This string contains the path to your base /*.mdl/ file the additions will be attached to.
  *             It is mandatory and taken in pairs with LINEID, it forms the unique identifier of every record.
- *             When used in /DSV/ mode ( like seen below ) is used as a hash index.
+ *             When used in /DSV/ mode ( like seen below ) it is used as a hash index.
  * MODELADD  > This is the /*.mdl/ path of the addition entity. It is mandatory and cannot be disabled.
  * ENTCLASS  > This is the class of the addition entity. When disabled or missing it defaults to a normal prop.
  * LINEID    > This is the ID of the point that can be selected for building. They must be
@@ -392,7 +388,7 @@ local myAdditions = {
   }
 }
 
--- Register the addon ADDITIONS to the pluggable DSV list
+-- Register the addon ADDITIONS to the plugable DSV list
 local bS, vO = pcall(SyncTable, "ADDITIONS", myAdditions, true)
 if(not bS) then ThrowError("ADDITIONS error: "..vO) end
 
@@ -404,7 +400,7 @@ if(not bS) then ThrowError("ADDITIONS error: "..vO) end
  * {TYPE, LINEID, NAME}
  * TYPE   > This is the category under your physical properties are stored internally.
  *          It is mandatory and taken in pairs with LINEID, it forms the unique identifier of every record.
- *          When used in /DSV/ mode ( like seen below ) is is used as a hash index.
+ *          When used in /DSV/ mode ( like seen below ) it is used as a hash index.
  * LINEID > This is the ID of the point that can be selected for building. They must be
  *          sequential and mandatory. If provided, the ID must the same as the row index under
  *          a given model key. Disabling this, makes it use the index of the current line.
@@ -414,7 +410,7 @@ if(not bS) then ThrowError("ADDITIONS error: "..vO) end
 ]]--
 local myPhysproperties = {}
 
--- Register the addon PHYSPROPERTIES to the pluggable DSV list
+-- Register the addon PHYSPROPERTIES to the plugable DSV list
 local bS, vO = pcall(SyncTable, "PHYSPROPERTIES", myPhysproperties, true)
 if(not bS) then ThrowError("PHYSPROPERTIES error: "..vO) end
 
