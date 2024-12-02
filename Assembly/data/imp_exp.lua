@@ -24,7 +24,13 @@ asmlib.SetLogControl(20000, false)
 
 local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
 
-asmlib.ImportDSV("PIECES", true, "tst_", nil, true)
+--asmlib.ImportDSV("PIECES", true, "poa_", nil, false)
+
+asmlib.ImportDSV("Assembly/trackassembly/dsv/poa_TRACKASSEMBLY_PIECES.txt", true)
+
+local r = asmlib.CacheQueryPiece("models/props_lab/blastdoor001b.mdl")
+print("Record:", r and r.Slot or "N/A")
+
 asmlib.ExportDSV("PIECES", "new_", nil, true)
 
 

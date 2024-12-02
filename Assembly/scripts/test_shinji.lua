@@ -58,3 +58,4 @@ end
 asmlib.ExportCategory(3, tS, sP, true)
 asmlib.ExportTypeDSV(sT)
 asmlib.ExportTypeRun(sT)
+asmlib.ExportSyncDB()

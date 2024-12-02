@@ -25,12 +25,3 @@ asmlib.SetLogControl(20000, false)
 local function IsValid(a) return a~=nil end 
 
 local P = asmlib.GetBuilderNick("PIECES")
-local D = P:GetDefinition()
-local V = {}; for iD = 1, D.Size do V[D[iD][1]] = iD end
-
-V["MODEL"] = nil
-V["LINEID"] = 0
-
-print(P:GetColumnList(nil,1,2,3))
-
-print(P:GetConcat(V, "|",function(iCT, sCT, vCT) return P:Match(vCT,iCT,true,"\"",true) end))

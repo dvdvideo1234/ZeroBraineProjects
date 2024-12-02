@@ -24,10 +24,7 @@ asmlib.SetLogControl(20000, false)
 local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
 
 table.Empty(tC)
-com.logTable(tC, "BEFORE")
 
 asmlib.ImportCategory(0, "cl_", true)
 asmlib.ExportCategory(3, tC, "new_", true)
-
-
-  
+com.logTable(tC, "AFTER")
