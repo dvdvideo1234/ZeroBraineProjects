@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local sEXP = "stcontrol"-- laserbeam, primitive, tanktracktool
 

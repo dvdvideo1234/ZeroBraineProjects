@@ -52,10 +52,6 @@ The description of the API is provided in the table below.
 |![image][ref-xsc]:`dmpInfo`(![image][ref-s])|![image][ref-xsc]|Dumps state controller to the chat area by string identifier|
 |![image][ref-xsc]:`dmpInfo`(![image][ref-s],![image][ref-n])|![image][ref-xsc]|Dumps state controller by number identifier in the specified area by first argument|
 |![image][ref-xsc]:`dmpInfo`(![image][ref-s],![image][ref-s])|![image][ref-xsc]|Dumps state controller by string identifier in the specified area by first argument|
-|![image][ref-xsc]:`dumpItem`(![image][ref-n])|![image][ref-xsc]|Dumps state controller to the chat area by number identifier|
-|![image][ref-xsc]:`dumpItem`(![image][ref-s])|![image][ref-xsc]|Dumps state controller to the chat area by string identifier|
-|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-n])|![image][ref-xsc]|Dumps state controller by number identifier in the specified area by first argument|
-|![image][ref-xsc]:`dumpItem`(![image][ref-s],![image][ref-s])|![image][ref-xsc]|Dumps state controller by string identifier in the specified area by first argument|
 |![image][ref-xsc]:`getBias`(![image][ref-xxx])|![image][ref-n]|Returns state controller output signal bias|
 |![image][ref-xsc]:`getControl`(![image][ref-xxx])|![image][ref-n]|Returns state controller automated control output signal value|
 |![image][ref-xsc]:`getControlTerm`(![image][ref-xxx])|![image][ref-r]|Returns state controller automated control term signals as vector or array|

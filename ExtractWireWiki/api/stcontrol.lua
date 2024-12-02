@@ -19,7 +19,7 @@ local API = {
   },
   FILE = {
     exts = "stcontrol",
-    base = "D:/Games/Steam/steamapps/common/GarrysMod/garrysmod/addons/ControlSystemsE2",
+    base = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/ControlSystemsE2",
     path = "data/wiki",
     slua = "lua/entities/gmod_wire_expression2/core/custom",
     cvar = "wire_expression2_stcontrol",
@@ -98,7 +98,7 @@ local E2Helper = {Descriptions = {}}
 local language = {}
 function language.Add() return nil end
 ]===]
-
+--[[
 API.DSCHUNK = [===[
 
 local DSC = E2Helper.Descriptions
@@ -250,7 +250,7 @@ DSC["dmpInfo(xsc:ss)"]        = fDump2:format(tActon[2], "string", "specified ar
 DSC["setZeroCross(xsc:n)"]    = fGnRet:format(tActon[8], "integral zero crossing margin")
 DSC["getZeroCross(xsc:)"]     = fGnRet:format(tActon[4], "integral zero crossing margin")
 ]===]
-
+]]
 API.TEXT = function() return([===[
 ### What does this extension include?
 State controller [OOP class][ref_class_oop] that creates LQ-PID controllers with static or
