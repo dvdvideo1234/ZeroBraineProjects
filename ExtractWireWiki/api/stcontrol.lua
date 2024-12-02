@@ -1,4 +1,4 @@
-local fImg = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/pictures/%s.png"
+local fImg = "https://raw.githubusercontent.com/dvdvideo1234/ControlSystemsE2/master/data/controlsystemse2/tools/pictures/%s.png"
 
 local API = {
   NAME = "StControl",
@@ -37,21 +37,21 @@ local API = {
     ["Material_surface_properties"] = "https://developer.valvesoftware.com/wiki/Material_surface_properties",
     ["Choen-Coon"] = fImg:format("CC_tuning"),
     ["%s+%(`*ZN`*%)%s+"] = {
-      ["Ziegler-Nichols"] = fImg:format("ZN_tunning"),
+      ["Ziegler-Nichols"] = fImg:format("ZN_tuning"),
       ["auto oscillation"] = fImg:format("auto_Tu")
     },
     ["%s+%(`*IAE`*%)%s+"]  = {["Integral absolute error"] = fImg:format("IAE_tuning")},
     ["%s+%(`*ISE`*%)%s+"]  = {["Integral square error"] = fImg:format("IAE_tuning")},
     ["%s+%(`*ITAE`*%)%s+"] = {["Integral of time-weighted absolute error"] = fImg:format("IAE_tuning")},
-    ["%(`*CHR`*%).+set%s+point%s+track"] = {["Chien-Hrones-Reswick"] = fImg:format("CHR_tunning_sp")},
-    ["%(`*CHR`*%).+load%s+rejection"]    = {["Chien-Hrones-Reswick"] = fImg:format("CHR_tunning_dr")},
+    ["%(`*CHR`*%).+set%s+point%s+track"] = {["Chien-Hrones-Reswick"] = fImg:format("CHR_tuning_sp")},
+    ["%(`*CHR`*%).+load%s+rejection"]    = {["Chien-Hrones-Reswick"] = fImg:format("CHR_tuning_dr")},
     ["%s+%(`*TL`*%)%s+"] = {
-      ["Tyreus-Luyben"] = fImg:format("TL_tunning"),
+      ["Tyreus-Luyben"] = fImg:format("TL_tuning"),
       ["auto oscillation"] = fImg:format("auto_Tu")
     },
     ["%s+%(`*ZNM`*%)%s+"] = {
       ["plant process"] = fImg:format("proc_curve"),
-      ["Ziegler-Nichols"] = fImg:format("ZN_proc_tunning")
+      ["Ziegler-Nichols"] = fImg:format("ZN_proc_tuning")
     }
   },
   HDESC = {
