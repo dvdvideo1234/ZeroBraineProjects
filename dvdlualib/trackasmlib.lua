@@ -52,6 +52,7 @@ local isstring                       = isstring
 local isvector                       = isvector
 local isangle                        = isangle
 local ismatrix                       = ismatrix
+local isentity                       = isentity
 local isfunction                     = isfunction
 local Vector                         = Vector
 local Matrix                         = Matrix
@@ -818,14 +819,14 @@ end
 
 ------------- COLOR ---------------
 
-function FixColor(nC)
+function ToColor(nC)
   local tC = GetOpVar("COLOR_CLAMP")
   return mathFloor(mathClamp((tonumber(nC) or 0), tC[1], tC[2]))
 end
 
 function GetColor(xR, xG, xB, xA)
-  local nR, nG = FixColor(xR), FixColor(xG)
-  local nB, nA = FixColor(xB), FixColor(xA)
+  local nR, nG = ToColor(xR), ToColor(xG)
+  local nB, nA = ToColor(xB), ToColor(xA)
   return Color(nR, nG, nB, nA)
 end
 
@@ -1857,7 +1858,7 @@ function GetFrequentPieces(iCnt)
     local oRec = tSort[iD] -- Index arranged record ID
     if(oRec) then oRec = oRec.Rec -- Jump over to the record
       if(not oRec.Post) then -- Initialized. Not yet picked
-        local nT = (tmNow - oRec.Used) -- Time to display
+        local nT = (tmNow - (tonumber(oRec.Used) or 0))
         local tD = {oRec.Slot, oRec.Type, oRec.Name, oRec.Size}
         frUsed.Size = (frUsed.Size + 1) -- Increment size
         tableInsert(frUsed, {Time = nT, Data = tD})
@@ -2236,33 +2237,48 @@ function GetAttachmentByID(vSrc, sID)
     LogInstance("Index missing "..GetReport(sID, vSrc)); return nil end
   if(isstring(vSrc)) then -- Source is a model path
     sSrc = vSrc; if(not IsModel(sSrc)) then
-      LogInstance("Model mismatch [S] "..GetReport(sID, sSrc)); return nil, sSrc end
+      LogInstance("[S] Source mismatch "..GetReport(sID, sSrc)); return nil, sSrc end
     eBase = GetOpVar("ENTITY_TRANSFORMPOA") -- Use transform entity
     if(eBase and eBase:IsValid()) then -- Valid basis entity then
       if(eBase:GetModel() ~= sSrc) then eBase:SetModel(sSrc)
-        LogInstance("Update [S] "..GetReport(eBase:EntIndex(), sID, sSrc)) end
+        LogInstance("[S] Source update "..GetReport(eBase:EntIndex(), sID, sSrc)) end
     else -- If there is no basis need to create one for attachment extraction
       eBase = NewEntityNone(sSrc); if(not (eBase and eBase:IsValid())) then
-        LogInstance("Basis creation error [S] "..GetReport(sID, sSrc)); return nil, sSrc end
+        LogInstance("[S] Creation error "..GetReport(sID, sSrc)); return nil, sSrc end
       SetOpVar("ENTITY_TRANSFORMPOA", eBase) -- Register the entity transform basis
     end -- Transfer the data from the transform attachment location
   elseif(isnumber(vSrc)) then
     local iSrc = mathFloor(vSrc); if(iSrc <= 0) then
-      LogInstance("Index invalid [N] "..GetReport(sID, vSrc, iSrc)); return nil, sSrc end
+      LogInstance("[N] Index invalid "..GetReport(sID, vSrc, iSrc)); return nil, sSrc end
     local eSrc = EntityID(iSrc); if(not (eSrc and eSrc:IsValid())) then
-      LogInstance("Entity invalid [N] "..GetReport(sID, eSrc)); return nil, sSrc end
+      LogInstance("[N] Entity invalid "..GetReport(sID, eSrc)); return nil, sSrc end
     eBase, sSrc = eSrc, eSrc:GetModel(); if(not isstring(sID)) then
-      LogInstance("Index mismatch [N] "..GetReport(sID, sSrc)); return nil, sSrc end
-  else -- Assume the source is an entity already spawned use it instead
+      LogInstance("[N] Index mismatch "..GetReport(sID, sSrc)); return nil, sSrc end
+  elseif(isentity(vSrc)) then -- Assume the source is an entity already spawned use it instead
     if(not (vSrc and vSrc:IsValid())) then
-      LogInstance("Entity invalid [E] "..GetReport(sID, vSrc)); return nil, sSrc end
+      LogInstance("[E] Entity invalid "..GetReport(sID, vSrc)); return nil, sSrc end
     eBase, sSrc = vSrc, vSrc:GetModel(); if(not isstring(sID)) then
-      LogInstance("Index mismatch [E] "..GetReport(sID, sSrc)); return nil, sSrc end
-  end
+      LogInstance("[E] Index mismatch "..GetReport(sID, sSrc)); return nil, sSrc end
+  elseif(isfunction(vSrc)) then
+    local bS, fSrc, fID = pcall(vSrc, sID); if(not bS) then
+      LogInstance("[F] Routine invalid "..GetReport(sID, vSrc, fSrc)); return nil, sSrc end
+    if(not IsHere(fSrc)) then -- There is nothing to extract from an empty value
+      LogInstance("[F] Results missing "..GetReport(sID, vSrc)); return nil, sSrc end
+    return GetAttachmentByID(fSrc, (IsHere(fID) and fID or sID))
+  elseif(istable(vSrc)) then local tSrc, tID = vSrc[1], vSrc[2] -- Try the array keys
+     -- Handle various table key here. Use for whatever. Extract and valide the index
+    tSrc, tID = (IsHere(tSrc) and tSrc or vSrc.SRC)   , ((IsHere(tID) and isstring(tID)) and tID or vSrc.ID)
+    tSrc, tID = (IsHere(tSrc) and tSrc or vSrc.Source), ((IsHere(tID) and isstring(tID)) and tID or vSrc.Index)
+    tSrc, tID = (IsHere(tSrc) and tSrc or vSrc.Entity), ((IsHere(tID) and isstring(tID)) and tID or vSrc.Point)
+    -- Make sure to validate the index before passing to the next stage
+    tID = ((IsHere(tID) and isstring(tID)) and tID or sID); return GetAttachmentByID(tSrc, tID)
+  else -- Assume the source is not supported when it is not explicitly developed
+    LogInstance("[X] Source invalid "..GetReport(vSrc, sID)); return nil, sSrc
+  end -- When there is no need for recursive source extraction calls return current
   local mID = eBase:LookupAttachment(sID); if(not isnumber(mID)) then
-    LogInstance("Attachment invalid ID "..GetReport(sID, sSrc)); return nil, sSrc end
+    LogInstance("Lookup invalid ID "..GetReport(sID, sSrc)); return nil, sSrc end
   local mTOA = eBase:GetAttachment(mID); if(not IsHere(mTOA)) then
-    LogInstance("Attachment missing "..GetReport(sID, mID, sSrc)); return nil, sSrc end
+    LogInstance("Data missing ID "..GetReport(mID, sID, sSrc)); return nil, sSrc end
   LogInstance("Extract "..GetReport(sID, mTOA.Pos, mTOA.Ang))
   return mTOA, sSrc -- The function must return transform table
 end
@@ -2278,21 +2294,20 @@ end
 ]]
 function LocatePOA(oRec, ivPoID)
   if(not oRec) then LogInstance("Missing record"); return nil end
-  local sMo = oRec.Slot
-  local tOffs = oRec.Offs; if(not tOffs) then
+  local sMo, tOffs = oRec.Slot, oRec.Offs; if(not tOffs) then
     LogInstance("Missing offsets for "..GetReport(oRec.Slot)); return nil end
   local iPoID = tonumber(ivPoID); if(iPoID) then iPoID = mathFloor(iPoID)
     else LogInstance("ID mismatch "..GetReport(ivPoID)); return nil end
   local stPOA = tOffs[iPoID]; if(not IsHere(stPOA)) then
     LogInstance("Missing ID "..GetReport(iPoID, oRec.Slot)); return nil end
   if(oRec.Post) then oRec.Post = nil -- Transforming has started
-    for ID = 1, oRec.Size do
-      local tPOA = tOffs[ID]
-      local oP, oO, oA = tPOA.P, tPOA.O, tPOA.A
-      local sP, sO, sA = oP:Raw(), oO:Raw(), oA:Raw()
-      if(sO) then tPOA.O:Decode(sO, sM, "Pos") end
-      if(sA) then tPOA.A:Decode(sA, sM, "Ang") end
-      if(sP) then tPOA.P:Decode(sP, sM, "Pos", tPOA.O:Get()) end
+    for ID = 1, oRec.Size do -- Loop trough all the points and process DB spawn
+      local tPOA = tOffs[ID] -- Extract current offset and localize raw values
+      local oP, oO, oA = tPOA.P, tPOA.O, tPOA.A -- POA object pointers
+      local sP, sO, sA = oP:Raw(), oO:Raw(), oA:Raw() -- POA raw values
+      if(sO) then tPOA.O:Decode(sO, sMo, "Pos") end -- Process origin
+      if(sA) then tPOA.A:Decode(sA, sMo, "Ang") end -- Process angle
+      if(sP) then tPOA.P:Decode(sP, sMo, "Pos", tPOA.O:Get()) end
       LogInstance("Spawn "..GetReport(ID, tPOA.P:String(), tPOA.O:String(), tPOA.A:String()))
     end -- Loop and transform all the POA configuration at once. Game model slot will be taken
   end; return stPOA, iPoID
@@ -2773,104 +2788,90 @@ function NewTable(sTable,defTab,bDelete,bReload)
   -- Navigates the reference in the cache
   function self:GetNavigate(...)
     local tKey = {...}; if(not IsHere(tKey[1])) then
-      LogInstance("Missing keys",tabDef.Nick); return nil end
-    local oSpot, kKey, iCnt = libCache, tKey[1], 1
-    while(tKey[iCnt]) do kKey = tKey[iCnt]; iCnt = iCnt + 1
-      if(tKey[iCnt]) then oSpot = oSpot[kKey]; if(not IsHere(oSpot)) then
-        LogTable(tKey,"Diverge("..tostring(kKey)..")",tabDef.Nick); return nil
-    end; end; end; if(not oSpot[kKey]) then
-      LogTable(tKey,"Missing",tabDef.Nick); return nil end
-    return oSpot, kKey, tKey
+      LogInstance("Missing keys", tabDef.Nick); return nil end
+    local oSpot, vKey, iCnt = libCache, tKey[1], 1
+    while(tKey[iCnt]) do vKey = tKey[iCnt]; iCnt = iCnt + 1
+      if(tKey[iCnt]) then oSpot = oSpot[vKey]; if(not IsHere(oSpot)) then
+        LogTable(tKey, "Diverge("..tostring(vKey)..")", tabDef.Nick); return nil
+    end; end; end; if(not oSpot[vKey]) then
+      LogTable(tKey, "Missing", tabDef.Nick); return nil end
+    return oSpot, vKey, tKey
   end
   -- Attaches timer to a record related in the table cache
   function self:TimerAttach(vMsg, ...)
-    local oSpot, kKey, tKey = self:GetNavigate(...)
-    if(not (IsHere(oSpot) and IsHere(kKey))) then
+    local oSpot, vKey, tKey = self:GetNavigate(...)
+    if(not (IsHere(oSpot) and IsHere(vKey))) then
       LogInstance("Navigation miss "..GetReport(unpack(tKey)),tabDef.Nick)
       LogTable(oSpot, "Navigation", tabDef.Nick); return nil
     end -- Navigated to the last table node and returned the value key
     local sDiv, nNow = GetOpVar("OPSYM_DIVIDER"), Time()
     local sMoDB, iCnt = GetOpVar("MODE_DATABASE"), select("#", ...)
-    LogInstance("Called by "..GetReport(vMsg, kKey),tabDef.Nick)
-    oSpot[kKey].Used = nNow -- Make the first selected deleteable to avoid phantom records
+    LogInstance("Called by "..GetReport(vMsg, vKey), tabDef.Nick)
+    oSpot[vKey].Used = nNow -- Make the first selected deleteable to avoid phantom records
     if(sMoDB == "SQL") then local qtCmd = self:GetCommand() -- Read the command and current time
       local tTim = qtCmd.Timer; if(not IsHere(tTim)) then
-        LogInstance("Missing timer settings",tabDef.Nick); return oSpot[kKey] end
+        LogInstance("Missing timer settings", tabDef.Nick); return oSpot[vKey] end
       local smTM, tmLif, tmDie, tmCol = tTim[1], tTim[2], tTim[3], tTim[4]; if(tmLif <= 0) then
-        LogInstance("Timer attachment ignored",tabDef.Nick); return oSpot[kKey] end
+        LogInstance("Timer attachment ignored",tabDef.Nick); return oSpot[vKey] end
       LogInstance("Stats "..GetReport(iCnt, smTM, tmLif, tmDie, tmCol), tabDef.Nick)
       if(smTM == "CQT") then
-        if(iCnt > 1) then -- Record in the placeholder must be cleared
-          for key, rec in pairs(oSpot) do -- Check other items that qualify
-            if(not rec.Used) then -- Used time is updated correctly. Report it
-              LogInstance("Navigation error "..GetReport(iCnt, unpack(tKey)),tabDef.Nick)
-              LogInstance("Navigation key "..GetReport(kKey, key),tabDef.Nick)
-              LogTable(rec, "Navigation", tabDef.Nick)
-            else -- Used time is updated correctly. Try to do some work
-              local vDif = (nNow - rec.Used) -- Calculate time difference
-              if(IsHere(rec.Used) and (vDif > tmLif)) then -- Check the deletion
-                LogInstance("Qualify "..GetReport(vDif, tmLif), tabDef.Nick)
-                if(tmDie) then oSpot[key] = nil; LogInstance("Clear "..GetReport(key),tabDef.Nick) end
-              end -- Clear one item that qualifies for deletion and time frame is present
-            end
-          end -- Clear all the items that qualified for deletion
-        else -- The whole cache placeholder must be deleted. Identifier is at base pointer
-          local key, rec = kKey, oSpot[kKey] -- Index placeholder
-          if(not rec.Used) then -- Used time is updated correctly. Report it
-            LogInstance("Navigation error "..GetReport(iCnt, unpack(tKey)),tabDef.Nick)
-            LogInstance("Navigation key "..GetReport(kKey, key),tabDef.Nick)
-            LogTable(rec, "Navigation", tabDef.Nick)
-          else -- Used time is updated correctly. Try to do some work
+        LogInstance("Navigation key "..GetReport(iCnt, unpack(tKey)), tabDef.Nick)
+        LogTable(oSpot, "Navigation", tabDef.Nick)
+        for key, rec in pairs(oSpot) do -- Check other items that qualify
+          if(rec.Used) then  -- Used time is updated on this level
             local vDif = (nNow - rec.Used) -- Calculate time difference
             if(IsHere(rec.Used) and (vDif > tmLif)) then -- Check the deletion
               LogInstance("Qualify "..GetReport(vDif, tmLif), tabDef.Nick)
-              if(tmDie) then oSpot[key] = nil; LogInstance("Clear "..GetReport(key),tabDef.Nick) end
-            end -- Clear the placeholder that qualifies for deletion and time frame is present
-          end
-        end
-        if(tmCol) then collectgarbage(); LogInstance("Garbage collected",tabDef.Nick) end
-        LogInstance("Finish "..GetReport(kKey, nNow), tabDef.Nick); return oSpot[kKey]
+              if(tmDie) then oSpot[key] = nil; LogInstance("Clear "..GetReport(key), tabDef.Nick) end
+            end -- Clear one item that qualifies for deletion and time frame is present
+          else -- Used time is missing on this key on this level. Report record.
+            LogInstance("Spot keyhash "..GetReport(iCnt, unpack(tKey)), tabDef.Nick)
+            LogInstance("Spot skipped "..GetReport(key, vKey), tabDef.Nick)
+          end -- Not every key is cached on the same level but some may use the same table
+        end -- Clear all the items that qualified for deletion
+        if(tmCol) then collectgarbage(); LogInstance("Garbage collected", tabDef.Nick) end
+        LogInstance("Finish "..GetReport(vKey, nNow), tabDef.Nick); return oSpot[vKey]
       elseif(smTM == "OBJ") then
         local tmID = tableConcat(tKey, sDiv)
         LogInstance("Timer ID "..GetReport(tmID), tabDef.Nick)
-        if(timerExists(tmID)) then LogInstance("Timer exists",tabDef.Nick); return oSpot[kKey] end
+        if(timerExists(tmID)) then LogInstance("Timer exists", tabDef.Nick); return oSpot[vKey] end
         timerCreate(tmID, tmLif, 1, function()
           LogInstance("Qualify "..GetReport(tmID, tmLif), tabDef.Nick)
-          if(tmDie) then oSpot[kKey] = nil; LogInstance("Clear "..GetReport(kKey),tabDef.Nick) end
+          if(tmDie) then oSpot[vKey] = nil; LogInstance("Clear "..GetReport(vKey), tabDef.Nick) end
           timerStop(tmID); timerRemove(tmID)
-          if(tmCol) then collectgarbage(); LogInstance("Garbage collected",tabDef.Nick) end
-        end); timerStart(tmID); return oSpot[kKey]
-      else LogInstance("Unsupported mode "..GetReport(smTM),tabDef.Nick); return oSpot[kKey] end
+          if(tmCol) then collectgarbage(); LogInstance("Garbage collected", tabDef.Nick) end
+        end); timerStart(tmID); return oSpot[vKey]
+      else LogInstance("Unsupported mode "..GetReport(smTM), tabDef.Nick); return oSpot[vKey] end
     elseif(sMoDB == "LUA") then
-      LogInstance("Memory manager skip",tabDef.Nick); return oSpot[kKey]
-    else LogInstance("Unsupported mode "..GetReport(sMoDB),tabDef.Nick); return nil end
+      LogInstance("Memory manager skip", tabDef.Nick); return oSpot[vKey]
+    else LogInstance("Unsupported mode "..GetReport(sMoDB), tabDef.Nick); return nil end
   end
   -- Restarts timer to a record related in the table cache
   function self:TimerRestart(vMsg, ...)
-    local oSpot, kKey, tKey = self:GetNavigate(...)
-    if(not (IsHere(oSpot) and IsHere(kKey))) then
-      LogInstance("Navigation miss "..GetReport(unpack(tKey)),tabDef.Nick)
+    local oSpot, vKey, tKey = self:GetNavigate(...)
+    if(not (IsHere(oSpot) and IsHere(vKey))) then
+      LogInstance("Navigation miss "..GetReport(unpack(tKey)), tabDef.Nick)
       LogTable(oSpot, "Navigation", tabDef.Nick); return nil
     end -- Navigated to the last table node and returned the value key
     local sMoDB = GetOpVar("MODE_DATABASE")
     local sDiv, nNow = GetOpVar("OPSYM_DIVIDER"), Time()
-    LogInstance("Called by "..GetReport(vMsg, kKey),tabDef.Nick)
-    oSpot[kKey].Used = nNow -- Mark the current caching time stamp
+    LogInstance("Called by "..GetReport(vMsg, vKey), tabDef.Nick)
+    oSpot[vKey].Used = nNow -- Mark the current caching time stamp
     if(sMoDB == "SQL") then local qtCmd = self:GetCommand()
       local tTim = qtCmd.Timer; if(not IsHere(tTim)) then
-        LogInstance("Missing timer settings",tabDef.Nick); return oSpot[kKey] end
+        LogInstance("Missing timer settings", tabDef.Nick); return oSpot[vKey] end
       local smTM, tmLif = tTim[1], tTim[2]; if(tmLif <= 0) then
-        LogInstance("Timer life ignored",tabDef.Nick); return oSpot[kKey] end
+        LogInstance("Timer life ignored", tabDef.Nick); return oSpot[vKey] end
       if(smTM == "CQT") then smTM = "CQT" -- Cache query timer does nothing
       elseif(smTM == "OBJ") then -- Just for something to do here for mode CQT
         local tmID = tableConcat(tKey, sDiv); if(not timerExists(tmID)) then
-          LogInstance("Timer missing "..GetReport(tmID),tabDef.Nick); return nil end
+          LogInstance("Timer missing "..GetReport(tmID), tabDef.Nick); return nil end
         timerStart(tmID)
-      else LogInstance("Mode mismatch "..GetReport(smTM),tabDef.Nick); return nil end
+      else LogInstance("Mode mismatch "..GetReport(smTM), tabDef.Nick); return nil end
     elseif(sMoDB == "LUA") then
-      LogInstance("Memory manager skip",tabDef.Nick); return oSpot[kKey]
-    else LogInstance("Unsupported mode "..GetReport(sMoDB),tabDef.Nick); return nil end
-    return oSpot[kKey]
+      LogInstance("Memory manager skip",tabDef.Nick); return oSpot[vKey]
+    else LogInstance("Unsupported mode "..GetReport(sMoDB), tabDef.Nick); return nil end
+    return oSpot[vKey]
   end
   -- Object internal data validation
   function self:IsValid() local bStat = true
@@ -3092,6 +3093,9 @@ function NewTable(sTable,defTab,bDelete,bReload)
     if(not isstring(sStmt)) then
       LogInstance("Previous mismatch "..GetReport(nA,qtCmd.STMT,sStmt),tabDef.Nick); return self:Deny() end
     local tA, qtDef = {...}, self:GetDefinition(); sStmt = sStmt:Trim("%s"):Trim(";")
+    
+    print(sStmt, nA)
+    
     for iCnt = 1, nA do
       local vA, sW = tA[iCnt], ((iCnt == 1) and " WHERE " or " AND "); if(not istable(vA)) then
         LogInstance("Argument not table "..GetReport(nA,iCnt), tabDef.Nick); return self:Deny() end
@@ -3598,8 +3602,8 @@ function ExportSyncDB(sDelim)
       LogInstance(sHew.." SQL exec error "..GetReport(sqlLastError(), Q)); return false end
     if(not IsHere(qData) or IsEmpty(qData)) then F:Flush(); F:Close()
       LogInstance(sHew.." No data found "..GetReport(Q)); return false end
-    stPan.Size = #qData; F:Write("# Query("..stPan.Size.."):<"..Q..">\n")
-   local coTy, cT = makTab:GetColumnName(2), nil
+    F:Write("# Query("..#qData.."):<"..Q..">\n")
+    local coTy, cT = makTab:GetColumnName(2), nil
     for iD = 1, #qData do local vRow = qData[iD]
       if(not cT or cT ~= vRow[coTy]) then cT = vRow[coTy]
         local sW = tostring(WorkshopID(cT) or sMiss)
@@ -3791,7 +3795,7 @@ end
 function ImportDSV(sTable, bComm, sPref, sDelim, bExp)
   local sTable = tostring(sTable or ""); if(IsBlank(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
-  local bFile, sLine, isEOF, F = fileExists(sTable), "", false
+  local bFile, sLine, isEOF, F = fileExists(sTable, "DATA"), "", false
   local tHew, sHew = GetOpVar("PATTEM_EXDSVHED")
   local sMoDB, makTab, defTab, cmdTab = GetOpVar("MODE_DATABASE")
   if(bFile) then
@@ -3972,7 +3976,7 @@ function TranslateDSV(sTable, sPref, sDelim)
   local defTab = makTab:GetDefinition(); if(not IsHere(defTab)) then
     LogInstance(sHew.." Missing table definition",sTable); return false end
   local sDSV = GetLibraryPath(GetOpVar("DIRPATH_DSV"), fPref, defTab.Name)
-  local sEXP = GetLibraryPath(GetOpVar("DIRPATH_EXP"), "[tr]"..fPref, defTab.Name)
+  local sEXP = GetLibraryPath(GetOpVar("DIRPATH_EXP"), "["..sMoDB.."-tr]"..fPref, defTab.Name)
   local D = fileOpen(sDSV, "rb", "DATA"); if(not D) then
     LogInstance(sHew.." Open fail: "..sDSV,sTable); return false end
   local I = fileOpen(sEXP, "wb", "DATA"); if(not I) then
@@ -4388,7 +4392,7 @@ function ExportTypeDSV(sType, sDelim)
           if(sCP == coLI and (tonumber(vCP) or 0) == 1) then
             local qrMo = makP:Match(rwM, 1, true)
             local Q = makA:Get(qInxA, qrMo); if(not IsHere(Q)) then local tQ = defA.Query[sFunc]
-              Q = makA:Select():Where(unpack(tQ.W)):Order(unpack(tW.O)):Store(qInxA):Get(qInxA, qrMo) end
+              Q = makA:Select():Where(unpack(tQ.W)):Order(unpack(tQ.O)):Store(qInxA):Get(qInxA, qrMo) end
             if(not IsHere(Q)) then P:Flush(); P:Close(); A:Flush(); A:Close()
               LogInstance("("..fPref..") Build statement failed",defA.Nick); return qsNov end
             if(iP == 1) then A:Write("# Query:<"..Q..">\n") end
@@ -4865,35 +4869,35 @@ end
 function AttachAdditions(ePiece)
   if(not (ePiece and ePiece:IsValid())) then
     LogInstance("Piece invalid"); return false end
-  local eAng, ePos, sMoc = ePiece:GetAngles(), ePiece:GetPos(), ePiece:GetModel()
+  local sMoc, dCass = ePiece:GetModel(), GetOpVar("ENTITY_DEFCLASS")
   local stData = CacheQueryAdditions(sMoc); if(not IsHere(stData)) then
-    LogInstance("Model skip "..GetReport(sMoc)); return true end
+    LogInstance("Skip attaching "..GetReport(sMoc)); return true end
   local makTab = GetBuilderNick("ADDITIONS"); if(not IsHere(makTab)) then
     LogInstance("Missing table definition"); return nil end
-  local sEoa = GetOpVar("OPSYM_ENTPOSANG"); LogInstance("PIECE:MODEL("..sMoc..")")
-  local coMB, coMA = makTab:GetColumnName(1), makTab:GetColumnName(2)
+  local ePos, eAng = ePiece:GetPos(), ePiece:GetAngles()
+  local coMA, oPOA = makTab:GetColumnName(2), NewPOA()
   local coEN, coLI = makTab:GetColumnName(3), makTab:GetColumnName(4)
   local coPO, coAN = makTab:GetColumnName(5), makTab:GetColumnName(6)
   local coMO, coPI = makTab:GetColumnName(7), makTab:GetColumnName(8)
   local coDR, coPM = makTab:GetColumnName(9), makTab:GetColumnName(10)
   local coPS, coSE = makTab:GetColumnName(11), makTab:GetColumnName(12)
-  for iCnt = 1, stData.Size do -- While additions are present keep adding them
-    local arRec = stData[iCnt]; LogInstance("PIECE:ADDITION("..iCnt..")")
-    local dCass, oPOA = GetOpVar("ENTITY_DEFCLASS"), NewPOA()
+  LogInstance("PIECE:MODEL("..sMoc..")") -- Start processing for the base model
+  for iA = 1, stData.Size do -- While additions are present keep adding them
+    local arRec = stData[iA]; LogInstance("PIECE:ADDITION("..iA..")")
     local sCass = GetEmpty(arRec[coEN], nil, dCass)
     local eBonus = entsCreate(sCass); LogInstance("ents.Create("..sCass..")")
     if(eBonus and eBonus:IsValid()) then
       local sMoa = tostring(arRec[coMA]); if(not IsModel(sMoa, true)) then
-        LogInstance("Invalid attachment "..GetReport(iCnt, sMoc, sMoa)); return false end
+        LogInstance("Invalid attachment "..GetReport(iA, sMoc, sMoa)); return false end
       eBonus:SetModel(sMoa) LogInstance("ENT:SetModel("..sMoa..")")
       local sPos = arRec[coPO]; if(not isstring(sPos)) then
-        LogInstance("Position mismatch "..GetReport(iCnt, sMoc, sPos)); return false end
+        LogInstance("Position mismatch "..GetReport(iA, sMoc, sPos)); return false end
       if(not GetEmpty(sPos)) then oPOA:Decode(sPos, eBonus, "Pos")
         local vPos = oPOA:Vector(); vPos:Set(ePiece:LocalToWorld(vPos))
         eBonus:SetPos(vPos); LogInstance("ENT:SetPos(DB)")
       else eBonus:SetPos(ePos); LogInstance("ENT:SetPos(PIECE:POS)") end
       local sAng = arRec[coAN]; if(not isstring(sAng)) then
-        LogInstance("Angle mismatch "..GetReport(iCnt, sMoc, sAng)); return false end
+        LogInstance("Angle mismatch "..GetReport(iA, sMoc, sAng)); return false end
       if(not GetEmpty(sAng)) then oPOA:Decode(sAng, eBonus, "Ang")
         local aAng = oPOA:Angle(); aAng:Set(ePiece:LocalToWorldAngles(aAng))
         eBonus:SetAngles(aAng); LogInstance("ENT:SetAngles(DB)")
@@ -4924,7 +4928,7 @@ function AttachAdditions(ePiece)
         LogInstance("ENT:SetSolid("..tostring(nSo)..")") end
     else
       local mA, mC = arRec[coMA], arRec[coEN]
-      LogInstance("Entity invalid "..GetReport(iCnt, sMoc, mA, mC)); return false
+      LogInstance("Entity invalid "..GetReport(iA, sMoc, mA, mC)); return false
     end
   end; LogInstance("Success"); return true
 end
@@ -4944,14 +4948,18 @@ function GetEntityOrTrace(oEnt)
   LogInstance("Success "..tostring(trEnt)); return trEnt
 end
 
+--[[
+ * Reads a skin code from a given entity
+ * oEnt > The entity to read to code from
+]]
 function GetPropSkin(oEnt)
-  local skEnt = GetEntityOrTrace(oEnt); if(not IsHere(skEnt)) then
+  local oEnt = GetEntityOrTrace(oEnt); if(not IsHere(oEnt)) then
     LogInstance("Failed to gather entity"); return "" end
-  if(IsOther(skEnt)) then
+  if(IsOther(oEnt)) then
     LogInstance("Entity other type"); return "" end
-  local Skin = tonumber(skEnt:GetSkin()); if(not IsHere(Skin)) then
+  local nRes = tonumber(oEnt:GetSkin()); if(not IsHere(nRes)) then
     LogInstance("Skin number mismatch"); return "" end
-  LogInstance("Success "..tostring(skEn)); return tostring(Skin)
+  LogInstance("Success "..tostring(skEn)); return tostring(mathFloor(nRes))
 end
 
 --[[
@@ -4959,38 +4967,38 @@ end
  * oEnt > The entity to read to code from
 ]]
 function GetPropBodyGroup(oEnt)
-  local bgEnt = GetEntityOrTrace(oEnt); if(not IsHere(bgEnt)) then
+  local oEnt = GetEntityOrTrace(oEnt); if(not IsHere(oEnt)) then
     LogInstance("Failed to gather entity"); return "" end
-  if(IsOther(bgEnt)) then
+  if(IsOther(oEnt)) then
     LogInstance("Entity other type"); return "" end
-  local tBG = bgEnt:GetBodyGroups(); if(not (tBG and tBG[1])) then
+  local tBG = oEnt:GetBodyGroups(); if(not (tBG and tBG[1])) then
     LogInstance("Bodygroup table empty"); return "" end
-  local sRez, iCnt, symSep = "", 1, GetOpVar("OPSYM_SEPARATOR")
-  while(tBG[iCnt]) do local iD = tBG[iCnt].id -- Read ID
-    local sD = bgEnt:GetBodygroup(iD) -- Read value by ID
-    sRez = sRez..symSep..tostring(sD or 0) -- Attach
-    LogInstance("GetBodygroup "..GetReport(iCnt, iD, sD))
-    iCnt = iCnt + 1 -- Prepare to take the next value
-  end; sRez = sRez:sub(2, -1) -- Remove last separator
-  LogInstance("Success "..GetReport(sRez)); return sRez
+  local sRes, iB, sySep = "", 1, GetOpVar("OPSYM_SEPARATOR")
+  while(tBG[iB]) do local iD = tBG[iB].id -- Read ID
+    local sD = oEnt:GetBodygroup(iD) -- Read value by ID
+    sRes = sRes..sySep..tostring(sD or 0) -- Attach
+    LogInstance("GetBodygroup "..GetReport(iB, iD, sD))
+    iB = iB + 1 -- Prepare to take the next value
+  end; sRes = sRes:sub(2, -1) -- Remove last separator
+  LogInstance("Success "..GetReport(sRes)); return sRes
 end
 
 --[[
- * Attach bodygroup code to a given entity
+ * Apply bodygroup code to a given entity
  * oEnt > The entity to attach the code for
+ * sBG  > Bodygroup code to attach like 1,2,3,4
 ]]
-function AttachBodyGroups(ePiece,sBgID)
-  if(not (ePiece and ePiece:IsValid())) then
+function ApplyBodyGroups(oEnt, sBG)
+  if(not (oEnt and oEnt:IsValid())) then
     LogInstance("Base entity invalid"); return false end
-  local sBgID = tostring(sBgID or "")
-  local iCnt, tBG = 1, ePiece:GetBodyGroups()
-  local IDs = GetOpVar("OPSYM_SEPARATOR"):Explode(sBgID)
-  while(tBG[iCnt] and IDs[iCnt]) do local vBG = tBG[iCnt]
-    local maxID = (ePiece:GetBodygroupCount(vBG.id) - 1)
-    local curID = mathClamp(mathFloor(tonumber(IDs[iCnt]) or 0), 0, maxID)
-    LogInstance("SetBodygroup "..GetReport(iCnt, vBG.id, maxID, curID))
-    ePiece:SetBodygroup(vBG.id, curID); iCnt = iCnt + 1
-  end; LogInstance("Success "..GetReport(sBgID)); return true
+  local sBG, tBG, iB = tostring(sBG or ""), oEnt:GetBodyGroups(), 1
+  local tID = GetOpVar("OPSYM_SEPARATOR"):Explode(sBG)
+  while(tBG[iB] and tID[iB]) do local vBG = tBG[iB]
+    local mBG = (oEnt:GetBodygroupCount(vBG.id) - 1)
+    local cBG = mathClamp(mathFloor(tonumber(tID[iB]) or 0), 0, mBG)
+    LogInstance("SetBodygroup "..GetReport(iB, vBG.id, mBG, cBG))
+    oEnt:SetBodygroup(vBG.id, cBG); iB = iB + 1
+  end; LogInstance("Success "..GetReport(sBG)); return true
 end
 
 function SetPosBound(ePiece,vPos,oPly,sMode)
@@ -5037,7 +5045,7 @@ function InSpawnMargin(oPly,oRec,vPos,aAng)
     else -- Otherwise create memory entry and sore the piece location
       oRec.Mpos, oRec.Mray = Vector(vPos), aAng:Forward()
       return false -- Store the last location the piece was spawned
-    end -- Otherwise wipe the current memoty when not provided
+    end -- Otherwise wipe the current memory when not provided
   else oRec.Mpos, oRec.Mray = nil, nil end; return false
 end
 
@@ -5084,7 +5092,7 @@ function NewPiece(pPly,sModel,vPos,aAng,nMass,sBgSkIDs,clColor,sMode)
   if(nMass > 0) then pPiece:SetMass(nMass) end -- Mass equal zero use model mass
   local tBgSk = GetOpVar("OPSYM_DIRECTORY"):Explode(sBgSkIDs or "")
   ePiece:SetSkin(mathClamp(tonumber(tBgSk[2]) or 0, 0, ePiece:SkinCount()-1))
-  if(not AttachBodyGroups(ePiece, tBgSk[1])) then ePiece:Remove()
+  if(not ApplyBodyGroups(ePiece, tBgSk[1])) then ePiece:Remove()
     LogInstance("Failed attaching bodygroups"); return nil end
   if(not AttachAdditions(ePiece)) then ePiece:Remove()
     LogInstance("Failed attaching additions"); return nil end
