@@ -37,6 +37,8 @@ net = {}
 vgui = {}
 constraint = {}
 surface = {__fonts = {}}
+concommand = {__data = {}}
+hook = {__data = {}}
 
 function ErrorNoHalt(m)
   print("ERROR: "..tostring(m))
@@ -773,6 +775,14 @@ end
 
 function ErrorNoHaltWithStack(sM)
   error(sM)
+end
+
+function concommand.Add(vI, vF)
+  concommand.__data[vI] = vF
+end
+
+function hook.Add(vI, vF)
+  hook.__data[vI] = vF
 end
 
 --- INITIALIZATION ---
