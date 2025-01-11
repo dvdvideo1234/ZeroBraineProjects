@@ -31,6 +31,16 @@ asmlib.SetLogControl(20000, false)
 local PIECES = asmlib.GetBuilderNick("PIECES")
 
 local M = PIECES:Match("model", 1, true)
-local Q = PIECES:Delete():Where({1,M},{2,2}):Get()
+local I = PIECES:Match('asdf', 4, true)
+local Q = PIECES:Delete():Get()
 
-print(Q)
+asmlib.LogInstance(PIECES:Begin():Get(), "QUERY")
+asmlib.LogInstance(PIECES:Commit():Get(), "QUERY")
+
+asmlib.LogInstance(Q, "QUERY")
+
+local IDX = PIECES:Index():Get()
+asmlib.LogTable(IDX, "IDX")
+
+local CMD = PIECES:GetCommand()
+asmlib.LogTable(CMD, "CMD")
