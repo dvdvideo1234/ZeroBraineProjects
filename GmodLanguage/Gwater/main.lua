@@ -8,18 +8,35 @@ local dir = require("directories")
       dir.addBase("D:/Programs/LuaIDE")
       dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
-local ext = false -- Generate extraction file
-local tok = {"^\".+\"=%[%[",  "^%]%]" , "#$#"}
-local com = require("common")
-local ser = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/gwater2/data_static/gwater2/locale"
+--[[
+  How to use:
+  1. Delete the [ext.txt] file and run the program
+  2. Translate [ext.txt] and write it to [new.txt]
+  3. The program will grab [new.txt] and merge it
+  4. A file [gwater2_<LOC>.txt] will be created
+  5. Validate and then commit your changes
+]]
 
-local fN = ser.."/gwater2_en.txt"
+local com = require("common")
+local dat = {"ext", "new", "gwater2_", "bg"} -- In, Out, Pref, <LOC>
+local tok = {"^\".+\"=%[%[",  "^%]%]" , "#$#"} -- Start tok, End tok, New-line code
+local ser = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/gwater2/data_static/gwater2/locale"
+local chn = com.stringGetChunkPath()
+
+local function isFile(sF, sB)
+  local sN = tostring(sB and sB.."/"..sF or sF)
+  local fT = io.open(sN)
+  if not fT then return false end
+  fT:close(); return true
+end
+
+local fN = ser.."/"..dat[3].."en.txt"
 local bS, fI = pcall(io.open, fN, "r")
 if(not bS) then error("Open error: "..fI) end
 if(not fI) then error("File error: "..fN) end
 
-if(ext) then
-  local fN = com.stringGetChunkPath().."ext.txt"
+if(not isFile(dat[1]..".txt", chn)) then
+  local fN = chn..dat[1]..".txt"
   local bS, fA = pcall(io.open, fN, "w")
   if(not bS) then error("Open error: "..fA) end
   if(not fA) then error("File error: "..fN) end
@@ -49,7 +66,7 @@ if(ext) then
   return
 else
   local eA = {iC = 0, iS = 0, Key = {}, Data = {}};
-  local fN, bS, fE = com.stringGetChunkPath().."new.txt"
+  local fN, bS, fE = chn..dat[2]..".txt"
         bS, fE = pcall(io.open, fN, "r")
   if(not bS) then error("Open error: "..fE) end
   if(not fE) then error("File error: "..fN) end 
@@ -60,7 +77,6 @@ else
     if(nS and nE) then
       eA.iS = eA.iS + 1
       eA.Data[eA.iS] = rE:gsub(tok[3], "\n")
-      print("G", eA.iS, rE:sub(nS, nE))
       eA.Key[rE:sub(nS, nE)] = eA.iS
       rE = fE:read("*line")
     end
@@ -68,7 +84,7 @@ else
   
   fE:close()
   
-  local fN = ser.."/gwater2_bg.txt"
+  local fN = ser.."/"..dat[3]..dat[4]..".txt"
   local bS, fO = pcall(io.open, fN, "w")
   if(not bS) then error("Open error: "..fI) end
   if(not fO) then error("File error: "..fN) end
