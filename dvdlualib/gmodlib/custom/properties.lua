@@ -5,11 +5,13 @@ local properties = {}
 
 local mtList = {}
       mtList.__index = mtList
+      mtList.__BOM = {0xEF, 0xBB, 0xBF} -- UTF-8-BOM
+      mtList.__BOM.Size = #mtList.__BOM -- BOM size
       
 function properties.newList()
   local self = {}; setmetatable(self, mtList)
-        self.BOM = {0xEF, 0xBB, 0xBF} -- UTF-8-BOM
-        self.BOM.Size = #self.BOM -- BOM size
+        self.BOM = mtList.__BOM
+        self.BOM.Size = mtList.__BOM.Size -- BOM size
         self.Prop = "resource/localization/"
   return self
 end
@@ -132,8 +134,8 @@ function properties.syncLocalizations(par)
   
   local function getResource(sL)
     local sdir = par.run_src.."/"..par.prf_src[1].."/resource/localization/"..sL.."/"
-    local snam = par.prf_src[2]..".properties"
-    directories.cpyRec(snam, sL.."_ "..snam, sdir, par.run_pth.."/localization/orig/")
+    local snam = par.prf_src[2]..par.prf_ext
+    directories.cpyRec(snam, sL..par.prf_ext, sdir, par.run_pth.."/localization/orig/")
     local R = assert(io.open(sdir..snam, "rb"))
     local L = R:read("*line"); res[sL] = {}; table.insert(res.__index, sL)
     while(L) do
@@ -144,15 +146,12 @@ function properties.syncLocalizations(par)
         res[sL][K] = V
         setDupe(res.__dupK, sL, K, V)
         setDupe(res.__dupV, sL, V, K)
+      else
+        
       end
       L = R:read("*line")
     end; return res[sL]
   end
-
-  directories.ersDir("localization", par.run_pth)
-  directories.newDir("localization", par.run_pth)
-  directories.newDir("orig", par.run_pth.."/localization")
-  directories.newDir("sync", par.run_pth.."/localization")
 
   local tF = directories.conDir("localization", par.run_src.."/"..par.prf_src[1].."/resource/")
 
@@ -167,7 +166,40 @@ function properties.syncLocalizations(par)
 
   for k, v in pairs(res[par.prm_lng]) do table.insert(res.__primary, k) end
   table.sort(res.__primary)
-
+  
+  local tM = directories.conDir(par.prf_src[2], par.run_pth.."/localization/merg")
+  if(tM and tM.File and #tM.File > 0) then    
+    common.logTable(tM, "tM")
+    res.__merge = {}
+    for m = 1, #tM.File do
+      local tV = tM.File[m]
+      local sL = tV.Name:match("^.+%."):sub(1, -2)
+      local fN = "localization/merg/"..par.prf_src[2].."/"..sL..".properties"
+      local fM = assert(io.open(par.run_pth.."/"..fN, "rb"))
+      local fL = fM:read("*line")
+      for bm = 1, mtList.__BOM.Size do
+        if(mtList.__BOM[bm] ~= fL:sub(bm,bm):byte()) then
+          error("Byte mask order #"..bm.." mismatch ["..fN.."]") end
+      end; res.__merge[sL] = {}; fL = fL:sub(4, -1)
+      local tO, iM = res.__merge[sL], 1
+      while(fL) do
+        if(fL ~= "") then
+          local sM = fL:find("=", 1, true)
+          if(sM) then
+            local sK = fL:sub(1, sM-1)
+            local sV = fL:sub(sM+1,-1)
+            tO[sK] = sV
+          else
+            error("No equal sign found ["..sL.."] at #"..iM.." line: "..fL)
+          end
+        end
+        fL = fM:read("*line")
+        iM = iM + 1
+      end
+      fM:close()
+    end
+  end
+  
   do
     local F = assert(io.open(par.run_pth.."/localization/k_dupe.txt", "wb"))
     for l = 1, #res.__index do
@@ -182,6 +214,7 @@ function properties.syncLocalizations(par)
         end
       end
     end
+    
     F:write("\n")
     F:flush()
     F:close()
@@ -234,6 +267,33 @@ function properties.syncLocalizations(par)
       local K = res.__key[iE]
       if(not res[par.prm_lng][K]) then
         F:write(K.."="..res[N][K].."\n")
+      end
+    end
+    F:flush()
+    F:close()
+  end
+  
+  for iL = 2, #res.__index do
+    local N = res.__index[iL]
+    local F = assert(io.open(par.run_pth.."/localization/sync/"..N..".txt", "ab"))
+    F:write("\n# Translations change form the last revision ["..N.."]\n\n")
+    local tO = res.__merge[N]
+    if(res.__merge[N]) then
+      for iE = 1, #res.__key do
+        local K = res.__key[iE]
+        if(not tO[K]) then
+          if(par.mrg_emp) then
+            F:write("O: "..K.."="..(tO[K] or "N/A").."\n")
+            F:write("N: "..K.."="..res[N][K].."\n")
+            F:write("\n")
+          end
+        else
+          if(tO[K] ~= res[N][K]) then
+            F:write("O: "..K.."="..(tO[K] or "N/A").."\n")
+            F:write("N: "..K.."="..res[N][K].."\n")
+            F:write("\n")
+          end
+        end
       end
     end
     F:flush()
