@@ -5,8 +5,8 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
       
 local com = require("common")
 

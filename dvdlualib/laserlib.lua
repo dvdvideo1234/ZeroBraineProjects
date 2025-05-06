@@ -16,17 +16,18 @@ DATA.NUGE = 2                -- Nudge amount for origin vectors back-tracing
 DATA.MINW = 0.05             -- Minimum width to be considered visible
 DATA.DOTM = 0.01             -- Collinearity and dot product margin check
 DATA.POWL = 0.001            -- Lowest bounds of laser power
-DATA.ERAD = 1.12             -- Entity refract coefficient for back trace origins
+DATA.BRAD = 2.5              -- How much the bounding radius is scaled for back-trace
+DATA.ERAD = 1.5              -- Entity refract coefficient for back trace origins
 DATA.TRWD = 0.27             -- Beam back trace width when refracting
 DATA.WLMR = 10000            -- World vectors to be correctly converted to local
 DATA.TRWU = 50000            -- The distance to trace for finding water surface
-DATA.FMVA = "%f,%f,%f"       -- Utilized to outut formatted vectors in proper manner
+DATA.FMVA = "%f,%f,%f"       -- Utilized to output formatted vectors in proper manner
 DATA.FNUH = "%.2f"           -- Formats number to be printed on a HUD
-DATA.FPSS = "%d#%d"          -- Formats pass-trough sensor keys
+DATA.FPSS = "%09d#%09d"      -- Formats pass-trough sensor keys
 DATA.AMAX = {-360, 360}      -- General angular limits for having min/max
-DATA.WVIS = { 380, 750}      -- General wavelength limists for visible light
-DATA.WCOL = {  0 , 300}      -- Mapping for wavelenght to color hue conversion
-DATA.WMAP = {  20,   5}      -- Dispersion wavelenght mapping for refractive index
+DATA.WVIS = { 380, 750}      -- General wavelength limits for visible light
+DATA.WCOL = {  0 , 300}      -- Mapping for wavelength to color hue conversion
+DATA.WMAP = {  20,   5}      -- Dispersion wavelength mapping for refractive index
 DATA.SODD = 589.29           -- General wavelength for sodium line used for dispersion
 DATA.BBONC = 0               -- External forced beam max bounces. Resets on every beam
 DATA.BLENG = 0               -- External forced beam length used in the current request
@@ -35,20 +36,20 @@ DATA.BCOLR = nil             -- External forced beam color used in the current r
 DATA.KEYD  = "#"             -- The default key in a collection point to take when not found
 DATA.KEYA  = "*"             -- The all key in a collection point to return the all in set
 DATA.KEYX  = "~"             -- The first symbol used to disable given things
+DATA.IMAT  = "*"             -- First and last symbol to match studio displacement empty mats
 DATA.AZERO = Angle()         -- Zero angle used across all sources
 DATA.VZERO = Vector()        -- Zero vector used across all sources
-DATA.VTEMP = Vector()        -- Global library temporary storage vector
-DATA.VDFWD = Vector(1, 0, 0) -- Global forward vector used across all sources
-DATA.VDRGH = Vector(0,-1, 0) -- Global right vector used across all sources. Positive is at the left
+DATA.VDRFW = Vector(1, 0, 0) -- Global forward vector used across all sources
+DATA.VDRRG = Vector(0,-1, 0) -- Global right vector used across all sources. Positive is at the left
 DATA.VDRUP = Vector(0, 0, 1) -- Global up vector used across all sources
-DATA.WTCOL = Color(0, 0, 0)  -- For wavelength to color conversions. It is expensive to crerate color
-DATA.WORLD = game.GetWorld() -- Store reference to the world to skip the call in realtime
+DATA.WTCOL = Color(0, 0, 0)  -- For wavelength to color conversions. It is expensive to create color
 DATA.DISID = DATA.TOOL.."_torch[%d]" -- Format to update dissolver target with entity index
 DATA.EXPLP = DATA.TOOL.."_exitpair"  -- General key for storing laser portal-pair entity networking
 DATA.PHKEY = DATA.TOOL.."_physprop"  -- Key used to register physical properties modifier
 DATA.MTKEY = DATA.TOOL.."_material"  -- Key used to register dupe material modifier
 DATA.TRDGQ = (DATA.TRWD * math.sqrt(3)) / 2 -- Trace hit normal displacement
-DATA.FILTW = function(ent) return (ent == DATA.WORLD) end -- Trace world filter function
+DATA.FSELF = function(arg) return arg end -- Copy-constructor for numbers and strings
+DATA.FILTW = function(ent) return (ent == game.GetWorld()) end -- Trace world filter function
 DATA.CAPSF = function(str) return str:gsub("^%l", string.upper) end -- Capitalize first letter
 
 -- Server controlled flags for console variables
@@ -3199,27 +3200,36 @@ end
 function mtBeam:GetMaterialID(trace)
   if(not trace) then return nil end
   if(not trace.Hit) then return nil end
+  local mtc = DATA.IMAT -- Fast check
   if(trace.HitWorld) then
     local mat = trace.HitTexture -- Use trace material type
-    if(mat:sub(1,1) == "*" and mat:sub(-1,-1) == "*") then
-      mat = gtMATYPE[tostring(trace.MatType)] -- Material lookup
+    if(mat:sub(1,1) == mtc and mat:sub(-1,-1) == mtc) then
+      mat = (gtMATYPE[tostring(trace.MatType)] or "") -- Material lookup
     end -- **studio**, **displacement**, **empty**
-    return mat
+    if(mat == "") then
+      local sur = util.GetSurfaceData(trace.SurfaceProps)
+      mat = (gtMATYPE[tostring(sur.material)] or sur.name)
+    end -- Trace material type is unavailable. Use the surface
+    return (mat or "")
   else
     local ent = trace.Entity
     if(not LaserLib.IsValid(ent)) then return nil end
     local mat = ent:GetMaterial() -- Entity may not have override
     if(mat == "") then -- Empty then use the material type
-      if(self.BmNoover) then -- No override is available use original
-        mat = ent:GetMaterials()[1] -- Just grab the first material
-      else -- Gmod cannot simply decide which material is hit
+      if(self.BmNoover) then mat = (ent:GetMaterials()[1] or "")
+      else -- No override is enabled return original
+        -- Gmod cannot simply decide which material is hit
         mat = trace.HitTexture -- Use trace material type
-        if(mat:sub(1,1) == "*" and mat:sub(-1,-1) == "*") then
-          mat = gtMATYPE[tostring(trace.MatType)] -- Material lookup
+        if(mat:sub(1,1) == mtc and mat:sub(-1,-1) == mtc) then
+          mat = (gtMATYPE[tostring(trace.MatType)] or "") -- Material lookup
         end -- **studio**, **displacement**, **empty**
+        if(mat == "") then
+          local sur = util.GetSurfaceData(trace.SurfaceProps)
+          mat = (gtMATYPE[tostring(sur.material)] or sur.name)
+        end -- Trace material type is unavailable. Use the surface
       end -- Physics object has a single surface type related to model
     end
-    return mat
+    return (mat or "")
   end
 end
 
