@@ -1,6 +1,39 @@
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+      dir.addBase("D:/Programs/LuaIDE")
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+
+
+
 require("turtle")
--- require("ZeroBraineProjects/dvdlualib/complex")
-require("ZeroBraineProjects/dvdlualib/common")
+local com = require("common")
+local cmp = require("complex")
+
+local __xy = cmp.getNew()
+local xySize = 2
+
+local function drawComplex(p, c)
+  local x = p:getReal()
+  local y = p:getImag()
+  pncl(c); rect(x-xySize,y-xySize,2*xySize+1,2*xySize+1)
+end
+
+cmp.setAction("xy", drawComplex)
+
+local function xyPlot(p, c)
+  __xy:Set(p.x, p.y)
+  __xy:Action("xy", c)
+end
+
+local function xyText(p)
+  __xy:Set(p.x, p.y)
+  return tostring(__xy)
+end
 
 open("Borderline Test")
 
@@ -72,7 +105,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       Pos.x = Pos.x + DirX * Sig * Mid
       Pos.y = Pos.y + DirY * Sig * Mid
       xyPlot(Pos,colr(255,0,0))
-      waitSeconds(nDelay)
+      wait(nDelay)
       --[[
         Estimate the distance and break
         earlier with 0.5 because of the 
@@ -102,7 +135,7 @@ function adaptLine(xyS,xyE,nI,nK,sMeth,nDelay,nDraw)
       V.y = V.y + D.y
       Sig = Enclose(V)
       xyPlot(V,colr(255,0,0))
-      waitSeconds(nDelay)
+      wait(nDelay)
       I = I + 1
     end
   end
@@ -120,13 +153,13 @@ local iE = {x = bE.x, y = 50}
 
 local S = {x = 200, y = 180}
 local s,i = adaptLine(S,iE,500,0.2,"ITR",0.01)
-logStatus(nil,"Iterat status: "..tostring(s))
+print("Iterat status: "..tostring(s))
 text("Iter: "..i.." "..xyText(S).." >  "..xyText(iE).." ("..tostring(s)..")",0,sW,sH-21)
 xyPlot(iE,colr(0,255,0))
 
 local S = {x = 200, y = 220}
 local s,i = adaptLine(S,bE,500,0.5,"BIN",1)
-logStatus(nil,"Binary status: "..tostring(s))
+print("Binary status: "..tostring(s))
 text("Iter: "..i.." "..xyText(S).." >  "..xyText(bE).." ("..tostring(s)..")",0,sW,eH+2)
 xyPlot(bE,colr(0,255,0))
 
