@@ -13,13 +13,13 @@ local com = require("common")
 require("gmodlib")
 require("laserlib")
 local corm = require("colormap")
-
+HSVToColor = corm.getColorHSV
 local gtREFRACT = LaserLib.DataRefract("*")
-local DATA = {} --LaserLib.GetData()
-
+local vrMBOUNCES = LaserLib.GetData("MBOUNCES")
 local cor = Color(128, 255, 10)
 
-HSVToColor = corm.getColorHSV
+vrMBOUNCES:SetData("7")
+print(table.concat(LaserLib.GetData("HARUNTM"),"|"))
 
 local function co_tostring(co)
   local f = ("%3d")
@@ -34,6 +34,7 @@ for i = 1, tW.Size do
   print("WAVE", ("%3d"):format(i), ("%.5f"):format(tW[i].P),
     co_tostring(tW[i].C), ("%.3f"):format(tW[i].W), tW[i].B and "V" or "X")
 end
+
 print("PW", tW.PW)
 print("PC", tW.PC)
 print("PS", tW.PS)
