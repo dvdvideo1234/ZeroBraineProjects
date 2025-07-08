@@ -14,11 +14,12 @@ require("gmodlib")
 require("laserlib")
 local corm = require("colormap")
 HSVToColor = corm.getColorHSV
-local gtREFRACT = LaserLib.DataRefract("*")
-local vrMBOUNCES = LaserLib.GetData("MBOUNCES")
-local cor = Color(128, 255, 10)
+local cor = Color(128, 255, 50)
 
-vrMBOUNCES:SetData("7")
+LaserLib.GetData("WDHUESTP"):SetData("10")
+LaserLib.GetData("WDRGBMAR"):SetData("10")
+
+
 print(table.concat(LaserLib.GetData("HARUNTM"),"|"))
 
 local function co_tostring(co)
