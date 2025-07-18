@@ -2621,13 +2621,17 @@ function LaserLib.GetWaveArray()
     if(not wave.New) then return wave.Data end
   else
     conf.Wave = {Data = {
-      Size = 0, Step = step,
-      Marg = marg, PS = 0,
-      PC = 0, PW = 0}, New = false}
+      Size = 0,    -- Amount of entries the decomposition has
+      Step = step, -- Hue adjustment step when defining components
+      Marg = marg, -- Color compate margin for component check
+      PS = 0,      -- Power sum. All of the beam visual powers combined 
+      PC = 0,      -- Individual component power for non-white light part
+      PW = 0       -- Individual component power for white light part
+    }, New = false}
     wave = conf.Wave  
   end
+  local tW = wave.Data -- Localize wave data
   local wvis, wcol = DATA.WVIS, DATA.WCOL
-  local tW = wave.Data
   local huS, huE = wcol[1], wcol[2]
   for hue = huS, huE, step do
     local r, g, b = HSVToColor(hue, 1, 1)

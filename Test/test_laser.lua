@@ -37,9 +37,6 @@ for i = 1, tW.Size do
     co_tostring(tW[i].C), ("%.3f"):format(tW[i].W), tW[i].B and "V" or "X")
 end
 
-print("Pointer1:", LaserLib.GetWaveArray())
-print("Pointer2:", LaserLib.GetWaveArray()); LaserLib.GetData("HAWASTP").Wave.New = true
-print("Pointer3:", LaserLib.GetWaveArray())
 print("PW", tW.PW)
 print("PC", tW.PC)
 print("PS", tW.PS)
