@@ -2618,21 +2618,22 @@ function LaserLib.GetWaveArray()
   if(marg >  0) then return nil end
   local wave = conf.Wave
   if(wave) then
-    if(not wave.New) then return wave.Data end
+    if(wave.New) then -- Apply new config
+      table.Empty(wave.Data)
+    else return wave.Data end
   else
-    conf.Wave = {Data = {
-      Size = 0,    -- Amount of entries the decomposition has
-      Step = step, -- Hue adjustment step when defining components
-      Marg = marg, -- Color compate margin for component check
-      PS = 0,      -- Power sum. All of the beam visual powers combined 
-      PC = 0,      -- Individual component power for non-white light part
-      PW = 0,      -- Individual component power for white light part
-      IS = 0,      -- Index start for the component extraction
-      IE = 0       -- Index end for the component extraction
-    }, New = false}
+    conf.Wave = {Data = {}}
     wave = conf.Wave  
   end
-  local tW = wave.Data -- Localize wave data
+  local tW = wave.Data; wave.New = false -- Localize wave data
+  tW.Size = 0    -- Amount of entries the decomposition has
+  tW.Step = step -- Hue adjustment step when defining components
+  tW.Marg = marg -- Color compate margin for component check
+  tW.PS = 0      -- Power sum. All of the beam visual powers combined 
+  tW.PC = 0      -- Individual component power for non-white light part
+  tW.PW = 0      -- Individual component power for white light part
+  tW.IS = 0      -- Index start for the component extraction
+  tW.IE = 0      -- Index end for the component extraction
   local wvis, wcol = DATA.WVIS, DATA.WCOL
   local huS, huE = wcol[1], wcol[2]
   for hue = huS, huE, step do
