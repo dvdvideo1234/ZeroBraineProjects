@@ -2626,7 +2626,9 @@ function LaserLib.GetWaveArray()
       Marg = marg, -- Color compate margin for component check
       PS = 0,      -- Power sum. All of the beam visual powers combined 
       PC = 0,      -- Individual component power for non-white light part
-      PW = 0       -- Individual component power for white light part
+      PW = 0,      -- Individual component power for white light part
+      IS = 0,      -- Index start for the component extraction
+      IE = 0       -- Index end for the component extraction
     }, New = false}
     wave = conf.Wave  
   end
@@ -2657,6 +2659,7 @@ function LaserLib.SetWaveArray(cow)
     weco.r = ((cow.r - coan) / coax) * comx
     weco.g = ((cow.g - coan) / coax) * comx
     weco.b = ((cow.b - coan) / coax) * comx
+    tW.IS, tW.IE = 1, tW.Size
   else
     tW.PC, tW.PW = (coax / comx), 0
     weco.r = (cow.r / coax) * comx
@@ -2670,6 +2673,9 @@ function LaserLib.SetWaveArray(cow)
     local mb = (weco.b - wav.C.b)
     if(mr >= marg and mg >= marg and mb >= marg) then
       -- Dominating component in the source color
+      if(coan == 0) then tW.IE = iH
+        if(tW.IS == 0) then tW.IS = iH end
+      end
       wav.P = tW.PC; wav.B = true
       tW.PS = tW.PS + tW.PC
     else wav.B = false end

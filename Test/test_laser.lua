@@ -36,7 +36,7 @@ for i = 1, tW.Size do
   print("WAVE", ("%3d"):format(i), ("%.5f"):format(tW[i].P),
     co_tostring(tW[i].C), ("%.3f"):format(tW[i].W), tW[i].B and "V" or "X")
 end
-
+print("Wave", tW.IS, tW.IE)
 print("PW", tW.PW)
 print("PC", tW.PC)
 print("PS", tW.PS)
