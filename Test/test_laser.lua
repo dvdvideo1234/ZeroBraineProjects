@@ -6,7 +6,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
       
 local com = require("common")
 
@@ -20,6 +20,7 @@ LaserLib.GetData("WDHUESTP"):SetData("10")
 LaserLib.GetData("WDRGBMAR"):SetData("10")
 
 
+
 print(table.concat(LaserLib.GetData("HARUNTM"),"|"))
 
 local function co_tostring(co)
@@ -30,12 +31,15 @@ local function co_tostring(co)
   return "("..r.." "..g.." "..b..")"
 end
 
-local tW = LaserLib.GetWaveArray(cor)
+local tW = LaserLib.SetWaveArray(cor)
 for i = 1, tW.Size do
   print("WAVE", ("%3d"):format(i), ("%.5f"):format(tW[i].P),
     co_tostring(tW[i].C), ("%.3f"):format(tW[i].W), tW[i].B and "V" or "X")
 end
 
+print("Pointer1:", LaserLib.GetWaveArray())
+print("Pointer2:", LaserLib.GetWaveArray()); LaserLib.GetData("HAWASTP").Wave.New = true
+print("Pointer3:", LaserLib.GetWaveArray())
 print("PW", tW.PW)
 print("PC", tW.PC)
 print("PS", tW.PS)

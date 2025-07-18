@@ -2611,16 +2611,41 @@ function LaserLib.ColorToWave(mr, mg, mb, ma)
   return math.Remap(rm, wcol[1], wcol[2], wvis[1], wvis[2])
 end
 
-function LaserLib.GetWaveArray(cow)
+function LaserLib.GetWaveArray()
   local conf = DATA.HAWASTP
   local step, marg = conf[1], -conf[2]
   if(step <= 0) then return nil end
   if(marg >  0) then return nil end
+  local wave = conf.Wave
+  if(wave) then
+    if(not wave.New) then return wave.Data end
+  else
+    conf.Wave = {Data = {
+      Size = 0, Step = step,
+      Marg = marg, PS = 0,
+      PC = 0, PW = 0}, New = false}
+    wave = conf.Wave  
+  end
+  local wvis, wcol = DATA.WVIS, DATA.WCOL
+  local tW = wave.Data
+  local huS, huE = wcol[1], wcol[2]
+  for hue = huS, huE, step do
+    local r, g, b = HSVToColor(hue, 1, 1)
+    local co = {r = r, g = g, b = b}
+    local wv = math.Remap(hue, huS, huE, wvis[1], wvis[2])
+    table.insert(tW, {C = co, P = 0, W = wv, B = false})
+    tW.Size = tW.Size + 1
+  end; return tW
+end
+
+function LaserLib.SetWaveArray(cow)
+  local tW = LaserLib.GetWaveArray()
+  if(not tW) then return nil end
   local comx, wvis = DATA.CLMX, DATA.WVIS
   local weco, wcol = DATA.WTCOL, DATA.WCOL
   local coax = math.max(cow.r, cow.g, cow.b)
   local coan = math.min(cow.r, cow.g, cow.b)
-  local tW = {PS = 0, Size = 0}
+  local marg = tW.Marg
   if(coan > 0) then
     tW.PW = (coan / comx)
     coax = coax - coan
@@ -2634,27 +2659,22 @@ function LaserLib.GetWaveArray(cow)
     weco.g = (cow.g / coax) * comx
     weco.b = (cow.b / coax) * comx
   end
-  local huS, huE = wcol[1], wcol[2]
-  for hue = huS, huE, step do
-    local bas = false
-    local r, g, b = HSVToColor(hue, 1, 1)
-    local mr, mg, mb = (weco.r - r), (weco.g - g),(weco.b - b)
+  for iH = 1, tW.Size do
+    local wav = tW[iH]
+    local mr = (weco.r - wav.C.r)
+    local mg = (weco.g - wav.C.g)
+    local mb = (weco.b - wav.C.b)
     if(mr >= marg and mg >= marg and mb >= marg) then
-       -- Dominating component in the source color
-      local co = {r = r, g = g, b = b}; bas = true
-      local wv = math.Remap(hue, huS, huE, wvis[1], wvis[2])
-      table.insert(tW, {C = co, P = tW.PC, W = wv, B = bas})
-      tW.Size = tW.Size + 1; tW.PS = tW.PS + tW.PC
-    end
+      -- Dominating component in the source color
+      wav.P = tW.PC; wav.B = true
+      tW.PS = tW.PS + tW.PC
+    else wav.B = false end
     if(coan > 0) then -- Base white component
         tW.PS = tW.PS + tW.PW
-      if(bas) then -- Adjust the dominant component
-        local com = tW[tW.Size]; com.P = com.P + tW.PW
+      if(wav.B) then -- Adjust the dominant component
+        wav.P = wav.P + tW.PW
       else -- Insert a gray component in the list
-        local co = {r = r, g = g, b = b}
-        local wv = math.Remap(hue, huS, huE, wvis[1], wvis[2])
-        table.insert(tW, {C = co, P = tW.PW, W = wv, B = bas})
-        tW.Size = tW.Size + 1
+        wav.P = tW.PW
       end
     end
   end; return tW
