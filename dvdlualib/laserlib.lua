@@ -2611,7 +2611,7 @@ function LaserLib.ColorToWave(mr, mg, mb, ma)
   return math.Remap(rm, wcol[1], wcol[2], wvis[1], wvis[2])
 end
 
-function LaserLib.GetWaveArray()
+function LaserLib.SetWaveArray()
   local conf = DATA.HAWASTP
   local step, marg = conf[1], -conf[2]
   if(step <= 0) then return nil end
@@ -2629,9 +2629,9 @@ function LaserLib.GetWaveArray()
   tW.Size = 0    -- Amount of entries the decomposition has
   tW.Step = step -- Hue adjustment step when defining components
   tW.Marg = marg -- Color compate margin for component check
-  tW.PS = 0      -- Power sum. All of the beam visual powers combined 
-  tW.PC = 0      -- Individual component power for non-white light part
-  tW.PW = 0      -- Individual component power for white light part
+  tW.PM = 0      -- Power multiplier converted scaled for comparison
+  tW.PX = 0      -- Individual component power for non-white light part
+  tW.PN = 0      -- Individual component power for white light part
   tW.IS = 0      -- Index start for the component extraction
   tW.IE = 0      -- Index end for the component extraction
   local wvis, wcol = DATA.WVIS, DATA.WCOL
@@ -2645,8 +2645,8 @@ function LaserLib.GetWaveArray()
   end; return tW
 end
 
-function LaserLib.SetWaveArray(cow)
-  local tW = LaserLib.GetWaveArray()
+function LaserLib.GetWaveArray(cow)
+  local tW = LaserLib.SetWaveArray()
   if(not tW) then return nil end
   local comx, wvis = DATA.CLMX, DATA.WVIS
   local weco, wcol = DATA.WTCOL, DATA.WCOL
@@ -2654,38 +2654,39 @@ function LaserLib.SetWaveArray(cow)
   local coan = math.min(cow.r, cow.g, cow.b)
   local marg = tW.Marg
   if(coan > 0) then
-    tW.PW = (coan / comx)
-    coax = coax - coan
-    tW.PC = (coax / comx)
-    weco.r = ((cow.r - coan) / coax) * comx
-    weco.g = ((cow.g - coan) / coax) * comx
-    weco.b = ((cow.b - coan) / coax) * comx
+    tW.PN = (coan / comx)
+    coax  = (coax - coan)
+    tW.PX = (coax / comx)
+    tW.PM = (comx / coax)
+    weco.r = tW.PM * (cow.r - coan)
+    weco.g = tW.PM * (cow.g - coan)
+    weco.b = tW.PM * (cow.b - coan)
     tW.IS, tW.IE = 1, tW.Size
   else
-    tW.PC, tW.PW = (coax / comx), 0
-    weco.r = (cow.r / coax) * comx
-    weco.g = (cow.g / coax) * comx
-    weco.b = (cow.b / coax) * comx
+    tW.PM = (comx / coax)
+    tW.PX, tW.PN = (coax / comx), 0
+    weco.r = (tW.PM * cow.r)
+    weco.g = (tW.PM * cow.g)
+    weco.b = (tW.PM * cow.b)
   end
   for iH = 1, tW.Size do
     local wav = tW[iH]
     local mr = (weco.r - wav.C.r)
     local mg = (weco.g - wav.C.g)
     local mb = (weco.b - wav.C.b)
+    wav.P, wav.B = 0, false
     if(mr >= marg and mg >= marg and mb >= marg) then
       -- Dominating component in the source color
-      if(coan == 0) then tW.IE = iH
+      if(coan <= 0) then tW.IE = iH
         if(tW.IS == 0) then tW.IS = iH end
-      end
-      wav.P = tW.PC; wav.B = true
-      tW.PS = tW.PS + tW.PC
-    else wav.B = false end
+      end -- Calculate the start-end indices
+      wav.P = tW.PX; wav.B = true
+    end
     if(coan > 0) then -- Base white component
-        tW.PS = tW.PS + tW.PW
       if(wav.B) then -- Adjust the dominant component
-        wav.P = wav.P + tW.PW
+        wav.P = wav.P + tW.PN
       else -- Insert a gray component in the list
-        wav.P = tW.PW
+        wav.P = tW.PN
       end
     end
   end; return tW
