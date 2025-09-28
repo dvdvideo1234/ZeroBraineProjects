@@ -5,8 +5,8 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase()
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
 
 require("turtle")
 require("gmodlib")
@@ -21,19 +21,21 @@ local crm = require("chartmap")
 local step = 10 -- Fused qartz
 local LaserLib, DATA = {}, {}
 
-DATA.WVIS = { 380, 750}      -- General wavelength limists for visible light
-DATA.WMAP = { 0.8, 3}        -- Dispersion wavelenght mapping for refractive index
-DATA.SODD = 589.29           -- General wavelength for sodium line used for dispersion
-DATA.SOMR = 100
+DATA.AMAX = {-360, 360}        -- General angular limits for having min/max
+DATA.WVIS = { 700, 300}        -- General wavelength limits for visible light
+DATA.WCOL = {  0 , 300}        -- Mapping for wavelength to color hue conversion
+DATA.WMAP = {  20, 5}        -- Dispersion wavelength mapping for refractive index
+DATA.SODD = 589.29             -- General wavelength for sodium line used for dispersion
+DATA.SOMR = 10                 -- General coefficient for wave to refractive index converion
 
 local nIndx = 1.458
 
 -------------------------------------
 
-local dX, dY = 0.1, 0.0025
+local dX, dY = 10, 0.01
 local W , H = 1000, 600
-local minX, maxX = DATA.WMAP[1], DATA.WMAP[2]
-local minY, maxY = 1.45, 1.47
+local minX, maxX = DATA.WVIS[2], DATA.WVIS[1]
+local minY, maxY = 1.4, 1.6
 local greyLevel  = 200
 local intX  = crm.New("interval","WinX", minX, maxX, 0, W)
 local intY  = crm.New("interval","WinY", minY, maxY, H, 0)
@@ -46,24 +48,22 @@ local scOpe = crm.New("scope"):setInterval(intX, intY):setBorder(minX, maxX, min
 
 -------------------------------------------------------
 
-function LaserLib.GetIndex(wave, nidx)
+function LaserLib.WaveToIndex(wave, nidx)
   local wr, mr, ms = DATA.WVIS, DATA.WMAP, DATA.SOMR
   local s = math.Remap(DATA.SODD, wr[1], wr[2], mr[1], mr[2])
   local x = math.Remap(wave, wr[1], wr[2], mr[1], mr[2])
-  local h = -math.log(s) / ms -- Index `nidx` for sodium line
+  local h = -math.log(s) / ms -- Sodium line index
   return (-math.log(x) / ms - h) + nidx
 end
 
 local tS, w = {}, DATA.WVIS[1] 
 
-while(w <= DATA.WVIS[2]) do
-  local wr, mr = DATA.WVIS, DATA.WMAP
-  local x = math.Remap(w, wr[1], wr[2], mr[1], mr[2])
-  local c = cpx.getNew(x, LaserLib.GetIndex(w, nIndx))
-  if(w == 700 or w == 590 or w == 400) then
+for w = DATA.WVIS[2], DATA.WVIS[1] do
+  local c = cpx.getNew(w, LaserLib.WaveToIndex(w, nIndx))
+  if(w % 100 == 0) then
     print(c, w)
   end
-  w = w + step
+  --print(c)
   table.insert(tS, c)
 end
 
@@ -89,7 +89,7 @@ if(tS) then
   for iD = 1, (#tS-1) do
     tS[iD]:Action("ab", tS[iD+1], clR)
     scOpe:drawComplexPoint(tS[iD])
-    updt(); wait(0.05)
+    updt(); wait(0.01)
   end 
   
   wait()
