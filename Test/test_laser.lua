@@ -6,36 +6,35 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
       
 local com = require("common")
+local cmp = require("colormap")
 
 require("gmodlib")
 require("laserlib")
-local corm = require("colormap")
-HSVToColor = corm.getColorHSV
-local cor = Color(128, 255, 0)
 
-LaserLib.GetData("WDHUESTP"):SetData("10")
+HSVToColor = function(H, S, V)
+  local r, g, b = cmp.getColorHSV(H, S, V)
+  return Color(r, g, b, 255)
+end
+
+local enr, set = 20, {Size = 0, Sump = 0}
+local cor = Color(255, 0, 200, 255)
+-- local cor = Color(255, 255, 255, 255)
+
+LaserLib.GetData("WDHUESTP"):SetData("30")
 LaserLib.GetData("WDRGBMAR"):SetData("10")
 
-
-print(table.concat(LaserLib.GetData("HARUNTM"),"|"))
-
-local function co_tostring(co)
-  local f = ("%3d")
-  r = f:format(co.r)
-  g = f:format(co.g)
-  b = f:format(co.b)
-  return "("..r.." "..g.." "..b..")"
-end
-
 local tW = LaserLib.GetWaveArray(cor)
-for i = 1, tW.Size do
-  print("WAVE", ("%3d"):format(i), ("%.5f"):format(tW[i].P),
-    co_tostring(tW[i].C), ("%.3f"):format(tW[i].W), tW[i].B and "V" or "X")
+-- com.logTable(tW, "GET")
+for iW = tW.IS, tW.IE do
+  local recw = tW[iW] -- Current component
+  local rCo, rPw, rEn = recw.C, recw.P, (recw.P / tW.PT)
+  sr, sg, sb = (rCo.r * rPw), (rCo.g * rPw), (rCo.b * rPw)
+  table.insert(set, rEn)
+  set.Size = set.Size + 1
+  set.Sump = set.Sump + rEn
 end
-print("Wave", tW.IS, tW.IE)
-print("PN", tW.PN)
-print("PX", tW.PX)
-print("PM", tW.PM)
+
+com.logTable(set, "POWER")
