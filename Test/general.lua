@@ -5,13 +5,14 @@ local drpath = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/LuaIDE").setBase(1)
+      drpath.addBase("D:/Programs/LuaIDE")
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 local common  = require('common')
 local complex  = require('complex')
 
+require('gmodlib')
+
 local a = function() end
 
-print(getmetatable(a))
-
-
+print(math.ease.InSine(1))
