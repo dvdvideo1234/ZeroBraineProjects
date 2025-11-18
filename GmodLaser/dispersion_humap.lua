@@ -21,11 +21,12 @@ local kym = require("keymap")
 -- http://hyperphysics.phy-astr.gsu.edu/hbase/geoopt/dispersion.html#c1
 local LaserLib, DATA = {}, {}
 
-DATA.WVIS = { 780, 310}        -- General wavelength limits for visible light
+DATA.WVIS = {}        -- General wavelength limits for visible light
 DATA.WCOL = {  0 , 300}        -- Mapping for wavelength to color hue conversion
 DATA.WMAP = {  15,   5}        -- Dispersion wavelength mapping for refractive index
 DATA.SODD = 589.29             -- General wavelength for sodium line used for dispersion
 DATA.SOMR = 10                 -- General coefficient for wave to refractive index conversion
+DATA.WFADE = 70                -- The wavelength magrin where color starts to fade away on conversion
 local nIndx = 1.333            -- Water
 
 DATA.WHUEMP = {
@@ -47,27 +48,51 @@ DATA.WHUEMP = {
   ["MAGENTA"] = {W = {380, 300}, H = {280, 300}}
 }; DATA.WHUEMP.Size = #DATA.WHUEMP
 
-DATA.WVIS[1] = DATA.WHUEMP[DATA.WHUEMP[1]].W[1]
-DATA.WVIS[2] = DATA.WHUEMP[DATA.WHUEMP[DATA.WHUEMP.Size]].W[2]
+DATA.WHUEMP.Lims = {
+  W = {
+    DATA.WHUEMP[DATA.WHUEMP[1]].W[1],
+    DATA.WHUEMP[DATA.WHUEMP[DATA.WHUEMP.Size]].W[2]
+  },
+  H = {
+    DATA.WHUEMP[DATA.WHUEMP[1]].H[1],
+    DATA.WHUEMP[DATA.WHUEMP[DATA.WHUEMP.Size]].H[2]
+  }
+}
+
+
+DATA.WVIS[1] = DATA.WHUEMP.Lims.W[1]
+DATA.WVIS[2] = DATA.WHUEMP.Lims.W[2]
 
 function LaserLib.WaveToHue(nW)
+  local g_wfade = DATA.WFADE
   local g_guemp = DATA.WHUEMP
+  local g_limsw = g_guemp.Lims.W
+  local g_limsh = g_guemp.Lims.H
+  local W1, W2 = g_limsw[1], g_limsw[2]
+  local nW = math.max((tonumber(nW) or 0), 0)
+  if(nW > W1) then return g_limsh[1], math.max(math.Remap(nW, W1, W1+g_wfade, 1, 0), 0) end
+  if(nW < W2) then return g_limsh[2], math.max(math.Remap(nW, W2, W2-g_wfade, 1, 0), 0) end
   for iD = 1, g_guemp.Size do
     local key = g_guemp[iD]
     local map = g_guemp[key]
-    local n, w, h = map.N, map.W, map.H
+    local w, h = map.W, map.H
     if(nW <= w[1] and nW >= w[2]) then
-      return math.Remap(nW, w[1], w[2], h[1], h[2])
+      return math.Remap(nW, w[1], w[2], h[1], h[2]), 1
     end
-  end; return nil
+  end
 end
 
 function LaserLib.HueToWave(nH)
   local g_guemp = DATA.WHUEMP
+  local g_limsw = g_guemp.Lims.W
+  local g_limsh = g_guemp.Lims.H
+  local nH = math.max((tonumber(nH) or 0), 0)
+  if(nH < g_limsh[1]) then return g_limsw[1] end
+  if(nH > g_limsh[2]) then return g_limsw[2] end
   for iD = 1, g_guemp.Size do
     local key = g_guemp[iD]
     local map = g_guemp[key]
-    local n, w, h = map.N, map.W, map.H
+    local w, h = map.W, map.H
     if(nH >= h[1] and nH <= h[2]) then
       return math.Remap(nH, h[1], h[2], w[1], w[2])
     end
@@ -81,11 +106,12 @@ end
 
 -------------------------------------
 
+local graphMar = 70
 local greyLevel  = 200
 local dX, dY = 10, 0.01
 local W , H = 1000, 600
-local minX = DATA.WVIS[2]-20
-local maxX = DATA.WVIS[1]+20
+local minX = DATA.WVIS[2] - graphMar
+local maxX = DATA.WVIS[1] + graphMar
 local minY, maxY = nIndx-0.1, nIndx+0.15
 local clB = colr(col.getColorBlueRGB())
 local clR = colr(col.getColorRedRGB())
@@ -100,21 +126,31 @@ local scOpe = crm.New("scope"):setInterval(intX, intY):setBorder(minX, maxX, min
 -------------------------------------------------------
 
 function LaserLib.WaveToIndex(wave, nidx)
-  local wr, mr, ms = DATA.WVIS, DATA.WMAP, DATA.SOMR
-  local s = math.Remap(DATA.SODD, wr[1], wr[2], mr[1], mr[2])
-  local x = math.Remap(wave, wr[1], wr[2], mr[1], mr[2])
-  local h = -math.log(s) / ms -- Sodium line index
-  return (-math.log(x) / ms - h) + nidx
+  local wm, mr, ms = DATA.WHUEMP.Lims.W, DATA.WMAP, DATA.SOMR
+  local s = math.Remap(DATA.SODD, wm[1], wm[2], mr[1], mr[2])
+  local x = math.Remap(wave, wm[1], wm[2], mr[1], mr[2])
+  local so = (-math.log(s) / ms) -- Sodium line index
+  return (-math.log(x) / ms - so) + nidx
 end
 
-function LaserLib.WaveToColor(wave, bobc)
+function LaserLib.WaveToColor(wave, marg, bobc)
   local wvis, wcol = DATA.WVIS, DATA.WCOL
-  local hue = LaserLib.WaveToHue(wave)
-  local tab = HSVToColor(hue, 1, 1) -- Returns table not color
-  if(bobc) then local wtcol = DATA.WTCOL
-    wtcol.r, wtcol.g = tab.r, tab.g
-    wtcol.b, wtcol.a = tab.b, tab.a; return wtcol
+  local marg = math.Clamp(tonumber(marg) or 1, 0, 1)  
+  local hue, trn = LaserLib.WaveToHue(wave)
+  local tab = HSVToColor(hue, trn, 1) -- Returns table not color
+  if(bobc) then local ctmp = DATA.COTMP
+    ctmp.r, ctmp.g = tab.r, tab.g
+    ctmp.b, ctmp.a = tab.b, tab.a; return ctmp
   end; return tab.r, tab.g, tab.b, tab.a
+end
+
+function LaserLib.ColorToWave(mr, mg, mb, ma)
+  local wvis, wcol, ctmp = DATA.WVIS, DATA.WCOL, DATA.COTMP
+  local r, g, b, a = LaserLib.GetColorRGBA(mr, mg, mb, ma)
+        ctmp.r, ctmp.g, ctmp.b = r, g, b
+  local mh, ms, mv = ColorToHSV(ctmp)
+  local rm = math.Remap(mh, 0, 360, wcol[1], wcol[2])
+  return math.Remap(rm, wcol[1], wcol[2], wvis[1], wvis[2])
 end
 
 -------------------------------------------------------
@@ -140,12 +176,13 @@ local function drawGraph()
   local r, g, b = LaserLib.WaveToColor(DATA.SODD)
   local idx = LaserLib.WaveToIndex(DATA.SODD, nIndx)
   local c, tS = cpx.getNew(DATA.SODD, idx), {}
-  for w = DATA.WVIS[2], DATA.WVIS[1], 5 do
+  for w = minX, maxX, 5 do
     local c = cpx.getNew(w, LaserLib.WaveToIndex(w, nIndx))
     table.insert(tS, {c = c, w = w})
   end
   scOpe:drawComplexPoint(c, colr(r, g, b))
-  scOpe:drawComplexText(c, tostring(c:getRound(0.01)).." : Sodium line", -90)
+  scOpe:drawComplexText(c, tostring(c:getRound(0.01)).." : Sodium Line", -90)
+  local vcs, vce = tS[1].c, tS[#tS].c
   local tMap = DATA.WHUEMP
   for iC = 1, tMap.Size do
     local k = tMap[iC]
@@ -158,14 +195,15 @@ local function drawGraph()
     scOpe:drawComplexText(c, tostring(c:getRound(0.01)).." : "..k, 90)
   end
   scOpe:setSizeVtx(2)
-
+  local sca = dX / dY
   for iD = 1, (#tS-1) do
     local v1, v2 = tS[iD], tS[iD+1]
     local r, g, b = LaserLib.WaveToColor(v1.w)
-    local ang, btx = -45, ((v1.w % 50) == 0)
+    local btx = ((v1.w % 50) == 0)
+    local can = v2.c:getNew():Sub(v1.c); can:setImag(can:getImag() * sca)
+    local ang = can:getRight():getAngDeg() + 45
     v1.c:Action("ab", v2.c, colr(r, g, b))
     scOpe:drawComplexPoint(v1.c, colr(r, g, b), btx, ang)
-    print(v1.w, r, g, b)
   end 
   
   text(("DATA.WVIS = %6.2f : %6.2f"):format(DATA.WVIS[1], DATA.WVIS[2]), 0, 0, 0)
@@ -175,7 +213,7 @@ local function drawGraph()
 end
 
 function getKey(t, k, u, d, l, r)
-  local step = 5
+  local step = 1
   if(kym.isKey(k, u)) then
     t[1] = t[1] + step
     drawGraph()
@@ -199,7 +237,7 @@ shift = 1
 
 while true do
   local key = char(); wait(0.1)
-  getKey(DATA.WMAP, key, "K_NUMPAD8", "K_NUMPAD5", "K_NUMPAD4", "K_NUMPAD6")
+  getKey(DATA.WMAP, key, "K_UP", "K_DOWN", "K_LEFT", "K_RIGHT")
 end
 
 wait()
