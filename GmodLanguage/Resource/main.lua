@@ -7,7 +7,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki",
                   "ZeroBraineProjects/GmodLangResource")
       dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      dir.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
       
 -- Constant stuff
 local com = require("common")
@@ -17,11 +17,13 @@ local rep = "GmodLanguage/Resource"
 
 -- Manual stuff
 local tam = {
+  --[[
   "physprop_adv",
   "material_adv",
   "spinner",
   "trackassembly",
-  "gearassembly"
+  "gearassembly",]]
+  "hovermodule"
 }
 
 for idn = 1, #tam do
