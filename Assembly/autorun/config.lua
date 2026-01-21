@@ -87,7 +87,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","8.810")
+asmlib.SetOpVar("TOOL_VERSION","9.789")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -105,7 +105,7 @@ local gsGenerPrf  = asmlib.GetOpVar("DBEXP_PREFGEN")
 local gsLimitName = asmlib.GetOpVar("CVAR_LIMITNAME")
 local gsDirDSV    = asmlib.GetOpVar("DIRPATH_BAS")..asmlib.GetOpVar("DIRPATH_DSV")
 local gsNoAnchor  = asmlib.GetOpVar("MISS_NOID")..gsSymRev..asmlib.GetOpVar("MISS_NOMD")
-local gsGrossDSV  = gsDirDSV..gsGenerPrf..gsToolPrefU
+local gsGenerDSV  = gsDirDSV..gsGenerPrf..gsToolPrefU
 
 ------------ VARIABLE FLAGS ------------
 
@@ -151,7 +151,7 @@ asmlib.SetBorder(gsToolPrefL.."spawnrate", 1, 10)
 asmlib.SetBorder(gsToolPrefL.."sgradmenu", 1, 16)
 asmlib.SetBorder(gsToolPrefL.."dtmessage", 0, 10)
 asmlib.SetBorder(gsToolPrefL.."ghostblnd", 0, 1)
-asmlib.SetBorder(gsToolPrefL.."crvsuprev", 0, 1)
+asmlib.SetBorder(gsToolPrefL.."crvsuprev", -2, 2)
 asmlib.SetBorder(gsToolPrefL.."rtradmenu", -gnMaxRot, gnMaxRot)
 
 ------------ CONFIGURE LOGGING ------------
@@ -304,9 +304,6 @@ asmlib.SetOpVar("STRUCT_SPAWN",{
     end,
   },
   {Name = "Origin",
-    {"F"   , "VEC", "Origin forward vector"},
-    {"R"   , "VEC", "Origin right vector"},
-    {"U"   , "VEC", "Origin up vector"},
     {"BPos", "VEC", "Base coordinate position"},
     {"BAng", "ANG", "Base coordinate angle"},
     {"OPos", "VEC", "Origin position"},
@@ -474,6 +471,7 @@ if(CLIENT) then
   asmlib.ToIcon("pn_contextm_li"        , "database"          )
   asmlib.ToIcon("pn_contextm_licg"      , "database_edit"     )
   asmlib.ToIcon("pn_contextm_licr"      , "database_add"      )
+  asmlib.ToIcon("pn_contextm_lirf"      , "database_refresh"  )
   asmlib.ToIcon("pn_contextm_lirm"      , "database_delete"   )
   asmlib.ToIcon("pn_contextm_ws"        , "cart"              )
   asmlib.ToIcon("pn_contextm_wsid"      , "key_go"            )
@@ -558,6 +556,7 @@ if(CLIENT) then
   asmlib.WorkshopID("SligWolf's Suspension Train" , "3297918081")
   asmlib.WorkshopID("Modular City Street"         , "3314861708")
   asmlib.WorkshopID("Scene Builder"               , "2233731395")
+  asmlib.WorkshopID("Modular Dungeons"            , "3302818415")
 
   asmlib.SetAction("CLEAR_GHOSTS" , function() asmlib.ClearGhosts() end)
   asmlib.SetAction("CTXMENU_OPEN" , function() asmlib.IsFlag("tg_context_menu", true ) end)
@@ -665,8 +664,9 @@ if(CLIENT) then
       local scrW, scrH = surfaceScreenWidth(), surfaceScreenHeight()
       local actMonitor = asmlib.GetScreen(0,0,scrW,scrH,conPalette,"GAME")
       if(not actMonitor) then asmlib.LogInstance("Screen invalid",sLog); return nil end
+      local nDr = asmlib.GetOpVar("DEG_RAD")
+      local sM  = asmlib.GetOpVar("MISS_NOAV")
       local nMd = asmlib.GetOpVar("MAX_ROTATION")
-      local nDr, sM = asmlib.GetOpVar("DEG_RAD"), asmlib.GetOpVar("MISS_NOAV")
       local nBr = (acTo:GetRadialAngle() * nDr)
       local nK, nN = acTo:GetRadialSegm(), conWorkMode:GetSize()
       local nR  = (mathMin(scrW, scrH) / (2 * gnRatio))
@@ -931,19 +931,6 @@ if(CLIENT) then
           function() asmlib.SetListViewRowClipboard(pnSelf) end):SetImage(asmlib.ToIcon(sI.."cprw"))
         pIn:AddOption(languageGetPhrase(sT.."cpth"),
           function() SetClipboardText(sDsv) end):SetImage(asmlib.ToIcon(sI.."cpth"))
-        -- Panel data line manipulation for import/export
-        local pIn, pOp = pnMenu:AddSubMenu(languageGetPhrase(sT.."li"))
-        if(not IsValid(pIn)) then pnFrame:Close()
-          asmlib.LogInstance("Internals menu invalid",sLog..".ListView"); return nil end
-        if(not IsValid(pOp)) then pnFrame:Close()
-          asmlib.LogInstance("Internals opts invalid",sLog..".ListView"); return nil end
-        pOp:SetIcon(asmlib.ToIcon(sI.."li"))
-        pIn:AddOption(languageGetPhrase(sT.."licg"),
-          function() tpText:Scan(pnLine, true) end):SetImage(asmlib.ToIcon(sI.."licg"))
-        pIn:AddOption(languageGetPhrase(sT.."licr"),
-          function() tpText:Scan(pnLine) end):SetImage(asmlib.ToIcon(sI.."licr"))
-        pIn:AddOption(languageGetPhrase(sT.."lirm"),
-          function() pnSelf:RemoveLine(nIndex) end):SetImage(asmlib.ToIcon(sI.."lirm"))
         -- Move current line around
         local pIn, pOp = pnMenu:AddSubMenu(languageGetPhrase(sT.."mv"))
         if(not IsValid(pIn)) then pnFrame:Close()
@@ -971,6 +958,28 @@ if(CLIENT) then
             if(nIndex >= nT) then return end
             tpText:Swap(pnLine, pnSelf:GetLine(nT))
           end):SetImage(asmlib.ToIcon(sI.."mvbt"))
+        -- Panel data line manipulation for import/export
+        local pIn, pOp = pnMenu:AddSubMenu(languageGetPhrase(sT.."li"))
+        if(not IsValid(pIn)) then pnFrame:Close()
+          asmlib.LogInstance("Internals menu invalid",sLog..".ListView"); return nil end
+        if(not IsValid(pOp)) then pnFrame:Close()
+          asmlib.LogInstance("Internals opts invalid",sLog..".ListView"); return nil end
+        pOp:SetIcon(asmlib.ToIcon(sI.."li"))
+        pIn:AddOption(languageGetPhrase(sT.."licg"),
+          function() tpText:Scan(pnLine, true) end):SetImage(asmlib.ToIcon(sI.."licg"))
+        pIn:AddOption(languageGetPhrase(sT.."licr"),
+          function() tpText:Scan(pnLine) end):SetImage(asmlib.ToIcon(sI.."licr"))
+        pIn:AddOption(languageGetPhrase(sT.."lirf"),
+          function()
+            local makTab = asmlib.GetBuilderNick("PIECES")
+            local defTab = makTab:GetDefinition()
+            local sFile = fDSV:format(sP, defTab.Nick)
+            if(fileExists(sFile, "DATA")) then
+              asmlib.ImportDSV(sFile, true, nil, nil, nil, true)
+            end
+          end):SetImage(asmlib.ToIcon(sI.."lirf"))
+        pIn:AddOption(languageGetPhrase(sT.."lirm"),
+          function() pnSelf:RemoveLine(nIndex) end):SetImage(asmlib.ToIcon(sI.."lirm"))
         -- Populate the sub-menu with all table nicknames
         local iD, pIn, pOp = 1, nil, nil
         local makTab = asmlib.GetBuilderID(iD)
@@ -1004,8 +1013,9 @@ if(CLIENT) then
                 function() SetClipboardText(tostring(fileSize(sFile, "DATA")).."B") end):SetImage(asmlib.ToIcon(sI.."stsz"))
               pTb:AddOption(languageGetPhrase(sT.."sted"),
                 function() -- Edit the database contents using the Luapad addon
-                  if(not luapad) then return end -- Luapad is not installed do nothing
-                  asmlib.LogInstance("Modify "..asmlib.GetReport(sFile), sLog..".ListView")
+                  if(not luapad) then -- Luapad is not installed then do nothing
+                    asmlib.LogInstance("Skipped "..asmlib.GetReport(sFile), sLog..".ListView"); return end
+                  asmlib.LogInstance  ("Modify "..asmlib.GetReport(sFile), sLog..".ListView")
                   if(luapad.Frame) then luapad.Frame:SetVisible(true); luapad.Frame:Center() else luapad.Toggle() end
                   luapad.AddTab("["..sP.."]["..defTab.Nick.."]", fileRead(sFile, "DATA"), sDsv);
                   if(defTab.Nick == "PIECES") then -- Load the category provider for this DSV
@@ -1274,7 +1284,7 @@ if(CLIENT) then
         asmlib.LogInstance("Click "..asmlib.GetReport(pnSelf:GetText()), sLog..".Button")
         if(asmlib.GetAsmConvar("exportdb", "BUL")) then
           asmlib.SetAsmConvar(oPly, "exportdb", 0)
-          if(inputIsKeyDown(KEY_LSHIFT) and asmlib.GetAsmConvar("devmode" ,"BUL")) then
+          if(inputIsKeyDown(KEY_LSHIFT)) then
             if(not asmlib.ExportSyncDB()) then
               asmlib.LogInstance("Export invalid", sLog..".Button"); return nil end
           else
@@ -1770,10 +1780,11 @@ asmlib.NewTable("PIECES",{
   Index = {{1,4,Un=true},{1},{2},{4}},
   Query = {
     ExportDSV       = {O = {2,3,1,4}},
+    Erase           = {W = {{1,"%s"}}},
     CacheQueryPiece = {W = {{1,"%s"}}, O = {4}},
     ExportTypeDSV   = {W = {{2,"%s"}}, O = {3,1,4}},
     ExportTypeRun   = {W = {{2,"%s"}}, O = {3,1,4}},
-    Record          = {"%s","%s","%s","%d","%s","%s","%s","%s"},
+    Record          = {V = {"%s","%s","%s","%d","%s","%s","%s","%s"}},
     CacheQueryTree  = {S = {1,2,3}, W = {{4,"%d"}}, O = {2,3,1}},
     ExportSyncDB    = {S = {1,2,3}, W = {{4,"%d"}}, O = {2,3,1}}
   },
@@ -1801,12 +1812,12 @@ asmlib.NewTable("PIECES",{
       local defTab = makTab:GetDefinition()
       local stData = tCache[snPK]; if(not stData) then
         tCache[snPK] = {}; stData = tCache[snPK] end
-      if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
-      if(not asmlib.IsHere(stData.Name)) then stData.Name = arLine[3] end
-      if(not asmlib.IsHere(stData.Unit)) then stData.Unit = arLine[8] end
       if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
       if(not asmlib.IsHere(stData.Used)) then stData.Used = 0 end
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
+      if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
+      if(not asmlib.IsHere(stData.Name)) then stData.Name = arLine[3] end
+      if(not asmlib.IsHere(stData.Unit)) then stData.Unit = arLine[8] end
       local nOffsID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(nOffsID)) then
         asmlib.LogInstance("Cannot match "..asmlib.GetReport(4,arLine[4],snPK),vSrc); return false end
       if(nOffsID ~= (stData.Size + 1)) then
@@ -1945,11 +1956,12 @@ asmlib.NewTable("ADDITIONS",{
   Timer = gaTimerSet[2],
   Index = {{1,4,Un=true},{1},{4}},
   Query = {
+    Erase               = {W = {{1,"%s"}}},
     ExportDSV           = {O = {1,4}},
     SetAdditionsRun     = {W = {{1,"%s"}}, O = {4}},
     CacheQueryAdditions = {W = {{1,"%s"}}, O = {4}},
     ExportTypeDSV       = {W = {{1,"%s"}}, O = {1,4}},
-    Record              = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"}
+    Record              = {V = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"}}
   },
   Cache = {
     Record = function(makTab, tCache, snPK, arLine, vSrc)
@@ -2010,7 +2022,8 @@ asmlib.NewTable("PHYSPROPERTIES",{
   Timer = gaTimerSet[3],
   Index = {{1,2,Un=true},{1},{2}},
   Query = {
-    Record    = {"%s","%d","%s"},
+    Erase     = {W = {{1,"%s"}}},
+    Record    = {V = {"%s","%d","%s"}},
     ExportDSV = {O = {1,2}},
     CacheQueryProperty = {
       N = {S = {2, 3}, W = {{1,"%s"}}, O = {2}},
@@ -2075,7 +2088,7 @@ asmlib.NewTable("PHYSPROPERTIES",{
 
 --[[ Categories are only needed client side ]]--
 if(CLIENT) then
-  if(fileExists(gsGrossDSV.."CATEGORY.txt", "DATA")) then
+  if(fileExists(gsGenerDSV.."CATEGORY.txt", "DATA")) then
     asmlib.LogInstance("DB CATEGORY from GENERIC",gtInitLogs)
     asmlib.ImportCategory(3, gsGenerPrf)
   else asmlib.LogInstance("DB CATEGORY from LUA",gtInitLogs) end
@@ -2094,7 +2107,7 @@ end
  * First  argument of Categorize() is used to provide default track type for TABLE:Record()
  * Second argument of Categorize() is used to generate track categories for the processed addon
 ]]--
-if(fileExists(gsGrossDSV.."PIECES.txt", "DATA")) then
+if(fileExists(gsGenerDSV.."PIECES.txt", "DATA")) then
   asmlib.LogInstance("DB PIECES from GENERIC",gtInitLogs)
   asmlib.ImportDSV("PIECES", true, gsGenerPrf)
 else
@@ -2495,7 +2508,8 @@ else
   PIECES:Record({"models/props_phx/misc/iron_beam4.mdl", "#", "#", 2, "", "-201.413, 0.001, 5.002", "0,180,0"})
   asmlib.Categorize("XQM Ball Rails",[[function(m)
     local g = m:gsub("models/xqm/rails/",""):gsub("/","_")
-    local r = g:match(".-_"):sub(1, -2); g = g:gsub(r.."_", "")
+    local r = g:match(".-_"); if(not r) then return end
+    r = r:sub(1, -2); g = g:gsub(r.."_", "")
     local t, n = g:match(".-_"), g:gsub("%.mdl","")
     if(t) then t = t:sub(1, -2); g = g:gsub(r.."_", "")
       if(r:find(t)) then n = n:gsub(t.."_", "")
@@ -4806,8 +4820,8 @@ else
   PIECES:Record({"models/scene_building/sewer_system/beam_hall_sky_dip.mdl", "#", "#", 2, "", "0,-44,4", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/comp_roundroom.mdl", "#", "#", 1, "", "-20,128,-26", "0,90,0"})
   PIECES:Record({"models/scene_building/sewer_system/comp_roundroom.mdl", "#", "#", 2, "", "-94,-28, 14", "0,-180,0"})
-  PIECES:Record({"models/scene_building/small_hallways/hall_1door_med.mdl", "#", "#", 1, "", "0, 15,0", "0, 90,0", ""})
-  PIECES:Record({"models/scene_building/small_hallways/hall_1door_med.mdl", "#", "#", 2, "", "0,-15,0", "0,-90,0", ""})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_med.mdl", "#", "#", 1, "", "0, 15,0", "0, 90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_med.mdl", "#", "#", 2, "", "0,-15,0", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_2door.mdl", "#", "#", 1, "", "145,0,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_2door.mdl", "#", "#", 2, "", "0,-175,-20", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_2door.mdl", "#", "#", 3, "", "-145,0,0", "0,-180,0"})
@@ -4817,8 +4831,8 @@ else
   PIECES:Record({"models/scene_building/sewer_system/tunnel_3sec.mdl", "#", "#", 1, "", "0,-172,0", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_3sec.mdl", "#", "#", 2, "", "-200,28,0", "0,-180,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_3sec.mdl", "#", "#", 3, "", "200,28,0"})
-  PIECES:Record({"models/scene_building/sewer_system/tunnel_big_bend.mdl", "#", "#", 1, "", "8.2,-121,-4", "0,-90,0", ""})
-  PIECES:Record({"models/scene_building/sewer_system/tunnel_big_bend.mdl", "#", "#", 2, "", "-49.604,18.618,-4", "0,135,0", ""})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_big_bend.mdl", "#", "#", 1, "", "8.2,-121,-4", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_big_bend.mdl", "#", "#", 2, "", "-49.604,18.618,-4", "0,135,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_door.mdl", "#", "#", 1, "", "-145,0,0", "0,-180,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_door.mdl", "#", "#", 2, "", "0,175,-20", "0,90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_door.mdl", "#", "#", 3, "", "0,-175,-20", "0,-90,0"})
@@ -4826,33 +4840,164 @@ else
   PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_ent.mdl", "#", "#", 2, "", "0,-59,-20", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_ent_gate.mdl", "#", "#", 1, "", "0, 59,-16", "0, 90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_ent_gate.mdl", "#", "#", 2, "", "0,-59,-20", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_short.mdl", "#", "#", 1, "", "0, 31,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_short.mdl", "#", "#", 2, "", "0,-31,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_mid.mdl", "#", "#", 1, "", "0, 63,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_mid.mdl", "#", "#", 2, "", "0,-63,0", "0,-90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_long.mdl", "#", "#", 1, "", "0, 115,0", "0,90,0"})
   PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_long.mdl", "#", "#", 2, "", "0,-115,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_2sec.mdl", "#", "#", 1, "", "91,24.5,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_2sec.mdl", "#", "#", 2, "", "-24,-91,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_bend.mdl", "#", "#", 1, "", "91,27.015,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_bend.mdl", "#", "#", 2, "", "-27,-91,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_3sec.mdl", "#", "#", 1, "", "112,24.4982,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_3sec.mdl", "#", "#", 2, "", "-2.80149,-90,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_3sec.mdl", "#", "#", 3, "", "-112,24.362,0", "0,-180,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_bend_half.mdl", "#", "#", 1, "", "24.6314,19.6809,0", "0,45,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_pipe_bend_half.mdl", "#", "#", 2, "", "-6.55228,-65.1073,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_straight.mdl", "#", "#", 1, "", "0, 95,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/sewer_system/tunnel_straight.mdl", "#", "#", 2, "", "0,-95,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door.mdl", "#", "#", 1, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door.mdl", "#", "#", 2, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_side.mdl", "#", "#", 1, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_side.mdl", "#", "#", 2, "", "-43,0,0", "0,180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_side.mdl", "#", "#", 3, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_sml.mdl", "#", "#", 1, "", "0,5,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_1door_sml.mdl", "#", "#", 2, "", "0,-5,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_l.mdl", "#", "#", 1, "", "43,-4,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_l.mdl", "#", "#", 2, "", "0, 47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_l.mdl", "#", "#", 3, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_opp.mdl", "#", "#", 1, "", "0, 47,0", "0, 90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_opp.mdl", "#", "#", 2, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_opp_small.mdl", "#", "#", 1, "", "0, 31,0", "0, 90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_opp_small.mdl", "#", "#", 2, "", "0,-31,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_r.mdl", "#", "#", 1, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_r.mdl", "#", "#", 2, "", "-43,-4,0", "0,180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_r.mdl", "#", "#", 3, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_side.mdl", "#", "#", 1, "", "43,0,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_side.mdl", "#", "#", 2, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_side.mdl", "#", "#", 3, "", "-43,0,0", "0,180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_2door_side.mdl", "#", "#", 4, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_3door.mdl", "#", "#", 1, "", "43,-4,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_3door.mdl", "#", "#", 2, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_3door.mdl", "#", "#", 3, "", "-43,-4,0","0,180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_3door.mdl", "#", "#", 4, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector.mdl", "#", "#", 1, "", "0, 47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector.mdl", "#", "#", 2, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_3way.mdl", "#", "#", 1, "", "2,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_3way.mdl", "#", "#", 2, "", "-45,0,0", "0,-180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_3way.mdl", "#", "#", 3, "", "2,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_4way.mdl", "#", "#", 1, "", "47,0,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_4way.mdl", "#", "#", 2, "", "0,47,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_4way.mdl", "#", "#", 3, "", "-47,0,0", "0,-180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_4way.mdl", "#", "#", 4, "", "0,-47,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_corner.mdl", "#", "#", 1, "", "-45,2,0", "0,180,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_corner.mdl", "#", "#", 2, "", "2,-45,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_hallways/hall_connector_deadend.mdl", "#", "#", 1, "", "0,-45,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/1door.mdl", "#", "#", 1, "", "0,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/1door_l.mdl", "#", "#", 1, "", "-64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/1door_r.mdl", "#", "#", 1, "", "64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp.mdl", "#", "#", 1, "", "-64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp.mdl", "#", "#", 2, "", "-64,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_l.mdl", "#", "#", 1, "", "-64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_l.mdl", "#", "#", 2, "", "64,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_ml.mdl", "#", "#", 1, "", "-64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_ml.mdl", "#", "#", 2, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_mr.mdl", "#", "#", 1, "", "64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_mr.mdl", "#", "#", 2, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_r.mdl", "#", "#", 1, "", "64,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opp_r.mdl", "#", "#", 2, "", "-64,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opposites.mdl", "#", "#", 1, "", "0,123,0", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_opposites.mdl", "#", "#", 2, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_sides.mdl", "#", "#", 1, "", "123,0,0"})
+  PIECES:Record({"models/scene_building/small_rooms/2door_sides.mdl", "#", "#", 2, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/3door.mdl", "#", "#", 1, "", "123,0,0"})
+  PIECES:Record({"models/scene_building/small_rooms/3door.mdl", "#", "#", 2, "", "0, 123,0", "0, 90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/3door.mdl", "#", "#", 3, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/4door.mdl", "#", "#", 1, "", "123,0,0"})
+  PIECES:Record({"models/scene_building/small_rooms/4door.mdl", "#", "#", 2, "", "0, 123,0", "0, 90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/4door.mdl", "#", "#", 3, "", "-123,0,0", "0,180,0"})
+  PIECES:Record({"models/scene_building/small_rooms/4door.mdl", "#", "#", 4, "", "0,-123,0", "0,-90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/stairs_straight.mdl", "#", "#", 1, "", "0,163,64", "0,90,0"})
+  PIECES:Record({"models/scene_building/small_rooms/stairs_straight.mdl", "#", "#", 2, "", "0,-163,-64", "0,-90,0"})
+  asmlib.Categorize("Modular Dungeons",[[function(m)
+    local g = m:gsub("models/coldsaturnight/dungeons/","")
+    local r, n = g:gsub("%.mdl",""):lower(), nil
+    if(r:find("^combine")) then
+      n = r:gsub("^combine", ""); r = "combine"
+    else r, n = nil, nil end; return r, n end]])
+  PIECES:Record({"models/coldsaturnight/dungeons/combinearmory.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridor.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridor.mdl", "#", "#", 2, "", "-256,0,80", "0,180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorend.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorcross.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorcross.mdl", "#", "#", 2, "", "0,256,80", "0,90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorcross.mdl", "#", "#", 3, "", "-256,0,80", "0,-180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorcross.mdl", "#", "#", 4, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridort.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridort.mdl", "#", "#", 2, "", "-256,0,80", "0,-180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridort.mdl", "#", "#", 3, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorturn.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinecorridorturn.mdl", "#", "#", 2, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineentry.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineentry.mdl", "#", "#", 2, "", "0,256,80", "0,90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineentry.mdl", "#", "#", 3, "", "-256,0,80", "0,180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineentry.mdl", "#", "#", 4, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineladder.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineladder.mdl", "#", "#", 2, "", "-256,0,336", "0,180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineroom.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineroom.mdl", "#", "#", 2, "", "-256,0,80", "0,180,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineroom.mdl", "#", "#", 3, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineroomend.mdl", "#", "#", 1, "", "0,-256,80", "0,90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineroomend.mdl", "#", "#", 2, "", "0,-256,80", "0,-90,0"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineshaft.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combineshaftend.mdl", "#", "#", 1, "", "256,0,80"})
+  PIECES:Record({"models/coldsaturnight/dungeons/combinestart.mdl", "#", "#", 1, "", "256,0,80"})
   if(gsMoDB == "SQL") then sqlCommit() end
 end
 
-if(fileExists(gsGrossDSV.."PHYSPROPERTIES.txt", "DATA")) then
+if(fileExists(gsGenerDSV.."PHYSPROPERTIES.txt", "DATA")) then
   asmlib.LogInstance("DB PHYSPROPERTIES from GENERIC",gtInitLogs)
   asmlib.ImportDSV("PHYSPROPERTIES", true, gsGenerPrf)
 else --- Valve's physical properties: https://developer.valvesoftware.com/wiki/Material_surface_properties
   if(gsMoDB == "SQL") then sqlBegin() end
   asmlib.LogInstance("DB PHYSPROPERTIES from LUA",gtInitLogs)
   local PHYSPROPERTIES = asmlib.GetBuilderNick("PHYSPROPERTIES"); asmlib.ModelToNameRule("CLR")
-  asmlib.Categorize("Special")
-  PHYSPROPERTIES:Record({"#", 1 , "default"             })
-  PHYSPROPERTIES:Record({"#", 2 , "default_silent"      })
-  PHYSPROPERTIES:Record({"#", 3 , "floatingstandable"   })
-  PHYSPROPERTIES:Record({"#", 4 , "item"                })
-  PHYSPROPERTIES:Record({"#", 5 , "ladder"              })
-  PHYSPROPERTIES:Record({"#", 6 , "no_decal"            })
-  PHYSPROPERTIES:Record({"#", 7 , "player"              })
-  PHYSPROPERTIES:Record({"#", 8 , "player_control_clip" })
   asmlib.Categorize("Concrete")
   PHYSPROPERTIES:Record({"#", 1 , "brick"          })
   PHYSPROPERTIES:Record({"#", 2 , "concrete"       })
   PHYSPROPERTIES:Record({"#", 3 , "concrete_block" })
   PHYSPROPERTIES:Record({"#", 4 , "gravel"         })
   PHYSPROPERTIES:Record({"#", 5 , "rock"           })
+  asmlib.Categorize("Frozen")
+  PHYSPROPERTIES:Record({"#", 1 , "snow"      })
+  PHYSPROPERTIES:Record({"#", 2 , "ice"       })
+  PHYSPROPERTIES:Record({"#", 3 , "gmod_ice"  })
+  asmlib.Categorize("Liquid")
+  PHYSPROPERTIES:Record({"#", 1 , "slime" })
+  PHYSPROPERTIES:Record({"#", 2 , "water" })
+  PHYSPROPERTIES:Record({"#", 3 , "wade"  })
+  asmlib.Categorize("Manufactured")
+  PHYSPROPERTIES:Record({"#", 1 , "jeeptire"                })
+  PHYSPROPERTIES:Record({"#", 2 , "jalopytire"              })
+  PHYSPROPERTIES:Record({"#", 3 , "rubber"                  })
+  PHYSPROPERTIES:Record({"#", 4 , "rubbertire"              })
+  PHYSPROPERTIES:Record({"#", 5 , "slidingrubbertire"       })
+  PHYSPROPERTIES:Record({"#", 6 , "slidingrubbertire_front" })
+  PHYSPROPERTIES:Record({"#", 7 , "slidingrubbertire_rear"  })
+  PHYSPROPERTIES:Record({"#", 8 , "brakingrubbertire"       })
+  PHYSPROPERTIES:Record({"#", 9 , "tile"                    })
+  PHYSPROPERTIES:Record({"#", 10, "paper"                   })
+  PHYSPROPERTIES:Record({"#", 11, "papercup"                })
+  PHYSPROPERTIES:Record({"#", 12, "cardboard"               })
+  PHYSPROPERTIES:Record({"#", 13, "plaster"                 })
+  PHYSPROPERTIES:Record({"#", 14, "plastic_barrel"          })
+  PHYSPROPERTIES:Record({"#", 15, "plastic_barrel_buoyant"  })
+  PHYSPROPERTIES:Record({"#", 16, "Plastic_Box"             })
+  PHYSPROPERTIES:Record({"#", 17, "plastic"                 })
+  PHYSPROPERTIES:Record({"#", 18, "glass"                   })
+  PHYSPROPERTIES:Record({"#", 19, "glassbottle"             })
+  PHYSPROPERTIES:Record({"#", 20, "combine_glass"           })
   asmlib.Categorize("Metal")
   PHYSPROPERTIES:Record({"#", 1 , "canister"              })
   PHYSPROPERTIES:Record({"#", 2 , "chain"                 })
@@ -4878,30 +5023,6 @@ else --- Valve's physical properties: https://developer.valvesoftware.com/wiki/M
   PHYSPROPERTIES:Record({"#", 22, "solidmetal"            })
   PHYSPROPERTIES:Record({"#", 23, "strider"               })
   PHYSPROPERTIES:Record({"#", 24, "weapon"                })
-  asmlib.Categorize("Wood")
-  PHYSPROPERTIES:Record({"#", 1 , "wood"          })
-  PHYSPROPERTIES:Record({"#", 2 , "Wood_Box"      })
-  PHYSPROPERTIES:Record({"#", 3 , "Wood_Furniture"})
-  PHYSPROPERTIES:Record({"#", 4 , "Wood_Plank"    })
-  PHYSPROPERTIES:Record({"#", 5 , "Wood_Panel"    })
-  PHYSPROPERTIES:Record({"#", 6 , "Wood_Solid"    })
-  asmlib.Categorize("Terrain")
-  PHYSPROPERTIES:Record({"#", 1 , "dirt"          })
-  PHYSPROPERTIES:Record({"#", 2 , "grass"         })
-  PHYSPROPERTIES:Record({"#", 3 , "gravel"        })
-  PHYSPROPERTIES:Record({"#", 4 , "mud"           })
-  PHYSPROPERTIES:Record({"#", 5 , "quicksand"     })
-  PHYSPROPERTIES:Record({"#", 6 , "sand"          })
-  PHYSPROPERTIES:Record({"#", 7 , "slipperyslime" })
-  PHYSPROPERTIES:Record({"#", 8 , "antlionsand"   })
-  asmlib.Categorize("Liquid")
-  PHYSPROPERTIES:Record({"#", 1 , "slime" })
-  PHYSPROPERTIES:Record({"#", 2 , "water" })
-  PHYSPROPERTIES:Record({"#", 3 , "wade"  })
-  asmlib.Categorize("Frozen")
-  PHYSPROPERTIES:Record({"#", 1 , "snow"      })
-  PHYSPROPERTIES:Record({"#", 2 , "ice"       })
-  PHYSPROPERTIES:Record({"#", 3 , "gmod_ice"  })
   asmlib.Categorize("Miscellaneous")
   PHYSPROPERTIES:Record({"#", 1 , "carpet"       })
   PHYSPROPERTIES:Record({"#", 2 , "ceiling_tile" })
@@ -4916,31 +5037,35 @@ else --- Valve's physical properties: https://developer.valvesoftware.com/wiki/M
   PHYSPROPERTIES:Record({"#", 6 , "foliage"     })
   PHYSPROPERTIES:Record({"#", 7 , "watermelon"  })
   PHYSPROPERTIES:Record({"#", 8 , "zombieflesh" })
-  asmlib.Categorize("Manufactured")
-  PHYSPROPERTIES:Record({"#", 1 , "jeeptire"                })
-  PHYSPROPERTIES:Record({"#", 2 , "jalopytire"              })
-  PHYSPROPERTIES:Record({"#", 3 , "rubber"                  })
-  PHYSPROPERTIES:Record({"#", 4 , "rubbertire"              })
-  PHYSPROPERTIES:Record({"#", 5 , "slidingrubbertire"       })
-  PHYSPROPERTIES:Record({"#", 6 , "slidingrubbertire_front" })
-  PHYSPROPERTIES:Record({"#", 7 , "slidingrubbertire_rear"  })
-  PHYSPROPERTIES:Record({"#", 8 , "brakingrubbertire"       })
-  PHYSPROPERTIES:Record({"#", 9 , "tile"                    })
-  PHYSPROPERTIES:Record({"#", 10, "paper"                   })
-  PHYSPROPERTIES:Record({"#", 11, "papercup"                })
-  PHYSPROPERTIES:Record({"#", 12, "cardboard"               })
-  PHYSPROPERTIES:Record({"#", 13, "plaster"                 })
-  PHYSPROPERTIES:Record({"#", 14, "plastic_barrel"          })
-  PHYSPROPERTIES:Record({"#", 15, "plastic_barrel_buoyant"  })
-  PHYSPROPERTIES:Record({"#", 16, "Plastic_Box"             })
-  PHYSPROPERTIES:Record({"#", 17, "plastic"                 })
-  PHYSPROPERTIES:Record({"#", 18, "glass"                   })
-  PHYSPROPERTIES:Record({"#", 19, "glassbottle"             })
-  PHYSPROPERTIES:Record({"#", 20, "combine_glass"           })
+  asmlib.Categorize("Special")
+  PHYSPROPERTIES:Record({"#", 1 , "default"             })
+  PHYSPROPERTIES:Record({"#", 2 , "default_silent"      })
+  PHYSPROPERTIES:Record({"#", 3 , "floatingstandable"   })
+  PHYSPROPERTIES:Record({"#", 4 , "item"                })
+  PHYSPROPERTIES:Record({"#", 5 , "ladder"              })
+  PHYSPROPERTIES:Record({"#", 6 , "no_decal"            })
+  PHYSPROPERTIES:Record({"#", 7 , "player"              })
+  PHYSPROPERTIES:Record({"#", 8 , "player_control_clip" })
+  asmlib.Categorize("Terrain")
+  PHYSPROPERTIES:Record({"#", 1 , "dirt"          })
+  PHYSPROPERTIES:Record({"#", 2 , "grass"         })
+  PHYSPROPERTIES:Record({"#", 3 , "gravel"        })
+  PHYSPROPERTIES:Record({"#", 4 , "mud"           })
+  PHYSPROPERTIES:Record({"#", 5 , "quicksand"     })
+  PHYSPROPERTIES:Record({"#", 6 , "sand"          })
+  PHYSPROPERTIES:Record({"#", 7 , "slipperyslime" })
+  PHYSPROPERTIES:Record({"#", 8 , "antlionsand"   })
+  asmlib.Categorize("Wood")
+  PHYSPROPERTIES:Record({"#", 1 , "wood"          })
+  PHYSPROPERTIES:Record({"#", 2 , "Wood_Box"      })
+  PHYSPROPERTIES:Record({"#", 3 , "Wood_Furniture"})
+  PHYSPROPERTIES:Record({"#", 4 , "Wood_Plank"    })
+  PHYSPROPERTIES:Record({"#", 5 , "Wood_Panel"    })
+  PHYSPROPERTIES:Record({"#", 6 , "Wood_Solid"    })
   if(gsMoDB == "SQL") then sqlCommit() end
 end
 
-if(fileExists(gsGrossDSV.."ADDITIONS.txt", "DATA")) then
+if(fileExists(gsGenerDSV.."ADDITIONS.txt", "DATA")) then
   asmlib.LogInstance("DB ADDITIONS from GENERIC",gtInitLogs)
   asmlib.ImportDSV("ADDITIONS", true, gsGenerPrf)
 else

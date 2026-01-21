@@ -635,6 +635,8 @@ function ents.Create(cla)
   return self
 end
 
+ents.CreateClientProp = ents.Create
+
 function Entity(id)
   if(id == nil) then return end
   return __entity[id]
