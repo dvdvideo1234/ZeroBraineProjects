@@ -2320,7 +2320,7 @@ function RegisterPOA(stData, ivID, sP, sO, sA)
     LogInstance("Origin mismatch "..GetReport(sO)); return nil end
   local sA = (sA or sNu); if(not isstring(sA)) then
     LogInstance("Angle mismatch "..GetReport(sA)); return nil end
-  LogInstance("Store "..GetReport(sNu, iID, sP, sO, sA, stData.Slot))
+  LogInstance("Store "..GetReport(iID, sP, sO, sA, stData.Slot))
   if(not stData.Offs) then if(iID ~= 1) then
     LogInstance("Mismatch ID "..GetReport(iID, stData.Slot)); return nil end
     stData.Offs = {}; stData.Post = true -- Mark post-process on spawn
@@ -2647,9 +2647,21 @@ function GetBuilderID(vID)
   local nID = tonumber(vID); if(not IsHere(nID)) then
     LogInstance("ID mismatch "..GetReport(vID)); return nil end
   if(nID <= 0) then LogInstance("ID invalid "..GetReport(nID)); return nil end
-  local makTab = GetBuilderNick(libQTable[nID]); if(not IsHere(makTab)) then
+  local sTable = libQTable[nID]; if(not isstring(sTable)) then
+    LogInstance("Builder key missing "..GetReport(nID)); return nil end
+  local makTab = GetBuilderNick(sTable); if(not IsHere(makTab)) then
     LogInstance("Builder object missing "..GetReport(nID)); return nil end
   return makTab -- Return the dedicated table builder object
+end
+
+function RunBuilderCount(fFnc, sSrc)
+  local iCnt = #libQTable -- Returns zero on error
+  if(isfunction(fFnc)) then; for iD = 1, iCnt do
+    local makTab = GetBuilderID(iD); if(not IsHere(makTab)) then
+      LogInstance("Missing table builder for "..GetReport(sSrc, iD)); return 0 end
+    local bS, vO = pcall(fFnc, makTab, iD); if(not bS) then
+      LogInstance("Execute error: "..vO, GetReport(sSrc, iD)); return 0 end
+  end; end; return iCnt -- Return the builder object count on success
 end
 
 function NewTable(sTable,defTab,bReload,bDelete)
@@ -3203,9 +3215,14 @@ function NewTable(sTable,defTab,bReload,bDelete)
       local qData = sqlQuery(Q); if(not qData and isbool(qData)) then
         LogInstance("SQL exec error "..GetReport(sqlLastError(), Q),qtDef.Nick); return false end
     end -- Clear the entry from the table cache too
+    local fsLog = GetOpVar("FORM_LOGSOURCE") -- The actual format value
+    local ssLog = "*"..fsLog:format(qtDef.Nick,sFunc,"%s")
     local tCache = libCache[qtDef.Name]; if(not IsHere(tCache)) then
       LogInstance("Cache missing",qtDef.Nick); return false end
-    if(sKey ~= "") then tCache[sKey] = nil else tableEmpty(tCache) end; return true
+    local bS, sR = pcall(qtDef.Cache[sFunc], self, tCache, sKey, ssLog:format("Cache"))
+    if(not bS) then LogInstance("Cache manager fail: "..sR,qtDef.Nick); return false end
+    if(not sR) then LogInstance("Cache routine fail",qtDef.Nick); return false end
+    return true -- The dynamic cache erasure was successful
   end
   -- Uses the given array to create a record in the table
   function self:Record(arLine)
@@ -3222,7 +3239,7 @@ function NewTable(sTable,defTab,bReload,bDelete)
     -- Call the trigger when provided
     if(istable(qtDef.Trigs)) then
       local bS, sR = pcall(qtDef.Trigs[sFunc], arLine, ssLog:format("Trigs"))
-      if(not bS) then LogInstance("Trigger manager "..sR,qtDef.Nick); return false end
+      if(not bS) then LogInstance("Trigger manager: "..sR,qtDef.Nick); return false end
       if(not sR) then LogInstance("Trigger routine fail",qtDef.Nick); return false end
     end -- Populate the data after the trigger does its thing
     if(sMoDB == "SQL") then local qsKey = GetOpVar("FORM_KEYSTMT")
@@ -3242,7 +3259,7 @@ function NewTable(sTable,defTab,bReload,bDelete)
       if(not istable(qtDef.Cache)) then
         LogInstance("Cache manager missing",qtDef.Nick); return false end
       local bS, sR = pcall(qtDef.Cache[sFunc], self, tCache, snPK, arLine, ssLog:format("Cache"))
-      if(not bS) then LogInstance("Cache manager fail "..sR,qtDef.Nick); return false end
+      if(not bS) then LogInstance("Cache manager fail: "..sR,qtDef.Nick); return false end
       if(not sR) then LogInstance("Cache routine fail",qtDef.Nick); return false end
     else LogInstance("Unsupported mode "..GetReport(sMoDB,1,qtDef[1][2]),qtDef.Nick); return false end
     return true -- The dynamic cache population was successful
@@ -3837,9 +3854,9 @@ function ImportDSV(sTable, bComm, sPref, sDelim, bExp, bRef)
   local sTable = tostring(sTable or ""); if(IsBlank(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
   local bFile, sLine, isEOF, F = fileExists(sTable, "DATA"), "", false
-  local tHew, sHew = GetOpVar("PATTEM_EXDSVHED")
+  local bRef, tHew, sHew = tobool(bRef), GetOpVar("PATTEM_EXDSVHED")
   local sMoDB, makTab, defTab, cmdTab = GetOpVar("MODE_DATABASE")
-  if(bFile) then
+  if(bFile) then -- The first argument is a file path
     local tHew, fName = GetOpVar("PATTEM_EXDSVHED"), sTable
     LogInstance("Reading configuration: "..fName)
     F = fileOpen(fName, "rb", "DATA"); if(not F) then
@@ -3862,7 +3879,7 @@ function ImportDSV(sTable, bComm, sPref, sDelim, bExp, bRef)
     F = fileOpen(fName, "rb", "DATA"); if(not F) then
       LogInstance(sHew.." Open fail: "..fName, sTable); return false end
     LogInstance(sHew.." Intern success "..GetReport(sPar), sTable)
-  else
+  else -- The first argument is considered to be a table nick
     sDelim = tostring(sDelim or "\t"):sub(1,1)
     local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
       LogInstance("Prefix mismatch "..GetReport(fPref,sPref), sTable); return false end
@@ -3878,10 +3895,10 @@ function ImportDSV(sTable, bComm, sPref, sDelim, bExp, bRef)
     F = fileOpen(fName, "rb", "DATA"); if(not F) then
       LogInstance(sHew.." Open fail: "..fName, sTable); return false end
   end
-  local bRef  = (tobool(bRef) and (sTable == "PIECES"))
   if(bComm and sMoDB == "SQL") then
     sqlQuery(makTab:Begin():Get()); LogInstance(sHew.." Begin", sTable)
   end
+  local iD = makTab:GetColumnID("LINEID")
   while(not isEOF) do sLine, isEOF = GetStringFile(F)
     if((not IsBlank(sLine)) and (not IsDisable(sLine))) then
       local tData = sDelim:Explode(sLine); if((#tData-1) > defTab.Size) then
@@ -3889,7 +3906,7 @@ function ImportDSV(sTable, bComm, sPref, sDelim, bExp, bRef)
       local sSors = tableRemove(tData, 1); if(sSors ~= defTab.Name) then
         LogInstance(sHew.." Internal table mismatch "..GetReport(sLine), sTable); return false end
       for iCnt = 1, defTab.Size do tData[iCnt] = GetStrip(tData[iCnt]) end
-      if(bRef and (tonumber(tData[4]) or 0) == 1) then
+      if(bRef and (tonumber(tData[iD]) or 0) == 1) then
         if(bComm) then makTab:Erase(tData[1]) end
       end
       if(bComm) then makTab:Record(tData) end
@@ -5640,12 +5657,14 @@ function GetCatmullRomCurveSegment(vP0, vP1, vP2, vP3, nN, nA)
   local vB1, vB2 = Vector(), Vector()
   local vA1, vA2, vA3 = Vector(), Vector(), Vector()
   for iD = 1, #tTN do tS[iD] = Vector(); local nTn, vTn = tTN[iD], tS[iD]
-    vA1:Set(vP0); vA1:Mul((nT1-nTn)/(nT1-nT0)); vA1:Add(vP1 * ((nTn-nT0)/(nT1-nT0)))
-    vA2:Set(vP1); vA2:Mul((nT2-nTn)/(nT2-nT1)); vA2:Add(vP2 * ((nTn-nT1)/(nT2-nT1)))
-    vA3:Set(vP2); vA3:Mul((nT3-nTn)/(nT3-nT2)); vA3:Add(vP3 * ((nTn-nT2)/(nT3-nT2)))
-    vB1:Set(vA1); vB1:Mul((nT2-nTn)/(nT2-nT0)); vB1:Add(vA2 * ((nTn-nT0)/(nT2-nT0)))
-    vB2:Set(vA2); vB2:Mul((nT3-nTn)/(nT3-nT1)); vB2:Add(vA3 * ((nTn-nT1)/(nT3-nT1)))
-    vTn:Set(vB1); vTn:Mul((nT2-nTn)/(nT2-nT1)); vTn:Add(vB2 * ((nTn-nT1)/(nT2-nT1)))
+    local nD1, nD2, nD3 = (nT1-nT0), (nT2-nT1), (nT3-nT2)
+    local nD4, nD5, nD6 = (nT2-nT0), (nT3-nT1), (nT2-nT1)
+    vA1:Set(vP0); vA1:Mul((nT1-nTn)/nD1); vA1:Add(vP1 * ((nTn-nT0)/nD1))
+    vA2:Set(vP1); vA2:Mul((nT2-nTn)/nD2); vA2:Add(vP2 * ((nTn-nT1)/nD2))
+    vA3:Set(vP2); vA3:Mul((nT3-nTn)/nD3); vA3:Add(vP3 * ((nTn-nT2)/nD3))
+    vB1:Set(vA1); vB1:Mul((nT2-nTn)/nD4); vB1:Add(vA2 * ((nTn-nT0)/nD4))
+    vB2:Set(vA2); vB2:Mul((nT3-nTn)/nD5); vB2:Add(vA3 * ((nTn-nT1)/nD5))
+    vTn:Set(vB1); vTn:Mul((nT2-nTn)/nD6); vTn:Add(vB2 * ((nTn-nT1)/nD6))
   end; return tS
 end
 
@@ -5654,26 +5673,31 @@ end
  * https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
  * tV > A table containing the curve control points ( KNOTS )
  * nT > Amount of points to be calculated between the control points
- * nA > Parametric constant curve factor [0 ; 1]
+ * nA > Parametric constant curve factor [0 ; 1] default [0.5]
+        [0] : More sharp corners in the nodes. Can create self-intersections and loops
+        [1] : More straight lines in the nodes. Can create tight sharp bends.
  * Returns a table containing the generated curve including the control points
 ]]
 function GetCatmullRomCurve(tV, nT, nA, tO)
   if(not istable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
-  if(nA and not isnumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
-  if(nA < 0 or nA > 1) then LogInstance("Factor invalid "..GetReport(nA)); return nil end
-  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
-    LogInstance("Samples mismatch "..GetReport(nT)); return nil end
-  local vM, iC, cS, cE, tN = GetOpVar("CURVE_MARGIN"), 1, Vector(), Vector(), (tO or {})
+  local vA = tonumber(nA); if(not vA) then vA = 0.5
+    LogInstance("Factor default to [0.5]"..GetReport(nA)) end
+  if(vA < 0 or vA > 1) then LogInstance("Factor mismatch "..GetReport(vA)); return nil end
+  local vT = tonumber(nT); if(not vT) then vT = 200
+    LogInstance("Samples default to [200]"..GetReport(nT)) end
+  local nV, rT = #tV, mathFloor(vT); if(rT < 0) then
+    LogInstance("Samples mismatch "..GetReport(vT)); return nil end
+  local vM, cS, cE, tN = GetOpVar("CURVE_MARGIN"), Vector(), Vector(), (tO or {})
   cS:Set(tV[ 1]); cS:Sub(tV[2])   ; cS:Normalize(); cS:Mul(vM); cS:Add(tV[1])
   cE:Set(tV[nV]); cE:Sub(tV[nV-1]); cE:Normalize(); cE:Mul(vM); cE:Add(tV[nV])
   tableInsert(tV, 1, cS); tableInsert(tV, cE); nV = (nV + 2); tableEmpty(tN)
   for iD = 1, (nV-3) do
     local cA, cB, cC, cD = tV[iD], tV[iD+1], tV[iD+2], tV[iD+3]
-    local tS = GetCatmullRomCurveSegment(cA, cB, cC, cD, nT, nA)
-    for iK = 1, (nT+1) do tN[iC] = tS[iK]; iC = (iC + 1) end
-  end; tN[iC] = Vector(); tN[iC]:Set(tV[nV-1])
+    local tS = GetCatmullRomCurveSegment(cA, cB, cC, cD, rT, vA)
+    for iK = 1, (rT+1) do tableInsert(tN, tS[iK]) end
+  end; tableInsert(tN, Vector(tV[nV-1]))
   tableRemove(tV, 1); tableRemove(tV); return tN
 end
 
@@ -5689,6 +5713,7 @@ function GetCatmullRomCurveDupe(tV, nT, nA, tO)
   if(not istable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices are needed"); return nil end
+  local nA = tonumber(nA) or 0.5
   if(nA and not isnumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
   if(nA < 0 or nA > 1) then LogInstance("Factor invalid "..GetReport(nA)); return nil end
   local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
@@ -5918,14 +5943,19 @@ function GetBezierCurve(tV, nT, tO)
   if(not istable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
-  local nT, nV = (mathFloor(tonumber(nT) or 200) + 1), #tV; if(nT < 0) then
-    LogInstance("Samples mismatch "..GetReport(nT)); return nil end
-  local iD, cT, dT, tB = 1, 0, (1 / nT), (tO or {})
-  tB[iD], cT, iD = Vector(tV[iD]), (cT + dT), (iD + 1)
-  while(cT < 1) do -- Recursively populate all the node segments
-    tB[iD] = GetBezierCurveVertex(cT, tV) -- Recursive calculation
-    cT, iD = (cT + dT), (iD + 1) -- Prepare for next segment
-  end; tB[iD] = Vector(tV[nV]) -- Bezier must include both ends
+  local vT = tonumber(nT); if(not vT) then vT = 200
+    LogInstance("Samples default to [200]"..GetReport(nT)) end
+  local rT = mathFloor(vT); if(rT < 0) then
+    LogInstance("Samples mismatch "..GetReport(vT)); return nil end
+  local nV = #tV; if(nV <= 0) then
+    LogInstance("Nodes missing "..GetReport(nV)); return nil end
+  local vE, tB = (1 - GetOpVar("EPSILON_ZERO")), (tO or {})
+  local cT, dT, vB = 0, (1 / (rT + 1)), nil -- Della is reasonable
+  tableInsert(tB, Vector(tV[1])); cT = (cT + dT)
+  while(cT < vE) do -- Recursively populate all the node segments
+    tableInsert(tB, GetBezierCurveVertex(cT, tV)) -- Recursive calculation
+    cT = (cT + dT) -- Prepare for next segment and adjust the delta
+  end; tableInsert(tB, Vector(tV[nV])) -- Bezier must include both ends
   return tB -- Return the calculated curve table array
 end
 

@@ -159,6 +159,9 @@ function Vector(x,y,z)
     local z = (self.z - v.z)
     return x^2 + y^2 + z^2
   end
+  function self:Distance(v)
+    return math.sqrt(self:DistToSqr(v))
+  end
   function self:LengthSqr() return self.x^2 + self.y^2 + self.z^2 end
   function self:Mul(n) self.x, self.y, self.z = n*self.x, n*self.y, n*self.z end
   function self:Div(n) self:Mul(1/n) end

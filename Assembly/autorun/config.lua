@@ -12,6 +12,7 @@ local SetClipboardText              = SetClipboardText
 local netStart                      = net and net.Start
 local netSendToServer               = net and net.SendToServer
 local netReceive                    = net and net.Receive
+local netReadString                 = net and net.ReadString
 local netReadEntity                 = net and net.ReadEntity
 local netReadVector                 = net and net.ReadVector
 local netReadNormal                 = net and net.ReadNormal
@@ -20,6 +21,7 @@ local netReadBool                   = net and net.ReadBool
 local netReadUInt                   = net and net.ReadUInt
 local netWriteEntity                = net and net.WriteEntity
 local netWriteUInt                  = net and net.WriteUInt
+local netWriteString                = net and net.WriteString
 local bitBor                        = bit and bit.bor
 local sqlBegin                      = sql and sql.Begin
 local sqlCommit                     = sql and sql.Commit
@@ -36,6 +38,7 @@ local mathMin                       = math and math.min
 local mathMax                       = math and math.max
 local mathNormalizeAngle            = math and math.NormalizeAngle
 local gameGetWorld                  = game and game.GetWorld
+local gameSinglePlayer              = game and game.SinglePlayer
 local tableConcat                   = table and table.concat
 local tableRemove                   = table and table.remove
 local tableEmpty                    = table and table.Empty
@@ -87,7 +90,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","9.789")
+asmlib.SetOpVar("TOOL_VERSION","9.792")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -259,12 +262,10 @@ local conCallBack = asmlib.GetContainer("CALLBAC_FUNC")
       end})
       conCallBack:Push({"timermode", function(sV, vO, vN)
         local arTim = gsSymDir:Explode(vN)
-        local mkTab, ID = asmlib.GetBuilderID(1), 1
-        while(mkTab) do local sTim = arTim[ID]
-          local defTab = mkTab:GetDefinition(); mkTab:TimerSetup(sTim)
+        asmlib.RunBuilderCount(function(makTab, iD)
+          local sTim, defTab = arTim[iD], makTab:GetDefinition(); makTab:TimerSetup(sTim)
           asmlib.LogInstance("Timer apply "..asmlib.GetReport(defTab.Nick,sTim),gtInitLogs)
-          ID = ID + 1; mkTab = asmlib.GetBuilderID(ID) -- Next table on the list
-        end; asmlib.LogInstance("Timer update "..asmlib.GetReport(vN),gtInitLogs)
+        end, "TIMER_MODE"); asmlib.LogInstance("Timer update "..asmlib.GetReport(vN),gtInitLogs)
       end})
       conCallBack:Push({"dtmessage", function(sV, vO, vN)
         if(SERVER) then
@@ -337,8 +338,24 @@ asmlib.SetOpVar("STRUCT_SPAWN",{
 
 ------------ ACTIONS ------------
 
+asmlib.SetAction("REFRESH_ITEM_LIST", -- Duplicator wrapper
+  function(tData, sPref)
+    asmlib.RunBuilderCount(function(makTab, iD)
+      local defTab = makTab:GetDefinition()
+      local sFile = tData.fDSV:format(sPref, defTab.Nick) *1
+      if(fileExists(sFile, "DATA")) then
+        asmlib.ImportDSV(defTab.Nick, true, sPref, nil, nil, true)
+      end
+    end, "REFRESH_ITEM_LIST")
+  end, {
+    fDSV = asmlib.GetOpVar("DIRPATH_BAS")..
+           asmlib.GetOpVar("DIRPATH_DSV")..
+           ("%s"..asmlib.GetOpVar("TOOLNAME_PU").."%s.txt")
+  })
+
 if(SERVER) then
 
+  utilAddNetworkString(gsLibName.."SendRefreshDSV")
   utilAddNetworkString(gsLibName.."SendDeleteGhosts")
   utilAddNetworkString(gsLibName.."SendIntersectClear")
   utilAddNetworkString(gsLibName.."SendIntersectRelate")
@@ -346,6 +363,13 @@ if(SERVER) then
   utilAddNetworkString(gsLibName.."SendUpdateCurveNode")
   utilAddNetworkString(gsLibName.."SendDeleteCurveNode")
   utilAddNetworkString(gsLibName.."SendDeleteAllCurveNode")
+
+  netReceive(gsLibName.."SendRefreshDSV",
+    function(nLen, oPly) local sLog = "*REFRESH_ITEM_LIST"
+      local bS, sR = asmlib.DoAction("REFRESH_ITEM_LIST", netReadString())
+      if(not bS) then LogInstance("Refresh execute: "..sR,sLog); return nil end
+      if(not sR) then LogInstance("Trigger routine fail",sLog); return nil end
+    end)
 
   asmlib.SetAction("DUPE_PHYS_SETTINGS", -- Duplicator wrapper
     function(oPly,oEnt,tData) local sLog = "*DUPE_PHYS_SETTINGS"
@@ -460,40 +484,40 @@ if(CLIENT) then
   asmlib.ToIcon(gsToolPrefU.."ADDITIONS"     , "bricks"          )
   asmlib.ToIcon(gsToolPrefU.."PHYSPROPERTIES", "wand"            )
   asmlib.ToIcon(gsToolPrefL.."context_menu"  , "database_gear"   )
-  asmlib.ToIcon("subfolder_item"        , "folder_brick"      )
-  asmlib.ToIcon("pn_contextm_cp"        , "page_copy"         )
-  asmlib.ToIcon("pn_contextm_cpbx"      , "application_go"    )
-  asmlib.ToIcon("pn_contextm_cprw"      , "report_go"         )
-  asmlib.ToIcon("pn_contextm_cpty"      , "database_go"       )
-  asmlib.ToIcon("pn_contextm_cpnm"      , "script_go"         )
-  asmlib.ToIcon("pn_contextm_cpth"      , "map_go"            )
-  asmlib.ToIcon("pn_contextm_cpmd"      , "brick_go"          )
-  asmlib.ToIcon("pn_contextm_li"        , "database"          )
-  asmlib.ToIcon("pn_contextm_licg"      , "database_edit"     )
-  asmlib.ToIcon("pn_contextm_licr"      , "database_add"      )
-  asmlib.ToIcon("pn_contextm_lirf"      , "database_refresh"  )
-  asmlib.ToIcon("pn_contextm_lirm"      , "database_delete"   )
-  asmlib.ToIcon("pn_contextm_ws"        , "cart"              )
-  asmlib.ToIcon("pn_contextm_wsid"      , "key_go"            )
-  asmlib.ToIcon("pn_contextm_wsop"      , "world"             )
-  asmlib.ToIcon("pn_contextm_ex"        , "transmit"          )
-  asmlib.ToIcon("pn_contextm_exdv"      , "database_table"    )
-  asmlib.ToIcon("pn_contextm_exru"      , "script_code"       )
-  asmlib.ToIcon("pn_contextm_mv"        , "joystick"          )
-  asmlib.ToIcon("pn_contextm_mvup"      , "arrow_up"          )
-  asmlib.ToIcon("pn_contextm_mvdn"      , "arrow_down"        )
-  asmlib.ToIcon("pn_contextm_mvtp"      , "arrow_redo"        )
-  asmlib.ToIcon("pn_contextm_mvbt"      , "arrow_undo"        )
-  asmlib.ToIcon("pn_contextm_st"        , "database_gear"     )
-  asmlib.ToIcon("pn_contextm_si"        , "database_key"      )
-  asmlib.ToIcon("pn_contextm_stnk"      , "folder_find"       )
-  asmlib.ToIcon("pn_contextm_stpt"      , "map_go"            )
-  asmlib.ToIcon("pn_contextm_sttm"      , "time_go"           )
-  asmlib.ToIcon("pn_contextm_stsz"      , "compress"          )
-  asmlib.ToIcon("pn_contextm_sted"      , "table_edit"        )
-  asmlib.ToIcon("pn_contextm_stdl"      , "table_delete"      )
-  asmlib.ToIcon("pn_contextm_tg"        , "database_connect"  )
-  asmlib.ToIcon("pn_contextm_ep"        , "zoom"              )
+  asmlib.ToIcon("subfolder_item"   , "folder_brick"      )
+  asmlib.ToIcon("pn_contextm_cp"   , "page_copy"         )
+  asmlib.ToIcon("pn_contextm_cpbx" , "application_go"    )
+  asmlib.ToIcon("pn_contextm_cprw" , "report_go"         )
+  asmlib.ToIcon("pn_contextm_cpty" , "database_go"       )
+  asmlib.ToIcon("pn_contextm_cpnm" , "script_go"         )
+  asmlib.ToIcon("pn_contextm_cpth" , "map_go"            )
+  asmlib.ToIcon("pn_contextm_cpmd" , "brick_go"          )
+  asmlib.ToIcon("pn_contextm_li"   , "database"          )
+  asmlib.ToIcon("pn_contextm_licg" , "database_edit"     )
+  asmlib.ToIcon("pn_contextm_licr" , "database_add"      )
+  asmlib.ToIcon("pn_contextm_lirf" , "database_refresh"  )
+  asmlib.ToIcon("pn_contextm_lirm" , "database_delete"   )
+  asmlib.ToIcon("pn_contextm_ws"   , "cart"              )
+  asmlib.ToIcon("pn_contextm_wsid" , "key_go"            )
+  asmlib.ToIcon("pn_contextm_wsop" , "world"             )
+  asmlib.ToIcon("pn_contextm_ex"   , "transmit"          )
+  asmlib.ToIcon("pn_contextm_exdv" , "database_table"    )
+  asmlib.ToIcon("pn_contextm_exru" , "script_code"       )
+  asmlib.ToIcon("pn_contextm_mv"   , "joystick"          )
+  asmlib.ToIcon("pn_contextm_mvup" , "arrow_up"          )
+  asmlib.ToIcon("pn_contextm_mvdn" , "arrow_down"        )
+  asmlib.ToIcon("pn_contextm_mvtp" , "arrow_redo"        )
+  asmlib.ToIcon("pn_contextm_mvbt" , "arrow_undo"        )
+  asmlib.ToIcon("pn_contextm_st"   , "database_gear"     )
+  asmlib.ToIcon("pn_contextm_si"   , "database_key"      )
+  asmlib.ToIcon("pn_contextm_stnk" , "folder_find"       )
+  asmlib.ToIcon("pn_contextm_stpt" , "map_go"            )
+  asmlib.ToIcon("pn_contextm_sttm" , "time_go"           )
+  asmlib.ToIcon("pn_contextm_stsz" , "compress"          )
+  asmlib.ToIcon("pn_contextm_sted" , "table_edit"        )
+  asmlib.ToIcon("pn_contextm_stdl" , "table_delete"      )
+  asmlib.ToIcon("pn_contextm_tg"   , "database_connect"  )
+  asmlib.ToIcon("pn_contextm_ep"   , "zoom"              )
   asmlib.ToIcon("pn_routine_end"   , "arrow_refresh"     )
   asmlib.ToIcon("pn_routine_typ"   , "package"           )
   asmlib.ToIcon("pn_routine_nam"   , "tag_green"         )
@@ -971,19 +995,17 @@ if(CLIENT) then
           function() tpText:Scan(pnLine) end):SetImage(asmlib.ToIcon(sI.."licr"))
         pIn:AddOption(languageGetPhrase(sT.."lirf"),
           function()
-            local makTab = asmlib.GetBuilderNick("PIECES")
-            local defTab = makTab:GetDefinition()
-            local sFile = fDSV:format(sP, defTab.Nick)
-            if(fileExists(sFile, "DATA")) then
-              asmlib.ImportDSV(sFile, true, nil, nil, nil, true)
-            end
+            if(not gameSinglePlayer()) then -- Server and client are on the same machine
+              asmlib.LogInstance("Single player only",sLog..".ListView"); return nil end
+            local bS, sR = asmlib.DoAction("REFRESH_ITEM_LIST", sP)
+            if(not bS) then LogInstance("Refresh execute: "..sR,sLog..".ListView"); return nil end
+            if(not sR) then LogInstance("Trigger routine fail",sLog..".ListView"); return nil end
+            netStart(gsLibName.."SendRefreshDSV"); netWriteString(sP); netSendToServer()
           end):SetImage(asmlib.ToIcon(sI.."lirf"))
         pIn:AddOption(languageGetPhrase(sT.."lirm"),
           function() pnSelf:RemoveLine(nIndex) end):SetImage(asmlib.ToIcon(sI.."lirm"))
         -- Populate the sub-menu with all table nicknames
-        local iD, pIn, pOp = 1, nil, nil
-        local makTab = asmlib.GetBuilderID(iD)
-        while(makTab) do
+        local pIn, pOp = nil, nil; asmlib.RunBuilderCount(function(makTab, iD)
           local defTab = makTab:GetDefinition()
           local sFile = fDSV:format(sP, defTab.Nick)
           if(fileExists(sFile, "DATA")) then
@@ -1036,9 +1058,7 @@ if(CLIENT) then
                 end):SetImage(asmlib.ToIcon(sI.."stdl"))
             end
           end
-          iD = (iD + 1); makTab = asmlib.GetBuilderID(iD)
-        end
-        pnMenu:Open()
+        end, "DSV_MENU"); pnMenu:Open()
       end -- Populate the tables for every database
       pnFrame:SetVisible(true); pnFrame:Center(); pnFrame:MakePopup()
       conElements:Push(pnFrame); asmlib.LogInstance("Success",sLog); return nil
@@ -1808,8 +1828,12 @@ asmlib.NewTable("PIECES",{
     end
   },
   Cache = {
+    Erase  = function(makTab, tCache, snPK, vSrc)
+      local stData = tCache[snPK]; if(not stData) then
+        asmlib.LogInstance("Cache missing "..asmlib.GetReport(snPK),vSrc); return false end
+      if(snPK and snPK ~= "") then tCache[snPK] = nil else tableEmpty(tCache) end; return true
+    end,
     Record = function(makTab, tCache, snPK, arLine, vSrc)
-      local defTab = makTab:GetDefinition()
       local stData = tCache[snPK]; if(not stData) then
         tCache[snPK] = {}; stData = tCache[snPK] end
       if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
@@ -1964,6 +1988,11 @@ asmlib.NewTable("ADDITIONS",{
     Record              = {V = {"%s","%s","%s","%d","%s","%s","%d","%d","%d","%d","%d","%d"}}
   },
   Cache = {
+    Erase  = function(makTab, tCache, snPK, vSrc)
+      local stData = tCache[snPK]; if(not stData) then
+        asmlib.LogInstance("Cache missing "..asmlib.GetReport(snPK),vSrc); return false end
+      if(snPK and snPK ~= "") then tCache[snPK] = nil else tableEmpty(tCache) end; return true
+    end,
     Record = function(makTab, tCache, snPK, arLine, vSrc)
       local defTab = makTab:GetDefinition()
       local stData = tCache[snPK]; if(not stData) then
@@ -2038,6 +2067,21 @@ asmlib.NewTable("PHYSPROPERTIES",{
     end
   },
   Cache = {
+    Erase  = function(makTab, tCache, snPK, vSrc)
+      local skName = asmlib.GetOpVar("HASH_PROPERTY_NAMES")
+      local skType = asmlib.GetOpVar("HASH_PROPERTY_TYPES")
+      local stName = tCache[skName]; if(not stName) then
+        asmlib.LogInstance("Types missing "..asmlib.GetReport(snPK),vSrc); return false end
+      local stType = tCache[skType]; if(not stType) then
+        asmlib.LogInstance("Config missing "..asmlib.GetReport(snPK),vSrc); return false end
+      if(snPK and snPK ~= "") then local vT
+        for iT = 1, stName.Size do -- Remove the type from the list
+          if(stName[iT] == snPK) then vT = tableRemove(stName, iT) end
+        end; if(vT) then stType[vT] = nil; stName.Size = stName.Size - 1 end
+      else -- Otherwise clear everything not just specific type
+        tableEmpty(stName); tableEmpty(stType)
+      end; return true
+    end,
     Record = function(makTab, tCache, snPK, arLine, vSrc)
       local skName = asmlib.GetOpVar("HASH_PROPERTY_NAMES")
       local skType = asmlib.GetOpVar("HASH_PROPERTY_TYPES")

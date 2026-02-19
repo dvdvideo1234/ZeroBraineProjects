@@ -28,6 +28,8 @@ local tC = asmlib.GetOpVar("TABLE_CATEGORIES")
 --asmlib.ImportDSV("PIECES", true, "Plarail", nil, false)
 asmlib.ImportDSV("PIECES", true, "poa_", nil, false)
 
+--[[
+
 --mak:Erase("models/ron/plarail/tracks/curve/r03_left.mdl")
 --mak:Erase()
 
@@ -52,5 +54,10 @@ if(r) then
 else
   print("Record:","N/A")
 end
-
-
+]]
+local stType = asmlib.CacheQueryProperty()
+if(stType) then
+  common.logTable(stType, "stType")
+  local stName = asmlib.CacheQueryProperty(stType[1])
+  common.logTable(stName, "stName")
+end
