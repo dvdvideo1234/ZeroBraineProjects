@@ -684,6 +684,7 @@ function InitBase(sName, sPurp)
   SetOpVar("DEG_RAD", mathPi / 180)
   SetOpVar("EPSILON_ZERO", 1e-5)
   SetOpVar("CURVE_MARGIN", 15)
+  SetOpVar("CURVE_NODEMR", 0.1)
   SetOpVar("COLOR_CLAMP", {0, 255})
   SetOpVar("GOLDEN_RATIO",1.61803398875)
   SetOpVar("FULL_SLOPEDG", 45)
@@ -760,6 +761,7 @@ function InitBase(sName, sPurp)
   SetOpVar("TYPEMT_POA",{})
   SetOpVar("TYPEMT_QUEUE",{})
   SetOpVar("TYPEMT_SCREEN",{})
+  SetOpVar("TYPEMT_BEAUTY",{})
   SetOpVar("TYPEMT_CONTAINER",{})
   SetOpVar("ARRAY_BNDERRMOD",{"OFF", "LOG", "HINT", "GENERIC", "ERROR"})
   SetOpVar("ARRAY_MODEDB",{"LUA", "SQL"})
@@ -2151,50 +2153,6 @@ function GetPointElevation(oEnt,ivPoID)
   return mathAbs(vOBB.z)
 end
 
-function GetBeautifyName(sName)
-  local sDiv = GetOpVar("OPSYM_DIVIDER")
-  local fCon = GetOpVar("MODELNAM_FUNC")
-  local sNam = tostring(sName or ""):lower():Trim()
-  local sOut = sNam:gsub("_+","_"):gsub("_$", "")
-  if(sOut:sub(1,1) ~= "_") then sOut = "_"..sOut end
-  return sOut:gsub(sDiv.."%w", fCon):sub(2,-1)
-end
-
-function ModelToName(sModel, bNoSet)
-  if(not isstring(sModel)) then
-    LogInstance("Argument mismatch "..GetReport(sModel)); return "" end
-  if(IsBlank(sModel)) then LogInstance("Empty string"); return "" end
-  local sSymDiv, sSymDir = GetOpVar("OPSYM_DIVIDER"), GetOpVar("OPSYM_DIRECTORY")
-  local sModel = (sModel:sub(1, 1) ~= sSymDir) and (sSymDir..sModel) or sModel
-        sModel = (stringGetFileName(sModel):gsub(GetOpVar("MODELNAM_FILE"),""))
-  local gModel = (sModel:sub(1,-1)) -- Create a copy so we can select cut-off parts later
-  if(not bNoSet) then local iCnt, iNxt
-    local tCut, tSub, tApp = ModelToNameRule("GET")
-    if(tCut and tCut[1]) then iCnt, iNxt = 1, 2
-      while(tCut[iCnt] and tCut[iNxt]) do
-        local fNu, bNu = tonumber(tCut[iCnt]), tonumber(tCut[iNxt])
-        local fCh, bCh = tostring(tCut[iCnt]), tostring(tCut[iNxt])
-        if(not (IsHere(fNu) and IsHere(bNu))) then
-          LogInstance("Cut mismatch "..GetReport(fCh, bCh, sModel)); return "" end
-        gModel = gModel:gsub(sModel:sub(fNu, bNu),""); iCnt, iNxt = (iCnt + 2), (iNxt + 2)
-        LogInstance("Cut "..GetReport(fCh, bCh, gModel))
-      end
-    end -- Replace the unneeded parts by finding an in-string gModel
-    if(tSub and tSub[1]) then iCnt, iNxt = 1, 2
-      while(tSub[iCnt]) do
-        local fCh, bCh = tostring(tSub[iCnt] or ""), tostring(tSub[iNxt] or "")
-        gModel = gModel:gsub(fCh,bCh); LogInstance("Sub "..GetReport(fCh, bCh, gModel))
-        iCnt, iNxt = (iCnt + 2), (iNxt + 2)
-      end
-    end -- Append something if needed
-    if(tApp and tApp[1]) then
-      local fCh, bCh = tostring(tApp[1] or ""), tostring(tApp[2] or "")
-      gModel = (fCh..gModel..bCh); LogInstance("App "..GetReport(fCh, bCh, gModel))
-    end
-  end -- Trigger the capital spacing using the divider ( _aaaaa_bbbb_ccccc )
-  return GetBeautifyName(gModel:Trim("_"))
-end
-
 --[[
  * Creates a basis instance for entity-related operations
  * The instance is invisible and cannot be hit by traces
@@ -2380,32 +2338,84 @@ function GetEmpty(sBas, fEmp, ...)
   end; return sM
 end
 
-function ModelToNameRule(sRule, gCut, gSub, gApp)
-  if(not isstring(sRule)) then
-    LogInstance("Rule mismatch "..GetReport(sRule)); return false end
-  if(sRule == "GET") then
-    return GetOpVar("TABLE_GCUT_MODEL"),
-           GetOpVar("TABLE_GSUB_MODEL"),
-           GetOpVar("TABLE_GAPP_MODEL")
-  elseif(sRule == "CLR" or sRule == "REM") then
-    SetOpVar("TABLE_GCUT_MODEL", ((sRule == "CLR") and {} or nil))
-    SetOpVar("TABLE_GSUB_MODEL", ((sRule == "CLR") and {} or nil))
-    SetOpVar("TABLE_GAPP_MODEL", ((sRule == "CLR") and {} or nil))
-  elseif(sRule == "SET") then
-    SetOpVar("TABLE_GCUT_MODEL", ((gCut and gCut[1]) and gCut or {}))
-    SetOpVar("TABLE_GSUB_MODEL", ((gSub and gSub[1]) and gSub or {}))
-    SetOpVar("TABLE_GAPP_MODEL", ((gApp and gApp[1]) and gApp or {}))
-  else LogInstance("Wrong mode: "..sRule); return false end
+function GetBeautify()
+  local moRes = GetOpVar("OBJECT_BEAUTY")
+  if(moRes) then return moRes end
+  local msLogs = "BEAUTY"
+  local msName, msConv, self = "", "", {}
+  local msDiv = GetOpVar("OPSYM_DIVIDER")
+  local msDir = GetOpVar("OPSYM_DIRECTORY")
+  local mfCon = GetOpVar("MODELNAM_FUNC")
+  local msExt = GetOpVar("MODELNAM_FILE")
+  local mtCut, mtSub, mtApp
+  function self:Get()
+    return msName
+  end
+  function self:Set(sIn)
+    msName = tostring(sIn or "")
+    return self
+  end
+  function self:GetRule()
+    return mtCut, mtSub, mtApp
+  end
+  function self:SetRule(gCut, gSub, gApp)
+    mtCut = ((gCut and gCut[1]) and gCut or nil)
+    mtSub = ((gSub and gSub[1]) and gSub or nil)
+    mtApp = ((gApp and gApp[1]) and gApp or nil)
+    return self
+  end
+  function self:Apply()
+    -- Apply the general rules on the conversion
+    if(mtCut) then local iCnt, iNxt = 1, 2
+      while(mtCut[iCnt] and mtCut[iNxt]) do
+        local fNu, bNu = tonumber(mtCut[iCnt]), tonumber(mtCut[iNxt])
+        if(IsHere(fNu) and IsHere(bNu)) then
+          LogInstance("Cut "..GetReport(fNu, bNu, msConv), msLogs)
+          msConv = msConv:gsub(msConv:sub(fNu, bNu), "", 1)
+        else LogInstance("Cut mismatch "..GetReport(fNu, bNu, sModel), msLogs); end
+        iCnt, iNxt = (iCnt + 2), (iNxt + 2)
+      end
+    end -- Replace the unneeded parts by finding an in-string msConv
+    if(mtSub) then local iCnt, iNxt = 1, 2
+      while(mtSub[iCnt]) do
+        local fCh, bCh = tostring(mtSub[iCnt] or ""), tostring(mtSub[iNxt] or "")
+        msConv = msConv:gsub(fCh, bCh); LogInstance("Sub "..GetReport(fCh, bCh, msConv), msLogs)
+        iCnt, iNxt = (iCnt + 2), (iNxt + 2)
+      end
+    end -- Append something if needed
+    if(mtApp) then
+      local fCh, bCh = tostring(mtApp[1] or ""), tostring(mtApp[2] or "")
+      msConv = (fCh..msConv..bCh); LogInstance("App "..GetReport(fCh, bCh, msConv), msLogs)
+    end; return self:Set(msConv)
+  end
+  function self:Beautify(sIn)
+    msConv = tostring(sIn or msName):lower():Trim()
+    msConv = msConv:gsub(msDiv.."+",msDiv):gsub(msDiv.."$", "")
+    if(msConv:sub(1,1) ~= msDiv) then msConv = msDiv..msConv end
+    return self:Set(msConv:gsub(msDiv.."%w", mfCon):sub(2,-1))
+  end
+  function self:Convert(sIn, bNo) -- ModelToName
+    local sIn = tostring(sIn or ""):lower():Trim()
+    if(IsBlank(sIn)) then LogInstance("Empty string", msLogs); return self:Set() end
+    sIn = (sIn:sub(1, 1) ~= msDir) and (msDir..sIn) or sIn
+    sIn = (stringGetFileName(sIn):gsub(msExt,""))
+    msConv = sIn:rep(1) -- Create a copy so we can select cut-off parts later
+    if(not bNo) then self:Apply() end -- Apply rules in the conversion
+    -- Trigger the capital spacing using the divider ( _aaaaa_bbbb_ccccc )
+    return self:Beautify(msConv:Trim(msDiv))
+  end; setmetatable(self, GetOpVar("TYPEMT_BEAUTY"))
+  SetOpVar("OBJECT_BEAUTY", self); return self
 end
 
 function Categorize(oTyp, fCat, ...)
+  local oBeu = GetBeautify()
   local tCat = GetOpVar("TABLE_CATEGORIES")
   if(not IsHere(oTyp)) then
     local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
     local tTyp = (tCat and tCat[sTyp] or nil)
     return sTyp, (tTyp and tTyp.Txt), (tTyp and tTyp.Cmp)
   else
-    ModelToNameRule("CLR"); SetOpVar("DEFAULT_TYPE", tostring(oTyp))
+    oBeu:SetRule(); SetOpVar("DEFAULT_TYPE", tostring(oTyp))
     if(CLIENT) then local tTyp -- Categories for the panel
       local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or "")
       local fsLog = GetOpVar("FORM_LOGSOURCE") -- The actual format value
@@ -3451,13 +3461,14 @@ end
  * stPanel > The actual panel information to populate
 ]]
 local function SortCategory(stPanel)
+  local oBeu = GetBeautify()
   local tCat = GetOpVar("TABLE_CATEGORIES")
   for iCnt = 1, stPanel.Size do local vRec = stPanel[iCnt]
     -- Register the category if definition functional is given
     if(tCat[vRec.T]) then -- There is a category definition
       local bS, vC, vN = pcall(tCat[vRec.T].Cmp, vRec.M)
       if(bS) then -- When the call is successful in protected mode
-        if(vN and not IsBlank(vN)) then vRec.N = GetBeautifyName(vN) end
+        if(vN and not IsBlank(vN)) then vRec.N = oBeu:Beautify(vN):Get() end
         -- Custom name override when the addon requests
         if(IsBlank(vC)) then vC = nil end
         if(IsHere(vC)) then
@@ -3466,7 +3477,7 @@ local function SortCategory(stPanel)
           for iD = 1, vC.Size do -- Create category tree path
             vC[iD] = tostring(vC[iD] or ""):lower():Trim()
             if(IsBlank(vC[iD])) then vC[iD] = "other" end
-            vC[iD] = GetBeautifyName(vC[iD]) -- Beautify the category
+            vC[iD] = oBeu:Beautify(vC[iD]):Get() -- Beautify the category
           end -- When the category has at least one element
         end -- Is there is any category apply it. When available process it now
       else -- When there is an error in the category execution report it
@@ -5685,8 +5696,8 @@ function GetCatmullRomCurve(tV, nT, nA, tO)
   local vA = tonumber(nA); if(not vA) then vA = 0.5
     LogInstance("Factor default to [0.5]"..GetReport(nA)) end
   if(vA < 0 or vA > 1) then LogInstance("Factor mismatch "..GetReport(vA)); return nil end
-  local vT = tonumber(nT); if(not vT) then vT = 200
-    LogInstance("Samples default to [200]"..GetReport(nT)) end
+  local vT = tonumber(nT); if(not vT) then vT = 100
+    LogInstance("Samples default to [100]"..GetReport(nT)) end
   local nV, rT = #tV, mathFloor(vT); if(rT < 0) then
     LogInstance("Samples mismatch "..GetReport(vT)); return nil end
   local vM, cS, cE, tN = GetOpVar("CURVE_MARGIN"), Vector(), Vector(), (tO or {})
@@ -5699,52 +5710,6 @@ function GetCatmullRomCurve(tV, nT, nA, tO)
     for iK = 1, (rT+1) do tableInsert(tN, tS[iK]) end
   end; tableInsert(tN, Vector(tV[nV-1]))
   tableRemove(tV, 1); tableRemove(tV); return tN
-end
-
---[[
- * Calculates a full Catmull-Rom curve when there are repeating points present
- * https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
- * tV > A table containing the curve control points ( KNOTS )
- * nT > Amount of points to be calculated between the control points
- * nA > Parametric constant curve factor [0 ; 1]
- * Returns a table containing the generated curve including the control points
-]]
-function GetCatmullRomCurveDupe(tV, nT, nA, tO)
-  if(not istable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
-  if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
-  if(not (tV[1] and tV[2])) then LogInstance("Two vertices are needed"); return nil end
-  local nA = tonumber(nA) or 0.5
-  if(nA and not isnumber(nA)) then LogInstance("Factor mismatch "..GetReport(nA)); return nil end
-  if(nA < 0 or nA > 1) then LogInstance("Factor invalid "..GetReport(nA)); return nil end
-  local nT, nV = mathFloor(tonumber(nT) or 200), #tV; if(nT < 0) then
-    LogInstance("Samples mismatch "..GetReport(nT)); return nil end
-  local nM, nN = GetOpVar("EPSILON_ZERO"), 1
-  local tN, tF = {tV[1], ID = {{true, 1}}}, (tO or {})
-  for iD = 2, nV do
-    if(tV[iD]:DistToSqr(tN[nN]) > nM) then
-      tableInsert(tN, tV[iD])
-      tN.ID[iD], nN = {true, nN}, (nN + 1)
-    else tN.ID[iD] = {false} end
-  end
-  if(nN > 1) then
-    local tC = GetCatmullRomCurve(tN, nT, nA)
-    for iD = 1, (nV - 1) do local iC = iD + 1
-      tableInsert(tF, Vector(tV[iD]))
-      if(not tN.ID[iC][1]) then
-        for iK = 1, nT do tableInsert(tF, Vector(tV[iD])) end
-      else
-        local iP = (tN.ID[iC][2] - 1) * (nT + 1)
-        for iK = 1, nT do local iI = (iP + iK + 1)
-          tableInsert(tF, Vector(tC[iI])) end
-      end
-    end; tableInsert(tF, Vector(tV[nV]))
-  else
-    for iD = 1, (nV - 1) do
-      tableInsert(tF, Vector(tV[1]))
-      for iK = 1, nT do tableInsert(tF, Vector(tV[1])) end
-    end; tableInsert(tF, Vector(tV[1]))
-  end
-  return tF
 end
 
 --[[
@@ -5900,8 +5865,8 @@ function CalculateRomCurve(oPly, nSmp, nFac)
   tC.SSize, tC.SKept = 0, 0 -- Amount of snapped points
   tableEmpty(tC.CNode) -- Reset the curve and snapping
   tableEmpty(tC.CNorm); tC.CSize = 0 -- And normals
-  GetCatmullRomCurveDupe(tC.Node, nSmp, nFac, tC.CNode)
-  GetCatmullRomCurveDupe(tC.Norm, nSmp, nFac, tC.CNorm)
+  GetCatmullRomCurve(tC.Node, nSmp, nFac, tC.CNode)
+  GetCatmullRomCurve(tC.Norm, nSmp, nFac, tC.CNorm)
   tC.Info.UCS[1]:Set(tC.CNode[1]) -- Put the first node in the UCS
   tC.Info.UCS[2]:Set(tC.CNorm[1]) -- Put the first normal in the UCS
   tC.CSize = (tC.Size - 1) * nSmp + tC.Size -- Get stack depth
@@ -5943,8 +5908,8 @@ function GetBezierCurve(tV, nT, tO)
   if(not istable(tV)) then LogInstance("Vertices mismatch "..GetReport(tV)); return nil end
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
-  local vT = tonumber(nT); if(not vT) then vT = 200
-    LogInstance("Samples default to [200]"..GetReport(nT)) end
+  local vT = tonumber(nT); if(not vT) then vT = 100
+    LogInstance("Samples default to [100]"..GetReport(nT)) end
   local rT = mathFloor(vT); if(rT < 0) then
     LogInstance("Samples mismatch "..GetReport(vT)); return nil end
   local nV = #tV; if(nV <= 0) then

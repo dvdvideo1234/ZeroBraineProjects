@@ -23,7 +23,7 @@ local enr, set = 20, {Size = 0, Sump = 0}
 local cor = Color(255, 0, 200, 255)
 -- local cor = Color(255, 255, 255, 255)
 
-LaserLib.GetData("WDHUESTP"):SetData("30")
+LaserLib.GetData("WDHUECNT"):SetData("30")
 LaserLib.GetData("WDRGBMAR"):SetData("10")
 
 local tW = LaserLib.GetWaveArray(cor)
@@ -37,4 +37,4 @@ for iW = tW.IS, tW.IE do
   set.Sump = set.Sump + rEn
 end
 
-com.logTable(set, "POWER")
+com.logTable(tW, "POWER")

@@ -26,7 +26,8 @@ require("laserlib")
 local nIndx = 1.333
 
 local WHUEMP = LaserLib.GetData("WHUEMP")
-local SODD = WHUEMP.CONF.SODD
+local WHUECF = LaserLib.GetData("WHUECF")
+local SODD = WHUECF.SODD
 
 local function drawGraph(scOpe, intX)
   wipe()
@@ -68,8 +69,8 @@ local function drawGraph(scOpe, intX)
   end 
 
   text((" WXS = %6.2f : %6.2f"):format(xL, xH), 0, 0, 0)
-  text((" VIS = %6.2f : %6.2f"):format(WHUEMP.CONF.WAVE[1], WHUEMP.CONF.WAVE[2]), 0, 0, 15)
-  text((" IDX = %6.2f : %6.2f"):format(WHUEMP.CONF.INDW[1], WHUEMP.CONF.INDW[2]), 0, 0, 30)
+  text((" VIS = %6.2f : %6.2f"):format(WHUECF.WAVE[1], WHUECF.WAVE[2]), 0, 0, 15)
+  text((" IDX = %6.2f : %6.2f"):format(WHUECF.INDW[1], WHUECF.INDW[2]), 0, 0, 30)
 
   updt()
 end
@@ -125,7 +126,7 @@ drawGraph(scOpe)
 while true do
   local key = char(); wait(0.1)
   if(key) then
-    getKey(WHUEMP.CONF.INDW, key, "K_UP", "K_DOWN", "K_LEFT", "K_RIGHT")
+    getKey(WHUECF.INDW, key, "K_UP", "K_DOWN", "K_LEFT", "K_RIGHT")
     drawGraph(scOpe)
   end
 end

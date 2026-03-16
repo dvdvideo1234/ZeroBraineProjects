@@ -1,6 +1,8 @@
 LaserLib = LaserLib or {} -- Initialize the global variable of the library
 
-local DATA = {}
+LaserLib.__newindex = nil
+
+local DATA = {}; setmetatable(LaserLib, LaserLib)
 
 DATA.GRAT = 1.61803398875      -- Golden ratio used for panels
 DATA.TOOL = "laseremitter"     -- Tool name for internal use
@@ -32,6 +34,7 @@ DATA.KEYA  = "*"               -- The all key in a collection point to return th
 DATA.KEYX  = "~"               -- The first symbol used to disable given things
 DATA.IMAT  = "*"               -- First and last symbol to match studio displacement empty mats
 DATA.LSEP  = ","               -- General list separator. Used for string splits and concatenation
+DATA.RADIE = 500               -- How far the ignited entity heat radiates with max damage
 DATA.AZERO = Angle()           -- Zero angle used across all sources
 DATA.VZERO = Vector()          -- Zero vector used across all sources
 DATA.VDRFW = Vector(1, 0, 0)   -- Global forward vector used across all sources
@@ -69,7 +72,8 @@ DATA.YSPLITER = CreateConVar(DATA.TOOL.."_yspliter"  , 0    , DATA.FGSRVCN, "Con
 DATA.ZSPLITER = CreateConVar(DATA.TOOL.."_zspliter"  , 1    , DATA.FGSRVCN, "Controls the default splitter Z direction", -1, 1)
 DATA.ENSOUNDS = CreateConVar(DATA.TOOL.."_ensounds"  , 1    , DATA.FGSRVCN, "Trigger this to enable or disable redirection sounds")
 DATA.DAMAGEDT = CreateConVar(DATA.TOOL.."_damagedt"  , 0.1  , DATA.FGSRVCN, "The time frame to pass between the beam damage cycles", 0, 10)
-DATA.VESFBEAM = CreateConVar(DATA.TOOL.."_vesfbeam"  , 150  , DATA.FGSRVCN, "Controls the beam safety velocity for player pushed aside", 0, 500)
+DATA.VESFBEAM = CreateConVar(DATA.TOOL.."_vesfbeam"  , 150  , DATA.FGSRVCN, "Controls the beam safety velocity for player pushed aside", 0, 600)
+DATA.IGENTMBM = CreateConVar(DATA.TOOL.."_igentmbm"  , 10   , DATA.FGSRVCN, "Controls the beam fire hazard duration for flaming entities", 0, 60)
 DATA.NRASSIST = CreateConVar(DATA.TOOL.."_nrassist"  , 1000 , DATA.FGSRVCN, "Controls the area that is searched when drawing assist", 0, 10000)
 DATA.TIMEASYN = CreateConVar(DATA.TOOL.."_timeasync" , 0.2  , DATA.FGSRVCN, "Controls the time delta checked for asynchronous events", 0, 5)
 DATA.BLHOLESG = CreateConVar(DATA.TOOL.."_blholesg"  , 5    , DATA.FGSRVCN, "Black hole gravity curving interpolation segment length", 0, 20)
@@ -182,7 +186,7 @@ DATA.WHUEMP = {
   ["MAGENTA"] = {W = {380, 300}, H = {280, 300}}
 }; DATA.WHUEMP.Size = #DATA.WHUEMP
 
-DATA.WHUEMP.CONF = {
+DATA.WHUECF = {
   -- The wavelength margin where color starts to fade away on conversion
   SODD = 589.29, -- General wavelength for sodium line used for dispersion
   MARG = 10,     -- General coefficient for wave to refractive index conversion
@@ -428,7 +432,7 @@ else -- Server-side initialization. Put server related code here
   DATA.DMGI = DamageInfo() -- Create a server-side damage information class
   DATA.BURN = Sound("player/general/flesh_burn.wav") -- Burn sound for player safety
   -- User notification configuration type. Used to format notifications via string.format
-  DATA.NTIF = {"GAMEMODE:AddNotify(\"%s\", NOTIFY_%s, 6)", "surface.PlaySound(\"ambient/water/drip%d.wav\")"}
+  DATA.NTIF = {"notification.AddLegacy(\"%s\", NOTIFY_%s, 6)", "surface.PlaySound(\"ambient/water/drip%d.wav\")"}
 end
 
 --[[
@@ -538,25 +542,23 @@ end
 
 --[[
  * Performs general traces according to the parameters passed
- * origin > Trace origin as world position vector
- * direct > Trace direction as world aim vector
- * length > Trace length in source units
- * filter > Trace filter as standard config
- * mask   > Trace mask as standard config
- * colgrp > Trace collision group as standard config
- * iworld > Trace ignore world as standard config
- * width  > When larger than zero will run a hull trace instead
- * result > Trace output destination table as standard config
+ * origin > Trace origin as world position vector (mandatory)
+ * direct > Trace direction as world aim vector (mandatory)
+ * length > Trace length in source units (If missing direction is used)
+ * filter > Trace filter as standard config (optional)
+ * mask   > Trace mask as standard config (optional)
+ * colgrp > Trace collision group as standard config (optional)
+ * iworld > Trace ignore world as standard config (optional)
+ * width  > When larger than zero will run a hull trace instead (optional)
+ * result > Trace output destination table as standard config (optional)
 ]]
 local function TraceBeam(origin, direct, length, filter, mask, colgrp, iworld, width, result)
-  local g_trace = DATA.TRACE
+  local g_trace, length = DATA.TRACE, (tonumber(length) or 0)
   g_trace.start:Set(origin)
-  g_trace.endpos:Set(direct)
-  g_trace.endpos:Normalize()
-  if(length and length > 0) then
+  g_trace.endpos:Set(direct) 
+  if(length > 0) then -- Length argument
+    g_trace.endpos:Normalize()
     g_trace.endpos:Mul(length)
-  else -- Use proper length even if missing
-    g_trace.endpos:Mul(direct:Length())
   end -- Utilize direction length when not provided
   g_trace.endpos:Add(origin)
   g_trace.filter = filter
@@ -596,6 +598,16 @@ local function TraceBeam(origin, direct, length, filter, mask, colgrp, iworld, w
     g_trace.output = nil
     return g_trace.action(g_trace)
   end
+end
+
+--[[
+ * This is used for validating the library to prevent
+ * Any unnecessary returns that remove various functions
+]]
+function LaserLib.IsInit()
+  local idx = LaserLib.__newindex
+  local typ, ret = type(idx), "function"
+  return (idx ~= nil and typ == ret)
 end
 
 --[[
@@ -1256,11 +1268,13 @@ function LaserLib.SetPrimary(ent, nov)
   if(nov) then
     ent:EditableSetIntCombo("InNonOverMater", "Internals", comxbool, "name", "icon")
     ent:EditableSetIntCombo("InBeamSafety"  , "Internals", comxbool, "name", "icon")
+    ent:EditableSetIntCombo("InBeamIgnite"  , "Internals", comxbool, "name", "icon")
     ent:EditableSetIntCombo("InBeamDisperse", "Internals", comxbool, "name", "icon")
     ent:EditableSetIntCombo("EndingEffect"  , "Visuals"  , comxbool, "name", "icon")
   else
     ent:EditableSetBool("InNonOverMater", "Internals")
     ent:EditableSetBool("InBeamSafety"  , "Internals")
+    ent:EditableSetBool("InBeamIgnite"  , "Internals")
     ent:EditableSetBool("InBeamDisperse", "Internals")
     ent:EditableSetBool("EndingEffect"  , "Visuals")
   end
@@ -1379,6 +1393,7 @@ function LaserLib.Configure(unit)
         self:SetKillSound(src:GetKillSound())
         self:SetStartSound(src:GetStartSound())
         self:SetBeamSafety(src:GetBeamSafety())
+        self:SetBeamIgnite(src:GetBeamIgnite())
         self:SetForceCenter(src:GetForceCenter())
         self:SetBeamDisperse(src:GetBeamDisperse())
         self:SetBeamMaterial(src:GetBeamMaterial())
@@ -2517,12 +2532,11 @@ if(SERVER) then
     end
   end
 
-  function LaserLib.NewLaser(user       , pos         , ang         , model      ,
-                             trandata   , key         , width       , length     ,
-                             damage     , material    , dissolveType, startSound ,
-                             stopSound  , killSound   , runToggle   , startOn    ,
-                             pushForce  , endingEffect, reflectRate , refractRate,
-                             forceCenter, frozen      , enOverMater , enSafeBeam , rayColor )
+  function LaserLib.NewLaser(user        , pos       , ang         , model      , trandata   ,
+                             key         , width     , length      , damage     , material   ,
+                             dissolveType, startSound, stopSound   , killSound  , runToggle  ,
+                             startOn     , pushForce , endingEffect, reflectRate, refractRate,
+                             forceCenter , frozen    , enOverMater , enSafeBeam , enIgneBeam , rayColor )
 
     if(not LaserLib.IsValid(user)) then return end
     if(not user:IsPlayer()) then return end
@@ -2544,7 +2558,7 @@ if(SERVER) then
     laser:Setup(width      , length      , damage    , material   , dissolveType,
                 startSound , stopSound   , killSound , runToggle  , startOn     ,
                 pushForce  , endingEffect, trandata  , reflectRate, refractRate ,
-                forceCenter, enOverMater , enSafeBeam, rayColor   , false)
+                forceCenter, enOverMater , enSafeBeam, enIgneBeam , rayColor    , false)
 
     local phys = laser:GetPhysicsObject()
     if(LaserLib.IsValid(phys)) then
@@ -2574,7 +2588,7 @@ end
 ]]
 function LaserLib.WaveToHue(nW)
   local g_hue = DATA.WHUEMP -- Hue map settings
-  local g_cnf = g_hue.CONF -- Configuration
+  local g_cnf = DATA.WHUECF -- Configuration
   local wav, hue = g_cnf.WAVE, g_cnf.HUES
   local WF, W1, W2 = g_cnf.FADE, wav[1], wav[2]
   local nW = math.max((tonumber(nW) or 0), 0)
@@ -2599,7 +2613,7 @@ end
 ]]
 function LaserLib.HueToWave(nH)
   local g_hue = DATA.WHUEMP -- Hue map settings
-  local g_cnf = g_hue.CONF -- Configuration
+  local g_cnf = DATA.WHUECF -- Configuration
   local wav, hue = g_cnf.WAVE, g_cnf.HUES
   local W1, W2 = wav[1], wav[2]
   local H1, H2 = hue[1], hue[2]
@@ -2626,7 +2640,7 @@ end
  * http://hyperphysics.phy-astr.gsu.edu/hbase/geoopt/dispersion.html#c1
 ]]
 function LaserLib.WaveToIndex(wave, nidx)
-  local cnf, eps = DATA.WHUEMP.CONF, DATA.ZEPS
+  local cnf, eps = DATA.WHUECF, DATA.ZEPS
   local mr, ms, fw = cnf.INDW, cnf.MARG, cnf.FADE
   local wm1, wm2 = cnf.WAVE[1]+fw, cnf.WAVE[2]-fw
   local s = math.max(math.Remap(cnf.SODD, wm1, wm2, mr[1], mr[2]), eps)
@@ -2680,7 +2694,7 @@ function LaserLib.SetWaveArray(tW, iN, nM, nS, nE, wS, wE)
         nM, cN = math.max(tonumber(nM) or 0), tW.Size
   if(iN <= 0) then if(cN) then table.Empty(tW) end; return nil end
   if(iN == (tonumber(cN) or 0)) then return tW end
-  local g_wm, g_um = DATA.WHUEMP.CONF.WAVE, DATA.WHUEMP.CONF.HUES
+  local g_wm, g_um = DATA.WHUECF.WAVE, DATA.WHUECF.HUES
   local nS, nE = (nS or g_um[1]), (nE or g_um[2])
   local wS, wE = (wS or g_wm[1]), (wE or g_wm[2])
   table.Empty(tW) -- Clears the data and prepare for the change
@@ -2696,11 +2710,11 @@ function LaserLib.SetWaveArray(tW, iN, nM, nS, nE, wS, wE)
   tW.PN = 0       -- Individual component power for white light part
   tW.IS = 0       -- Index start for the component extraction
   tW.IE = 0       -- Index end for the component extraction
-  for iW = 0, (iN - 1) do
-    local vW = wS + iW * tW.Step
-    local vH, vM = LaserLib.WaveToHue(vW)
-    local cH = HSVToColor(vH, 1, vM)
-    table.insert(tW, {C = cH, P = 0, W = vW, B = false})
+  for iS = 0, (iN - 1) do -- On every step retrieve the delta
+    local vW = wS + iS * tW.Step -- Calculate wavelength
+    local vH, vM = LaserLib.WaveToHue(vW) -- Map wavelength to hue
+    local vC = HSVToColor(vH, 1, 1) -- Produce and cache the RGBA color
+    table.insert(tW, {C = vC, P = 0, H = vH, M = vM, W = vW, B = false})
   end; return tW
 end
 
@@ -2891,7 +2905,6 @@ function mtBeam:SetWavelength(nWav)
   self.BmWaveLn = math.max(0, (tonumber(nWav) or 0))
   return self
 end
-
 
 --[[
  * Returns the current beam flags
@@ -3086,7 +3099,6 @@ function mtBeam:SetSource(base, ...)
     end -- Source is found. Store it
   end; return self -- No source is found
 end
-
 
 --[[
  * Returns the beam current active length
@@ -4690,34 +4702,65 @@ if(SERVER) then
   end
 
   function mtBeam:DoDissolve(torch)
-    if(not LaserLib.IsValid(torch)) then return end
+    if(not LaserLib.IsValid(torch)) then return self end
     torch:Fire("Dissolve", torch.Target, 0)
     torch:Fire("Kill", "", 0.1)
-    torch:Remove()
+    torch:Remove(); return self
   end
 
   function mtBeam:DoSound(param)
     local target, noise = param.target, param.noise
-    if(not LaserLib.IsValid(target)) then return end
+    if(not LaserLib.IsValid(target)) then return self end
     if(noise and (target:Health() > 0 or target:IsPlayer())) then
       sound.Play(noise, target:GetPos())
       target:EmitSound(Sound(noise))
-    end
+    end; return self
   end
 
+  --[[
+   * Play burning sounds while roasting players
+   * Applicable when damage parameter is present
+   * Mmmmm... You know that smells kinda nice
+  ]]
   function mtBeam:DoBurn(param)
     local target, origin = param.target, param.origin
-    if(not LaserLib.IsValid(target)) then return end
+    if(not LaserLib.IsValid(target)) then return self end
     local direct, safety = param.direct, param.safety
-    if(not safety) then return end -- Beam safety skipped
+    local damage = param.damage -- Beam damage
+    if(damage <= 0) then return self end
+    if(not safety) then return self end -- Beam safety skipped
     local smu = DATA.VESFBEAM:GetFloat() -- Safety velocity
-    if(smu <= 0) then return end -- General setting
+    if(smu <= 0) then return self end -- General setting
     local idx = target:StartLoopingSound(DATA.BURN)
+    if(idx and idx < 0) then return self end -- Loop failed
     local obb = target:LocalToWorld(target:OBBCenter())
     local pbb = LaserLib.ProjectPointRay(obb, origin, direct)
           obb:Sub(pbb); obb:Normalize(); obb:Mul(smu)
           obb.z = 0; target:SetVelocity(obb)
-    timer.Simple(0.5, function() target:StopLoopingSound(idx) end)
+    timer.Simple(0.5, function()
+      target:StopLoopingSound(idx)
+    end); return self
+  end
+
+  --[[
+   * Flame-On! Set entities on fire
+   * The heat radiates DATA.RADIE units away
+   * Applicable when damage parameter is present
+  ]]
+  function mtBeam:DoIgnite(param)
+    local target = param.target
+    if(not LaserLib.IsValid(target)) then return self end
+    if(target:IsOnFire()) then return self end
+    local ignite = param.ignite -- Ignite flag
+    if(not ignite) then return self end
+    local damage = param.damage -- Beam damage
+    if(damage <= 0) then return self end
+    local smu = DATA.IGENTMBM:GetFloat() -- Ignite time
+    if(smu <= 0) then return self end
+    local maxdmg = DATA.MXBMDAMG:GetFloat()
+    local ignera = (DATA.RADIE * (damage / maxdmg))
+    target:Ignite(smu, ignera)
+    return self
   end
 
   function mtBeam:DoDamage(laser)
@@ -4727,12 +4770,12 @@ if(SERVER) then
         tbran[idx]:DoDamage(laser) end
     end
     local trace = self:GetTarget()
-    if(not (trace and trace.Hit)) then return end
+    if(not (trace and trace.Hit)) then return self end
     local target, param = trace.Entity, DATA.DMPAR
-    if(not LaserLib.IsValid(target)) then return end
-    if(LaserLib.IsUnit(target)) then return end
+    if(not LaserLib.IsValid(target)) then return self end
+    if(LaserLib.IsUnit(target)) then return self end
     local sours = self:GetSource()
-    if(not LaserLib.IsValid(sours)) then return end
+    if(not LaserLib.IsValid(sours)) then return self end
     -- Localize the calculated parameters
     param.target   = target
     param.laser    = laser
@@ -4747,6 +4790,7 @@ if(SERVER) then
     param.noise    = sours:GetKillSound()
     param.fcenter  = sours:GetForceCenter()
     param.safety   = sours:GetBeamSafety()
+    param.ignite   = sours:GetBeamIgnite()
     -- Create a reference to what is used locally
     local direct, damage = param.direct, param.damage
     local force , origin = param.force , param.origin
@@ -4761,8 +4805,12 @@ if(SERVER) then
           phys:ApplyForceOffset(direct * force, origin)
         end -- This is the way laser can be used as forcer
       end -- Do not apply force on laser units
-      if(target:IsPlayer() and damage > 0) then -- Portal beam safety
-        self:DoBurn(param)
+      if(damage > 0) then -- Portal beam safety
+        if(target:IsPlayer()) then
+          self:DoBurn(param)
+        else
+          self:DoIgnite(param)
+        end
       end -- Target is not unit. Check emiter safety
     end
     -- Time to do next damage blast when there is damage
@@ -4771,19 +4819,19 @@ if(SERVER) then
       if(cas and g_damage[cas]) then
         local suc, oux = pcall(g_damage[cas], self, param)
         if(not suc) then target:Remove(); ErrorNoHaltWithStack(oux) end -- Remove target
-        if(oux) then return end -- Exit main damage routine immediately
+        if(oux) then return self end -- Exit main damage routine immediately
       else
         if(target:IsPlayer()) then
           if(target:Health() <= damage) then
             local suc, oux = pcall(g_damage["#ISPLAYER#"], self, param)
             if(not suc) then target:Kill(); ErrorNoHaltWithStack(oux) end -- Remove target
-            if(oux) then return end -- Exit main damage routine immediately
+            if(oux) then return self end -- Exit main damage routine immediately
           end
         elseif(target:IsNPC()) then
           if(target:Health() <= damage) then
             local suc, oux = pcall(g_damage["#ISNPC#"], self, param)
             if(not suc) then target:Remove(); ErrorNoHaltWithStack(oux) end -- Remove target
-            if(oux) then return end -- Exit main damage routine immediately
+            if(oux) then return self end -- Exit main damage routine immediately
           end
         elseif(target:IsVehicle()) then
           local driver = target:GetDriver()
@@ -4792,13 +4840,13 @@ if(SERVER) then
               param.target = driver -- Switch target to the driver on kill
               local suc, oux = pcall(g_damage["#ISPLAYER#"], self, param)
               if(not suc) then driver:Kill(); ErrorNoHaltWithStack(oux) end -- Remove target
-              if(oux) then return end -- Exit main damage routine immediately
+              if(oux) then return self end -- Exit main damage routine immediately
             end
           end
         end
       end -- When target is not supposed to be killed yet
       self:TakeDamage(param) -- Make it eat one more slap
-    end
+    end; return self
   end
 end
 
@@ -4859,7 +4907,7 @@ function mtBeam:IsDisperse(tRef, vOrg, vDir)
   for iW = tW.IS, tW.IE do -- Use only available entries
     local recw = tW[iW] -- Current component indexing
     local rCo, rPw, rEn = recw.C, recw.P, (recw.P / pmr)
-    sr, sg, sb, sa = rCo.r, rCo.g, rCo.b, (sa * rPw)
+    local vr, vg, vb, va = rCo.r, rCo.g, rCo.b, (sa * rPw)
     local beam = LaserLib.Beam(org, dir, len) -- Make a beam
     -- Setup child beam and apply power modifiers
     beam:SetSource(src, src, sro) -- Primary source
@@ -4870,7 +4918,7 @@ function mtBeam:IsDisperse(tRef, vOrg, vDir)
     beam:SetFgTexture(ovr, false) -- Disable dispersion
     beam:SetBounces(bnc)          -- Left over bounces
     beam:SetWavelength(recw.W)    -- Component wavelength
-    beam:SetColorRGBA(sr, sg, sb, sa) -- Apply beam color
+    beam:SetColorRGBA(vr, vg, vb, va) -- Apply beam color
     -- Validate branch beam state and start the propagation
     if(not beam:IsValid() and SERVER) then
       beam:Clear(); src:Remove(); return false end
@@ -5158,6 +5206,7 @@ function LaserLib.CheckBox(panel, convar)
 end
 
 function LaserLib.ComboBoxString(panel, convar, nameset)
+  if(SERVER) then return end
   local sTool = DATA.TOOL -- Read the tool name directly
   local sVar  = GetConVar(sTool.."_"..convar):GetString()
   local sBase = language.GetPhrase("tool."..sTool.."."..convar.."_con")
@@ -5465,7 +5514,7 @@ if(CLIENT) then
       local tre = tr.Entity; if(not LaserLib.IsValid(tre)) then return end
       if(tre:GetClass():find("gmod_laser", 1, true)) then -- For all laser units
         local vor, vdr = LaserLib.GetTransformUnit(tre) -- Read unit transform
-        vor, vdr = (vor or tr.HitPos), (vdr or tr.HitNormal) -- Fail-safe rays
+        vor, vdr = (vor or tr.HitPos), (vdr or tr.HitNormal) -- Fail-safe rays4
         LaserLib.DrawAssist(vor, vdr, ray, tre, ply) -- Convert to world-space
       end
   end)
@@ -5475,3 +5524,11 @@ CheckMaterials(DATA.REFLECT, 7)
 CheckMaterials(DATA.REFRACT, 6)
 
 ConfigureHookRegistry(DATA.BLHOLE, "sp_black_hole")
+
+LaserLib.__newindex = function(t, k, v)
+  local g = debug.getinfo(2)
+  local k = (isstring(k) and ("\""..k.."\"") or tostring(k))
+  local s = "["..tostring(g.short_src or g.source).."]"
+  local n = "["..tostring(g.currentline or g.lastlinedefined).."]"
+  error("Laser member refused ["..k.."] = "..tostring(v).." at "..s.." line "..n)
+end
