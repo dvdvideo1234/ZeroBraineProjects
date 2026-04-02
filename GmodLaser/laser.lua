@@ -19,22 +19,21 @@ HSVToColor = function(H, S, V)
   return Color(r, g, b, 255)
 end
 
-local enr, set = 20, {Size = 0, Sump = 0}
+LaserLib.GetData("WDHUECNT"):SetData(25)
+
+local d, p = {r=0,g=0,b=0}
 local cor = Color(255, 0, 200, 255)
--- local cor = Color(255, 255, 255, 255)
+--local cor = Color(255, 255, 255, 255)
 
-LaserLib.GetData("WDHUECNT"):SetData("30")
-LaserLib.GetData("WDRGBMAR"):SetData("10")
-
+function l(c)
+  return ("[%5.3f|%5.3f|%5.3f]"):format(c.r, c.g, c.b)
+end
 local tW = LaserLib.GetWaveArray(cor)
--- com.logTable(tW, "GET")
-for iW = tW.IS, tW.IE do
-  local recw = tW[iW] -- Current component
-  local rCo, rPw, rEn = recw.C, recw.P, (recw.P / tW.PT)
-  sr, sg, sb = (rCo.r * rPw), (rCo.g * rPw), (rCo.b * rPw)
-  table.insert(set, rEn)
-  set.Size = set.Size + 1
-  set.Sump = set.Sump + rEn
+
+
+for i = 1, tW.Size do
+  local w = tW[i]
+  print(("[%3d]"):format(i), "  ", l(w.C), "  ", w.P, tostring(w.B))
 end
 
-com.logTable(tW, "POWER")
+--com.logTable(tW)

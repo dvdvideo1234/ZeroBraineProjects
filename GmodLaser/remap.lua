@@ -73,3 +73,21 @@ local w = 530
 print("GenericR", math.Remap(w, DATA.WVIS[1], DATA.WVIS[2], DATA.WCOL[1], DATA.WCOL[2]))
 print("CustomHW", LaserLib.WaveToHue(w))
 print("CustomHR", LaserLib.HueToWave(LaserLib.WaveToHue(w)))
+
+local a = Vector(0,0,1)
+
+function a:LengthSqr1()
+  print("LengthSqr1")
+  return a:LengthSqr()
+end
+
+function a:LengthSqr2()
+  print("LengthSqr2")
+  return a:LengthSqr()
+end
+
+function IsHitNormal(norm, skip)
+  local dotm = (skip and norm:LengthSqr1() or norm:LengthSqr2())
+end
+
+IsHitNormal(a, true) 
