@@ -2816,14 +2816,8 @@ function LaserLib.GetWaveArray(cB, ...)
 
     -- Soft threshold (removes noise)
     
-    p = p - 0.1
+    p = p - 0.5
     if(p < 0) then p = 0 end
-
-    -- Channel agreement (critical for your "no green" case)
-    local agree = 1 - math.abs(wg - cg)
-    if(agree < 0) then agree = 0 end
-
-    p = p * agree
 
     -- Sharpen response
     p = p * p
@@ -2850,11 +2844,14 @@ function LaserLib.GetWaveArray(cB, ...)
   -- === 6. Add white back uniformly ===
   if(white > 0) then
     local w = white / m
+    local s = (tW.Size * w) + 1
     for iH = 1, tW.Size do
-      tW[iH].P = tW[iH].P + w
+      local wav = tW[iH]
+      wav.P = (wav.P + w) / s
+      wav.B = (wav.P > 0)
     end
     tW.PT = tW.PT + w * tW.Size
-  end
+  end 
 
   return tW
 end

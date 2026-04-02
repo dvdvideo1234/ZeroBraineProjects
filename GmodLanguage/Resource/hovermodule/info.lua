@@ -1,0 +1,16 @@
+local info = {}
+
+info.tool = "hovermodule" -- Tool name
+info.limit = info.tool -- Spawn limit convar name
+info.sors = "%s/"..info.tool.."/lang/%s.lua"
+info.dest = "%s/"..info.tool.."/resource/localization/%s/"..info.tool..".properties"
+info.lang = {"en", "bg", "fr", "ru", "ja"} -- Available languages
+info.match = { -- The amount of matches to try
+  {"\"..stool..\"", info.tool},
+  {"\"..slimit..\"", info.limit},
+  {"\"..slimit", info.limit}
+} -- Automatic array size
+info.lang.size = #info.lang
+info.match.size = #info.match
+
+return info
