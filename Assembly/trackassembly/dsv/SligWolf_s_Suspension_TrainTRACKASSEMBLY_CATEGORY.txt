@@ -1,0 +1,2 @@
+# ExportCategory:(SligWolf_s_Suspension_Train@3) 26-04-20 10:24:50 [ LUA ]
+[===[SligWolf's Suspension Train===function(m) local s, c; s = _G.SligWolf_Addons; c = s and s.CallFunctionOnAddon("wpsuspensiontrain", "TrackAssamblerCategory", m); return c; end]===]

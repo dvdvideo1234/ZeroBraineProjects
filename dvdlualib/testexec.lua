@@ -5,8 +5,8 @@ metaexec.ftime = "%H:%M:%S"
 metaexec.secto = "%02d:%02d:%02d"
 metaexec.outfi = "Output set to: %s"
 metaexec.start = "Started %d test cases for %d functions..."
-metaexec.ffins = "Test finished all %d cases successfully!"
-metaexec.ffinc = "Test finished %d of %d cases successfully!"
+metaexec.ffins = "Test finished all %d case(s) successfully!"
+metaexec.ffinc = "Test finished %d of %d case(s) successfully!"
 metaexec.ffina = "Test case <%s> with fail rate: %d%%"
 metaexec.ffspc = {"Estimation for [%", "s]: %s"}
 metaexec.nocnt = "No test card count `stCard.%s` for test ID # %d!"
@@ -102,7 +102,7 @@ function testexec.Run(stCard, stEstim)
         local tRoll = fnc.Ro[tstNam]
         local nTime = os.clock()
         for inx = 1, fooCyc do -- N Cycles
-          local Rez = fnc.Func(fooVal)
+          local Rez = fnc.Func(unpack(fooVal))
           if(Rez == fooRes) then tRoll["PASS"] = tRoll["PASS"] + 1 else
             if(not tstFail.Hash[tstNam][1]) then
               tstFail.Hash[tstNam][1] = true
@@ -192,7 +192,7 @@ function testexec.New()
     local sName = tostring(sName or mtExec.__defcase:format(#stEstim + 1))
     table.insert(stEstim, testexec.Case(fActf, sName)); return self
   end
-  function self:setCard(vIn, vOut, sName)
+  function self:setCard(sName, vIn, vOut)
     local sName = tostring(sName or mtExec.__defcard:format(#stCard + 1))
     table.insert(stCard, {sName, vIn, vOut}); return self
   end

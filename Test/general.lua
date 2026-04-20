@@ -13,6 +13,10 @@ local complex  = require('complex')
 
 require('gmodlib')
 
-local a = function() end
+local ron = nil
+local trn = nil
 
-print(math.ease.InSine(1))
+  local ro = ((ron ~= nil) and tobool(ron) or false)
+  local ov = ((trn ~= nil) and tostring(trn or "") or nil)
+
+print(ov, ro)

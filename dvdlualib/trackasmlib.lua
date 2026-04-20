@@ -63,6 +63,7 @@ local IsValid                        = IsValid
 local Material                       = Material
 local require                        = require
 local Time                           = CurTime
+local SysTime                        = SysTime
 local EntityID                       = Entity
 local tonumber                       = tonumber
 local tostring                       = tostring
@@ -98,6 +99,7 @@ local entsCreate                     = ents and ents.Create
 local entsCreateClientProp           = ents and ents.CreateClientProp
 local fileOpen                       = file and file.Open
 local fileExists                     = file and file.Exists
+local fileIsDir                      = file and file.IsDir
 local fileAppend                     = file and file.Append
 local fileDelete                     = file and file.Delete
 local fileCreateDir                  = file and file.CreateDir
@@ -268,12 +270,14 @@ end
 ]]
 function GetReport(...)
   local sD = (GetOpVar("OPSYM_VERTDIV") or "|")
-        sD = tostring(sD):sub(1, 1) -- First symbol
-  local tV, sV = {...}, sD -- Use vertical divider
   local nV = select("#", ...) -- Read report count
-  if(nV == 0) then return sV end -- Nothing to report
-  if(nV == 1) then sV = "{"..type(tV[1]).."}"..sV end
-  for iV = 1, nV do sV = sV..tostring(tV[iV])..sD end
+  if(nV == 0) then return sD end -- Nothing to report
+  if(nV == 1) then local sV = select(1, ...)
+    return ("{%s}%s%s%s"):format(type(sV),sD,sV,sD)
+  end; local tV = GetOpVar("REP_TABLE"); tableInsert(tV,sD)
+  for iV = 1, nV do local sV = select(iV, ...)
+    tableInsert(tV,("%s%s"):format(sV,sD)) end
+  local sV = tableConcat(tV); tableEmpty(tV)
   return sV -- Concatenate vararg and return a string
 end
 
@@ -295,6 +299,28 @@ end
 -- Gets the date and time according to the specified format
 function GetDateTime(vDT, fDT)
   return GetDate(vDT, fDT).." "..GetTime(vDT, fDT)
+end
+
+local function TimeTic()
+  local tTm = {
+    S = SysTime() * 1000,
+    C = SysTime() * 1000,
+    N = 0, LS = 0, LC = 0
+  }
+  SetOpVar("BENCH_TIME", tTm)
+  LogInstance("TIC: "..tTm.S)
+end
+
+local function TimeLap(sMar)
+  local tTm = GetOpVar("BENCH_TIME")
+  if(not tTm) then return end
+  local nMr = tostring(sMar or "N/A")
+  tTm.N = SysTime() * 1000
+  tTm.LC = tTm.N - tTm.C
+  tTm.LS = tTm.N - tTm.S
+  tTm.C = tTm.N
+
+  LogInstance("LAP["..nMr.."]: "..GetReport(tTm.S, tTm.C, tTm.LS, tTm.LC))
 end
 
 -- Uses custom model check to remove the pre-caching overhead
@@ -658,6 +684,7 @@ function InitBase(sName, sPurp)
     LogInstance("Purpose invalid "..GetReport(sPurp), true); return false end
   SetOpVar("LOG_SKIP",{})
   SetOpVar("LOG_ONLY",{})
+  SetOpVar("REP_TABLE",{})
   SetOpVar("LOG_MAXLOGS",0)
   SetOpVar("LOG_CURLOGS",0)
   SetOpVar("LOG_LOGLAST","")
@@ -2666,7 +2693,7 @@ end
 
 function RunBuilderCount(fFnc, sSrc)
   local iCnt = #libQTable -- Returns zero on error
-  if(isfunction(fFnc)) then; for iD = 1, iCnt do
+  if(isfunction(fFnc)) then for iD = 1, iCnt do
     local makTab = GetBuilderID(iD); if(not IsHere(makTab)) then
       LogInstance("Missing table builder for "..GetReport(sSrc, iD)); return 0 end
     local bS, vO = pcall(fFnc, makTab, iD); if(not bS) then
@@ -3619,13 +3646,23 @@ end
  * file path to be ready for opening the file object
 ]]
 function GetLibraryPath(sT, sP, sN)
+  LogInstance("Arguments["..GetReport(GetOpVar("DIRPATH_BAS"), sT, sP, sN).."]")
+  TimeLap("LB-PATH-0")
   local fName = GetOpVar("DIRPATH_BAS")
+  TimeLap("LB-PATH-1")
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
-    fName = fName..tostring(sT or "") -- Target folder in `trackassembly/`
+  TimeLap("LB-PATH-2")
+  fName = fName..tostring(sT or "") -- Target folder in `trackassembly/`
+  TimeLap("LB-PATH-3")
   if(not fileExists(fName,"DATA")) then fileCreateDir(fName) end
+  TimeLap("LB-PATH-4")
   if(not (sP or sN)) then return fName end -- Create the folders only
+  TimeLap("LB-PATH-5")
   local sForm = GetOpVar("FORM_PREFIXDSV") -- Concatenate file name
-  return fName..sForm:format(tostring(sP or ""), tostring(sN or ""))
+  TimeLap("LB-PATH-6")
+  local ret = fName..sForm:format(tostring(sP or ""), tostring(sN or ""))
+  TimeLap("LB-PATH-7")
+  return ret
 end
 
 --[[
@@ -3635,9 +3672,14 @@ end
 ]]
 function IsGenericDB(sSors)
   local sSors = tostring(sSors or "")
+  TimeLap("GEN-DB-1")
   local sName, fGenc = GetOpVar("TOOLNAME_PU"), GetOpVar("DBEXP_PREFGEN")
+  TimeLap("GEN-DB-2")
   local fName = GetLibraryPath(GetOpVar("DIRPATH_DSV"), fGenc, sName..sSors)
-  return fileExists(fName, "DATA")
+  TimeLap("GEN-DB-3")
+  local ret = fileExists(fName, "DATA")
+  TimeLap("GEN-DB-4")
+  return ret
 end
 
 --[[
@@ -3938,21 +3980,32 @@ end
  * sDelim > What delimiter is the server using
 ]]
 function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
+  TimeTic()
   if(not isstring(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
+  TimeLap("SRC-FILE-0")
   local sDelim, fData = tostring(sDelim or "\t"):sub(1,1), {}
+  TimeLap("SRC-FILE-1")
   local fPref = tostring(sPref or GetInstPref()); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(fPref,sPref),sTable); return false end
+  TimeLap("SRC-FILE-2")
   local tHew, sMoDB = GetOpVar("PATTEM_EXDSVHED"), GetOpVar("MODE_DATABASE")
+  TimeLap("SRC-FILE-3")
   local sHew, sFunc = tHew[2]:format(fPref, sTable, sDelim), debugGetinfo(1).name
+  TimeLap("SRC-FILE-4")
   if(IsFlag("en_dsv_datalock")) then
     LogInstance(sHew.." User disabled",sTable); return true end
+  TimeLap("SRC-FILE-5")
   if(IsGenericDB(sTable)) then
     LogInstance(sHew.." Generic database",sTable); return true end
+  TimeLap("SRC-FILE-6")
   local makTab = GetBuilderNick(sTable); if(not IsHere(makTab)) then
     LogInstance(sHew.." Missing table builder",sTable); return false end
+  TimeLap("SRC-FILE-7")
   local defTab, iD = makTab:GetDefinition(), makTab:GetColumnID("LINEID")
+  TimeLap("SRC-FILE-8")
   local fName = GetLibraryPath(GetOpVar("DIRPATH_DSV"), fPref, defTab.Name)
+  TimeLap("SRC-FILE-9")
   if(fileExists(fName, "DATA")) then
     local sLine, isEOF = "", false
     local I = fileOpen(fName, "rb", "DATA"); if(not I) then
@@ -3979,6 +4032,7 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
       end
     end; I:Close()
   else LogInstance(sHew.." Creating file "..GetReport(fName),sTable) end
+  TimeLap("SRC-DATA")
   for key, rec in pairs(tData) do -- Check the given table and match the key
     local vK = makTab:Match(key,1,false,"",true,true); if(not IsHere(vK)) then
       LogInstance(sHew.." Sync matching PK failed "..GetReport(key),sTable); return false end
@@ -4012,10 +4066,13 @@ function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
         fData[vK] = tRec; fData[vK].Size = #tRec end
     end
   end
+  TimeLap("SRC-PREP")
   local tSort = Arrange(fData); if(not tSort) then
     LogInstance(sHew.." Sorting failed",sTable); return false end
+  TimeLap("SRC-SORT")
   local O = fileOpen(fName, "wb" ,"DATA"); if(not O) then
     LogInstance(sHew.." Open fail: "..fName,sTable); return false end
+  TimeLap("SRC-OUTF")
   O:Write("# "..sFunc..":"..sHew.." "..GetDateTime().." [ "..sMoDB.." ]\n")
   O:Write("# "..sTable..":("..makTab:GetColumnList(sDelim)..")\n")
   for iKey = 1, tSort.Size do local key = tSort[iKey].Key
@@ -5667,7 +5724,8 @@ function GetCatmullRomCurveSegment(vP0, vP1, vP2, vP3, nN, nA)
   local tTN = GetLinearSpace(nT1, nT2, nN)
   local vB1, vB2 = Vector(), Vector()
   local vA1, vA2, vA3 = Vector(), Vector(), Vector()
-  for iD = 1, #tTN do tS[iD] = Vector(); local nTn, vTn = tTN[iD], tS[iD]
+  for iD = 1, #tTN do tS[iD] = Vector()
+    local nTn, vTn = tTN[iD], tS[iD]
     local nD1, nD2, nD3 = (nT1-nT0), (nT2-nT1), (nT3-nT2)
     local nD4, nD5, nD6 = (nT2-nT0), (nT3-nT1), (nT2-nT1)
     vA1:Set(vP0); vA1:Mul((nT1-nTn)/nD1); vA1:Add(vP1 * ((nTn-nT0)/nD1))

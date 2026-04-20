@@ -2816,15 +2816,24 @@ function LaserLib.GetWaveArray(cB, ...)
 
     -- Soft threshold (removes noise)
     
-    p = p - 0.5
+    p = p - 0.1
     if(p < 0) then p = 0 end
+    
+    -- Penalize channels not present in input
+    local mask = 1
+
+    if(wr == 0) then mask = mask * (1 - cr) end
+    if(wg == 0) then mask = mask * (1 - cg) end
+    if(wb == 0) then mask = mask * (1 - cb) end
+
+    p = p * mask
 
     -- Sharpen response
     p = p * p
 
     wav.P = p
     wav.B = (p > 0)
-
+    
     if(wav.B) then
       if(tW.IS == 0) then tW.IS = iH end
       tW.IE = iH
@@ -2844,11 +2853,15 @@ function LaserLib.GetWaveArray(cB, ...)
   -- === 6. Add white back uniformly ===
   if(white > 0) then
     local w = white / m
-    local s = (tW.Size * w) + 1
+    local s = (tW.Size * w) + tW.PT
     for iH = 1, tW.Size do
       local wav = tW[iH]
       wav.P = (wav.P + w) / s
       wav.B = (wav.P > 0)
+      if(wav.B) then
+        if(tW.IS == 0) then tW.IS = iH end
+        tW.IE = iH
+      end
     end
     tW.PT = tW.PT + w * tW.Size
   end 

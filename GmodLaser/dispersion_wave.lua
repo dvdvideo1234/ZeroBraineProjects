@@ -44,7 +44,7 @@ function p(w)
   print("Input:", x(w))
   for i = 1, tW.Size do
     local w = tW[i]
-    print(z(i), "  ", x(w.C), "  ", y(w.P), tostring(w.B), y(w.P))
+    print(z(i), "  ", x(w.C), "  ", y(w.P), tostring(w.B), w.P)
     s = s + w.P
   end
   print("Idx", tW.IS, tW.IE)
