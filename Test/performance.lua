@@ -12,7 +12,13 @@ require("dvdlualib/gmodlib")
 require("dvdlualib/trackasmlib")
 local testexec = require("testexec")
 
+local mar = 300
 local cat = {}
+local ga = ("a"):rep(mar)
+local gb = ("b"):rep(mar)
+local gc = ("s"):rep(mar)
+local gd = ("d"):rep(mar)
+local arg = {ga,gb,gc,gd}
 
 function dotdot(a,b,c,d)
   return a.."|"..b.."|"..c.."|"..d
@@ -37,9 +43,10 @@ end
 t = testexec.New()
 t:setCase(dotdot, "dotdot")
 t:setCase(formats, "formats")
-t:setCase(formati, "formati")
+--t:setCase(formati, "formati")
 t:setCase(concat, "concat")
 t:setProgress(1, 0.1)
-t:setCount(1000, 10000)
-t:setCard("cat", {1,2,3,4}, "1|2|3|4")
+t:setCount(1000, 100000)
+--t:setCard("cat", {1,2,3,4}, "1|2|3|4")
+t:setCard("cas", arg, table.concat(arg, "|"))
 t:runMeasure()

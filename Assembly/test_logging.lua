@@ -21,19 +21,33 @@ require("Assembly/autorun/folder")
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
-asmlib.SetLogControl(20000, false)
-require("Assembly/scripts/sligwolf_s_suspension_train")
+asmlib.SetLogControl(1000, 0, false)
 
-print("-----------")
-print(asmlib.GetReport())
-print(asmlib.GetReport(nil))
-print(asmlib.GetReport(1234))
-print(asmlib.GetReport("asdf"))
-print(asmlib.GetReport(1,2,"c", nil, "ASDF"))
+local KT1 = {1,2,3}
+local KT2 = {C = 1, D = 2, E = 3}
+local KF1 = function() end
+local KF2 = function() end
 
+local T = 
+{
+  A = "asdf",
+  B = 2,
+  [1] = "qwer",
+  [2] = 3,
+  [KT1] = "tyui",
+  [KT2] = 4,
+  [KF1] = "ghjk",
+  [KF2] = 5
+}
+T.S = T
 
+local s = os.clock() * 10000
+for i = 1, 1000 do
+asmlib.LogCeption(T)
+end
+local e = os.clock() * 10000 - s
 
-
+print("Time:", e)
 
 
 

@@ -1,4 +1,4 @@
-# SynchronizeDSV:(SligWolf_s_Suspension_Train@PIECES@	) 26-04-20 10:24:50 [ LUA ]
+# SynchronizeDSV:(SligWolf_s_Suspension_Train@PIECES@	) 26-04-20 16:30:16 [ LUA ]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/sligwolf/wpsuspensiontrain/handrails/handrail_platform_192.mdl"	"SligWolf's Suspension Train"	"Handrail (192)"	1	"NULL"	"!handrail01"	"!handrail01"	"NULL"
 TRACKASSEMBLY_PIECES	"models/sligwolf/wpsuspensiontrain/handrails/handrail_platform_192.mdl"	"SligWolf's Suspension Train"	"Handrail (192)"	2	"NULL"	"!handrail02"	"!handrail02"	"NULL"

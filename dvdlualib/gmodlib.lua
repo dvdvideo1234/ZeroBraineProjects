@@ -557,6 +557,12 @@ function file.Exists(n)
   return false
 end
 
+function file.IsDir(n)
+  if(type(n) ~= "string") then return false end
+  local r = os.execute("cd "..n)
+  return (r == 0)
+end
+
 function file.Delete(n)
   local p = common.stringGetFilePath(n)
   local n = common.stringGetFileName(n)
