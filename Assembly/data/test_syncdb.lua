@@ -1,27 +1,28 @@
-local drpath = require("directories")
-      drpath.addPath("myprograms",
-                     "CorporateProjects",
-                     "ZeroBraineProjects",
-                     -- When not located in general directory search in projects
-                     "ZeroBraineProjects/dvdlualib",
-                     "ZeroBraineProjects/ExtractWireWiki")
-      drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+                .addBase("D:/Programs/LuaIDE")
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+                
+local com = require("common")
 
-local common = require("common")
+rawset(_G, "CLIENT", true)
+rawset(_G, "SERVER", false)
 
-SERVER = true
-CLIENT = true
-
-require("../dvdlualib/gmodlib")
-require("../dvdlualib/trackasmlib")
-asmlib = trackasmlib
-CreateConVar("gmod_language")
+require("gmodlib")
+require("trackasmlib")
+local asmlib = trackasmlib
+if(not asmlib) then error("No library") end
+require("Assembly/autorun/folder")
 require("Assembly/autorun/config")
-PIECES = asmlib.GetBuilderNick("PIECES")
-require("Assembly/data/pieces")
-asmlib.SetOpVar("DIRPATH_BAS", "Assembly/trackassembly/")
-asmlib.SetLogControl(1000,false)
+
+asmlib.SetOpVar("MODE_DATABASE", "LUA")
+asmlib.IsModel = function(m) return isstring(m) end
+asmlib.SetLogControl(20000, false)
 ---------------------------------------------------------------------------------------
 
 local myPrefix = "aaa"

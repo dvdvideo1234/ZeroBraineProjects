@@ -530,7 +530,6 @@ function file.Open(n, m)
     return logStatus("file.Open("..m.."): "..tostring(e), nil)
   end
   local mt = getmetatable(f)
-  mt.Read  = mt.read
   mt.Write = mt.write
   mt.Close = mt.close
   mt.Flush = mt.flush
@@ -539,6 +538,9 @@ function file.Open(n, m)
     local p = f:seek() -- Store position
     local t = f:read(); f:seek("set", p)
     return common.getPick(t, false, true)
+  end
+  mt.Read = function(f)
+    return f:read("*all")
   end
   mt.Tell = function(f)
     return f:seek()

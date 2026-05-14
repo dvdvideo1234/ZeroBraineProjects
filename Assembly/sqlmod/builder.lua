@@ -6,7 +6,7 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
                 .addBase("D:/Programs/LuaIDE")
-                .addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
 

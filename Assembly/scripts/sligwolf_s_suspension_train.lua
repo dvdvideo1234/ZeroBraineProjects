@@ -18,7 +18,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * It must NOT be an empty string nil or any other type regarding
  * The value will be automatically pattern converted to a index prefix
 ]]
-local myAddon = "SligWolf's Suspension Train"
+local myAddon = "SligWolf_s_Suspension_Train"
 
 -- Log messages identifier. Leave DSV here or change it if you like
 local mySource = "DSV"
@@ -78,7 +78,7 @@ end
  * This logic statement is needed for reporting the error
  * in the console if the process fails.
  *
- @ bSuccess = trackasmlib.SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
+ @ bSuccess = SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
  * sTable > The table you want to sync
  * tData  > A data table like the one described above
  * bRepl  > If set to /true/, makes the API replace the repeating models with
@@ -88,12 +88,12 @@ end
  * sPref  > An export file custom prefix. For synchronizing it must be related to your addon
  * sDelim > The delimiter used by the server/client ( default is a tab symbol )
  *
- @ bSuccess = trackasmlib.TranslateDSV(sTable, sPref, sDelim)
+ @ bSuccess = TranslateDSV(sTable, sPref, sDelim)
  * sTable > The table you want to translate to Lua script
  * sPref  > An export file custom prefix. For synchronizing it must be related to your addon
  * sDelim > The delimiter used by the server/client ( default is a tab symbol )
 ]]--
-local function DoSynchronize(sName, tData, bRepl)
+local function SyncTable(sName, tData, bRepl)
   local sRep = asmlib.GetReport(myPrefix, sName) -- Generate report if error is present
   if(not asmlib.IsEmpty(tData)) then -- Something to be processed. Do stuff when the table is not empty
     asmlib.LogInstance("Synchronization START "..sRep, mySource) -- Signal start synchronization
@@ -114,13 +114,13 @@ end
  * (/garrysmod/data/trackassembly/set/trackasmlib_dsv.txt)
  * a.k.a the DATA folder of Garry's mod.
  *
- * @bSuccess = trackasmlib.RegisterDSV(sProg, sPref, sDelim)
+ * @bSuccess = RegisterDSV(sProg, sPref, sDelim)
  * sProg  > The program which registered the DSV
  * sPref  > The external data prefix to be added ( default instance prefix )
  * sDelim > The delimiter to be used for processing ( default tab )
  * bSkip  > Skip addition for the DSV prefix if exists ( default `false` )
 ]]--
-local function DoRegister(bSkip)
+local function RegisterDSV(bSkip)
   local sRep = asmlib.GetReport(myPrefix, bSkip) -- Generate report if error is present
   asmlib.LogInstance("Registration START "..sRep, mySource)
   if(bSkip) then -- Your DSV must be registered only once when loading for the first time
@@ -137,13 +137,13 @@ end
  * This logic statement is needed for reporting the error in the console if the
  * process fails.
  *
- @ bSuccess = trackasmlib.ExportCategory(nInd, tData, sPref)
+ @ bSuccess = ExportCategory(nInd, tData, sPref)
  * nInd   > The index equal indent format to be stored with ( generally = 3 )
  * tData  > The category functional definition you want to use to divide your stuff with
  * sPref  > An export file custom prefix. For synchronizing
  *          it must be related to your addon ( default is instance prefix )
 ]]--
-local function DoCategory(tCatg)
+local function ExportCategory(tCatg)
   local sRep = asmlib.GetReport(myPrefix, bSkip) -- Generate report if error is present
   asmlib.LogInstance("Category export START "..sRep, mySource)
   if(CLIENT) then -- Category handling is client side only
@@ -162,7 +162,7 @@ asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..",
 asmlib.WorkshopID(myAddon, "3297918081")
 
 -- Register the addon to the plugable DSV list
-local bS, vO = pcall(DoRegister, myFlag)
+local bS, vO = pcall(RegisterDSV, myFlag)
 if(not bS) then ThrowError("Registration error: "..vO) end
 
 --[[
@@ -178,12 +178,19 @@ if(not bS) then ThrowError("Registration error: "..vO) end
 ]]--
 local myCategory = {
   [myType] = {Txt = [[
-    function(m) local s, c; s = _G.SligWolf_Addons; c = s and s.CallFunctionOnAddon("wpsuspensiontrain", "TrackAssamblerCategory", m); return c; end
+    function(m) local c
+    local r = m:gsub("models/shinji85/train/rail_", "")
+    if(r:find("cross")) then c = "crossing-x"
+    elseif(r:find("switch")) then c = "switch"
+    elseif(r:find("curve")) then c = "curve"
+    elseif(r:find("bumper")) then c = "bumper"
+    elseif(r:find("junction")) then c = "junction"
+    elseif(r:find("%dx")) then c = "straight" end; return c end
   ]]}
 }
 
 -- Register the addon category to the plugable DSV list
-local bS, vO = pcall(DoCategory, myCategory)
+local bS, vO = pcall(ExportCategory, myCategory)
 if(not bS) then ThrowError("Category error: "..vO) end
 
 --[[
@@ -905,7 +912,7 @@ local myPieces = {
 }
 
 -- Register the addon PIECES to the plugable DSV list
-local bS, vO = pcall(DoSynchronize, "PIECES", myPieces, true)
+local bS, vO = pcall(SyncTable, "PIECES", myPieces, true)
 if(not bS) then ThrowError("PIECES error: "..vO) end
 
 --[[
@@ -943,7 +950,7 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
 local myAdditions = {}
 
 -- Register the addon ADDITIONS to the plugable DSV list
-local bS, vO = pcall(DoSynchronize, "ADDITIONS", myAdditions, true)
+local bS, vO = pcall(SyncTable, "ADDITIONS", myAdditions, true)
 if(not bS) then ThrowError("ADDITIONS error: "..vO) end
 
 --[[
@@ -965,7 +972,8 @@ if(not bS) then ThrowError("ADDITIONS error: "..vO) end
 local myPhysproperties = {}
 
 -- Register the addon PHYSPROPERTIES to the plugable DSV list
-local bS, vO = pcall(DoSynchronize, "PHYSPROPERTIES", myPhysproperties, true)
+local bS, vO = pcall(SyncTable, "PHYSPROPERTIES", myPhysproperties, true)
 if(not bS) then ThrowError("PHYSPROPERTIES error: "..vO) end
 
 asmlib.LogInstance("<<< "..myScript, mySource)
+

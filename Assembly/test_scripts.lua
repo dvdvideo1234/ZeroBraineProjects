@@ -16,24 +16,21 @@ rawset(_G, "SERVER", false)
 require("gmodlib")
 require("trackasmlib")
 asmlib = trackasmlib
+
 require("Assembly/autorun/folder")
 
 CreateConVar("gmod_language")
 require("Assembly/autorun/config")
 
-asmlib.SetLogControl(20000, false)
+asmlib.SetLogControl(20000, 0)
+
+asmlib.IsFlag("file_read_once", true)
+
 require("Assembly/scripts/sligwolf_s_suspension_train")
 
-print("-----------")
-print(asmlib.GetReport())
-print(asmlib.GetReport(nil))
-print(asmlib.GetReport(1234))
-print(asmlib.GetReport("asdf"))
-print(asmlib.GetReport(1,2,"c", nil, "ASDF"))
+local P = asmlib.GetBuilderNick("PIECES")
 
-
-
-
+asmlib.ImportCategory(0, "sligwolf_s_suspension_train")
 
 
 
