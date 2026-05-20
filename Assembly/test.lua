@@ -38,3 +38,23 @@ local stData = oPieces:GetNavigate("TRACKASSEMBLY_PIECES", "models/props_phx/hug
 
 common.logTable(stData, "stData")
 
+
+
+local mt1 = {}
+function new1()
+  self = {}; setmetatable(self, mt1)
+  mt1.__index = mt1
+  return self
+end
+
+local mt2 = {}
+function new2()
+  self = {}; setmetatable(self, mt2)
+  mt2.__index = mt2
+  mt2.__tostring = function(o) return "TEST" end
+  return self
+end
+
+local a, b, c = new1(), new2(), {}
+
+print(a, istable(a), b, istable(b), c, istable(c))

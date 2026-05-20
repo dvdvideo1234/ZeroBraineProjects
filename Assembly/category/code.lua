@@ -6,26 +6,19 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
                 .addBase("D:/Programs/LuaIDE")
-                .addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
 
 rawset(_G, "CLIENT", true)
+rawset(_G, "SERVER", false)
 
 require("gmodlib")
 require("trackasmlib")
-
-asmlib = trackasmlib
+local asmlib = trackasmlib
 if(not asmlib) then error("No library") end
-
-asmlib.IsModel = function(m) return isstring(m) end
-
-if(not asmlib.InitBase("track","assembly")) then error("Init fail") end
-
-asmlib.NewAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
-CreateConVar("gmod_language")
+require("Assembly/autorun/folder")
 require("Assembly/autorun/config")
-
 asmlib.SetLogControl(20000, false)
 
 local sT = "Plarail"
@@ -86,16 +79,13 @@ local tD = {
   "models/scene_building/small_rooms/2door_sides.mdl",
   "models/scene_building/small_rooms/3door.mdl",
   "models/scene_building/small_rooms/4door.mdl",
-  "models/scene_building/small_rooms/stairs_straight.mdl"
+  "models/scene_building/small_rooms/stairs/straight.mdl"
 }
 
--- function self:TimerSetup(vTim)
-asmlib.Categorize(sT, [[function(m)
-    local g = m:gsub("models/scene_building/","")
-    local r = g:gsub("/.+$",""); return r end]])
+asmlib.Categorize(sT, 2, "models/scene_building/")
 
 local dat = asmlib.GetOpVar("TABLE_CATEGORIES")[sT]
-
+local beu = asmlib.GetBeautify()
 com.logTable(dat, "CAT")
 
 local out = assert(io.open("Assembly/trackassembly/trackasmlib_nodes.txt", "wb"))
@@ -105,11 +95,11 @@ for i = 1, #tD do
   
   local nam = com.stringGetFileName(mod)
         nam = com.stringStripExtension(nam)
-        nam = "# "..asmlib.GetBeautifyName(nam)
+        nam = "# "..beu:Convert(nam):Get()
   local suc, cat, ovr = pcall(dat.Cmp, mod)--; cat = nil
   if(not suc) then error(cat) end; if(cat and not istable(cat)) then cat = {cat} end
   if(not istable(cat)) then cat = "# ROOTING ITEM" else
-    for i = 1, #cat do cat[i] = asmlib.GetBeautifyName(cat[i]) end
+    for i = 1, #cat do cat[i] = beu:Convert(cat[i]):Get() end
     cat = "("..table.concat(cat,"|")..")"
   end
   out:write(com.stringPadR(mod, 80, " ").." > "..com.stringPadR(cat, 35, " ").." > "..tostring(ovr or nam).."\n")

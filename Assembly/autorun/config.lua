@@ -90,7 +90,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","9.834")
+asmlib.SetOpVar("TOOL_VERSION","9.839")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -863,7 +863,7 @@ if(CLIENT) then
           tDat[1] = ((tDat[1] == "V") and "V" or "X")
           -- Database unique prefix. Contains non-spaces
           tDat[2] = tostring(tDat[2] or "")
-          tDat[2] = tDat[2]:Trim():gsub("[^%w]","_")
+          tDat[2] = asmlib.GetTypePrefix(tDat[2])
           -- Additional information. It can be anything
           tDat[3] = tostring(tDat[3] or ""):Trim()
           tDat[3] = (asmlib.IsBlank(tDat[3]) and gsNoAV or tDat[3])
@@ -1033,7 +1033,7 @@ if(CLIENT) then
             if(pIn and pOp) then -- When the sub-menu pointer is available add tables
               local pTb, pOb = pIn:AddSubMenu(defTab.Nick)
               if(not IsValid(pTb)) then pnFrame:Close()
-                asmlib.LogInstance("Manage menu invalid"..GetReport(iD, defTab.Nick),sLog..".ListView"); return nil end
+                asmlib.LogInstance("Manage menu invalid "..GetReport(iD, defTab.Nick),sLog..".ListView"); return nil end
               if(not IsValid(pOb)) then pnFrame:Close()
                 asmlib.LogInstance("Manage opts invalid",sLog..".ListView"); return nil end
               pOb:SetIcon(asmlib.ToIcon(sI.."si"))
@@ -1817,7 +1817,7 @@ asmlib.NewTable("PIECES",{
       if(not asmlib.IsHere(stData.Used)) then stData.Used = 0 end
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
       if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
-      if(not asmlib.IsHere(stData.Pref)) then stData.Pref = arLine[2]:gsub("[^%w]","_"):lower()  end
+      if(not asmlib.IsHere(stData.Pref)) then stData.Pref = asmlib.GetTypePrefix(arLine[2])  end
       if(not asmlib.IsHere(stData.Name)) then stData.Name = arLine[3] end
       if(not asmlib.IsHere(stData.Unit)) then stData.Unit = arLine[8] end
       local nOffsID = makTab:Match(arLine[4],4); if(not asmlib.IsHere(nOffsID)) then
@@ -1829,22 +1829,22 @@ asmlib.NewTable("PIECES",{
         asmlib.LogInstance("Cannot process "..asmlib.GetReport(nOffsID, snPK),vSrc); return false end
       stData.Size = stData.Size + 1; return true
     end,
-    ExportSyncDB = function(oFile, makTab, tCache, sDelim, vSrc)
+    ExportSyncDB = function(oF, makTab, tCache, sDelim, vSrc)
       local tSort, cT = asmlib.Arrange(tCache, "Type", "Name", "Slot"), nil
       if(not tSort) then asmlib.LogInstance("Cannot sort cache data",vSrc); return false end
       for iS = 1, tSort.Size do local stRec = tSort[iS]
         local sKey, vRec = stRec.Key, stRec.Rec
         if(not cT or cT ~= vRec.Type) then cT = vRec.Type
           local sW = tostring(asmlib.WorkshopID(cT) or sMiss)
-          oFile:Write("# Categorize("); oFile:Write(cT)
-          oFile:Write("): "); oFile:Write(sW); oFile:Write("\n")
+          oF:Write("# Categorize("); oF:Write(cT)
+          oF:Write("): "); oF:Write(sW); oF:Write("\n")
         end
-        oFile:Write(makTab:Match(vRec.Slot,1,true,"\"")..sDelim)
-        oFile:Write(makTab:Match(vRec.Type,2,true,"\"")..sDelim)
-        oFile:Write(makTab:Match(vRec.Name,3,true,"\"")); oFile:Write("\n")
+        oF:Write(makTab:Match(vRec.Slot,1,true,"\"")..sDelim)
+        oF:Write(makTab:Match(vRec.Type,2,true,"\"")..sDelim)
+        oF:Write(makTab:Match(vRec.Name,3,true,"\"")); oF:Write("\n")
       end; return true
     end,
-    ExportDSV = function(oFile, makTab, tCache, fPref, sDelim, vSrc)
+    ExportDSV = function(oF, makTab, tCache, fPref, sDelim, vSrc)
       local defTab = makTab:GetDefinition()
       local tSort = asmlib.Arrange(tCache, "Type", "Name", "Slot"); if(not tSort) then
         asmlib.LogInstance("Cannot sort cache data "..asmlib.GetReport(fPref),vSrc); return false end
@@ -1865,12 +1865,12 @@ asmlib.NewTable("PIECES",{
           local sP, sO, sA = stPnt.P:Export(stPnt.O), stPnt.O:Export(), stPnt.A:Export()
           local sC = (asmlib.IsHere(tData.Unit) and tostring(tData.Unit) or noSQL)
                 sC = ((sC == sClass) and noSQL or sC) -- Export default class as noSQL
-          oFile:Write(sData); oFile:Write(sDelim)
-          oFile:Write(makTab:Match(iD,4,true,"\"")); oFile:Write(sDelim)
-          oFile:Write("\""); oFile:Write(sP); oFile:Write("\""); oFile:Write(sDelim)
-          oFile:Write("\""); oFile:Write(sO); oFile:Write("\""); oFile:Write(sDelim)
-          oFile:Write("\""); oFile:Write(sA); oFile:Write("\""); oFile:Write(sDelim)
-          oFile:Write("\""); oFile:Write(sC); oFile:Write("\"\n")
+          oF:Write(sData); oF:Write(sDelim)
+          oF:Write(makTab:Match(iD,4,true,"\"")); oF:Write(sDelim)
+          oF:Write("\""); oF:Write(sP); oF:Write("\""); oF:Write(sDelim)
+          oF:Write("\""); oF:Write(sO); oF:Write("\""); oF:Write(sDelim)
+          oF:Write("\""); oF:Write(sA); oF:Write("\""); oF:Write(sDelim)
+          oF:Write("\""); oF:Write(sC); oF:Write("\"\n")
         end
       end; return true
     end,
@@ -1884,7 +1884,7 @@ asmlib.NewTable("PIECES",{
       for iP = 1, tSort.Size do
         local stRec = tSort[iP]
         local tData = PCache[stRec.Key]
-        local sPref = tData.Type:gsub("[^%w]","_"):lower()
+        local sPref = asmlib.GetTypePrefix(tData.Type)
         if(sPref == fPref) then local tOffs = tData.Offs
           local sData = asmlib.GetConcat(defP.Name, sDelim,
             makP:Match(stRec.Key ,1, true, "\""), sDelim,
@@ -1922,7 +1922,7 @@ asmlib.NewTable("PIECES",{
       local coP , coO  = makP:GetColumnName(5), makP:GetColumnName(6)
       local coA , coC  = makP:GetColumnName(7), makP:GetColumnName(8)
       local sClass = asmlib.GetOpVar("ENTITY_DEFCLASS")
-      local sPref, iCnt = sType:gsub("[^%w]","_"):lower(), 0
+      local sPref, iCnt = asmlib.GetTypePrefix(sType), 0
       for mod, rec in pairs(PCache) do
         if(rec.Type == sType or rec.Pref == sPref) then
           local iID, tOffs = 1, rec.Offs -- Start from the first point
@@ -1996,14 +1996,14 @@ asmlib.NewTable("ADDITIONS",{
           asmlib.LogInstance("Cannot match "..asmlib.GetReport(iCnt,arLine[iCnt],snPK),vSrc); return false end
       end; stData.Size = stData.Size + 1; return true
     end,
-    ExportDSV = function(oFile, makTab, tCache, fPref, sDelim, vSrc)
+    ExportDSV = function(oF, makTab, tCache, fPref, sDelim, vSrc)
       local defTab = makTab:GetDefinition()
       local tSort = asmlib.Arrange(tCache, "Slot")
       for iRow = 1, tSort.Size do
         local tRow = tSort[iRow]
         local sKey, tRec = tRow.Key, tRow.Rec
         for iRec = 1, #tRec do local vRec = tRec[iRec]
-          oFile:Write(defTab.Name); oFile:Write(Delim); oFile:Write(makTab:Match(sKey,1,true,"\""))
+          oF:Write(defTab.Name); oF:Write(Delim); oF:Write(makTab:Match(sKey,1,true,"\""))
           for iID = 2, defTab.Size do
             local sC = makTab:GetColumnName(iID); if(not sC) then
               asmlib.LogInstance("Cannot index "..asmlib.GetReport(iID,sKey),vSrc); return false end
@@ -2011,8 +2011,8 @@ asmlib.NewTable("ADDITIONS",{
               asmlib.LogInstance("Cannot extract "..asmlib.GetReport(iID,sKey),vSrc); return false end
             local vM = makTab:Match(vData,iID,true,"\""); if(not asmlib.IsHere(vM)) then
               asmlib.LogInstance("Cannot match "..asmlib.GetReport(iID,vData)); return false
-            end; oFile:Write(sDelim); oFile:Write(tostring(vM or ""))
-          end; oFile:Write("\n") -- Data is already inserted, there will be no crash
+            end; oF:Write(sDelim); oF:Write(tostring(vM or ""))
+          end; oF:Write("\n") -- Data is already inserted, there will be no crash
         end
       end; return true
     end,
@@ -2055,16 +2055,16 @@ asmlib.NewTable("PHYSPROPERTIES",{
     Erase  = function(makTab, tCache, snPK, vSrc)
       local skName = asmlib.GetOpVar("HASH_PROPERTY_NAMES")
       local skType = asmlib.GetOpVar("HASH_PROPERTY_TYPES")
-      local stName = tCache[skName]; if(not stName) then
+      local tNames = tCache[skName]; if(not tNames) then
         asmlib.LogInstance("Types missing "..asmlib.GetReport(snPK),vSrc); return false end
-      local stType = tCache[skType]; if(not stType) then
+      local tTypes = tCache[skType]; if(not tTypes) then
         asmlib.LogInstance("Config missing "..asmlib.GetReport(snPK),vSrc); return false end
-      if(snPK and snPK ~= "") then local vT
-        for iT = 1, stName.Size do -- Remove the type from the list
-          if(stName[iT] == snPK) then vT = tableRemove(stName, iT) end
-        end; if(vT) then stType[vT] = nil; stName.Size = stName.Size - 1 end
+      if(snPK and snPK ~= "") then  -- Remove the type from the list
+        for iT = 1, tTypes.Size do; if(tTypes[iT] == snPK) then
+          tableRemove(tTypes, iT); tTypes.Size = (tTypes.Size - 1); break
+        end; end; tNames[snPK] = nil -- Erase the names for the type as well
       else -- Otherwise clear everything not just specific type
-        tableEmpty(stName); tableEmpty(stType)
+        tableEmpty(tNames); tableEmpty(tTypes)
       end; return true
     end,
     Record = function(makTab, tCache, snPK, arLine, vSrc)
@@ -5106,3 +5106,4 @@ else
 end
 
 asmlib.LogInstance("Version: "..asmlib.GetOpVar("TOOL_VERSION"), gtInitLogs)
+

@@ -1,7 +1,7 @@
-# ExportCategory:(sligwolf_s_suspension_train@3) 26-05-14 11:04:38 [LUA]
-[===[SligWolf_s_Suspension_Train===function(m) local c
+# ExportCategory:([lua-cat]shinji85_s_rails@3) 26-05-20 16:05:49 [LUA]
+[===[Shinji85's Rails===function(m) local c
     local r = m:gsub("models/shinji85/train/rail_", "")
-    if(r:find("cross")) then c = "crossing-x"
+    if(r:find("cross")) then c = "crossing"
     elseif(r:find("switch")) then c = "switch"
     elseif(r:find("curve")) then c = "curve"
     elseif(r:find("bumper")) then c = "bumper"

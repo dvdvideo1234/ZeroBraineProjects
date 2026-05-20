@@ -211,12 +211,16 @@ function SetOpVar(sName, vVal)
   libOpVars[sName] = vVal
 end
 
-function IsInit()
-  return IsHere(GetOpVar("TIME_INIT"))
+function GetInstPrefix()
+  return (CLIENT and "cl_" or (SERVER and "sv_" or "na_"))
 end
 
-function GetInstPref()
-  return (CLIENT and "cl_" or SERVER and "sv_" or "na_")
+function GetTypePrefix(sP)
+  return tostring(sP or ""):Trim():gsub("[^%w]","_"):lower()
+end
+
+function IsInit()
+  return IsHere(GetOpVar("TIME_INIT"))
 end
 
 function IsBlank(vVal)
@@ -630,7 +634,7 @@ function WorkshopID(sType, sID)
   local tID = GetOpVar("TABLE_WSIDADDON"); if(not isstring(sType)) then
     LogInstance("Invalid "..GetReport(sType)); return nil end
   local sType = sType:Trim() -- Trim leading and trailing spaces
-  local sPref = sType:gsub("[^%w]","_"):lower()
+  local sPref = GetTypePrefix(sType)
   local sWP = tID[sPref] -- Read the value under the key
   if(sID) then local sPS = tostring(sID or ""):Trim() -- Convert argument
     local nS, nE = sPS:find(GetOpVar("PATTEM_WORKSHID")) -- Check ID
@@ -772,8 +776,12 @@ function InitBase(sName, sPurp)
   SetOpVar("FORM_INTEGER", "[%d]")
   SetOpVar("FORM_KEYSTMT","%s(%s)")
   SetOpVar("FORM_PREFIXFMT", "[%s-%s]%s")
-  SetOpVar("FORM_HEADEREXP", {"# %s:(%s) %s [%s]\n", "# %s:(%s)\n"})
+  SetOpVar("FORM_HEADEREXP", {
+    "# %s:(%s) %s [%s]\n" , "# %s:(%s)\n",
+    "# Query(%d):[[%s]]\n", "# Categorize(%s): %s\n"
+  })
   SetOpVar("FORM_LOGSOURCE","%s.%s(%s)")
+  SetOpVar("FORM_METHCALLS","%s:%s(%s)")
   SetOpVar("FORM_PREFIXDSV", "%s%s.txt")
   SetOpVar("FORM_GITWIKI", "https://github.com/dvdvideo1234/TrackAssemblyTool/wiki/%s")
   SetOpVar("FORM_SNAPSND", "physics/metal/metal_canister_impact_hard%d.wav")
@@ -1562,104 +1570,114 @@ function GetScreen(sW, sH, eW, eH, conClr, aKey)
 end
 
 function NewPOA(vA, vB, vC)
-  local self, mRaw = {0, 0, 0}, nil
-  local mMis = GetOpVar("MISS_NOSQL")
-  local mSep = GetOpVar("OPSYM_SEPARATOR")
-  local mEoa = GetOpVar("OPSYM_ENTPOSANG")
-  function self:Get()
-    return unpack(self)
-  end
-  function self:Array()
-    return {self:Get()}
-  end
-  function self:Vector()
-    return Vector(self:Get())
-  end
-  function self:Angle()
-    return Angle(self:Get())
-  end
-  function self:String(sS)
-    local sS = (IsHere(sS) and tostring(sS) or mSep)
-    return tableConcat(self, sS) -- Custom separator
-  end
-  function self:Set(vA, vB, vC)
-    if(istable(vA)) then
-      self[1] = (tonumber(vA[1]) or 0)
-      self[2] = (tonumber(vA[2]) or 0)
-      self[3] = (tonumber(vA[3]) or 0)
-    else
-      self[1] = (tonumber(vA) or 0)
-      self[2] = (tonumber(vB) or 0)
-      self[3] = (tonumber(vC) or 0)
-    end; return self
-  end
-  function self:Raw(sR)
-    if(IsHere(sR)) then -- Remove spaces
-      mRaw = tostring(sR):gsub("%s+", "") end
-    return mRaw -- Source data manager
-  end
-  function self:IsSame(vA, vB, vC)
-    if(istable(vA)) then
+  local self = {0, 0, 0}
+  local mtPOA = GetOpVar("TYPEMT_POA")
+  setmetatable(self, mtPOA)
+  if(not mtPOA.__type) then
+    mtPOA.__fraw, mtPOA.__fnum = "%s+", "%10.3f"
+    mtPOA.__type, mtPOA.__index = "POA", mtPOA
+    mtPOA.__eoa = GetOpVar("OPSYM_ENTPOSANG")
+    mtPOA.__sep = GetOpVar("OPSYM_SEPARATOR")
+    mtPOA.__mis = GetOpVar("MISS_NOSQL")
+    mtPOA.__form = GetConcat(
+      mtPOA.__type,"{", mtPOA.__fnum,",",
+      mtPOA.__fnum,",",mtPOA.__fnum,"}","[%s]")
+    function mtPOA:Get() return unpack(self) end
+    function mtPOA:Array() return {self:Get()} end
+    function mtPOA:Angle() return Angle(self:Get()) end
+    function mtPOA:Vector() return Vector(self:Get()) end
+    function mtPOA:String(sS)
+      local sS = (IsHere(sS) and tostring(sS) or mtPOA.__sep)
+      return tableConcat(self, sS) -- Custom separator
+    end
+    function mtPOA:Set(vA, vB, vC)
+      if(istable(vA)) then
+        self[1] = (tonumber(vA[1]) or 0)
+        self[2] = (tonumber(vA[2]) or 0)
+        self[3] = (tonumber(vA[3]) or 0)
+      else
+        self[1] = (tonumber(vA) or 0)
+        self[2] = (tonumber(vB) or 0)
+        self[3] = (tonumber(vC) or 0)
+      end; return self
+    end
+    function mtPOA:IsZero()
       for iD = 1, 3 do
-        local nP = (tonumber(vA[iD]) or 0)
-        if(nP ~= self[iD]) then return false end
-      end -- Compare with a array of values
-    else -- Try to convert to number
-      local vA = (tonumber(vA) or 0)
-      if(vA ~= self[1]) then return false end
-      local vB = (tonumber(vB) or 0)
-      if(vB ~= self[2]) then return false end
-      local vC = (tonumber(vC) or 0)
-      if(vC ~= self[3]) then return false end
-    end; return true
-  end
-  function self:Export(vA, vB, vC)
-    local sS, bE = self:String()
-    if(vA) then -- Must compare
-      bE = self:IsSame(vA, vB, vC)
-    else bE = self:IsSame() end
-    return (mRaw or (bE and mMis or sS))
-  end
-  function self:Import(sB, ...)
-    local bE, sB = GetEmpty(sB) -- Default to string
-    if(bE) then -- Check when entry data is vacant
-      self:Set(...) -- Override with the default value provided
-    else -- Entry data is missing use default otherwise decode the value
-      local tPOA = mSep:Explode(sB)  -- Read the components
-      for iD = 1, 3 do                 -- Apply on all components
-        local nC = tonumber(tPOA[iD])  -- Is the data really a number
-        if(not IsHere(nC)) then nC = 0 -- If not write zero and report it
-          LogInstance("Mismatch "..GetReport(sB, iD)) end; self[iD] = nC
-      end -- Try to decode the entry when present
-    end; return self
-  end
-  function self:Decode(sB, vS, sT, ...)
-    local bE, sB = GetEmpty(sB) -- Default to string
-    if(bE) then -- Check when entry data is vacant
-      self:Set(...) -- Override with the default value provided
-    else -- Entry data is missing use default otherwise decode the value
-      if(sB:sub(1,1) == mEoa) then -- POA key must extracted from the model
-        local sT = tostring(sT or "") -- Default the type index to string
-        local sK = sB:sub(2, -1) -- Read key transform ID and try to index
-        local tT, sM = GetAttachmentByID(vS, sK) -- Read transform key
-        if(IsHere(tT)) then -- Attachment is found. Try to process it
-          local uT = tT[sT] -- Extract transform value for the type
-          if(IsHere(uT)) then self:Set(uT:Unpack()) -- Load key into POA
+        if(self[iD] ~= 0) then return false end
+      end; return true
+    end
+    function mtPOA:IsSame(vA, vB, vC)
+      if(istable(vA)) then
+        for iD = 1, 3 do
+          local nP = (tonumber(vA[iD]) or 0)
+          if(nP ~= self[iD]) then return false end
+        end -- Compare with a array of values
+      else -- Try to convert to number
+        local vA = (tonumber(vA) or 0)
+        if(vA ~= self[1]) then return false end
+        local vB = (tonumber(vB) or 0)
+        if(vB ~= self[2]) then return false end
+        local vC = (tonumber(vC) or 0)
+        if(vC ~= self[3]) then return false end
+      end; return true
+    end
+    function mtPOA:Raw(sR)
+      if(IsHere(sR)) then -- Remove spaces
+        self.__raw = tostring(sR):gsub(mtPOA.__fraw, "") end
+      return self.__raw -- Source data manager
+    end
+    function mtPOA:Export(vA, vB, vC)
+      local sS, bE = self:String()
+      if(vA) then -- Must compare
+        bE = self:IsSame(vA, vB, vC)
+      else bE = self:IsSame() end
+      return (self:Raw() or (bE and mtPOA.__mis or sS))
+    end
+    function mtPOA:Import(sB, ...)
+      local bE, sB = GetEmpty(sB) -- Default to string
+      if(bE) then -- Check when entry data is vacant
+        self:Set(...) -- Override with the default value provided
+      else -- Entry data is missing use default otherwise decode the value
+        local tPOA = mtPOA.__sep:Explode(sB)  -- Read the components
+        for iD = 1, 3 do                 -- Apply on all components
+          local nC = tonumber(tPOA[iD])  -- Is the data really a number
+          if(not IsHere(nC)) then nC = 0 -- If not write zero and report it
+            LogInstance("Mismatch "..GetReport(sB, iD)) end; self[iD] = nC
+        end -- Try to decode the entry when present
+      end; return self
+    end
+    function mtPOA:Decode(sB, vS, sT, ...)
+      local bE, sB = GetEmpty(sB) -- Default to string
+      if(bE) then -- Check when entry data is vacant
+        self:Set(...) -- Override with the default value provided
+      else -- Entry data is missing use default otherwise decode the value
+        if(sB:sub(1,1) == mtPOA.__eoa) then -- POA key must extracted from the model
+          local sT = tostring(sT or "") -- Default the type index to string
+          local sK = sB:sub(2, -1) -- Read key transform ID and try to index
+          local tT, sM = GetAttachmentByID(vS, sK) -- Read transform key
+          if(IsHere(tT)) then -- Attachment is found. Try to process it
+            local uT = tT[sT] -- Extract transform value for the type
+            if(IsHere(uT)) then self:Set(uT:Unpack()) -- Load key into POA
+            else -- Try decoding the transform key when not applicable
+              self:Import(sK, ...) -- Try to process the key when present
+              LogInstance("Mismatch "..GetReport(sB, sM, sT)) -- Report mismatch
+            end -- Decode the transformation when is not null or empty string
           else -- Try decoding the transform key when not applicable
             self:Import(sK, ...) -- Try to process the key when present
-            LogInstance("Mismatch "..GetReport(sB, sM, sT)) -- Report mismatch
+            LogInstance("Missing "..GetReport(sB, sM, sT)) -- Report mismatch
           end -- Decode the transformation when is not null or empty string
-        else -- Try decoding the transform key when not applicable
-          self:Import(sK, ...) -- Try to process the key when present
-          LogInstance("Missing "..GetReport(sB, sM, sT)) -- Report mismatch
-        end -- Decode the transformation when is not null or empty string
-      else -- When the value is empty use zero otherwise process the value
-        self:Import(sB, ...) -- Try to process the value when present
-        LogInstance("Regular "..GetReport(sB, vS, sT)) -- No Attachment call
-      end -- Try to decode the entry when present
-    end; return self
+        else -- When the value is empty use zero otherwise process the value
+          self:Import(sB, ...) -- Try to process the value when present
+          LogInstance("Regular "..GetReport(sB, vS, sT)) -- No Attachment call
+        end -- Try to decode the entry when present
+      end; return self
+    end
+    function mtPOA.__tostring(self)
+      local sR, nA, nB, nC = self:Raw(), self:Get()
+      return mtPOA.__form:format(nA, nB, nC, sR)
+    end
   end; if(vA or vB or vC) then self:Set(vA, vB, vC) end
-  setmetatable(self, GetOpVar("TYPEMT_POA")); return self
+  return self
 end
 
 function SetAction(sKey, fAct, tDat)
@@ -2410,12 +2428,17 @@ end
 function GetBeautify()
   local moRes = GetOpVar("OBJECT_BEAUTY")
   if(moRes) then return moRes end
-  local msLogs = "BEAUTY"
+  local mtBeu = GetOpVar("TYPEMT_BEAUTY")
   local msName, msConv, self = "", "", {}
+  local msLogs = "BEAUTY"; setmetatable(self, mtBeu)
+  local msExt = GetOpVar("MODELNAM_FILE")
+  local mfCon = GetOpVar("MODELNAM_FUNC")
   local msDiv = GetOpVar("OPSYM_DIVIDER")
   local msDir = GetOpVar("OPSYM_DIRECTORY")
-  local mfCon = GetOpVar("MODELNAM_FUNC")
-  local msExt = GetOpVar("MODELNAM_FILE")
+  self.__GSUB = {
+    {msDiv.."+" , msDiv}, {msDiv.."$" , ""   },
+    {msDiv.."%w", mfCon}, {msExt      , ""   }
+  }
   local mtCut, mtSub, mtApp
   function self:Get()
     return msName
@@ -2458,91 +2481,104 @@ function GetBeautify()
     end; return self:Set(msConv)
   end
   function self:Beautify(sIn)
+    local tA, tB, tC, tD = unpack(self.__GSUB)
     msConv = tostring(sIn or msName):lower():Trim()
-    msConv = msConv:gsub(msDiv.."+",msDiv):gsub(msDiv.."$", "")
+    msConv = msConv:gsub(tA[1], tA[2]):gsub(tB[1], tB[2])
     if(msConv:sub(1,1) ~= msDiv) then msConv = msDiv..msConv end
-    return self:Set(msConv:gsub(msDiv.."%w", mfCon):sub(2,-1))
+    return self:Set(msConv:gsub(tC[1], tC[2]):sub(2,-1))
   end
   function self:Convert(sIn, bNo) -- ModelToName
+    local tA, tB, tC, tD = unpack(self.__GSUB)
     local sIn = tostring(sIn or ""):lower():Trim()
-    if(IsBlank(sIn)) then LogInstance("Empty string", msLogs); return self:Set() end
-    sIn = (sIn:sub(1, 1) ~= msDir) and (msDir..sIn) or sIn
-    sIn = (stringGetFileName(sIn):gsub(msExt,""))
+    if(IsBlank(sIn)) then return self:Set() end
+    sIn = (sIn:sub(1, 1) ~= msDir) and GetConcat(msDir, sIn) or sIn
+    sIn = (stringGetFileName(sIn):gsub(tD[1], tD[2]))
     msConv = sIn:rep(1) -- Create a copy so we can select cut-off parts later
     if(not bNo) then self:Apply() end -- Apply rules in the conversion
     -- Trigger the capital spacing using the divider ( _aaaaa_bbbb_ccccc )
     return self:Beautify(msConv:Trim(msDiv))
-  end; setmetatable(self, GetOpVar("TYPEMT_BEAUTY"))
-  SetOpVar("OBJECT_BEAUTY", self); return self
+  end; SetOpVar("OBJECT_BEAUTY", self); return self
 end
 
 function Categorize(oTyp, fCat, ...)
   local oBeu = GetBeautify()
   local tCat = GetOpVar("TABLE_CATEGORIES")
-  if(not IsHere(oTyp)) then
+  if(not IsHere(oTyp)) then -- No category then read the contents
     local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or ""):Trim()
-    local sPrf = sTyp:gsub("[^%w]","_"):lower()
     local tTyp = (tCat and tCat[sTyp] or nil)
     return sTyp, (tTyp and tTyp.Txt), (tTyp and tTyp.Cmp)
-  else
+  else -- Category is provided. Update the default
     oBeu:SetRule(); SetOpVar("DEFAULT_TYPE", tostring(oTyp))
-    if(CLIENT) then local tTyp -- Categories for the panel
-      local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or ""):Trim()
-      local sPrf = sTyp:gsub("[^%w]","_"):lower()
-      local fsLog = GetOpVar("FORM_LOGSOURCE") -- The actual format value
-      local ssLog = "*"..fsLog:format("TYPE","Categorize",tostring(oTyp))
-      LogInstance("Name "..GetReport(type(fCat), oTyp, sTyp, sPrf), ssLog)
-      if(isstring(fCat)) then
-        tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp; tTyp.Txt = fCat
-      elseif(istable(fCat)) then local tArg = {...}
-        local sTr = GetOpVar("OPSYM_REVISION") -- Trigger
-        local sSe = GetOpVar("OPSYM_DIRECTORY") -- Separator
-        tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp
-        tTyp.Txt = [[function(m)
-          local o = {}
-          function setBranch(v, p, b, q)
-            if(v:find(p)) then
-              local e = v:gsub("%W*"..p.."%W*", "_")
-              if(b and o.M) then return e end
-              if(b and not o.M) then o.M = true end
-              table.insert(o, (q or p)); return e
-            end; return v
-          end]]
-        tTyp.Txt = tTyp.Txt.."\nlocal r = m:gsub(\""..tostring(tArg[1] or "").."\",\"\"):gsub(\"%.mdl$\",\"\");"
-        for iD = 1, #fCat do
-          local tV = sSe:Explode(fCat[iD])
-          local sR = tostring(tV[2] and ("\""..tostring(tV[2]).."\"") or nil)
-          if(tV[1]:sub(1,1) == sTr) then tV[1] = tV[1]:sub(2,-1)
-            tTyp.Txt = tTyp.Txt.."\nr = setBranch(r, \""..tostring(tV[1]).."\", true, "..sR..")"
-          else
-            tTyp.Txt = tTyp.Txt.."\nr = setBranch(r, \""..tostring(tV[1]).."\", false, "..sR..")"
-          end
+    if(SERVER) then return end -- The server must bail out right here
+    local sTyp = tostring(GetOpVar("DEFAULT_TYPE") or ""):Trim()
+    local fsLog, tTyp = GetOpVar("FORM_LOGSOURCE") -- The format value
+    local ssLog = "*"..fsLog:format("TYPE","Categorize",tostring(oTyp))
+    LogInstance("Name "..GetReport(type(fCat), oTyp, sTyp, sPrf), ssLog)
+    if(isstring(fCat)) then
+      tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp; tTyp.Txt = fCat
+    elseif(istable(fCat)) then local tArg, tTxt = {...}, {}
+      local sTr = GetOpVar("OPSYM_REVISION") -- Trigger
+      local sSe = GetOpVar("OPSYM_DIRECTORY") -- Separator
+      tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp
+      tableInsert(tTxt, "function(m) local o = {}\n")
+      tableInsert(tTxt, "function setBranch(v, p, b, q)\n")
+      tableInsert(tTxt, "  if(v:find(p)) then\n")
+      tableInsert(tTxt, "    local e = v:gsub(\"%W*\"..p..\"%W*\", \"_\")\n")
+      tableInsert(tTxt, "    if(b and o.M) then return e end\n")
+      tableInsert(tTxt, "    if(b and not o.M) then o.M = true end\n")
+      tableInsert(tTxt, "    table.insert(o, (q or p)); return e\n")
+      tableInsert(tTxt, "  end; return v\n")
+      tableInsert(tTxt, "end\n")
+      tableInsert(tTxt, "local r = m:gsub(\"")
+      tableInsert(tTxt, tostring(tArg[1] or ""))
+      tableInsert(tTxt, "\",\"\"):gsub(\"%.mdl$\",\"\");")
+      for iD = 1, #fCat do
+        local tV = sSe:Explode(fCat[iD])
+        local sR = tostring(tV[2] and GetConcat("\"", tV[2], "\"") or nil)
+        if(tV[1]:sub(1,1) == sTr) then tV[1] = tV[1]:sub(2,-1)
+          tableInsert(tTxt, "\nr = setBranch(r, \"")
+          tableInsert(tTxt, tostring(tV[1]))
+          tableInsert(tTxt, GetConcat("\", true, ", sR, ")"))
+        else
+          tableInsert(tTxt, "\nr = setBranch(r, \"")
+          tableInsert(tTxt, tostring(tV[1]))
+          tableInsert(tTxt, GetConcat("\", false, ", sR, ")"))
         end
-        tTyp.Txt = tTyp.Txt.."\no.M = nil; return o, r:gsub(\"^_+\", \"\"):gsub(\"_+$\", \"\"):gsub(\"_+\", \"_\") end"
-      elseif(isnumber(fCat)) then local tArg = {...}
-        tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp
-        tTyp.Txt = "function(m)"
-        tTyp.Txt = tTyp.Txt.."\nlocal n = math.floor(tonumber("..fCat..") or 0)"
-        tTyp.Txt = tTyp.Txt.."\nlocal m = m:gsub(\""..tostring(tArg[1] or "").."\", \"\")\n"
-        for i = 2, #tArg do local aP, aN = tArg[i], tArg[i+1]
-          if(aP and aN) then tTyp.Txt = tTyp.Txt.."\nlocal m = m:gsub(\""..aP.."\", \""..aN.."\")\n" end end
-        tTyp.Txt = tTyp.Txt..[[local t, x = {n = 0}, m:find("/", 1, true)
-          while(x and x > 0) do
-            t.n = t.n + 1; t[t.n] = m:sub(1, x-1)
-            m = m:sub(x+1, -1); x = m:find("/", 1, true)
-          end; m = m:gsub("%.mdl$","")
-          if(n == 0) then return t, m end; local a = math.abs(n)
-          if(a > t.n) then return t, m end; local s = #t-a
-          if(n < 0) then for i = 1, a do t[i] = t[i+s] end end
-          while(s > 0) do table.remove(t); s = s - 1 end
-          return t, m
-        end]]
-      else LogInstance("Skip "..GetReport(fCat), ssLog); return nil end
-      tTyp.Cmp = CompileString("return ("..tTyp.Txt..")", sTyp)
-      local bS, vO = pcall(tTyp.Cmp); if(not bS) then
-        LogInstance("Failed "..GetReport(fCat, vO), ssLog); return nil end
-      tTyp.Cmp = vO; return sTyp, tTyp.Txt, tTyp.Cmp
-    end
+      end
+      tableInsert(tTxt, "\no.M = nil; return o, r:gsub(\"^_+\", \"\")")
+      tableInsert(tTxt, ":gsub(\"_+$\", \"\"):gsub(\"_+\", \"_\") end")
+      tTyp.Txt = tableConcat(tTxt)
+    elseif(isnumber(fCat)) then local tArg, tTxt = {...}, {}
+      tTyp = (tCat[sTyp] or {}); tCat[sTyp] = tTyp
+      tableInsert(tTxt, "function(m)")
+      tableInsert(tTxt, "\nlocal n = math.floor(tonumber(")
+      tableInsert(tTxt, fCat); tableInsert(tTxt, ") or 0)")
+      tableInsert(tTxt, "\nlocal m = m:gsub(\"")
+      tableInsert(tTxt, tostring(tArg[1] or ""))
+      tableInsert(tTxt, "\", \"\")\n")
+      for i = 2, #tArg do local aP, aN = tArg[i], tArg[i+1]
+        if(aP and aN) then
+           tableInsert(tTxt, "\nlocal m = m:gsub(\"")
+           tableInsert(tTxt, aP); tableInsert(tTxt, "\", \"")
+           tableInsert(tTxt, aN); tableInsert(tTxt, "\")\n")
+        end
+      end
+      tableInsert(tTxt, "local t, x = {n = 0}, m:find(\"/\", 1, true)\n")
+      tableInsert(tTxt, "while(x and x > 0) do\n")
+      tableInsert(tTxt, "  t.n = t.n + 1; t[t.n] = m:sub(1, x-1)\n")
+      tableInsert(tTxt, "  m = m:sub(x+1, -1); x = m:find(\"/\", 1, true)\n")
+      tableInsert(tTxt, "  end; m = m:gsub(\"%.mdl$\",\"\")\n")
+      tableInsert(tTxt, "  if(n == 0) then return t, m end; local a = math.abs(n)\n")
+      tableInsert(tTxt, "  if(a > t.n) then return t, m end; local s = #t-a\n")
+      tableInsert(tTxt, "  if(n < 0) then for i = 1, a do t[i] = t[i+s] end end\n")
+      tableInsert(tTxt, "  while(s > 0) do table.remove(t); s = s - 1 end\n")
+      tableInsert(tTxt, "  return t, m\n")
+      tableInsert(tTxt, "end"); tTyp.Txt = tableConcat(tTxt)
+    else LogInstance("Skip "..GetReport(fCat), ssLog); return nil end
+    tTyp.Cmp = CompileString(GetConcat("return (", tTyp.Txt, ")"), sTyp)
+    local bS, vO = pcall(tTyp.Cmp); if(not bS) then
+      LogInstance("Failed "..GetReport(fCat, vO), ssLog); return nil end
+    tTyp.Cmp = vO; return sTyp, tTyp.Txt, tTyp.Cmp
   end
 end
 
@@ -3075,12 +3111,12 @@ function NewTable(sTable,defTab,bReload,bDelete)
       end
     elseif(tyCol == "REAL" or tyCol == "INTEGER") then
       snOut = tonumber(snValue); if(not IsHere(snOut)) then
-        LogInstance("Failed converting number"..GetReport(snValue, nvID),qtDef.Nick); return nil end
+        LogInstance("Invalid number "..GetReport(snValue, nvID),qtDef.Nick); return nil end
       if(tyCol == "INTEGER") then
         if    (opCol == "FLR") then snOut = mathFloor(snOut)
         elseif(opCol == "CEL") then snOut = mathCeil (snOut) end
       end
-    else LogInstance("Invalid column type "..GetReport(tyCol),qtDef.Nick); return nil
+    else LogInstance("Invalid type "..GetReport(tyCol),qtDef.Nick); return nil
     end; return snOut
   end
   function self:GetPrepare(tLine, sDelim, fFoo, ...)
@@ -3491,7 +3527,7 @@ function CacheQueryPiece(sModel)
         LogInstance("No data found "..GetReport(Q)); return nil end
       stData.Slot, stData.Size = sModel, #qData
       stData.Type = qData[1][makTab:GetColumnName(2)]
-      stData.Pref = stData.Type:gsub("[^%w]","_"):lower()
+      stData.Pref = GetTypePrefix(stData.Type)
       stData.Name = qData[1][makTab:GetColumnName(3)]
       stData.Unit = qData[1][makTab:GetColumnName(8)]
       local coID, coP = makTab:GetColumnName(4), makTab:GetColumnName(5)
@@ -3773,12 +3809,12 @@ function ExportSyncDB(sDelim)
       LogInstance("SQL exec error "..GetReport(sHew, sqlLastError(), Q)); return false end
     if(not IsHere(qData) or IsEmpty(qData)) then F:Flush(); F:Close()
       LogInstance("No data found "..GetReport(sHew, Q)); return false end
-    F:Write("# Query("..#qData.."):<"..Q..">\n")
+    F:Write(tHea[3]:format(#qData, Q))
     local coTy, cT = makTab:GetColumnName(2), nil
     for iD = 1, #qData do local vRow = qData[iD]
       if(not cT or cT ~= vRow[coTy]) then cT = vRow[coTy]
         local sW = tostring(WorkshopID(cT) or sMiss)
-        F:Write("# Categorize("..cT.."): "..sW.."\n")
+        F:Write(tHea[4]:format(cT, sW))
       end; F:Write(makTab:GetPrepare(vRow, sDelim,
       function(iCT, sCT, vCT) return makTab:Match(vCT,iCT,true,"\"",true) end).."\n")
     end
@@ -3804,7 +3840,7 @@ end
 ]]
 function ExportCategory(vEq, tData, sPref, bExp)
   if(SERVER) then LogInstance("Working on server"); return true end
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sPref, fPref)); return false end
   local nEq = (tonumber(vEq) or 0); if(nEq <= 0) then
     LogInstance("Wrong equality "..GetReport(vEq)); return false end
@@ -3814,18 +3850,20 @@ function ExportCategory(vEq, tData, sPref, bExp)
     LogInstance("User disabled "..GetReport(sHew)); return true end
   if(IsGenericDB("CATEGORY")) then
     LogInstance("Generic database "..GetReport(sHew)); return true end
-  local sSnam = GetOpVar("TOOLNAME_PU").."CATEGORY"
+  local sSnam = (GetOpVar("TOOLNAME_PL").."CATEGORY"):lower()
   local sSors = (bExp and GetOpVar("DIRPATH_EXP") or GetOpVar("DIRPATH_DSV"))
   local fName = GetLibraryPath(sSors, fPref, sSnam)
   local F = fileOpen(fName, "wb", "DATA"); if(not F) then
     LogInstance("Open fail "..GetReport(sHew,fName)); return false end
   local sEq, nLen, tHea = ("="):rep(nEq), (nEq+2), GetOpVar("FORM_HEADEREXP")
   local tCat = (istable(tData) and tData or GetOpVar("TABLE_CATEGORIES"))
+  LogInstance("Source "..GetReport(sHew, (tCat == tData)))
   local tSort = Arrange(tCat); if(not tSort) then
     LogInstance("Sorting keys fail "..GetReport(sHew)); return false end
   F:Write(tHea[1]:format(sFunc, sHew:sub(2,-2), GetDateTime(), sMoDB))
   for iS = 1, tSort.Size do local rec, cat = tSort[iS]
-    rec, cat = rec.Rec, rec.Key; if(isstring(rec.Txt)) then
+    rec, cat = rec.Rec, rec.Key -- Record is the structure and key is the type
+    if(isstring(rec.Txt)) then -- In case there is something for compilation
       F:Write("["); F:Write(sEq); F:Write("["); F:Write(cat); F:Write(sEq)
       F:Write(rec.Txt:Trim()); F:Write("]"); F:Write(sEq); F:Write("]\n");
     else F:Flush(); F:Close(); LogInstance("Category code mismatch "..GetReport(sHew, cat, rec.Txt)); return false end
@@ -3840,12 +3878,12 @@ end
 ]]
 function ImportCategory(vEq, sPref, bExp)
   if(SERVER) then LogInstance("Working on server"); return true end
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sPref, fPref)); return false end
   local nEq = mathMax(mathFloor(tonumber(vEq) or 0), 0)
   local tHew = GetOpVar("PATTEM_EXCATHED")
   local sHew = tHew[2]:format(fPref, nEq)
-  local sSnam = GetOpVar("TOOLNAME_PU").."CATEGORY"
+  local sSnam = (GetOpVar("TOOLNAME_PL").."CATEGORY"):lower()
   local sSors = (bExp and GetOpVar("DIRPATH_EXP") or GetOpVar("DIRPATH_DSV"))
   local fName = GetLibraryPath(sSors, fPref, sSnam)
   local F = fileOpen(fName, "rb", "DATA"); if(not F) then
@@ -3907,7 +3945,7 @@ function ExportDSV(sTable, sPref, sDelim, bExp)
   if(not isstring(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
   local sDelim, tHea = tostring(sDelim or "\t"):sub(1,1), GetOpVar("FORM_HEADEREXP")
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sPref, fPref), sTable); return false end
   local tHew, sMoDB = GetOpVar("PATTEM_EXDSVHED"), GetOpVar("MODE_DATABASE")
   local tDBmo = GetOpVar("ARRAY_MODEDB"); if(not tDBmo[sMoDB]) then
@@ -3934,11 +3972,11 @@ function ExportDSV(sTable, sPref, sDelim, bExp)
       Q = makTab:Select():Order(unpack(tQ.O)):Store(qIndx):Get(qIndx) end
     if(not IsHere(Q)) then F:Flush(); F:Close()
       LogInstance("Build statement failed "..GetReport(sHew, fName, qIndx), sTable); return false end
-    F:Write("# Query:<"..Q..">\n")
     local qData = sqlQuery(Q); if(not qData and isbool(qData)) then F:Flush(); F:Close()
       LogInstance("SQL exec error "..GetReport(sHew, fName, sqlLastError(), Q), sTable); return false end
     if(not IsHere(qData) or IsEmpty(qData)) then F:Flush(); F:Close()
       LogInstance("No data found "..GetReport(sHew, fName, Q), sTable); return false end
+    F:Write(tHea[3]:format(#qData, Q))
     for iCnt = 1, #qData do
       F:Write(defTab.Name); F:Write(sDelim); F:Write(makTab:GetPrepare(qData[iCnt], sDelim,
         function(iCT, sCT, vCT) return makTab:Match(vCT,iCT,true,"\"",true) end)); F:Write("\n")
@@ -3968,7 +4006,7 @@ end
 function ImportDSV(sTable, bComm, sPref, sDelim, bExp, bRef)
   local sTable = tostring(sTable or ""); if(IsBlank(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sPref, fPref), sTable); return false end
   local bFile, fName = fileExists(sTable, "DATA")
   local tHew, sHew = GetOpVar("PATTEM_EXDSVHED")
@@ -4036,11 +4074,11 @@ end
  * sDelim > What delimiter is the server using
 ]]
 function SynchronizeDSV(sTable, tData, bRepl, sPref, sDelim)
-  TimeTic("SYNC:"..GetReport(sTable, bRepl, sPref, sDelim), false)
+  TimeTic("SYNC: "..GetReport(sTable, bRepl, sPref, sDelim), false)
   if(not isstring(sTable)) then
     LogInstance("Table mismatch "..GetReport(sTable)); return false end
   local sDelim, fData = tostring(sDelim or "\t"):sub(1,1), {}
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sPref, fPref), sTable); return false end
   local tHew, sMoDB = GetOpVar("PATTEM_EXDSVHED"), GetOpVar("MODE_DATABASE")
   local sHew, sFunc = tHew[2]:format(fPref, sTable, sDelim), debugGetinfo(1).name
@@ -4148,7 +4186,7 @@ function TranslateDSV(sTable, sPref, sDelim, bExp)
   local tHew, sHew = GetOpVar("PATTEM_EXDSVHED")
   local sDelim = tostring(sDelim or "\t"):sub(1,1)
   local sMoDB, sFunc = GetOpVar("MODE_DATABASE"), debugGetinfo(1).name
-  local fPref, tHea = tostring(sPref or GetInstPref()):lower(), GetOpVar("FORM_HEADEREXP")
+  local fPref, tHea = tostring(sPref or GetInstPrefix()):lower(), GetOpVar("FORM_HEADEREXP")
   if(bFile) then sSRC = sTable -- Use the settings form the file or override
     LogInstance("Reading configuration "..GetReport(sSRC))
     local F = fileOpen(sSRC, "rb", "DATA"); if(not F) then
@@ -4218,7 +4256,7 @@ end
 function RegisterDSV(sProg, sPref, sDelim, bSkip)
   local sProg = tostring(sProg or ""); if(IsBlank(sProg)) then
     LogInstance("Program empty "..GetReport(sProg, sPref)); return false end
-  local fPref = tostring(sPref or GetInstPref()):lower(); if(IsBlank(fPref)) then
+  local fPref = tostring(sPref or GetInstPrefix()):lower(); if(IsBlank(fPref)) then
     LogInstance("Prefix mismatch "..GetReport(sProg, sPref, fPref), sTable); return false end
   if(CLIENT and gameSinglePlayer()) then
     LogInstance("Single client "..GetReport(sProg, sPref)); return true end
@@ -4442,7 +4480,7 @@ function ExportTypeRun(sType)
   local tDBmo = GetOpVar("ARRAY_MODEDB"); if(not tDBmo[sMoDB]) then
     LogInstance("Unsupported mode"); return end
   local sType, sFunc = sType:Trim(), debugGetinfo(1).name
-  local sPref, qPieces, qAdditions = sType:gsub("[^%w]","_"):lower()
+  local sPref, qPieces, qAdditions = GetTypePrefix(sType)
   local noSQL, sTool = GetOpVar("MISS_NOSQL"), GetOpVar("TOOLNAME_NL")
   local sForm, fMon = GetOpVar("FORM_FILENAMEAR"), GetConcat("[", sMoDB:lower(), "-run]")
   local sS = GetLibraryPath(GetOpVar("DIRPATH_SET"), sForm:format(sTool))
@@ -4547,7 +4585,7 @@ function ExportTypeDSV(sType, sDelim)
   local tHea = GetOpVar("FORM_HEADEREXP"); if(not isstring(sType)) then
     LogInstance("Type mismatch "..GetReport(sType)); return end
   local tHew, sType = GetOpVar("PATTEM_EXDSVHED"), sType:Trim()
-  local fPref = sType:gsub("[^%w]","_"):lower()
+  local fPref = GetTypePrefix(sType)
   local makP = GetBuilderNick("PIECES"); if(not IsHere(makP)) then
     LogInstance("Missing pieces builder "..GetReport(sType, fPref)); return end
   local defP = makP:GetDefinition(); if(not IsHere(defP)) then
@@ -4580,12 +4618,12 @@ function ExportTypeDSV(sType, sDelim)
       Q =  makP:Select():Where(unpack(tQ.W)):Order(unpack(tQ.O)):Store(qInxP):Get(qInxP, qType) end
     if(not IsHere(Q)) then P:Flush(); P:Close(); A:Flush(); A:Close()
       LogInstance("Build statement failed "..GetReport(sType, fPref),defP.Nick); return end
-    P:Write("# Query:<"..Q..">\n")
     local qP = sqlQuery(Q); if(not qP and isbool(qP)) then P:Flush(); P:Close(); A:Flush(); A:Close()
       LogInstance("SQL exec error "..GetReport(fPref,sqlLastError(), Q), defP.Nick); return end
     if(not IsHere(qP) or IsEmpty(qP)) then P:Flush(); P:Close(); A:Flush(); A:Close()
       LogInstance("No data found "..GetReport(fPref, Q), defP.Nick); return end
     local coMo, coLI, rwM = makP:GetColumnName(1), makP:GetColumnName(4), ""
+    P:Write(tHea[3]:format(#qP, Q))
     for iP = 1, #qP do
       P:Write(defP.Name); P:Write(sDelim); P:Write(makP:GetPrepare(qP[iP], sDelim,
         function(iCP, sCP, vCP)
@@ -4596,12 +4634,11 @@ function ExportTypeDSV(sType, sDelim)
               Q = makA:Select():Where(unpack(tQ.W)):Order(unpack(tQ.O)):Store(qInxA):Get(qInxA, qrMo) end
             if(not IsHere(Q)) then P:Flush(); P:Close(); A:Flush(); A:Close()
               LogInstance("Build statement failed "..GetReport(sType, fPref),defA.Nick); return qsNov end
-            if(iP == 1) then A:Write("# Query:<"..Q..">\n") end
             local qA = sqlQuery(Q); if(not qA and isbool(qA)) then P:Flush(); P:Close(); A:Flush(); A:Close()
               LogInstance("SQL exec error "..GetReport(fPref, sqlLastError(), Q), defA.Nick); return qsNov end
             if(not IsHere(qA) or IsEmpty(qA)) then
               LogInstance("No data found "..GetReport(fPref, Q), defA.Nick)
-            else
+            else if(iP == 1) then A:Write(tHea[3]:format(#qA, Q)) end
               for iA = 1, #qA do
                 A:Write(defA.Name); A:Write(sDelim); A:Write(makA:GetPrepare(qA[iA], sDelim,
                   function(iCA, sCA, vCA) return makA:Match(vCA,iCA,true,"\"",true) end).."\n")
@@ -4635,8 +4672,8 @@ function ExportTypeTrn(sType, bExp)
   if(not isstring(sType)) then -- Type is not a string
     LogInstance("Type mismatch "..GetReport(sType)); return end
   local sSrc = (bExp and GetOpVar("DIRPATH_EXP") or GetOpVar("DIRPATH_DSV"))
-  local sType, sDir, sNam = sType:Trim(), GetLibraryPath(sSrc)
-  local sPrf = sType:gsub("[^%w]","_"):lower()
+  local sType, sDir = sType:Trim(), GetLibraryPath(sSrc)
+  local sPrf, sNam = GetTypePrefix(sType)
   if(bExp) then -- Use the pattern for the export file format
     sNam = GetOpVar("FORM_PREFIXDSV"):format(sPrf, "*"):lower()
     sNam = GetOpVar("FORM_PREFIXFMT"):format("*", "dsv", sNam):lower()
@@ -5096,62 +5133,59 @@ function AttachAdditions(ePiece)
     LogInstance("Skip attaching "..GetReport(sMoc)); return true end
   local makTab = GetBuilderNick("ADDITIONS"); if(not IsHere(makTab)) then
     LogInstance("Missing table definition"); return nil end
-  local ePos, eAng = ePiece:GetPos(), ePiece:GetAngles()
-  local coMA, oPOA = makTab:GetColumnName(2), NewPOA()
+  local ePos, eAng, oPOA = ePiece:GetPos(), ePiece:GetAngles(), NewPOA()
+  local coMA, saFM = makTab:GetColumnName(2), GetOpVar("FORM_METHCALLS")
   local coEN, coLI = makTab:GetColumnName(3), makTab:GetColumnName(4)
   local coPO, coAN = makTab:GetColumnName(5), makTab:GetColumnName(6)
   local coMO, coPI = makTab:GetColumnName(7), makTab:GetColumnName(8)
   local coDR, coPM = makTab:GetColumnName(9), makTab:GetColumnName(10)
   local coPS, coSE = makTab:GetColumnName(11), makTab:GetColumnName(12)
-  LogInstance("PIECE:MODEL("..sMoc..")") -- Start processing for the base model
-  for iA = 1, stData.Size do -- While additions are present keep adding them
-    local arRec = stData[iA]; LogInstance("PIECE:ADDITION("..iA..")")
+  LogInstance(saFM:format("PIECE", "MODEL", sMoc)) -- Start processing for the base model
+  for iA = 1, stData.Size do local arRec = stData[iA]
+    LogInstance(saFM:format("PIECE", "ADDITION", tostring(iA)))
     local sCass = GetEmpty(arRec[coEN], nil, dCass)
-    local eBonus = entsCreate(sCass); LogInstance("ents.Create("..sCass..")")
-    if(eBonus and eBonus:IsValid()) then
-      local sMoa = tostring(arRec[coMA]); if(not IsModel(sMoa, true)) then
-        LogInstance("Invalid attachment "..GetReport(iA, sMoc, sMoa)); return false end
-      eBonus:SetModel(sMoa) LogInstance("ENT:SetModel("..sMoa..")")
-      local sPos = arRec[coPO]; if(not isstring(sPos)) then
-        LogInstance("Position mismatch "..GetReport(iA, sMoc, sPos)); return false end
-      if(not GetEmpty(sPos)) then oPOA:Decode(sPos, eBonus, "Pos")
-        local vPos = oPOA:Vector(); vPos:Set(ePiece:LocalToWorld(vPos))
-        eBonus:SetPos(vPos); LogInstance("ENT:SetPos(DB)")
-      else eBonus:SetPos(ePos); LogInstance("ENT:SetPos(PIECE:POS)") end
-      local sAng = arRec[coAN]; if(not isstring(sAng)) then
-        LogInstance("Angle mismatch "..GetReport(iA, sMoc, sAng)); return false end
-      if(not GetEmpty(sAng)) then oPOA:Decode(sAng, eBonus, "Ang")
-        local aAng = oPOA:Angle(); aAng:Set(ePiece:LocalToWorldAngles(aAng))
-        eBonus:SetAngles(aAng); LogInstance("ENT:SetAngles(DB)")
-      else eBonus:SetAngles(eAng); LogInstance("ENT:SetAngles(PIECE:ANG)") end
-      local nMo = (tonumber(arRec[coMO]) or -1)
-      if(nMo >= 0) then eBonus:SetMoveType(nMo)
-        LogInstance("ENT:SetMoveType("..nMo..")") end
-      local nPh = (tonumber(arRec[coPI]) or -1)
-      if(nPh >= 0) then eBonus:PhysicsInit(nPh)
-        LogInstance("ENT:PhysicsInit("..nPh..")") end
-      local nSh = (tonumber(arRec[coDR]) or 0)
-      if(nSh ~= 0) then nSh = (nSh > 0); eBonus:DrawShadow(nSh)
-        LogInstance("ENT:DrawShadow("..tostring(nSh)..")") end
-      eBonus:SetParent(ePiece); LogInstance("ENT:SetParent(PIECE)")
-      eBonus:Spawn(); LogInstance("ENT:Spawn()")
-      pPonus = eBonus:GetPhysicsObject()
-      if(pPonus and pPonus:IsValid()) then
-        local bEm = (tonumber(arRec[coPM]) or 0)
-        if(bEm ~= 0) then bEm = (bEm > 0); pPonus:EnableMotion(bEm)
-          LogInstance("ENT:EnableMotion("..tostring(bEm)..")") end
-        local nZe = (tonumber(arRec[coPS]) or 0)
-        if(nZe > 0) then pPonus:Sleep(); LogInstance("ENT:Sleep()") end
-      end
-      eBonus:Activate(); LogInstance("ENT:Activate()")
-      ePiece:DeleteOnRemove(eBonus); LogInstance("PIECE:DeleteOnRemove(ENT)")
-      local nSo = (tonumber(arRec[coSE]) or -1)
-      if(nSo >= 0) then eBonus:SetSolid(nSo)
-        LogInstance("ENT:SetSolid("..tostring(nSo)..")") end
-    else
-      local mA, mC = arRec[coMA], arRec[coEN]
-      LogInstance("Entity invalid "..GetReport(iA, sMoc, mA, mC)); return false
+    local eBonus = entsCreate(sCass); LogInstance(saFM:format("ENT", "CREATE", sCass))
+    if(not (eBonus and eBonus:IsValid())) then local mA, mC = arRec[coMA], arRec[coEN]
+      LogInstance("Entity invalid "..GetReport(iA, sMoc, mA, mC)); return false end
+    local sMoa = tostring(arRec[coMA]); if(not IsModel(sMoa, true)) then
+      LogInstance("Invalid attachment "..GetReport(iA, sMoc, sMoa)); return false end
+    eBonus:SetModel(sMoa) LogInstance(saFM:format("ENT", "SetModel", sMoa))
+    local sPos = arRec[coPO]; if(not isstring(sPos)) then
+      LogInstance("Position mismatch "..GetReport(iA, sMoc, sPos)); return false end
+    if(not GetEmpty(sPos)) then oPOA:Decode(sPos, eBonus, "Pos")
+      local vPos = oPOA:Vector(); vPos:Set(ePiece:LocalToWorld(vPos))
+      eBonus:SetPos(vPos); LogInstance("ENT:SetPos(DB)")
+    else eBonus:SetPos(ePos); LogInstance("ENT:SetPos(PIECE:POS)") end
+    local sAng = arRec[coAN]; if(not isstring(sAng)) then
+      LogInstance("Angle mismatch "..GetReport(iA, sMoc, sAng)); return false end
+    if(not GetEmpty(sAng)) then oPOA:Decode(sAng, eBonus, "Ang")
+      local aAng = oPOA:Angle(); aAng:Set(ePiece:LocalToWorldAngles(aAng))
+      eBonus:SetAngles(aAng); LogInstance("ENT:SetAngles(DB)")
+    else eBonus:SetAngles(eAng); LogInstance("ENT:SetAngles(PIECE:ANG)") end
+    local nMo = (tonumber(arRec[coMO]) or -1)
+    if(nMo >= 0) then eBonus:SetMoveType(nMo)
+      LogInstance(saFM:format("ENT", "SetMoveType", nMo)) end
+    local nPh = (tonumber(arRec[coPI]) or -1)
+    if(nPh >= 0) then eBonus:PhysicsInit(nPh)
+      LogInstance(saFM:format("ENT", "PhysicsInit", nPh)) end
+    local nSh = (tonumber(arRec[coDR]) or 0)
+    if(nSh ~= 0) then nSh = (nSh > 0); eBonus:DrawShadow(nSh)
+      LogInstance("ENT", "DrawShadow", tostring(nSh)) end
+    eBonus:SetParent(ePiece); LogInstance("ENT:SetParent(PIECE)")
+    eBonus:Spawn(); LogInstance("ENT:Spawn()")
+    pPonus = eBonus:GetPhysicsObject()
+    if(pPonus and pPonus:IsValid()) then
+      local bEm = (tonumber(arRec[coPM]) or 0)
+      if(bEm ~= 0) then bEm = (bEm > 0); pPonus:EnableMotion(bEm)
+        LogInstance(saFM:format("ENT", "EnableMotion", tostring(bEm))) end
+      local nZe = (tonumber(arRec[coPS]) or 0)
+      if(nZe > 0) then pPonus:Sleep(); LogInstance("ENT:Sleep()") end
     end
+    eBonus:Activate(); LogInstance("ENT:Activate()")
+    ePiece:DeleteOnRemove(eBonus); LogInstance("PIECE:DeleteOnRemove(ENT)")
+    local nSo = (tonumber(arRec[coSE]) or -1)
+    if(nSo >= 0) then eBonus:SetSolid(nSo)
+      LogInstance(saFM:format("ENT", "SetSolid", tostring(nSo))) end
   end; LogInstance("Success"); return true
 end
 
@@ -5231,7 +5265,7 @@ function SetPosBound(ePiece,vPos,oPly,sMode)
   local sMode = tostring(sMode or "LOG") -- Error mode is "LOG" by default
   local vPos  = Vector(vPos or GetOpVar("VEC_ZERO"))
   if(sMode == "OFF") then ePiece:SetPos(vPos)
-    LogInstance("("..sMode..") Skip"); return true end
+    LogInstance("Skip: "..GetReport(sMode)); return true end
   if(utilIsInWorld(vPos)) then ePiece:SetPos(vPos) else ePiece:Remove()
     if(sMode == "HINT" or sMode == "GENERIC" or sMode == "ERROR") then
       Notify(oPly, "Position out of map bounds!", sMode) end
@@ -5283,7 +5317,7 @@ function NewPiece(pPly,sModel,vPos,aAng,nMass,sBgSkIDs,clColor,sMode)
   if(not IsModel(sModel, true)) then
     LogInstance("Model invalid"); return nil end
   local stData = CacheQueryPiece(sModel) if(not IsHere(stData)) then
-    LogInstance("Record missing for "..GetReport(sModel)); return nil end
+    LogInstance("Record missing "..GetReport(sModel)); return nil end
   local aAng = Angle(aAng or GetOpVar("ANG_ZERO"))
   if(InSpawnMargin(pPly, stData, vPos, aAng)) then
     LogInstance("Spawn margin stop "..GetReport(sModel)); return nil end
@@ -5844,10 +5878,10 @@ function GetCatmullRomCurve(tV, nT, nA, tO)
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
   local vA = tonumber(nA); if(not vA) then vA = 0.5
-    LogInstance("Factor default to [0.5]"..GetReport(nA)) end
+    LogInstance("Factor default to [0.5] "..GetReport(nA)) end
   if(vA < 0 or vA > 1) then LogInstance("Factor mismatch "..GetReport(vA)); return nil end
   local vT = tonumber(nT); if(not vT) then vT = 100
-    LogInstance("Samples default to [100]"..GetReport(nT)) end
+    LogInstance("Samples default to [100] "..GetReport(nT)) end
   local nV, rT = #tV, mathFloor(vT); if(rT < 0) then
     LogInstance("Samples mismatch "..GetReport(vT)); return nil end
   local vM, cS, cE, tN = GetOpVar("CURVE_MARGIN"), Vector(), Vector(), (tO or {})
@@ -6059,7 +6093,7 @@ function GetBezierCurve(tV, nT, tO)
   if(IsEmpty(tV)) then LogInstance("Vertices missing "..GetReport(tV)); return nil end
   if(not (tV[1] and tV[2])) then LogInstance("Two vertices needed"); return nil end
   local vT = tonumber(nT); if(not vT) then vT = 100
-    LogInstance("Samples default to [100]"..GetReport(nT)) end
+    LogInstance("Samples default to [100] "..GetReport(nT)) end
   local rT = mathFloor(vT); if(rT < 0) then
     LogInstance("Samples mismatch "..GetReport(vT)); return nil end
   local nV = #tV; if(nV <= 0) then

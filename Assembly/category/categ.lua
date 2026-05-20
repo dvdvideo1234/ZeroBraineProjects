@@ -1,55 +1,41 @@
-require("directories")
-require("common")
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+                .addBase("D:/Programs/LuaIDE")
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+                
+local com = require("common")
+
+rawset(_G, "CLIENT", true)
+rawset(_G, "SERVER", false)
+
 require("gmodlib")
-require("asmlib")
-local string = string
-      string.Trim = stringTrim
-local stringExplode = string.Explode
-local stringSub   =  string.sub
-local stringFind  = string.find
-local stringFormat = string.format
+require("trackasmlib")
+local asmlib = trackasmlib
+if(not asmlib) then error("No library") end
+require("Assembly/autorun/folder")
+require("Assembly/autorun/config")
+asmlib.SetLogControl(20000, false)
 
-asmlib.InitBase("track","assembly")
-
-asmlib.SetOpVar("MODE_DATABASE" , "SQL")
-
-asmlib.CreateTable("PIECES",{
-  --Timer = asmlib.TimerSetting(gaTimerSet[1]),
-  Index = {{1},{4},{1,4}},
-  [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
-  [2] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
-  [3] = {"NAME"  , "TEXT"   ,  nil , "QMK"},
-  [4] = {"LINEID", "INTEGER", "FLR",  nil },
-  [5] = {"POINT" , "TEXT"   ,  nil ,  nil },
-  [6] = {"ORIGIN", "TEXT"   ,  nil ,  nil },
-  [7] = {"ANGLE" , "TEXT"   ,  nil ,  nil },
-  [8] = {"CLASS" , "TEXT"   ,  nil ,  nil }
-},true,true)
-
-
-asmlib.SetOpVar("DIRPATH_BAS","E:/Documents/Lua-Projs/ZeroBraineIDE/myprograms/")
-asmlib.SetOpVar("DIRPATH_DSV","ZeroBraineProjects/Assembly/")
-
-
-asmlib.ImportCategory(4,"tst_")
-asmlib.LogInstance("")
-asmlib.Print(asmlib.GetOpVar("TABLE_CATEGORIES"))
-
-local m1 = "models/ron/maglev/track/straight/straight_128.mdl"
-local m2 = "models/ron/maglev/support/support_a.mdl"
-
-local f = function(m)
-    local function conv(x) return " "..x:sub(2,2):upper() end
-    local r = m:gsub("models/ron/maglev/",""):gsub("[\\/]([^\\/]+)$","");
-    logStatus(nil,r)
-    local t, i, c = {r:rep(1)}, 1, true
-    while(c) do
-      local n = t[i]:find("[\\/]", 1)
-      if(n) then
-        t[i+1] = t[i]:sub(n+1,-1); t[i] = t[i]:sub(1,n-1)
-        t[i] = (("_"..t[i]):gsub("_%w",conv):sub(2,-1)); i = (i + 1)
-      else c, t[i] = false, (("_"..t[i]):gsub("_%w",conv):sub(2,-1)) end 
-    end; return t
+local function convert(m)
+local n = math.floor(tonumber(2) or 0)
+local m = m:gsub("models", "")
+local t, x = {n = 0}, m:find("/", 1, true)
+while(x and x > 0) do
+  t.n = t.n + 1; t[t.n] = m:sub(1, x-1)
+  m = m:sub(x+1, -1); x = m:find("/", 1, true)
+  end; m = m:gsub("%.mdl$","")
+  if(n == 0) then return t, m end; local a = math.abs(n)
+  if(a > t.n) then return t, m end; local s = #t-a
+  if(n < 0) then for i = 1, a do t[i] = t[i+s] end end
+  while(s > 0) do table.remove(t); s = s - 1 end
+  return t, m
 end
-    
-asmlib.Print(f(m3))
+
+local a, b = convert("models/scene_building/sewer_system/tunnel_big_bend.mdl")
+asmlib.LogTable(a)
+print("Name:", b)
