@@ -1,4 +1,4 @@
-# ExportDSV:([generic]_@PIECES@	) 26-05-20 16:05:51 [LUA]
+# ExportDSV:([generic]_@PIECES@	) 26-05-20 16:11:41 [LUA]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/alexcookie/2ft/curve/curve_90_512.mdl"	"AlexCookie's 2ft track pack"	"Curve 90 512"	1	"NULL"	"0,0,13.04688"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/alexcookie/2ft/curve/curve_90_512.mdl"	"AlexCookie's 2ft track pack"	"Curve 90 512"	2	"NULL"	"-480,-480,13.04688"	"0,-90,0"	"NULL"

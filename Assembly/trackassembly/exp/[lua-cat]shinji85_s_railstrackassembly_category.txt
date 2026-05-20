@@ -1,4 +1,4 @@
-# ExportCategory:([lua-cat]shinji85_s_rails@3) 26-05-20 16:05:49 [LUA]
+# ExportCategory:([lua-cat]shinji85_s_rails@3) 26-05-20 16:11:39 [LUA]
 [===[Shinji85's Rails===function(m) local c
     local r = m:gsub("models/shinji85/train/rail_", "")
     if(r:find("cross")) then c = "crossing"

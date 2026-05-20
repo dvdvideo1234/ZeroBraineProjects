@@ -2003,7 +2003,7 @@ asmlib.NewTable("ADDITIONS",{
         local tRow = tSort[iRow]
         local sKey, tRec = tRow.Key, tRow.Rec
         for iRec = 1, #tRec do local vRec = tRec[iRec]
-          oF:Write(defTab.Name); oF:Write(Delim); oF:Write(makTab:Match(sKey,1,true,"\""))
+          oF:Write(defTab.Name); oF:Write(sDelim); oF:Write(makTab:Match(sKey,1,true,"\""))
           for iID = 2, defTab.Size do
             local sC = makTab:GetColumnName(iID); if(not sC) then
               asmlib.LogInstance("Cannot index "..asmlib.GetReport(iID,sKey),vSrc); return false end

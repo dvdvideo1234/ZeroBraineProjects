@@ -1,4 +1,4 @@
-# TranslateDSV:(shinji85_s_rails@PIECES@	) 26-05-20 16:05:50 [LUA]
+# TranslateDSV:(shinji85_s_rails@PIECES@	) 26-05-20 16:11:40 [LUA]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 PIECES:Record({"models/shinji85/train/rail_16x.mdl", "Shinji85's Rails", "Straight 16x", 1, "NULL", "0,0,7.346", "NULL", "NULL"})
 PIECES:Record({"models/shinji85/train/rail_16x.mdl", "Shinji85's Rails", "Straight 16x", 2, "NULL", "-2048,0,7.346", "0,180,0", "NULL"})

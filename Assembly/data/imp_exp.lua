@@ -21,11 +21,13 @@ require("Assembly/autorun/folder")
 require("Assembly/autorun/config")
 asmlib.SetLogControl(20000, false)
 
-local sG = asmlib.GetOpVar("DBEXP_PREFGEN")
-local sM = asmlib.GetOpVar("MODE_DATABASE")
 local sT = "Shinji85's Rails"
+
 local sP = asmlib.GetTypePrefix(sT)
 local sE = sT
+local sG = asmlib.GetOpVar("DBEXP_PREFGEN")
+local sM = asmlib.GetOpVar("MODE_DATABASE")
+
 require(("Assembly/autorun/z_autorun_[%s]"):format(sP))
 
 asmlib.ImportDSV("PIECES", true, sP)
