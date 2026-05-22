@@ -18,7 +18,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * It must NOT be an empty string nil or any other type regarding
  * The value will be automatically pattern converted to a index prefix
 ]]
-local myAddon = asmlib.RegisterTypeGroup("Shinji85's Rails") -- Your addon name
+local myAddon, myGroup = asmlib.RegisterTypeGroup("Multy Type", "Pesho's tracks", "Iron tracks")
 
 -- Log messages identifier. Leave DSV here or change it if you like
 local mySource = "DSV"
@@ -29,7 +29,8 @@ local mySource = "DSV"
  * myType3, ... myType/n when your addon contains
  * multiple model packs.
 ]]--
-local myType = myAddon -- The type your addon resides in the tool with
+local myType = "Iron tracks" -- The type your addon resides in the tool with
+local myType1 = "Pesho's tracks" -- The type your addon resides in the tool with
 
 -- This is used for addon relation prefix. Fingers away from it
 local myPrefix = asmlib.GetTypePrefix(myAddon) -- Addon prefix
@@ -186,6 +187,11 @@ local myCategory = {
     elseif(r:find("bumper")) then c = "bumper"
     elseif(r:find("junction")) then c = "junction"
     elseif(r:find("%dx")) then c = "straight" end; return c end
+  ]]},
+  [myType1] = {Txt = [[
+    function(m) local c
+    local r = m:gsub("models/shinji85/train/rail_", "")
+    return r end
   ]]}
 }
 
@@ -235,12 +241,12 @@ if(not bS) then ThrowError("Category error: "..vO) end
 ]]--
 local myPieces = {
   ["models/shinji85/train/rail_16x.mdl"] = {
-    {myType, "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
+    {myType1, "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
+    {myType1, "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
   },
   ["models/shinji85/train/rail_1x.mdl"] = {
-    {myType, "Straight 1x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Straight 1x", gsSymOff, gsMissDB, "-128,0,7.346", "0,180,0", gsMissDB}
+    {myType1, "Straight 1x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
+    {myType1, "Straight 1x", gsSymOff, gsMissDB, "-128,0,7.346", "0,180,0", gsMissDB}
   },
   ["models/shinji85/train/rail_2x.mdl"] = {
     {myType, "Straight 2x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},

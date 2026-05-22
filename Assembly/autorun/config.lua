@@ -90,7 +90,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
 ------------ CONFIGURE ASMLIB ------------
 
 asmlib.InitBase("track","assembly")
-asmlib.SetOpVar("TOOL_VERSION","9.839")
+asmlib.SetOpVar("TOOL_VERSION","9.846")
 
 ------------ CONFIGURE GLOBAL INIT OPVARS ------------
 
@@ -945,7 +945,7 @@ if(CLIENT) then
         if(not IsValid(pnMenu)) then pnFrame:Close()
           asmlib.LogInstance("Menu invalid",sLog..".ListView"); return nil end
         local sI, mX, mY = "pn_contextm_", inputGetCursorPos()
-        local sP, sT = pnLine:GetColumnText(2), ("tool."..gsToolNameL.."."..sI)
+        local sP, sT = pnLine:GetColumnText(2):lower(), ("tool."..gsToolNameL.."."..sI)
         -- Enable and disable DSV
         pnMenu:AddOption(languageGetPhrase(sT.."tg"),
           function() pnLine:SetColumnText(1, ((pnLine:GetColumnText(1) == "V") and "X" or "V"))
@@ -1052,7 +1052,7 @@ if(CLIENT) then
                     if(luapad.Frame) then luapad.Frame:SetVisible(true); luapad.Frame:Center() else luapad.Toggle() end
                     luapad.AddTab("["..sP.."]["..defTab.Nick.."]", fileRead(sFile, "DATA"), gsDrcDSV);
                     if(defTab.Nick == "PIECES") then -- Load the category provider for this DSV
-                      local sCats = fDSV:format(sP, "CATEGORY"); if(fileExists(sCats,"DATA")) then
+                      local sCats = fDSV:format(sP, "CATEGORY"):lower(); if(fileExists(sCats,"DATA")) then
                         luapad.AddTab("["..sP.."][CATEGORY]", fileRead(sCats, "DATA"), gsDrcDSV);
                       end -- This is done so we can distinguish between luapad and other panels
                     end -- Luapad is designed not to be closed so we need to make it invisible
@@ -1067,7 +1067,7 @@ if(CLIENT) then
               pTb:AddOption(languageGetPhrase(sT.."stdl"),
                 function() fileDelete(sFile)
                   asmlib.LogInstance("Deleted "..asmlib.GetReport(sFile), sLog..".ListView")
-                  if(defTab.Nick == "PIECES") then local sCats = fDSV:format(sP, "CATEGORY")
+                  if(defTab.Nick == "PIECES") then local sCats = fDSV:format(sP, "CATEGORY"):lower()
                     if(fileExists(sCats,"DATA")) then fileDelete(sCats) -- Delete category when present
                       asmlib.LogInstance("Deleted "..asmlib.GetReport(sCats), sLog..".ListView") end
                   end
@@ -1816,7 +1816,7 @@ asmlib.NewTable("PIECES",{
       if(not asmlib.IsHere(stData.Size)) then stData.Size = 0 end
       if(not asmlib.IsHere(stData.Used)) then stData.Used = 0 end
       if(not asmlib.IsHere(stData.Slot)) then stData.Slot = snPK end
-      if(not asmlib.IsHere(stData.Type)) then stData.Type = arLine[2] end
+      if(not asmlib.IsHere(stData.Type)) then stData.Type = asmlib.GetTypeClean(arLine[2]) end
       if(not asmlib.IsHere(stData.Pref)) then stData.Pref = asmlib.GetTypePrefix(arLine[2])  end
       if(not asmlib.IsHere(stData.Name)) then stData.Name = arLine[3] end
       if(not asmlib.IsHere(stData.Unit)) then stData.Unit = arLine[8] end
@@ -1874,24 +1874,24 @@ asmlib.NewTable("PIECES",{
         end
       end; return true
     end,
-    ExportTypeDSV = function(fP, makP, PCache, fA, makA, ACache, fPref, sDelim, vSrc)
-      local tSort = asmlib.Arrange(PCache, "Name", "Slot"); if(not tSort) then
-        asmlib.LogInstance("Cannot sort cache data "..asmlib.GetReport(fPref),vSrc); return false end
+    ExportTypeDSV = function(fP, makP, PCache, fA, makA, ACache, sType, sDelim, vSrc)
+      local tSort = asmlib.Arrange(PCache, "Type", "Name", "Slot"); if(not tSort) then
+        asmlib.LogInstance("Cannot sort cache data "..asmlib.GetReport(sType),vSrc); return false end
+      local sType, tType, nType = asmlib.RegisterTypeGroup(sType) -- Normalize type
       local defP, defA = makP:GetDefinition(), makA:GetDefinition()
       local noSQL = asmlib.GetOpVar("MISS_NOSQL")
       local symOff = asmlib.GetOpVar("OPSYM_DISABLE")
       local sClass = asmlib.GetOpVar("ENTITY_DEFCLASS")
       for iP = 1, tSort.Size do
-        local stRec = tSort[iP]
-        local tData = PCache[stRec.Key]
-        local sPref = asmlib.GetTypePrefix(tData.Type)
-        if(sPref == fPref) then local tOffs = tData.Offs
+        local stRec = tSort[iP] -- Sorted sequential key
+        local tData = PCache[stRec.Key] -- Index data
+        local rType, tOffs = tData.Type, tData.Offs -- Extract record type
+        if(rType == sType or tType[rType] and tType[rType] > 0) then
           local sData = asmlib.GetConcat(defP.Name, sDelim,
             makP:Match(stRec.Key ,1, true, "\""), sDelim,
             makP:Match(tData.Type,2, true, "\""), sDelim,
-            makP:Match(tData.Name,3, true, "\""))
-          -- Matching crashes only for numbers. The number is already inserted, so there will be no crash
-          for iD = 1, #tOffs do
+            makP:Match(tData.Name,3, true, "\"")) -- Matching crashes only for numbers.
+          for iD = 1, #tOffs do -- The number is already inserted, so there will be no crash
             local stPnt = tOffs[iD] -- Read current offsets from the model
             local sP, sO, sA = stPnt.P:Export(stPnt.O), stPnt.O:Export(), stPnt.A:Export()
             local sC = (asmlib.IsHere(tData.Unit) and tostring(tData.Unit) or noSQL)
@@ -1921,16 +1921,16 @@ asmlib.NewTable("PIECES",{
       local coNm, coLn = makP:GetColumnName(3), makP:GetColumnName(4)
       local coP , coO  = makP:GetColumnName(5), makP:GetColumnName(6)
       local coA , coC  = makP:GetColumnName(7), makP:GetColumnName(8)
-      local sClass = asmlib.GetOpVar("ENTITY_DEFCLASS")
-      local sPref, iCnt = asmlib.GetTypePrefix(sType), 0
+      local sClass, qData = asmlib.GetOpVar("ENTITY_DEFCLASS"), {}
+      local sType = asmlib.GetTypeClean(sType)
+      local sPref = asmlib.GetTypePrefix(sType)
       for mod, rec in pairs(PCache) do
         if(rec.Type == sType or rec.Pref == sPref) then
           local iID, tOffs = 1, rec.Offs -- Start from the first point
           local rPOA = tOffs[iID]; if(not asmlib.IsHere(rPOA)) then
             asmlib.LogInstance("Missing point ID "..asmlib.GetReport(iID, rec.Slot),vSrc) return false end
-          for iID = 1, rec.Size do
-            iCnt = (iCnt + 1); qPieces[iCnt] = {} -- Allocate row memory
-            local qRow = qPieces[iCnt]; rPOA = tOffs[iID]
+          for iID = 1, rec.Size do  -- Allocate row memory
+            local qRow = {}; rPOA = tOffs[iID]
             local sP, sO, sA = rPOA.P:Export(rPOA.O), rPOA.O:Export(), rPOA.A:Export()
             local sC = (asmlib.IsHere(rec.Unit) and tostring(rec.Unit) or noSQL)
                   sC = ((sC == sClass) and noSQL or sC) -- Export default class as noSQL
@@ -1940,17 +1940,24 @@ asmlib.NewTable("PIECES",{
             qRow[coLn] = iID
             qRow[coP ] = sP; qRow[coO ] = sO
             qRow[coA ] = sA; qRow[coC ] = sC
+            tableInsert(qData, qRow)
           end
         end
       end -- Must be the same format as returned from SQL
-      local tSort = asmlib.Arrange(qPieces, coNm, coMo, coLn); if(not tSort) then
-        LogInstance("Sort cache mismatch",vSrc); return false
-      end; tableEmpty(qPieces)
-      for iD = 1, tSort.Size do qPieces[iD] = tSort[iD].Rec end
+      local tSort = asmlib.Arrange(qData, coNm, coMo, coLn); if(not tSort) then
+        LogInstance("Sort cache mismatch",vSrc); return false end
+      for iD = 1, tSort.Size do tableInsert(qPieces, tSort[iD].Rec) end
       asmlib.LogInstance("Sorted rows count "..asmlib.GetReport(tSort.Size, sType),vSrc)
       return true
     end,
-    ExportContentsRun = function(aRow) aRow[2], aRow[4] = "myType", "gsSymOff"; return true end
+    ExportContentsRun = function(sType, aRow)
+      local sType, tType, nType = asmlib.RegisterTypeGroup(sType)
+      local aType, rType = asmlib.GetStrip(aRow[2], "\""), aRow[2]
+      rType = ((aType == sType) and "myType0" or rType)
+      for iT = 1, nType do local sT = tType[iT]
+        rType = ((aType == sT) and "myType"..iT or rType)
+      end; aRow[2], aRow[4] = rType, "gsSymOff"; return true
+    end
   },
   [1] = {"MODEL" , "TEXT"   , "LOW", "QMK"},
   [2] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
@@ -2016,7 +2023,7 @@ asmlib.NewTable("ADDITIONS",{
         end
       end; return true
     end,
-    ExportContentsRun = function(aRow) aRow[4] = "gsSymOff"; return true end
+    ExportContentsRun = function(sType, aRow) aRow[4] = "gsSymOff"; return true end
   },
   [1]  = {"MODELBASE", "TEXT"   , "LOW", "QMK"},
   [2]  = {"MODELADD" , "TEXT"   , "LOW", "QMK"},
@@ -2107,7 +2114,7 @@ asmlib.NewTable("PHYSPROPERTIES",{
         end
       end; return true
     end,
-    ExportContentsRun = function(aRow) aRow[1], aRow[2] = "myType", "gsSymOff"; return true end
+    ExportContentsRun = function(sType, aRow) aRow[2] = "gsSymOff"; return true end
   },
   [1] = {"TYPE"  , "TEXT"   ,  nil , "QMK"},
   [2] = {"LINEID", "INTEGER", "FLR",  nil },
@@ -5106,4 +5113,3 @@ else
 end
 
 asmlib.LogInstance("Version: "..asmlib.GetOpVar("TOOL_VERSION"), gtInitLogs)
-

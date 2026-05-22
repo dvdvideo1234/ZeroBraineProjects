@@ -21,7 +21,8 @@ require("Assembly/autorun/folder")
 require("Assembly/autorun/config")
 asmlib.SetLogControl(20000, false)
 
-local sT = "Shinji85's Rails"
+local sT = "Multy Type"
+--local sT = "Shinji85's Rails"
 
 local sP = asmlib.GetTypePrefix(sT)
 local sE = sT
@@ -48,3 +49,6 @@ asmlib.ExportDSV("PIECES", sG, nil, true)
 asmlib.ExportDSV("ADDITIONS", sG, nil, true)
 asmlib.ExportDSV("PHYSPROPERTIES", sG, nil, true)
 asmlib.ExportSyncDB()
+
+local sU, tA, nA = asmlib.RegisterTypeGroup(sT)
+print(sU, tA, nA)
