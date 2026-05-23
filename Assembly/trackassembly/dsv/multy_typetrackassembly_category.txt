@@ -1,4 +1,4 @@
-# ExportCategory:(multy_type@3) 26-05-22 16:56:20 [LUA]
+# ExportCategory:(multy_type@3) 26-05-23 13:37:57 [LUA]
 [===[Iron tracks===function(m) local c
     local r = m:gsub("models/shinji85/train/rail_", "")
     if(r:find("cross")) then c = "crossing"

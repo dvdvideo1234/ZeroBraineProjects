@@ -18,7 +18,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * It must NOT be an empty string nil or any other type regarding
  * The value will be automatically pattern converted to a index prefix
 ]]
-local myAddon, myGroup = asmlib.RegisterTypeGroup("Multy Type", "Pesho's tracks", "Iron tracks")
+local myAddon, myGroup = asmlib.ComponentType("Multy Type", "Pesho's tracks", "Iron tracks")
 
 -- Log messages identifier. Leave DSV here or change it if you like
 local mySource = "DSV"
@@ -240,6 +240,10 @@ if(not bS) then ThrowError("Category error: "..vO) end
  *          Disabling via /#/ makes it take the NULL value. In this case the model is spawned as a prop
 ]]--
 local myPieces = {
+  ["models/shinji85/train/rail_2x.mdl"] = {
+    {myType0, "Straight 2x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
+    {myType0, "Straight 2x", gsSymOff, gsMissDB, "-256,0,7.346", "0,180,0", gsMissDB}
+  },
   ["models/shinji85/train/rail_16x.mdl"] = {
     {myType1, "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
     {myType1, "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
@@ -324,10 +328,6 @@ local myPieces = {
     {myType2, "Right Switch", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
     {myType2, "Right Switch", gsSymOff, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB},
     {myType2, "Right Switch", gsSymOff, gsMissDB, "-966.40515,128,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_2x.mdl"] = {
-    {myType2, "Straight 2x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType2, "Straight 2x", gsSymOff, gsMissDB, "-256,0,7.346", "0,180,0", gsMissDB}
   },
   ["models/shinji85/train/rail_4x.mdl"] = {
     {myType2, "Straight 4x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},

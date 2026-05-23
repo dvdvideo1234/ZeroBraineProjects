@@ -1,4 +1,4 @@
-# ExportTypeDSV:(multy_type@PIECES@	) 26-05-22 16:56:22 [LUA]
+# ExportTypeDSV:(multy_type@PIECES@	) 26-05-23 13:37:57 [LUA]
 # PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_bumper.mdl"	"Iron tracks"	"Bumper"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_double_bumper.mdl"	"Iron tracks"	"Bumper Double"	1	"NULL"	"0,128,7.346"	"NULL"	"NULL"
@@ -41,8 +41,6 @@ TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_l_switch.mdl"	"Iron tracks"	"Le
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_r_switch.mdl"	"Iron tracks"	"Right Switch"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_r_switch.mdl"	"Iron tracks"	"Right Switch"	2	"NULL"	"-1024,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_r_switch.mdl"	"Iron tracks"	"Right Switch"	3	"NULL"	"-966.40515,128,7.346"	"0,165,0"	"NULL"
-TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_2x.mdl"	"Iron tracks"	"Straight 2x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
-TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_2x.mdl"	"Iron tracks"	"Straight 2x"	2	"NULL"	"-256,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_4x.mdl"	"Iron tracks"	"Straight 4x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_4x.mdl"	"Iron tracks"	"Straight 4x"	2	"NULL"	"-512,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_8x.mdl"	"Iron tracks"	"Straight 8x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
@@ -51,6 +49,8 @@ TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_x_junction.mdl"	"Iron tracks"	"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_x_junction.mdl"	"Iron tracks"	"X Junction"	2	"NULL"	"-494.55,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_x_junction.mdl"	"Iron tracks"	"X Junction"	3	"NULL"	"-33.129,-123.63866,7.346"	"0,-30,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_x_junction.mdl"	"Iron tracks"	"X Junction"	4	"NULL"	"-461.42175,123.63649,7.346"	"0,150,0"	"NULL"
+TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_2x.mdl"	"Multy Type"	"Straight 2x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
+TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_2x.mdl"	"Multy Type"	"Straight 2x"	2	"NULL"	"-256,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Pesho's tracks"	"Straight 16x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Pesho's tracks"	"Straight 16x"	2	"NULL"	"-2048,0,7.346"	"0,180,0"	"NULL"
 TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_1x.mdl"	"Pesho's tracks"	"Straight 1x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
