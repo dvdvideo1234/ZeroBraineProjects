@@ -176,9 +176,9 @@ if(not bS) then ThrowError("Registration error: "..vO) end
  * for multiple track types, just put their hashes in the table below
  * and make every track point to its dedicated category handler.
 ]]--
-local myCategory = {}
-      myCategory[myType0] = {Txt = [[
-        function(m) local c
+local myCategory = {
+  [myType0] = {Txt = [[
+    function(m) local c
         local r = m:gsub("models/shinji85/train/rail_", "")
         if(r:find("cross")) then c = "crossing"
         elseif(r:find("switch")) then c = "switch"
@@ -186,7 +186,8 @@ local myCategory = {}
         elseif(r:find("bumper")) then c = "bumper"
         elseif(r:find("junction")) then c = "junction"
         elseif(r:find("%dx")) then c = "straight" end; return c end
-      ]]}
+  ]]}
+}
 
 -- Register the addon category to the plugable DSV list
 local bS, vO = pcall(DoCategory, myCategory)
@@ -376,14 +377,14 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
 ]]--
 local myAdditions = {
   ["models/shinji85/train/rail_l_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,-125,0", "0,180,0", -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, -1, 1, 6},
-    {"models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, 0, -1, 0}
+    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,-125,0", "0,180,0", -1, -1, -1, +0, -1, -1},
+    {"models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1, +1, SOLID_VPHYSICS},
+    {"models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, +0, -1, SOLID_NONE}
   },
   ["models/shinji85/train/rail_r_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,125,0", gsMissDB, -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, -1, 1, 6},
-    {"models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, 0, -1, 0}
+    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,125,0", gsMissDB, -1, -1, -1, +0, -1, -1},
+    {"models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1, +1, SOLID_VPHYSICS},
+    {"models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, +0, -1, SOLID_NONE}
   }
 }
 

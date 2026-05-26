@@ -6,19 +6,21 @@ local dir = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
                 .addBase("D:/Programs/LuaIDE")
-                .addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
+local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
 
 rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", false)
 
 require("gmodlib")
-require("trackasmlib")
+dofile(rev.."trackassembly/trackasmlib.lua")
 local asmlib = trackasmlib
 if(not asmlib) then error("No library") end
 require("Assembly/autorun/folder")
-require("Assembly/autorun/config")
+dofile(rev.."autorun/trackassembly_init.lua")
+
 asmlib.SetLogControl(20000, false)
 
 --local sT = "Multy Type"
@@ -50,9 +52,9 @@ for iD = 1, nA do local sA = tA[iD]
 end
 
 asmlib.ExportCategory(3, tC, "["..sM.."-cat]"..sP, true)
-asmlib.ExportTypeRun(sE)
+asmlib.ExportTypeRUN(sE)
 asmlib.ExportTypeDSV(sE)
-asmlib.ExportTypeTrn(sE)
+asmlib.ExportTypeTRN(sE)
 asmlib.ExportDSV("PIECES", sG, nil, true)
 asmlib.ExportDSV("ADDITIONS", sG, nil, true)
 asmlib.ExportDSV("PHYSPROPERTIES", sG, nil, true)
