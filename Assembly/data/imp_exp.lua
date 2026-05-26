@@ -13,15 +13,37 @@ local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTo
 
 rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", false)
-
 require("gmodlib")
-dofile(rev.."trackassembly/trackasmlib.lua")
-local asmlib = trackasmlib
-if(not asmlib) then error("No library") end
-require("Assembly/autorun/folder")
-dofile(rev.."autorun/trackassembly_init.lua")
 
+local function CongigureLIB(sRev)
+  print("----------------LIBS----------------")
+  -- single source of truth
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  local oservr = asmlib.SetOpVar
+  asmlib.SetOpVar = function(n, v)
+    if n ~= "DIRPATH_BAS" then
+      return oservr(n, v)
+    else
+      print("CUSTOM-VAR", n)
+      return oservr(n, "Assembly/trackassembly/")
+    end
+  end
+  -- _G.SetOpVar = asmlib.SetOpVar
+  print("SetOpVar 0 identity:", SetOpVar)
+  print("SetOpVar 1 identity:", _G.SetOpVar)
+  print("SetOpVar 2 identity:", asmlib.SetOpVar)
+  print("SetOpVar 3 identity:", trackasmlib.SetOpVar)
+  print("----------------INIT----------------")
+  -- init must operate on the SAME instance
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  return asmlib
+end
+
+local asmlib = CongigureLIB(rev)
 asmlib.SetLogControl(20000, false)
+
 
 --local sT = "Multy Type"
 local sT = "Shinji85's Rails"
