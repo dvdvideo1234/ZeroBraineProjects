@@ -44,6 +44,11 @@ end
 local asmlib = CongigureLIB(rev)
 asmlib.SetLogControl(20000, false)
 
+asmlib.IsFlag("file_read_once", false)
+asmlib.SetOpVar("MODE_DATABASE", "LUA")
+asmlib.IsModel = function(m) return isstring(m) end
+
+-------- CUSTOM TEST --------
 
 --local sT = "Multy Type"
 local sT = "Shinji85's Rails"
@@ -56,27 +61,19 @@ local sM = asmlib.GetOpVar("MODE_DATABASE")
 require(("Assembly/autorun/z_autorun_[%s]"):format(sP))
 
 local sU, tA, nA = asmlib.ComponentType(sT)
+
 asmlib.Log(asmlib.GetReport(sU, tA, nA))
-asmlib.LogTable(tA)
+asmlib.LogTable(tA, "["..sT.."]:COMPONENTS")
 
 asmlib.ImportDSV("PIECES", true, sP)
 asmlib.ImportDSV("ADDITIONS", true, sP)
 asmlib.ImportCategory(0, sP, false)
 
 
-asmlib.IsFlag("file_read_once", false)
-asmlib.SetOpVar("MODE_DATABASE", "LUA")
-asmlib.IsModel = function(m) return isstring(m) end
-
-tC[sU] = asmlib.GetOpVar("TABLE_CATEGORIES")[sU]
-for iD = 1, nA do local sA = tA[iD]
-  tC[sA] = asmlib.GetOpVar("TABLE_CATEGORIES")[sA]
-end
-
-asmlib.ExportCategory(3, tC, "["..sM.."-cat]"..sP, true)
 asmlib.ExportTypeRUN(sE)
 asmlib.ExportTypeDSV(sE)
 asmlib.ExportTypeTRN(sE)
+asmlib.ExportTypeCAT(sE)
 asmlib.ExportDSV("PIECES", sG, nil, true)
 asmlib.ExportDSV("ADDITIONS", sG, nil, true)
 asmlib.ExportDSV("PHYSPROPERTIES", sG, nil, true)

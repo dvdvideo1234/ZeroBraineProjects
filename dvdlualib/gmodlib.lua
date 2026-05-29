@@ -302,36 +302,6 @@ function CompileFile(nS)
   return loadfile(nS)
 end
 
-function string.Explode(separator, str, withpattern)
-	if ( separator == "" ) then return totable( str ) end
-	if ( withpattern == nil ) then withpattern = false end
-	local ret, current_pos = {}, 1
-	for i = 1, str:len() do
-		local start_pos, end_pos = str:find(separator, current_pos, not withpattern )
-		if (not start_pos) then break end
-		ret[ i ] = str:sub(current_pos, start_pos - 1 )
-		current_pos = end_pos + 1
-	end; ret[ #ret + 1 ] = str:sub(current_pos ); return ret
-end
-
-function string.GetFileFromFilename( path )
-	if (not path:find( "\\" ) and not path:find( "/" ) ) then return path end
-	return path:match( "[\\/]([^/\\]+)$" ) or ""
-end
-
-function string.Implode( seperator, Table ) return
-	table.concat( Table, seperator )
-end
-
-function string.Split( str, delimiter )
-	return string.Explode( delimiter, str )
-end
-
-function string.Trim(s, char)
-  local char = char or "%s"
-  return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
-end
-
 function math.Round( num, idp )
   local mult = 10 ^ ( idp or 0 )
   return math.floor( num * mult + 0.5 ) / mult
@@ -364,11 +334,6 @@ function SysTime() return os.clock() end
 
 function CompileString(s)
   return load(s)
-end
-
-function string.Trim( s, char )
-  local char = char or "%s"
-  return string.match( s, "^" .. char .. "*(.-)" .. char .. "*$" ) or s
 end
 
 function IsValid(anyV) return anyV ~= nil end
@@ -804,4 +769,5 @@ CreateConVar("gmod_language")
 
 require("gmodlib/math")
 require("gmodlib/vgui")
+require("gmodlib/string")
 require("gmodlib/constants")
