@@ -9,19 +9,42 @@ local dir = require("directories")
                 .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
+local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
 
 rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", false)
-
 require("gmodlib")
-require("trackasmlib")
-asmlib = trackasmlib
-if(not asmlib) then error("No library") end
-asmlib.IsModel = function(m) return isstring(m) end
-asmlib.InitBase("track","assembly")
-require("Assembly/autorun/config")
 
+local function CongigureLIB(sRev)
+  print("----------------LIBS----------------")
+  -- single source of truth
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  print("SetOpVar 0 identity:", asmlib.SetOpVar)
+  print("SetOpVar 1 identity:", trackasmlib.SetOpVar)
+  local oservr = asmlib.SetOpVar
+  asmlib.SetOpVar = function(n, v)
+    if n ~= "DIRPATH_BAS" then
+      return oservr(n, v)
+    else
+      return oservr(n, "Assembly/trackassembly/")
+    end
+  end
+  print("SetOpVar 2 identity:", asmlib.SetOpVar)
+  print("SetOpVar 3 identity:", trackasmlib.SetOpVar)
+  print("----------------INIT----------------")
+  -- init must operate on the SAME instance
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  return asmlib
+end
+
+local asmlib = CongigureLIB(rev)
 asmlib.SetLogControl(20000, false)
+
+asmlib.IsFlag("file_read_once", false)
+asmlib.SetOpVar("MODE_DATABASE", "LUA")
+asmlib.IsModel = function(m) return isstring(m) end
 
 local s = asmlib.GetBeautify()
 

@@ -17,21 +17,27 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * It is used by TA in order to classify the content you are creating
  * It must NOT be an empty string nil or any other type regarding
  * The value will be automatically pattern converted to a index prefix
+ * Change this if you want to use different in-game type
+ * You can also use multiple types myType1, myType2,
+ * myType3, ... myType/n as variable arguments when your
+ * addon contains multiple model packs.
 ]]
-local myAddon, myGroup = asmlib.ComponentType("Multy Type", "Pesho's tracks", "Iron tracks")
+local myAddon, myGroup = asmlib.ComponentType("Multy Type", "Pesho's tracks", "Iron tracks", "Test", "Aaaaa")
 
 -- Log messages identifier. Leave DSV here or change it if you like
 local mySource = "DSV"
 
 --[[
- * Change this if you want to use different in-game type
- * You can also use multiple types myType1, myType2,
- * myType3, ... myType/n when your addon contains
- * multiple model packs.
+ * If you have passed a vararg above you will have a type group that
+ * indicates multiple model packs. Assign these using Lua selection operator
+ * Example: myType1 = (myGroup and myGroup[1] or myAddon)
+ * Then pass the calculated grouped type to myPieces record
 ]]--
-local myType0 = asmlib.GetTypeClean(myAddon)
-local myType1 = asmlib.GetTypeClean(myGroup and myGroup[1] or myAddon)
-local myType2 = asmlib.GetTypeClean(myGroup and myGroup[2] or myAddon)
+local myType0 = asmlib.GetTypeNormal(myAddon)
+local myType1 = asmlib.GetTypeNormal(myGroup and myGroup[1] or myAddon)
+local myType2 = asmlib.GetTypeNormal(myGroup and myGroup[2] or myAddon)
+local myType3 = asmlib.GetTypeNormal(myGroup and myGroup[3] or myAddon)
+local myType4 = asmlib.GetTypeNormal(myGroup and myGroup[4] or myAddon)
 
 -- This is used for addon relation prefix. Fingers away from it
 local myPrefix = asmlib.GetTypePrefix(myAddon) -- Addon prefix
@@ -161,7 +167,11 @@ end
 asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..", "..myPrefix.."}", mySource)
 
 -- Register the addon to the workshop ID list
-asmlib.WorkshopID(myType0, "326640186")
+asmlib.WorkshopID(myType0, "1234567890")
+asmlib.WorkshopID(myType1, "111")
+asmlib.WorkshopID(myType2, "222")
+asmlib.WorkshopID(myType3, "333")
+asmlib.WorkshopID(myType4, "444")
 
 -- Register the addon to the plugable DSV list
 local bS, vO = pcall(DoRegister, myFlag)
@@ -178,22 +188,25 @@ if(not bS) then ThrowError("Registration error: "..vO) end
  * for multiple track types, just put their hashes in the table below
  * and make every track point to its dedicated category handler.
 ]]--
-local myCategory = {}
-      myCategory[myType1] = {Txt = [[
+local myCategory = {
+  [myType1] = {Txt = [[
         function(m) local c
-        local r = m:gsub("models/shinji85/train/rail_", "")
-        return r end
-      ]]}
-      myCategory[myType2] = {Txt = [[
+            local r = m:gsub("models/shinji85/train/rail_", "")
+            return r end
+      
+  ]]},
+  [myType2] = {Txt = [[
         function(m) local c
-        local r = m:gsub("models/shinji85/train/rail_", "")
-        if(r:find("cross")) then c = "crossing"
-        elseif(r:find("switch")) then c = "switch"
-        elseif(r:find("curve")) then c = "curve"
-        elseif(r:find("bumper")) then c = "bumper"
-        elseif(r:find("junction")) then c = "junction"
-        elseif(r:find("%dx")) then c = "straight" end; return c end
-      ]]}
+            local r = m:gsub("models/shinji85/train/rail_", "")
+            if(r:find("cross")) then c = "crossing"
+            elseif(r:find("switch")) then c = "switch"
+            elseif(r:find("curve")) then c = "curve"
+            elseif(r:find("bumper")) then c = "bumper"
+            elseif(r:find("junction")) then c = "junction"
+            elseif(r:find("%dx")) then c = "straight" end; return c end
+      
+  ]]}
+}
 
 -- Register the addon category to the plugable DSV list
 local bS, vO = pcall(DoCategory, myCategory)
@@ -383,14 +396,14 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
 ]]--
 local myAdditions = {
   ["models/shinji85/train/rail_l_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,-125,0", "0,180,0", -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, -1, 1, 6},
-    {"models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, 0, -1, 0}
+    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,-125,0", "0,180,0", -1, -1, -1,  0, -1, -1},
+    {"models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1,  1, SOLID_VPHYSICS},
+    {"models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1,  0, -1, SOLID_NONE}
   },
   ["models/shinji85/train/rail_r_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,125,0", gsMissDB, -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, -1, 1, 6},
-    {"models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, 6, 6, -1, 0, -1, 0}
+    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,125,0", gsMissDB, -1, -1, -1,  0, -1, -1},
+    {"models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1,  1, SOLID_VPHYSICS},
+    {"models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1,  0, -1, SOLID_NONE}
   }
 }
 

@@ -22,6 +22,7 @@ local __type   = type
 local __typedt = {{"number"}, {"string"}, {"boolean", "bool"},{"function"},{"table"},
                   {"Vector", "vector"},{"Angle", "angle"},{"Matrix", "matrix"}}
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
+local __metatb = {}
 
 game = {__single = true}
 language = {}
@@ -82,11 +83,10 @@ end
 function Sound(...)
 end
 
---[[
+
 function include(...)
   common.logStatus("include: {"..table.concat({...}, "|").."}")
 end
-]]
 
 type = function(any)
   local mt = getmetatable(any)
@@ -111,6 +111,7 @@ local mtMatrix = {__type = "Matrix"}
         end; return sM
       end
       mtMatrix.__index = mtMatrix
+      table.insert(__metatb, mtMatrix)
 
 function Matrix()
   local self = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; setmetatable(self, mtMatrix)
@@ -130,6 +131,7 @@ local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0}
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
       end
+      table.insert(__metatb, mtColor)
 function Color(r, g, b, a)
   local self = {}; setmetatable(self, mtColor)
   self.r, self.g = r, g
@@ -143,7 +145,7 @@ local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0}
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
       end
-
+      table.insert(__metatb, mtVector)
 function Vector(x,y,z)
   local self = {}; setmetatable(self, mtVector)
   self.x, self.y, self.z = 0, 0, 0
@@ -283,7 +285,7 @@ local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0}
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
       end
-
+      table.insert(__metatb, mtAngle)
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
   self.ID = mtVector.__ID; mtVector.__ID = mtVector.__ID + 1
@@ -492,7 +494,7 @@ end
 function file.Open(n, m)
   local s, f, e = pcall(io.open, n, m)
   if(not (s and f)) then
-    return logStatus("file.Open("..m.."): "..tostring(e), nil)
+    return logStatus("file.Open("..m.."): "..tostring(e))
   end
   local mt = getmetatable(f)
   mt.Write = mt.write
@@ -526,8 +528,10 @@ end
 
 function file.IsDir(n)
   if(type(n) ~= "string") then return false end
-  local r = os.execute("cd "..n)
-  return (r == 0)
+  local s, r = pcall(os.execute, "cd /d "..n)
+  if(not s) then r = false end
+  if(not r) then r = false end
+  return r
 end
 
 function file.Delete(n)
@@ -539,7 +543,7 @@ end
 function file.Append(n, c)
   local F = file.Open(n, "ab")
   if(not F) then
-    return logStatus("file.Append: Nofile: "..tostring(n), nil)
+    return logStatus("file.Append: Nofile: "..tostring(n))
   end
   F:seek("end")
   F:write(tostring(c))
@@ -547,8 +551,10 @@ function file.Append(n, c)
   F:close()
 end
 
-function file.CreateDir(sPath)
-  return os.execute("mkdir "..sPath.." >nul 2>&1")
+function file.CreateDir(n)
+  local s, r = pcall(os.execute, "mkdir "..n.." >nul 2>&1")
+  print(s, r, "CreateDir("..n.."): "..tostring(r))
+  return (s and 1 or r)
 end
 
 function file.Find(sName, sPath, sSort)
@@ -569,6 +575,16 @@ end
 local mtEntity = {__type = "Entity"}
       mtEntity.__tostring = function(oE) return ("ENT{"..oE:EntIndex().."}{"..oE:GetClass().."}") end
       mtEntity.__index = mtEntity
+      table.insert(__metatb, mtEntity)
+  function mtEntity:IsValid() return true end
+  function mtEntity:IsPlayer() return false end
+  function mtEntity:IsVehicle() return false end
+  function mtEntity:IsNPC() return false end
+  function mtEntity:IsRagdoll() return false end
+  function mtEntity:IsWeapon() return false end
+  function mtEntity:IsWidget() return false end
+  function mtEntity:GetTable() return {} end
+      
 function ents.Create(cla)
   local self = {}; setmetatable(self, mtEntity)
   local mcla = tostring(cla or "prop_physics")
@@ -585,13 +601,6 @@ function ents.Create(cla)
   function self:SetPos(vP) mpos:Set(vP) end
   function self:GetAngles() return mang end
   function self:SetAngles(vA) mang:Set(vA) end
-  function self:IsValid() return true end
-  function self:IsPlayer() return false end
-  function self:IsVehicle() return false end
-  function self:IsNPC() return false end
-  function self:IsRagdoll() return false end
-  function self:IsWeapon() return false end
-  function self:IsWidget() return false end
   function self:GetBodyGroups() return mbdygrp end
   function self:GetBodygroup(id) return mbdygrp.data[id] end
   function self:SetCollisionGroup() return nil end
@@ -685,6 +694,7 @@ function constraint.NoCollide(e1, e2, b1, b2)
 end
 
 local mtVGUI = {__type = "VGUI"}
+      table.insert(__metatb, mtVGUI)
 function vgui.Create(sTyp, pPar)
   local self = {__type = mtVGUI.__type..":"..tostring(sTyp or "")}
         self.Icon = {}
@@ -765,9 +775,19 @@ end
 
 --- INITIALIZATION ---
 
+function FindMetaTable(cn)
+  for iD = 1, #__metatb do
+    local vD = __metatb[iD]
+    if(vD and vD.__type == cn) then
+      return vD
+    end
+  end; return nil
+end
+
 CreateConVar("gmod_language")
 
 require("gmodlib/math")
 require("gmodlib/vgui")
 require("gmodlib/string")
 require("gmodlib/constants")
+require("gmodlib/duplicator")

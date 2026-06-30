@@ -6,15 +6,16 @@ local drpath = require("directories")
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
 require("gmodlib")
 local common = require("common")
 
-local str = "[\"en\"] = \"Dedizierter Spawnpunkt für Feinde\","
-local ptr = "%[\"en\"%]"
+local str = "multy_type"
+local ptr = "[^%w]"
 local exp = str:match(ptr, 1, true)
-
+local ssb = str:gsub(ptr, "_")
 print("S:", str)
+print("R:", ssb)
 print("E:", "<"..exp..">")
 

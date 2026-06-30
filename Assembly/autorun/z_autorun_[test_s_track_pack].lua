@@ -17,21 +17,23 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * It is used by TA in order to classify the content you are creating
  * It must NOT be an empty string nil or any other type regarding
  * The value will be automatically pattern converted to a index prefix
+ * Change this if you want to use different in-game type
+ * You can also use multiple types myType1, myType2,
+ * myType3, ... myType/n as variable arguments when your
+ * addon contains multiple model packs.
 ]]
-local myAddon, myGroup = asmlib.ComponentType("Multy Type", "Pesho's tracks", "Iron tracks")
+local myAddon, myGroup = asmlib.ComponentType("Test's track pack")
 
 -- Log messages identifier. Leave DSV here or change it if you like
 local mySource = "DSV"
 
 --[[
- * Change this if you want to use different in-game type
- * You can also use multiple types myType1, myType2,
- * myType3, ... myType/n when your addon contains
- * multiple model packs.
+ * If you have passed a vararg above you will have a type group that
+ * indicates multiple model packs. Assign these using Lua selection operator
+ * Example: myType1 = (myGroup and myGroup[1] or myAddon)
+ * Then pass the calculated grouped type to myPieces record
 ]]--
-local myType = "Iron tracks" -- The type your addon resides in the tool with
-local myType1 = "Pesho's tracks" -- The type your addon resides in the tool with
-local myType0 = myAddon -- The type your addon resides in the tool with
+local myType = myAddon -- The type your addon resides in the tool with
 
 -- This is used for addon relation prefix. Fingers away from it
 local myPrefix = asmlib.GetTypePrefix(myAddon) -- Addon prefix
@@ -128,7 +130,7 @@ local function DoRegister(bSkip)
   if(bSkip) then -- Your DSV must be registered only once when loading for the first time
     asmlib.LogInstance("Registration SKIP "..sRep, mySource)
   else -- If the locking file is not located that means this is the first run of your script
-    if(not asmlib.RegisterDSV("", myPrefix)) then -- Register the DSV prefix and check for error
+    if(not asmlib.RegisterDSV(myScript, myPrefix)) then -- Register the DSV prefix and check for error
       ThrowError("Failed to register content") -- Throw the error if fails
     end -- Third argument is the delimiter. The default tab is used
     asmlib.LogInstance("Registration OK "..sRep, mySource)
@@ -161,7 +163,7 @@ end
 asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..", "..myPrefix.."}", mySource)
 
 -- Register the addon to the workshop ID list
-asmlib.WorkshopID(myAddon, "1234567890")
+asmlib.WorkshopID(myAddon, "287012681")
 
 -- Register the addon to the plugable DSV list
 local bS, vO = pcall(DoRegister, myFlag)
@@ -175,24 +177,23 @@ if(not bS) then ThrowError("Registration error: "..vO) end
  * with that much elements or return a /nil/ value to add the piece to
  * the root of your branch. You can also return a second value if you
  * want to override the track piece name. If you need to use categories
- * for multiple track types, just put their hashes in  the table below
+ * for multiple track types, just put their hashes in the table below
  * and make every track point to its dedicated category handler.
 ]]--
 local myCategory = {
   [myType] = {Txt = [[
-    function(m) local c
-    local r = m:gsub("models/shinji85/train/rail_", "")
-    if(r:find("cross")) then c = "crossing"
-    elseif(r:find("switch")) then c = "switch"
-    elseif(r:find("curve")) then c = "curve"
-    elseif(r:find("bumper")) then c = "bumper"
-    elseif(r:find("junction")) then c = "junction"
-    elseif(r:find("%dx")) then c = "straight" end; return c end
-  ]]},
-  [myType1] = {Txt = [[
-    function(m) local c
-    local r = m:gsub("models/shinji85/train/rail_", "")
-    return r end
+    function(m)
+      local r = m:gsub("models/props_phx/construct/",""):gsub("_","/")
+      local s = r:find("/"); r = s and r:sub(1,s-1) or nil
+      local n = nil
+      if(r) then
+        if(r ==  "metal" ) then n = "My metal plate" end
+        if(r == "windows") then n = "My glass plate" end
+      end
+      r = r and r:gsub("^%l", string.upper) or nil
+      p = r and {r} or nil
+      return p, n
+    end
   ]]}
 }
 
@@ -241,108 +242,13 @@ if(not bS) then ThrowError("Category error: "..vO) end
  *          Disabling via /#/ makes it take the NULL value. In this case the model is spawned as a prop
 ]]--
 local myPieces = {
-  ["models/shinji85/train/rail_16x.mdl"] = {
-    {myType1, "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType1, "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
+  ["models/props_phx/construct/metal_plate1x2.mdl"] = { -- Here goes the model of your pack
+    {myType , gsSymOff, 1, "","0,-47.455105,1.482965","0,-90,0",""}, -- The first point parameter
+    {myType , gsSymOff, 2, "","0, 47.455105,1.482965","0, 90,0",""}  -- The second point parameter
   },
-  ["models/shinji85/train/rail_1x.mdl"] = {
-    {myType1, "Straight 1x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType1, "Straight 1x", gsSymOff, gsMissDB, "-128,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_2x.mdl"] = {
-    {myType0, "Straight 2x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType0, "Straight 2x", gsSymOff, gsMissDB, "-256,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_4x.mdl"] = {
-    {myType, "Straight 4x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Straight 4x", gsSymOff, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_4x_crossing.mdl"] = {
-    {myType, "Crossing 4x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Crossing 4x", gsSymOff, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_8x.mdl"] = {
-    {myType, "Straight 8x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Straight 8x", gsSymOff, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_bumper.mdl"] = {
-    {myType, "Bumper", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB}
-  },
-  ["models/shinji85/train/rail_cross_4x.mdl"] = {
-    {myType, "Cross 4x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Cross 4x", gsSymOff, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB},
-    {myType, "Cross 4x", gsSymOff, gsMissDB, "-256,-256,7.346", "0,270,0", gsMissDB},
-    {myType, "Cross 4x", gsSymOff, gsMissDB, "-256,256,7.346", "0,90,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_cs.mdl"] = {
-    {myType, "Counter Switch", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Counter Switch", gsSymOff, gsMissDB, "-908.81165,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_csfix.mdl"] = {
-    {myType, "Counter Switch Fix", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Counter Switch Fix", gsSymOff, gsMissDB, "-115.18847,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_cc.mdl"] = {
-    {myType, "Curve Cc", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve Cc", gsSymOff, gsMissDB, "-966.40515,128,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r1.mdl"] = {
-    {myType, "Curve R1", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R1", gsSymOff, gsMissDB, "-1060.12341,139.56763,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r11.mdl"] = {
-    {myType, "Curve R11", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R11", gsSymOff, gsMissDB, "-1086.11584,449.88458,7.346", "0,135,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r12.mdl"] = {
-    {myType, "Curve R12", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R12", gsSymOff, gsMissDB, "-905.09656,374.90414,7.346", "0,135,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r13.mdl"] = {
-    {myType, "Curve R13", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R13", gsSymOff, gsMissDB, "-724.07727,299.92276,7.346", "0,135,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r2.mdl"] = {
-    {myType, "Curve R2", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R2", gsSymOff, gsMissDB, "-993.86572,130.84471,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_curve_r3.mdl"] = {
-    {myType, "Curve R3", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Curve R3", gsSymOff, gsMissDB, "-927.60797,122.1218,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_cx.mdl"] = {
-    {myType, "Counter X", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Counter X", gsSymOff, gsMissDB, "-362.51361,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_cxfix.mdl"] = {
-    {myType, "Counter X Fix", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Counter X Fix", gsSymOff, gsMissDB, "-149.48648,0,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_double_4x_crossing.mdl"] = {
-    {myType, "Crossing Double 4x", gsSymOff, gsMissDB, "0,128,7.346", gsMissDB, gsMissDB},
-    {myType, "Crossing Double 4x", gsSymOff, gsMissDB, "-512,128,7.346", "0,180,0", gsMissDB},
-    {myType, "Crossing Double 4x", gsSymOff, gsMissDB, "0,-128,7.346", gsMissDB, gsMissDB},
-    {myType, "Crossing Double 4x", gsSymOff, gsMissDB, "-512,-128,7.346", "0,180,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_double_bumper.mdl"] = {
-    {myType, "Bumper Double", gsSymOff, gsMissDB, "0,128,7.346", gsMissDB, gsMissDB},
-    {myType, "Bumper Double", gsSymOff, gsMissDB, "0,-128,7.346", gsMissDB, gsMissDB}
-  },
-  ["models/shinji85/train/rail_l_switch.mdl"] = {
-    {myType, "Left Switch", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Left Switch", gsSymOff, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB},
-    {myType, "Left Switch", gsSymOff, gsMissDB, "-966.40515,-128,7.346", "0,195,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_r_switch.mdl"] = {
-    {myType, "Right Switch", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Right Switch", gsSymOff, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB},
-    {myType, "Right Switch", gsSymOff, gsMissDB, "-966.40515,128,7.346", "0,165,0", gsMissDB}
-  },
-  ["models/shinji85/train/rail_x_junction.mdl"] = {
-    {myType, "X Junction", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "X Junction", gsSymOff, gsMissDB, "-494.55,0,7.346", "0,180,0", gsMissDB},
-    {myType, "X Junction", gsSymOff, gsMissDB, "-33.129,-123.63866,7.346", "0,-30,0", gsMissDB},
-    {myType, "X Junction", gsSymOff, gsMissDB, "-461.42175,123.63649,7.346", "0,150,0", gsMissDB}
+  ["models/props_phx/construct/windows/window1x2.mdl"] = {
+    {myType , gsSymOff, gsSymOff, "","0,-23.73248,1.482965","0,-90,0",""},
+    {myType , gsSymOff, gsSymOff, "","0, 71.17773,1.482965","0, 90,0",""}
   }
 }
 
@@ -382,18 +288,7 @@ if(not bS) then ThrowError("PIECES error: "..vO) end
  *             When the parameter is equal or less than zero skips the call of /Entity:Sleep/
  * SETSOLID  > This internally calls /Entity:SetSolid/ if the database parameter is zero or greater.
 ]]--
-local myAdditions = {
-  ["models/shinji85/train/rail_l_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,-125,0", "0,180,0", -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1, 1, SOLID_VPHYSICS},
-    {"models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, 0, -1, SOLID_NONE}
-  },
-  ["models/shinji85/train/rail_r_switch.mdl"] = {
-    {"models/shinji85/train/sw_lever.mdl", "buttonswitch", gsSymOff, "-100,125,0", gsMissDB, -1, -1, -1, 0, -1, -1},
-    {"models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1, 1, SOLID_VPHYSICS},
-    {"models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", gsSymOff, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, 0, -1, SOLID_NONE}
-  }
-}
+local myAdditions = {}
 
 -- Register the addon ADDITIONS to the plugable DSV list
 local bS, vO = pcall(DoSynchronize, "ADDITIONS", myAdditions, true)

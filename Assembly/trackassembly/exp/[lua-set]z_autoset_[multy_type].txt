@@ -22,7 +22,7 @@ local asmlib = trackasmlib; if(not asmlib) then -- Module present
  * myType3, ... myType/n as variable arguments when your
  * addon contains multiple model packs.
 ]]
-local myAddon, myGroup = asmlib.ComponentType("Test's track pack")
+local myAddon, myGroup = asmlib.ComponentType("Multy Type", "Pesho's tracks", "Iron tracks", "Test", "Aaaaa")
 
 --[[
  * If you have passed a vararg above you will have a type group that
@@ -30,7 +30,11 @@ local myAddon, myGroup = asmlib.ComponentType("Test's track pack")
  * Example: myType1 = (myGroup and myGroup[1] or myAddon)
  * Then pass the calculated grouped type to myPieces record
 ]]--
-local myType = myAddon -- The type your addon resides in the tool with
+local myType0 = asmlib.GetTypeNormal(myAddon)
+local myType1 = asmlib.GetTypeNormal(myGroup and myGroup[1] or myAddon)
+local myType2 = asmlib.GetTypeNormal(myGroup and myGroup[2] or myAddon)
+local myType3 = asmlib.GetTypeNormal(myGroup and myGroup[3] or myAddon)
+local myType4 = asmlib.GetTypeNormal(myGroup and myGroup[4] or myAddon)
 
 --[[
  * This is the beautifier object if you need to apply name beautifier rules
@@ -87,7 +91,11 @@ local myPath = { -- This contains the path to generic DSV
 asmlib.LogInstance(">>> "..myScript.." ("..tostring(myFlag).."): {"..myAddon..", "..myPrefix.."}", mySource)
 
 -- Register the workshop ID
-asmlib.WorkshopID(myAddon, "287012681")
+asmlib.WorkshopID(myType0, "1234567890")
+asmlib.WorkshopID(myType1, "111")
+asmlib.WorkshopID(myType2, "222")
+asmlib.WorkshopID(myType3, "333")
+asmlib.WorkshopID(myType4, "444")
 
 -- Register the prefix with the DSV panel as autoset
 -- Register the auto prefix and check for errors
@@ -140,25 +148,95 @@ end -- Third argument is the delimiter. The default tab is used
 ]]--
 if(not file.Exists(myPath.PIECES, "DATA")) then
   local PIECES = asmlib.GetBuilderNick("PIECES")
-  asmlib.Categorize(myAddon, [[
-    function(m)
-      local r = m:gsub("models/props_phx/construct/",""):gsub("_","/")
-      local s = r:find("/"); r = s and r:sub(1,s-1) or nil
-      local n = nil
-      if(r) then
-        if(r ==  "metal" ) then n = "My metal plate" end
-        if(r == "windows") then n = "My glass plate" end
-      end
-      r = r and r:gsub("^%l", string.upper) or nil
-      p = r and {r} or nil
-      return p, n
-    end
+
+  asmlib.Categorize(myType0)
+  if(gsModeDB == "SQL") then sql.Begin() end
+  PIECES:Record({"models/shinji85/train/rail_2x.mdl", gsSymOff, "Straight 2x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_2x.mdl", gsSymOff, "Straight 2x", 2, gsMissDB, "-256,0,7.346", "0,180,0", gsMissDB})
+  if(gsModeDB == "SQL") then sql.Commit() end
+
+  asmlib.Categorize(myType1, [[
+        function(m) local c
+            local r = m:gsub("models/shinji85/train/rail_", "")
+            return r end
+      
   ]])
   if(gsModeDB == "SQL") then sql.Begin() end
-  PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl"   , gsMissDB, "Metal Plate1x2",1 "NULL","0,-47.455105,1.482965","0,-90,0" "NULL"})
-  PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl"   , gsMissDB, "Metal Plate1x2",2 "NULL","0, 47.455105,1.482965","0, 90,0" "NULL"})
-  PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", gsMissDB, "Window1x2"     ,1,"NULL","0,-23.732480,1.482965","0,-90,0" "NULL"})
-  PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", gsMissDB, "Window1x2"     ,2,"NULL","0, 71.177730,1.482965","0, 90,0" "NULL"})
+  PIECES:Record({"models/shinji85/train/rail_16x.mdl", gsSymOff, "Straight 16x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_16x.mdl", gsSymOff, "Straight 16x", 2, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_1x.mdl", gsSymOff, "Straight 1x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_1x.mdl", gsSymOff, "Straight 1x", 2, gsMissDB, "-128,0,7.346", "0,180,0", gsMissDB})
+  if(gsModeDB == "SQL") then sql.Commit() end
+
+  asmlib.Categorize(myType2, [[
+        function(m) local c
+            local r = m:gsub("models/shinji85/train/rail_", "")
+            if(r:find("cross")) then c = "crossing"
+            elseif(r:find("switch")) then c = "switch"
+            elseif(r:find("curve")) then c = "curve"
+            elseif(r:find("bumper")) then c = "bumper"
+            elseif(r:find("junction")) then c = "junction"
+            elseif(r:find("%dx")) then c = "straight" end; return c end
+      
+  ]])
+  if(gsModeDB == "SQL") then sql.Begin() end
+  PIECES:Record({"models/shinji85/train/rail_bumper.mdl", gsSymOff, "Bumper", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_bumper.mdl", gsSymOff, "Bumper Double", 1, gsMissDB, "0,128,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_bumper.mdl", gsSymOff, "Bumper Double", 2, gsMissDB, "0,-128,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cs.mdl", gsSymOff, "Counter Switch", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cs.mdl", gsSymOff, "Counter Switch", 2, gsMissDB, "-908.81165,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_csfix.mdl", gsSymOff, "Counter Switch Fix", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_csfix.mdl", gsSymOff, "Counter Switch Fix", 2, gsMissDB, "-115.18847,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cx.mdl", gsSymOff, "Counter X", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cx.mdl", gsSymOff, "Counter X", 2, gsMissDB, "-362.51361,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cxfix.mdl", gsSymOff, "Counter X Fix", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cxfix.mdl", gsSymOff, "Counter X Fix", 2, gsMissDB, "-149.48648,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cross_4x.mdl", gsSymOff, "Cross 4x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cross_4x.mdl", gsSymOff, "Cross 4x", 2, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cross_4x.mdl", gsSymOff, "Cross 4x", 3, gsMissDB, "-256,-256,7.346", "0,270,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_cross_4x.mdl", gsSymOff, "Cross 4x", 4, gsMissDB, "-256,256,7.346", "0,90,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_4x_crossing.mdl", gsSymOff, "Crossing 4x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_4x_crossing.mdl", gsSymOff, "Crossing 4x", 2, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_4x_crossing.mdl", gsSymOff, "Crossing Double 4x", 1, gsMissDB, "0,128,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_4x_crossing.mdl", gsSymOff, "Crossing Double 4x", 2, gsMissDB, "-512,128,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_4x_crossing.mdl", gsSymOff, "Crossing Double 4x", 3, gsMissDB, "0,-128,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_double_4x_crossing.mdl", gsSymOff, "Crossing Double 4x", 4, gsMissDB, "-512,-128,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_cc.mdl", gsSymOff, "Curve Cc", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_cc.mdl", gsSymOff, "Curve Cc", 2, gsMissDB, "-966.40515,128,7.346", "0,165,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r1.mdl", gsSymOff, "Curve R1", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r1.mdl", gsSymOff, "Curve R1", 2, gsMissDB, "-1060.12341,139.56763,7.346", "0,165,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r11.mdl", gsSymOff, "Curve R11", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r11.mdl", gsSymOff, "Curve R11", 2, gsMissDB, "-1086.11584,449.88458,7.346", "0,135,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r12.mdl", gsSymOff, "Curve R12", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r12.mdl", gsSymOff, "Curve R12", 2, gsMissDB, "-905.09656,374.90414,7.346", "0,135,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r13.mdl", gsSymOff, "Curve R13", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r13.mdl", gsSymOff, "Curve R13", 2, gsMissDB, "-724.07727,299.92276,7.346", "0,135,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r2.mdl", gsSymOff, "Curve R2", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r2.mdl", gsSymOff, "Curve R2", 2, gsMissDB, "-993.86572,130.84471,7.346", "0,165,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r3.mdl", gsSymOff, "Curve R3", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_curve_r3.mdl", gsSymOff, "Curve R3", 2, gsMissDB, "-927.60797,122.1218,7.346", "0,165,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_l_switch.mdl", gsSymOff, "Left Switch", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_l_switch.mdl", gsSymOff, "Left Switch", 2, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_l_switch.mdl", gsSymOff, "Left Switch", 3, gsMissDB, "-966.40515,-128,7.346", "0,195,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_r_switch.mdl", gsSymOff, "Right Switch", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_r_switch.mdl", gsSymOff, "Right Switch", 2, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_r_switch.mdl", gsSymOff, "Right Switch", 3, gsMissDB, "-966.40515,128,7.346", "0,165,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_4x.mdl", gsSymOff, "Straight 4x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_4x.mdl", gsSymOff, "Straight 4x", 2, gsMissDB, "-512,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_8x.mdl", gsSymOff, "Straight 8x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_8x.mdl", gsSymOff, "Straight 8x", 2, gsMissDB, "-1024,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_x_junction.mdl", gsSymOff, "X Junction", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_x_junction.mdl", gsSymOff, "X Junction", 2, gsMissDB, "-494.55,0,7.346", "0,180,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_x_junction.mdl", gsSymOff, "X Junction", 3, gsMissDB, "-33.129,-123.63866,7.346", "0,-30,0", gsMissDB})
+  PIECES:Record({"models/shinji85/train/rail_x_junction.mdl", gsSymOff, "X Junction", 4, gsMissDB, "-461.42175,123.63649,7.346", "0,150,0", gsMissDB})
+  if(gsModeDB == "SQL") then sql.Commit() end
+
+  asmlib.Categorize(myType3)
+  if(gsModeDB == "SQL") then sql.Begin() end
+  if(gsModeDB == "SQL") then sql.Commit() end
+
+  asmlib.Categorize(myType4)
+  if(gsModeDB == "SQL") then sql.Begin() end
   if(gsModeDB == "SQL") then sql.Commit() end
 end
 
@@ -199,6 +277,14 @@ end
 ]]--
 if(not file.Exists(myPath.ADDITIONS, "DATA")) then
   local ADDITIONS = asmlib.GetBuilderNick("ADDITIONS")
+  if(gsModeDB == "SQL") then sql.Begin() end
+  ADDITIONS:Record({"models/shinji85/train/rail_l_switch.mdl", "models/shinji85/train/sw_lever.mdl", "buttonswitch", 1, "-100,-125,0", "0,180,0", -1, -1, -1,  0, -1, -1})
+  ADDITIONS:Record({"models/shinji85/train/rail_l_switch.mdl", "models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", 2, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1,  1, SOLID_VPHYSICS})
+  ADDITIONS:Record({"models/shinji85/train/rail_l_switch.mdl", "models/shinji85/train/rail_l_switcher2.mdl", "prop_dynamic", 3, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1,  0, -1, SOLID_NONE})
+  ADDITIONS:Record({"models/shinji85/train/rail_r_switch.mdl", "models/shinji85/train/sw_lever.mdl", "buttonswitch", 1, "-100,125,0", gsMissDB, -1, -1, -1,  0, -1, -1})
+  ADDITIONS:Record({"models/shinji85/train/rail_r_switch.mdl", "models/shinji85/train/rail_r_switcher1.mdl", "prop_dynamic", 2, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1,  1, SOLID_VPHYSICS})
+  ADDITIONS:Record({"models/shinji85/train/rail_r_switch.mdl", "models/shinji85/train/rail_r_switcher2.mdl", "prop_dynamic", 3, gsMissDB, gsMissDB, MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1,  0, -1, SOLID_NONE})
+  if(gsModeDB == "SQL") then sql.Commit() end
 end
 
 --[[
@@ -225,3 +311,4 @@ if(not file.Exists(myPath.PHYSPROPERTIES, "DATA")) then
 end
 
 asmlib.LogInstance("<<< "..myScript)
+
