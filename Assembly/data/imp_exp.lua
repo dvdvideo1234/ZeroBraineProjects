@@ -13,7 +13,8 @@ local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTo
 local bas = dir.getBase().."/ZeroBraineProjects/"
 
 rawset(_G, "CLIENT", true)
-rawset(_G, "SERVER", false)
+
+rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
 game.SinglePlayer(false)
@@ -53,7 +54,7 @@ asmlib.IsModel = function(m) return isstring(m) end
 
 -------- CUSTOM TEST --------
 local sS = "set"
---local sS = "run"
+local sS = "run"
 local sT = "Multy Type"
 --local sT = "test_s_track_pack"
 
@@ -87,6 +88,7 @@ print("TYPE-DSV-------------------------------")
 asmlib.ExportTypeDSV(sE)
 print("TRN-------------------------------")
 asmlib.ExportTypeTRN(sE)
+asmlib.ExportTypeTRN(sE, true)
 print("CAT-------------------------------")
 asmlib.ExportTypeCAT(sE)
 print("DSV-------------------------------")
@@ -95,7 +97,8 @@ asmlib.ExportDSV("ADDITIONS", sG, nil, true)
 asmlib.ExportDSV("PHYSPROPERTIES", sG, nil, true)
 asmlib.ExportSyncDB()
 
-print("MAK-------------------------------", file.IsDir("asasadadsa"))
+print("MAK-------------------------------")
+print(file.IsDir("asasadadsa"))
 asmlib.RunBuilderCount(
   function()
     local a = 1 + {}
@@ -104,3 +107,5 @@ asmlib.RunBuilderCount(
   function() end)
 asmlib.RunBuilderCount(4)
 asmlib.RunBuilderCount(function() return true end )
+print("CUS-------------------------------")
+asmlib.TranslateDSV(asmlib.GetLibraryPath("exp/","test-trackassembly_additions"), nil, nil, true)

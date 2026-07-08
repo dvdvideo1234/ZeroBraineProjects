@@ -1,12 +1,12 @@
-# ExportCategory:([lua-cat]multy_type@3) 26-06-23 14:46:36 [LUA]
+# ExportCategory:([lua-cat]multy_type@3) 26-07-07 16:39:26 [LUA]
 [===[Iron tracks===function(m) local c
-        local r = m:gsub("models/shinji85/train/rail_", "")
-        if(r:find("cross")) then c = "crossing"
-        elseif(r:find("switch")) then c = "switch"
-        elseif(r:find("curve")) then c = "curve"
-        elseif(r:find("bumper")) then c = "bumper"
-        elseif(r:find("junction")) then c = "junction"
-        elseif(r:find("%dx")) then c = "straight" end; return c end]===]
+    local r = m:gsub("models/shinji85/train/rail_", "")
+    if(r:find("cross")) then c = "crossing"
+    elseif(r:find("switch")) then c = "switch"
+    elseif(r:find("curve")) then c = "curve"
+    elseif(r:find("bumper")) then c = "bumper"
+    elseif(r:find("junction")) then c = "junction"
+    elseif(r:find("%dx")) then c = "straight" end; return c end]===]
 [===[Pesho's tracks===function(m) local c
-        local r = m:gsub("models/shinji85/train/rail_", "")
-        return r end]===]
+    local r = m:gsub("models/shinji85/train/rail_", "")
+    return r end]===]

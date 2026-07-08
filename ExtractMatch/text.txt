@@ -1,0 +1,294 @@
+Searching 89 files for "Notify" (case sensitive)
+
+C:\Users\ddobromirov\Documents\Lua-Projs\VerControl\TrackAssemblyTool_GIT\lua\autorun\trackassembly_init.lua:
+ 1495                while(tCn and tCn[ID]) do local eCn = tCn[ID].Constraint
+ 1496                  if(eCn and eCn:IsValid()) then eCn:Remove() end; ID = (ID + 1)
+ 1497:               end; asmlib.Notify(oPly, "CLEANUP", "Removed: Welds %s !", (ID - 1)); return true
+ 1498              else
+ 1499                local sAnch = oPly:GetInfo(gsToolPrefL.."anchor", gsNoAnchor)
+ 1500                local tAnch = gsSymRev:Explode(sAnch)
+ 1501                local nAnch = tonumber(tAnch[1]); if(not asmlib.IsHere(nAnch)) then
+ 1502:                 asmlib.Notify(oPly, "ERROR", "Anchor: Mismatch %s !", sAnch) return false end
+ 1503                local eBase = ents.GetByIndex(nAnch); if(not (eBase and eBase:IsValid())) then
+ 1504:                 asmlib.Notify(oPly, "ERROR", "Entity: Missing %s !", nAnch) return false end
+ 1505                local maxforce = asmlib.GetAsmConvar("maxforce", "FLT")
+ 1506                local forcelim = math.Clamp(oPly:GetInfoNum(gsToolPrefL.."forcelim", 0), 0, maxforce)
+ ....
+ 1524                while(tCn and tCn[ID]) do local eCn = tCn[ID].Constraint
+ 1525                  if(eCn and eCn:IsValid()) then eCn:Remove() end; ID = (ID + 1)
+ 1526:               end; asmlib.Notify(oPly, "CLEANUP", "Removed: NoCollides %s !", (ID - 1)); return true
+ 1527              else -- Get anchor prop
+ 1528                local sAnch = oPly:GetInfo(gsToolPrefL.."anchor", gsNoAnchor)
+ 1529                local tAnch = gsSymRev:Explode(sAnch)
+ 1530                local nAnch = tonumber(tAnch[1]); if(not asmlib.IsHere(nAnch)) then
+ 1531:                 asmlib.Notify(oPly, "ERROR", "Anchor: Mismatch %s !", sAnch) return false end
+ 1532                local eBase = ents.GetByIndex(nAnch); if(not (eBase and eBase:IsValid())) then
+ 1533:                 asmlib.Notify(oPly, "ERROR", "Entity: Missing %s !", nAnch) return false end
+ 1534                local maxforce = asmlib.GetAsmConvar("maxforce", "FLT")
+ 1535                local forcelim = math.Clamp(oPly:GetInfoNum(gsToolPrefL.."forcelim", 0), 0, maxforce)
+ ....
+ 1552                local eCn = constraint.Find(ePiece, game.GetWorld(), "AdvBallsocket", 0, 0)
+ 1553                if(eCn and eCn:IsValid()) then eCn:Remove()
+ 1554:                 asmlib.Notify(oPly, "CLEANUP", "Removed: NoCollideWorld !")
+ 1555:               else asmlib.Notify(oPly, "CLEANUP", "Missing: NoCollideWorld !") end
+ 1556              else
+ 1557                local maxforce = asmlib.GetAsmConvar("maxforce", "FLT")
+ ....
+ 1595      else
+ 1596        if(cTim > pTim[2]) then
+ 1597:         asmlib.Notify(oPly, "UNDO", "Do not rush the context menu!")
+ 1598          pTim[2] = (cTim + nDel) -- For given amount of seconds
+ 1599        end
+
+C:\Users\ddobromirov\Documents\Lua-Projs\VerControl\TrackAssemblyTool_GIT\lua\trackassembly\trackasmlib.lua:
+ 2794   * ...   > Varargs of thing to display. Must the same count as format
+ 2795  ]]
+ 2796: function Notify(oPly, sType, sForm, ...)
+ 2797    if(not IsPlayer(oPly)) then
+ 2798      LogInstance("Player invalid "..GetReport(oPly)); return false end
+ ....
+ 5495    if(util.IsInWorld(vPos)) then ePiece:SetPos(vPos) else ePiece:Remove()
+ 5496      if(sMode == "HINT" or sMode == "GENERIC" or sMode == "ERROR") then
+ 5497:       Notify(oPly, sMode, "Position [%s] out of map bounds!", vPos) end
+ 5498      LogInstance("Position out of map bounds "..GetReport(sMode, oPly)); return false
+ 5499    end; LogInstance("Success "..GetReport(sMode, oPly)); return true
+ ....
+ 5513        if(nBpos <= cMarg) then -- Check the margin area
+ 5514          if(nMarg < 0) then -- When negative check position only
+ 5515:           Notify(oPly, "ERROR", "Spawn distance %s less than marging %s !", nBpos, nMarg)
+ 5516            LogInstance("Spawn distance: "..GetReport(nBpos, nMarg)); return true
+ 5517          else -- Otherwise check the spawn direction ray for being the same
+ ....
+ 5519            local nMray = (1 - (cMarg * GetOpVar("EPSILON_ZERO")))
+ 5520            if(nBray >= nMray) then -- Positive checks position and direction
+ 5521:             Notify(oPly, "ERROR", "Spawn direction %s ray %s less than margin %s ray %s !", nBpos, nBray, nMarg, nMray)
+ 5522              LogInstance("Spawn direction: "..GetReport(nBpos, nMarg, nBray, nMray)); return true
+ 5523            end -- Piece angles will not align when spawned
+
+C:\Users\ddobromirov\Documents\Lua-Projs\VerControl\TrackAssemblyTool_GIT\lua\weapons\gmod_tool\stools\trackassembly.lua:
+  397        if(not bMute) then
+  398          asmlib.LogInstance("Relation cleared "..sRe, gtLogs)
+  399:         asmlib.Notify(user, "CLEANUP", "Intersect relation clear: %s !", sRe)
+  400        end -- Make sure to delete the relation on both client and server
+  401      end
+  ...
+  413      local sRe = asmlib.GetIdentity(oEnt) -- If the entity is not valid show legend is unavailable
+  414      if(oEnt and oEnt:IsValid()) then asmlib.UpdateColor(oEnt, "intersect", "ry", true) end
+  415:     asmlib.Notify(user, "UNDO", "Intersect relation set: %s !", sRe)
+  416    end return true
+  417  end
+  ...
+  424    local xx, x1, x2, stRay1, stRay2 = asmlib.IntersectRayHash(user, "origin", "relate")
+  425    if(not xx) then if(bMute) then return nil
+  426:     else asmlib.Notify(user, "GENERIC", "Define intersection relation !")
+  427        asmlib.LogInstance("Active ray mismatch",gtLogs); return nil end
+  428    end
+  429    local mx, o1, o2 = asmlib.IntersectRayModel(model, pointid, pnextid)
+  430    if(not mx) then if(bMute) then return nil
+  431:     else asmlib.Notify(user, "ERROR", "Model intersection mismatch !")
+  432        asmlib.LogInstance("Model ray mismatch",gtLogs); return nil end
+  433    end
+  ...
+  459    if(svEnt and svEnt:IsValid() and not svEnt:IsWorld()) then
+  460      asmlib.UpdateColor(svEnt, "anchor", "an", false) end
+  461:   if(not bMute) then -- Notify the user when anchor is cleared
+  462:     asmlib.Notify(user, "CLEANUP", "Anchor: Cleaned %s !", siAnc) end
+  463    asmlib.LogInstance("Cleared "..asmlib.GetReport(bMute),gtLogs); return true
+  464  end
+  ...
+  478      self:SetObject(1,trEnt,stTrace.HitPos,phEnt,stTrace.PhysicsBone,stTrace.HitNormal)
+  479      asmlib.SetAsmConvar(user,"anchor",sAnchor)
+  480:     asmlib.Notify(user, "UNDO", "Anchor: Set %s !", sAnchor)
+  481      asmlib.LogInstance("(WORLD) Set "..asmlib.GetReport(sAnchor),gtLogs)
+  482    else
+  ...
+  489      self:SetObject(1,trEnt,stTrace.HitPos,phEnt,stTrace.PhysicsBone,stTrace.HitNormal)
+  490      asmlib.SetAsmConvar(user,"anchor",sAnchor)
+  491:     asmlib.Notify(user, "UNDO", "Anchor: Set %s !", sAnchor)
+  492      asmlib.LogInstance("(PROP) Set "..asmlib.GetReport(sAnchor),gtLogs)
+  493    end; return true
+  ...
+  641            if(SERVER and not bMute) then
+  642              asmlib.LogInstance("Flip over mismatch ID "..asmlib.GetReport(iD, eID, bID, bMR), gtLogs)
+  643:             asmlib.Notify(user, "GENERIC", "Flip over mismatch entity %s at ID %s !", tF[iD], iD)
+  644            end
+  645          end
+  ...
+  659    local trRec = asmlib.CacheQueryPiece(trMoc)
+  660    if(not asmlib.IsHere(trRec)) then
+  661:     asmlib.Notify(user, "ERROR", "Flip over %s not a piece %s !", trCss, trMoc)
+  662      asmlib.LogInstance("Flip over not piece "..asmlib.GetReport(trCss,trMoc),gtLogs)
+  663      return nil -- Just disable overall flipping for the other models
+  ...
+  692    if(not bMute) then
+  693      asmlib.LogInstance("Flip over cleared", gtLogs)
+  694:     asmlib.Notify(user, "CLEANUP", "Flip over cleared !")
+  695    end -- Make sure to delete the relation on both client and server
+  696  end
+  ...
+  745    asmlib.SetAsmConvar(user,"pnextid", pnextid)
+  746    asmlib.SetAsmConvar(user, "model" , sModel)
+  747:   asmlib.Notify(user, "UNDO", "Model selected: %s !", namo)
+  748    asmlib.LogInstance("Success "..asmlib.GetReport(namo,sModel),gtLogs); return true
+  749  end
+  ...
+  766    local tC  = asmlib.GetCacheCurve(user)
+  767    if(iD <= 1) then -- Cannot chose first ID to intersect
+  768:     if(not bMute) then asmlib.Notify(user, "ERROR", "Node point uses prev !") end
+  769      return nil -- The chosen node ID does not meet requirements
+  770    end
+  771    if(iD >= tC.Size) then -- Cannot chose last ID to intersect
+  772:     if(not bMute) then asmlib.Notify(user, "ERROR", "Node point uses next !") end
+  773      return nil -- The chosen node ID does not meet requirements
+  774    end
+  ...
+  781    else
+  782      if(tS[3]) then -- Previous is an active point
+  783:       if(not bMute) then asmlib.Notify(user, "HINT", "Node projection prev !") end
+  784        local mr, nr, xr = asmlib.ProjectRay(tS[1], tS[2]:Forward(), vPnt); return xr, 1
+  785      elseif(tE[3]) then -- Next is an active point
+  786:       if(not bMute) then asmlib.Notify(user, "HINT", "Node projection next !") end
+  787        local mr, nr, xr = asmlib.ProjectRay(tE[1], tE[2]:Forward(), vPnt); return xr, 1
+  788      else -- None of the previous and next nodes are active points
+  789:       if(not bMute) then asmlib.Notify(user, "HINT", "Node project bisector !") end
+  790        local vS, vE = tC.Node[iS], tC.Node[iE] -- Read start and finish nodes
+  791        local vD = Vector(vE); vD:Sub(vS) -- Direction from start to finish
+  ...
+  905    local vPr, vNx = tC.Node[iPr], tC.Node[iNx]
+  906    if(vPr and vPr:DistToSqr(vPos) < nM) then
+  907:     asmlib.Notify(user, "ERROR", "Former node %s too close %s !", sN, iPr)
+  908      asmlib.LogInstance("Former close ", asmlib.GetReport(sN, iPr), gtLogs); return nil
+  909    end
+  910    if(vNx and vNx:DistToSqr(vPos) < nM) then
+  911:     asmlib.Notify(user, "ERROR", "Coming node %s too close %s !", sN, iNx)
+  912      asmlib.LogInstance("Coming close "..asmlib.GetReport(sN, iNx), gtLogs); return nil
+  913    end; return tC
+  ...
+  958    end; tC.Size = (tC.Size + 1)-- Increment stack size. Adding stuff
+  959    if(not bMute) then local iH = ((iD > 0) and iC or tC.Size)
+  960:     asmlib.Notify(user, "CLEANUP", "Node index inserted: %s !", iH)
+  961      net.Start(gsLibName.."SendInsertCurveNode")
+  962        net.WriteEntity(user)           -- Player who applied the curve change
+  ...
+  994    -- Increment stack size is done after the message
+  995    if(not bMute) then local iH = ((iD > 0) and iC or tC.Size)
+  996:     asmlib.Notify(user, "CLEANUP", "Node index removed: %s !", iH)
+  997      net.Start(gsLibName.."SendRemoveCurveNode")
+  998        net.WriteEntity(user) -- Player who applied the curve change
+  ...
+ 1017      asmlib.LogInstance("Curve missing", gtLogs); return nil end
+ 1018    if(not (tC.Size and tC.Size > 0)) then
+ 1019:     asmlib.Notify(user, "ERROR", "Populate nodes first !")
+ 1020      asmlib.LogInstance("Nodes missing", gtLogs); return nil
+ 1021    end
+ ....
+ 1067    end
+ 1068    if(not bMute) then
+ 1069:     asmlib.Notify(user, "CLEANUP", "Node index updated: %s !", mD)
+ 1070      net.Start(gsLibName.."SendUpdateCurveNode")
+ 1071        net.WriteEntity(user)
+ ....
+ 1091      asmlib.LogInstance("Curve missing", gtLogs); return nil end
+ 1092    if(not bMute) then
+ 1093:     asmlib.Notify(user, "CLEANUP", "Nodes cleared: %s !", tC.Size)
+ 1094      net.Start(gsLibName.."SendClearCurveNode")
+ 1095      net.WriteEntity(user); net.Send(user)
+ ....
+ 1121    -- Disable for stack having less than two vertices
+ 1122    local tC = asmlib.GetCacheCurve(user); if(tC.Size and tC.Size < 2) then
+ 1123:     asmlib.Notify(user, "ERROR", "Two vertices needed !")
+ 1124      asmlib.LogInstance("Two vertices needed: "..fnmodel, gtLogs); return nil
+ 1125    end
+ 1126    -- Disable for single active end track segments
+ 1127    if(hdRec.Size <= 1) then
+ 1128:     asmlib.Notify(user, "ERROR", "Segmented track needed !")
+ 1129      asmlib.LogInstance("Segmented track needed: "..fnmodel, gtLogs); return nil end
+ 1130    -- Disable for missing start track segments
+ 1131    local sPOA = asmlib.LocatePOA(hdRec, pointid); if(not sPOA) then
+ 1132:     asmlib.Notify(user, "ERROR", "Start segment missing !")
+ 1133      asmlib.LogInstance("Start segment missing: "..fnmodel, gtLogs); return nil
+ 1134    end
+ 1135    -- Disable for missing end track segments
+ 1136    local ePOA = asmlib.LocatePOA(hdRec, pnextid); if(not ePOA) then
+ 1137:     asmlib.Notify(user, "ERROR", "End segment missing !")
+ 1138      asmlib.LogInstance("End segment missing: "..fnmodel, gtLogs); return nil
+ 1139    end
+ ....
+ 1148    -- Disable for active points with zero distance
+ 1149    local nD = eO:DistToSqr(sO); if(nD <= nEps) then
+ 1150:     asmlib.Notify(user, "ERROR", "Segment tiny %s !", fnmodel)
+ 1151      asmlib.LogInstance("Segment tiny: "..fnmodel, gtLogs); return nil
+ 1152    end
+ 1153    -- Disable for non-straight track segments
+ 1154    if(sA:Forward():Cross(eA:Forward()):LengthSqr() >= nEps) then
+ 1155:     asmlib.Notify(user, "ERROR", "Segment curved %s !", fnmodel)
+ 1156      asmlib.LogInstance("Segment curved: "..fnmodel, gtLogs); return nil
+ 1157    end
+ 1158    -- Disable for 180 curve track segments
+ 1159    if(sA:Forward():Dot(eA:Forward()) >= nEps) then
+ 1160:     asmlib.Notify(user, "ERROR", "Segment overturn %s !", fnmodel)
+ 1161      asmlib.LogInstance("Segment overturn: "..fnmodel, gtLogs); return nil
+ 1162    end
+ 1163    -- Disable for ramp track segments
+ 1164    if(sA:Forward():Dot((sO - eO):GetNormalized()) < (1 - nEps)) then
+ 1165:     asmlib.Notify(user, "ERROR", "Segment gradient %s !", fnmodel)
+ 1166      asmlib.LogInstance("Segment gradient: "..fnmodel, gtLogs); return nil
+ 1167    end
+ ....
+ 1284  
+ 1285    if(workmode == 3 or workmode == 5) then
+ 1286:     if(poQueue:IsBusy(user)) then asmlib.Notify(user, "ERROR", "Server busy !"); return true end
+ 1287      local hdRec = asmlib.CacheQueryPiece(model); if(not asmlib.IsHere(hdRec)) then
+ 1288        self:LogStatus(stTrace,"(Hold) Holder model not piece"); return false end
+ ....
+ 1316              if(nF and nF < crvturnlm) then
+ 1317                oArg.mundo = asmlib.GetReport(iD, asmlib.GetNearest(tV[1], tC.Node), ("%4.3f"):format(nF))
+ 1318:               asmlib.Notify(oPly, "ERROR", "%s: excessive turn at %s !", oArg.wname, oArg.mundo)
+ 1319                self:LogStatus(stTrace,"Turn excessive "..asmlib.GetReport(oArg.wname, oArg.mundo)); return false
+ 1320              end
+ 1321              if(nU and nU < crvleanlm) then
+ 1322                oArg.mundo = asmlib.GetReport(iD, asmlib.GetNearest(tV[1], tC.Node),("%4.3f"):format(nU))
+ 1323:               asmlib.Notify(oPly, "ERROR", "%s: excessive lean at %s !", oArg.wname, oArg.mundo)
+ 1324                self:LogStatus(stTrace,"Lean excessive "..asmlib.GetReport(oArg.wname, oArg.mundo)); return false
+ 1325              end
+ ....
+ 1375      end); return true
+ 1376    elseif(workmode == 4 and self:IsFlipOver()) then
+ 1377:     if(poQueue:IsBusy(user)) then asmlib.Notify(user, "ERROR", "Server busy !"); return true end
+ 1378      local wOver, wNorm = self:GetFlipOverOrigin(stTrace, user:KeyDown(IN_SPEED))
+ 1379      local tE, nE = self:GetFlipOver(true)
+ 1380      local tC, nC = asmlib.GetConstraintOver(tE)
+ 1381      if(not tE or nE <= 0) then
+ 1382:       asmlib.Notify(user, "ERROR", "No tracks selected !")
+ 1383        self:LogStatus(stTrace,"(Over) No tracks selected",trEnt); return false
+ 1384      end
+ ....
+ 1412              end
+ 1413            else
+ 1414:             asmlib.Notify(user, "ERROR", "Spawn piece [%s] invalid: %s !", iD, oArg.mundo)
+ 1415              self:LogStatus(stTrace,"(Over) Spawn data invalid",trEnt); return false
+ 1416            end
+ ....
+ 1499  
+ 1500    if((workmode == 1) and (stackcnt > 0) and user:KeyDown(IN_SPEED) and (tonumber(hdRec.Size) or 0) > 1) then
+ 1501:     if(poQueue:IsBusy(user)) then asmlib.Notify(user, "ERROR", "Server busy !"); return true end
+ 1502      if(pointid == pnextid) then self:LogStatus(stTrace,"Point ID overlap"); return false end
+ 1503      local fInt, hdOffs = asmlib.GetOpVar("FORM_INTEGER"), asmlib.LocatePOA(stSpawn.HRec, pnextid)
+ 1504      if(not hdOffs) then -- Make sure the next point is present so we have something to stack on
+ 1505:       asmlib.Notify(user, "ERROR", "Missing next point ID !")
+ 1506        self:LogStatus(stTrace,"(Stack) Missing next point ID"); return false
+ 1507      end -- Validated existent next point ID
+ ....
+ 1535              actrad, spnflat, igntype, nextx, nexty, nextz, nextpic, nextyaw, nextrol, oArg.spawn)
+ 1536            if(not oArg.spawn) then -- Something happened spawn is not available and task must be removed
+ 1537:             asmlib.Notify(oPly, "ERROR", "Cannot obtain spawn data !")
+ 1538              self:LogStatus(stTrace,"(Stack) Cannot obtain spawn data "..asmlib.GetReport(sItr, user)); return false
+ 1539            end -- Spawn data is valid for the current iteration iNdex
+ ....
+ 1549            end
+ 1550          else -- Something happened piece cannot be created and task must be removed
+ 1551:           asmlib.Notify(oPly, "ERROR", "Stack attempts depleted !")
+ 1552            self:LogStatus(stTrace,"(Stack) Stack attempts depleted "..asmlib.GetReport(sItr, user)); return false
+ 1553          end -- We still have enough memory to preform the stacking
+
+55 matches across 3 files

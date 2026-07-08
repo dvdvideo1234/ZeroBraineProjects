@@ -156,10 +156,9 @@ if(not file.Exists(myPath.PIECES, "DATA")) then
   if(gsModeDB == "SQL") then sql.Commit() end
 
   asmlib.Categorize(myType1, [[
-        function(m) local c
-            local r = m:gsub("models/shinji85/train/rail_", "")
-            return r end
-      
+    function(m) local c
+        local r = m:gsub("models/shinji85/train/rail_", "")
+        return r end
   ]])
   if(gsModeDB == "SQL") then sql.Begin() end
   PIECES:Record({"models/shinji85/train/rail_16x.mdl", gsSymOff, "Straight 16x", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})
@@ -169,15 +168,14 @@ if(not file.Exists(myPath.PIECES, "DATA")) then
   if(gsModeDB == "SQL") then sql.Commit() end
 
   asmlib.Categorize(myType2, [[
-        function(m) local c
-            local r = m:gsub("models/shinji85/train/rail_", "")
-            if(r:find("cross")) then c = "crossing"
-            elseif(r:find("switch")) then c = "switch"
-            elseif(r:find("curve")) then c = "curve"
-            elseif(r:find("bumper")) then c = "bumper"
-            elseif(r:find("junction")) then c = "junction"
-            elseif(r:find("%dx")) then c = "straight" end; return c end
-      
+    function(m) local c
+        local r = m:gsub("models/shinji85/train/rail_", "")
+        if(r:find("cross")) then c = "crossing"
+        elseif(r:find("switch")) then c = "switch"
+        elseif(r:find("curve")) then c = "curve"
+        elseif(r:find("bumper")) then c = "bumper"
+        elseif(r:find("junction")) then c = "junction"
+        elseif(r:find("%dx")) then c = "straight" end; return c end
   ]])
   if(gsModeDB == "SQL") then sql.Begin() end
   PIECES:Record({"models/shinji85/train/rail_bumper.mdl", gsSymOff, "Bumper", 1, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB})

@@ -12,8 +12,9 @@ local com = require("common")
 local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
 local bas = dir.getBase().."/ZeroBraineProjects/"
 
-rawset(_G, "CLIENT", false)
-rawset(_G, "SERVER", true)
+rawset(_G, "CLIENT", true)
+
+rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
 game.SinglePlayer(false)
@@ -47,25 +48,10 @@ end
 
 local asmlib = CongigureLIB(rev)
 
+TOOL = makeTool("trackassembly")
+
 asmlib.IsFlag("file_read_once", false)
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
 asmlib.IsModel = function(m) return isstring(m) end
 
---------------------------
-local oPly    = LocalPlayer()
-local oPieces = asmlib.GetBuilderNick("PIECES")
-
-asmlib.Categorize("TEST-O")
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 1, "", "!test", "", "aaa"})
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl", "#", "x1", 2, "", "1,2,4", "", "aaa"})
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "#", 1, "", "0,0,0", "", "aaa"})
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "x1", 2, "", "#1,2,3", "", "aaa"})
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "x1", 3, "", "#aaaa", "", "aaa"})
-oPieces:Record({"models/sprops/cuboids/height06/size_1/cube_6x6x61.mdl", "#", "#", 4, "", "", "", "aaa"})
-
-local stBase = oPieces:GetNavigate("TRACKASSEMBLY_PIECES")
-local stData = oPieces:GetNavigate("TRACKASSEMBLY_PIECES", "models/props_phx/huge/road_short.mdl","Size")
-
-common.logTable(stData, "stData")
-
-asmlib.Notify(oPly, "GENERIC", "Test is good!")
+dofile(rev.."weapons/gmod_tool/stools/trackassembly.lua")

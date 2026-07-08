@@ -1,0 +1,56 @@
+Notify" (case sensitive)
+Notify(oPly, "CLEANUP", "Removed: Welds %s !", (ID - 1)); return true
+Notify(oPly, "ERROR", "Anchor: Mismatch %s !", sAnch) return false end
+Notify(oPly, "ERROR", "Entity: Missing %s !", nAnch) return false end
+Notify(oPly, "CLEANUP", "Removed: NoCollides %s !", (ID - 1)); return true
+Notify(oPly, "ERROR", "Anchor: Mismatch %s !", sAnch) return false end
+Notify(oPly, "ERROR", "Entity: Missing %s !", nAnch) return false end
+Notify(oPly, "CLEANUP", "Removed: NoCollideWorld !")
+Notify(oPly, "CLEANUP", "Missing: NoCollideWorld !") end
+Notify(oPly, "UNDO", "Do not rush the context menu!")
+Notify(oPly, sType, sForm, ...)
+Notify(oPly, sMode, "Position [%s] out of map bounds!", vPos) end
+Notify(oPly, "ERROR", "Spawn distance %s less than marging %s !", nBpos, nMarg)
+Notify(oPly, "ERROR", "Spawn direction %s ray %s less than margin %s ray %s !", nBpos, nBray, nMarg, nMray)
+Notify(user, "CLEANUP", "Intersect relation clear: %s !", sRe)
+Notify(user, "UNDO", "Intersect relation set: %s !", sRe)
+Notify(user, "GENERIC", "Define intersection relation !")
+Notify(user, "ERROR", "Model intersection mismatch !")
+Notify the user when anchor is cleared
+Notify(user, "CLEANUP", "Anchor: Cleaned %s !", siAnc) end
+Notify(user, "UNDO", "Anchor: Set %s !", sAnchor)
+Notify(user, "UNDO", "Anchor: Set %s !", sAnchor)
+Notify(user, "GENERIC", "Flip over mismatch entity %s at ID %s !", tF[iD], iD)
+Notify(user, "ERROR", "Flip over %s not a piece %s !", trCss, trMoc)
+Notify(user, "CLEANUP", "Flip over cleared !")
+Notify(user, "UNDO", "Model selected: %s !", namo)
+Notify(user, "ERROR", "Node point uses prev !") end
+Notify(user, "ERROR", "Node point uses next !") end
+Notify(user, "HINT", "Node projection prev !") end
+Notify(user, "HINT", "Node projection next !") end
+Notify(user, "HINT", "Node project bisector !") end
+Notify(user, "ERROR", "Former node %s too close %s !", sN, iPr)
+Notify(user, "ERROR", "Coming node %s too close %s !", sN, iNx)
+Notify(user, "CLEANUP", "Node index inserted: %s !", iH)
+Notify(user, "CLEANUP", "Node index removed: %s !", iH)
+Notify(user, "ERROR", "Populate nodes first !")
+Notify(user, "CLEANUP", "Node index updated: %s !", mD)
+Notify(user, "CLEANUP", "Nodes cleared: %s !", tC.Size)
+Notify(user, "ERROR", "Two vertices needed !")
+Notify(user, "ERROR", "Segmented track needed !")
+Notify(user, "ERROR", "Start segment missing !")
+Notify(user, "ERROR", "End segment missing !")
+Notify(user, "ERROR", "Segment tiny %s !", fnmodel)
+Notify(user, "ERROR", "Segment curved %s !", fnmodel)
+Notify(user, "ERROR", "Segment overturn %s !", fnmodel)
+Notify(user, "ERROR", "Segment gradient %s !", fnmodel)
+Notify(user, "ERROR", "Server busy !"); return true end
+Notify(oPly, "ERROR", "%s: excessive turn at %s !", oArg.wname, oArg.mundo)
+Notify(oPly, "ERROR", "%s: excessive lean at %s !", oArg.wname, oArg.mundo)
+Notify(user, "ERROR", "Server busy !"); return true end
+Notify(user, "ERROR", "No tracks selected !")
+Notify(user, "ERROR", "Spawn piece [%s] invalid: %s !", iD, oArg.mundo)
+Notify(user, "ERROR", "Server busy !"); return true end
+Notify(user, "ERROR", "Missing next point ID !")
+Notify(oPly, "ERROR", "Cannot obtain spawn data !")
+Notify(oPly, "ERROR", "Stack attempts depleted !")

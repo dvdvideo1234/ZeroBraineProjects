@@ -19,8 +19,6 @@ local __nermsg = {}
 local __lang   = {}
 local Msg      = print
 local __type   = type
-local __typedt = {{"number"}, {"string"}, {"boolean", "bool"},{"function"},{"table"},
-                  {"Vector", "vector"},{"Angle", "angle"},{"Matrix", "matrix"}}
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 local __metatb = {}
 
@@ -93,13 +91,6 @@ type = function(any)
   if(mt and mt.__type) then
     return tostring(mt.__type)
   else return __type(any) end
-end
-
-for i = 1, #__typedt do
-  local v = __typedt[i]
-  local n =("is"..(v[2] or v[1])) 
-  local f = function(x) return type(x) == v[1] end
-  rawset(_G, n, f)
 end
 
 local mtMatrix = {__type = "Matrix"}
@@ -394,7 +385,7 @@ end
 function CurTime() return os.clock() end
 
 function LocalPlayer()
-  local self = {}
+  local self = ents.Create("gmod_player")
   function self:IsValid() return true end
   function self:IsPlayer() return true end
   function self:Nick() return "[Sk&Bh]YOLO" end
@@ -402,18 +393,26 @@ function LocalPlayer()
     Msg("[player]["..tostring(n).."] "..tostring(m))
   end
   function self:ConCommand(a)
-    Msg("player:ConCommand(\""..tostring(a:gsub("\n","|")).."\")")
+    Msg("[player:"..self:Nick().."]ConCommand(\""..tostring(a:gsub("\n","|")).."\")")
+  end
+  function self:SendLua(sCode)
+    Msg("[player:"..self:Nick().."]"..sCode)
   end
   return self
 end
 
 function makeTool(sM)
   local self = {}
+  local convars = {}
   self.Mode = tostring(sM or "")
   self.ClientConVar = {}
   function self:GetClientNumber(sK) return (tonumber(self.ClientConVar[sK]) or 0) end
   function self:GetClientInfo(sK) return tostring(self.ClientConVar[sK] or "") end
   function self:SetClient(sK, vV) self.ClientConVar[sK] = tostring(vV) end
+  function self:BuildConVarList(tV)
+    for k, v in pairs(self.ClientConVar) do convars[self.Mode .. "_" .. k] = v end
+    return convars
+  end
   __tools[self.Mode] = self
   return self
 end
@@ -784,10 +783,32 @@ function FindMetaTable(cn)
   end; return nil
 end
 
+local __typedt = {
+  {"number"},
+  {"string"},
+  {"boolean", "bool"},
+  {"function"},
+  {"table"},
+  {mtColor.__type, mtColor.__type:lower()},
+  {mtVector.__type, mtVector.__type:lower()},
+  {mtAngle.__type, mtAngle.__type:lower()},
+  {mtMatrix.__type, mtMatrix.__type:lower()},
+  {mtEntity.__type, mtEntity.__type:lower()}
+}
+
+for i = 1, #__typedt do
+  local v = __typedt[i]
+  local n =("is"..(v[2] or v[1])) 
+  local f = function(x) return type(x) == v[1] end
+  rawset(_G, n, f)
+end
+
 CreateConVar("gmod_language")
 
+require("gmodlib/hook")
 require("gmodlib/math")
 require("gmodlib/vgui")
 require("gmodlib/string")
 require("gmodlib/constants")
 require("gmodlib/duplicator")
+require("gmodlib/concommand")
