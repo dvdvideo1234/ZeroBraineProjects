@@ -5,29 +5,54 @@ local dir = require("directories")
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
                   "ZeroBraineProjects/ExtractWireWiki")
-      dir.addBase("D:/Programs/LuaIDE")
-      dir.addBase("C:/Programs/ZeroBraineIDE")
-      dir.setBase(2)
+                .addBase("D:/Programs/LuaIDE")
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+                
+local com = require("common")
+local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
+local bas = dir.getBase().."/ZeroBraineProjects/"
 
-CLIENT = true
-SERVER = true
+rawset(_G, "CLIENT", true)
 
+rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
-require("trackasmlib")
-local common = require("common")
-local asmlib = trackasmlib
 
+game.SinglePlayer(false)
 
-local stringExplode = string.Explode
-local stringSub   =  string.sub
-local stringFind  = string.find
-local stringFormat = string.format
-local vguiCreate  = vgui.Create
-local languageGetPhrase = language.GetPhrase
-local tableInsert = table.insert
+local function CongigureLIB(sRev)
+  -- single source of truth
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  local SetOpVar = asmlib.SetOpVar
+  asmlib.SetOpVar = function(n, ...)
+    if (n ~= "DIRPATH_BAS") then
+      return SetOpVar(n, ...)
+    else  
+      return SetOpVar(n, bas.."Assembly/trackassembly/")
+    end
+  end
+  local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+  local NewAsmConvar = asmlib.NewAsmConvar
+  CreateConVar("trackassembly_logsmax", 0, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
+  CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
+  asmlib.NewAsmConvar = function(n, ...)
+    if (n ~= "logsmax" and n ~= "logsbrs") then
+      return NewAsmConvar(n, ...)
+    end
+  end
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  asmlib.SetLogControl(1,0)
+  return asmlib
+end
 
-CreateConVar("gmod_language")
-require("Assembly/autorun/config")
+local asmlib = CongigureLIB(rev)
+
+asmlib.IsFlag("file_read_once", false)
+asmlib.SetOpVar("MODE_DATABASE", "LUA")
+asmlib.IsModel = function(m) return isstring(m) end
+
+---
 
 asmlib.ImportDSV("PIECES", true, "shinji85_s_rails")
 asmlib.ImportDSV("ADDITIONS", true, "shinji85_s_rails")

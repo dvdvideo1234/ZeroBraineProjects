@@ -48,15 +48,13 @@ end
 
 local asmlib = CongigureLIB(rev)
 
-asmlib.IsFlag("file_read_once", true)
+asmlib.IsFlag("file_read_once", false)
 asmlib.SetOpVar("MODE_DATABASE", "LUA")
 asmlib.IsModel = function(m) return isstring(m) end
 
 -------- CUSTOM TEST --------
-local sS = "set"
 local sS = "run"
 local sT = "SligWolf_s_Suspension_Train"
-local sT = "Shinji85's Rails"
 --local sT = "test_s_track_pack"
 
 local sP = asmlib.GetTypePrefix(sT)
@@ -65,52 +63,15 @@ local sG = asmlib.GetOpVar("DBEXP_PREFGEN")
 local sM = asmlib.GetOpVar("MODE_DATABASE")
 
 require(("Assembly/autorun/z_auto"..sS.."_[%s]"):format(sP))
-
-if(sS == "run") then
+print("------------------------------------------------")
+local mT, eT = 0, 1
+for iD = 1, eT do
+  asmlib.GetBuilderNick("PIECES"):Erase()
   local nT = os.clock()
   asmlib.ImportDSV("PIECES", true, sP)
-  --asmlib.ImportDSV1("ADDITIONS", true, sP)
-  --asmlib.ImportCategory(0, sP, false)
-  print("Elapsed: "..((os.clock() - nT) * 1000).."ms")
+  mT = mT + ((os.clock() - nT) * 1000)
 end
+print("------------------------------------------------")
+print("Elapsed: "..(mT / eT).."ms")
 
-if(true) then return end
-
-asmlib.WorkshopID(sP, tostring(0):rep(3))
-asmlib.WorkshopID(sT, tostring(0):rep(3))
-local sU, tA, nA = asmlib.ComponentType(sT, "Test", "Iron tracks", "Aaaaa")
-for iD = 1, nA do asmlib.WorkshopID(tA[iD], tostring(iD):rep(3)) end
-asmlib.Log(asmlib.GetReport(sU, tA, nA))
-asmlib.LogTable(tA, "["..sT.."]:COMPONENTS")
-
-
-asmlib.WorkshopID("Iron tracks", "33334444")
-
-print("TYPE-RUN-------------------------------")
-asmlib.ExportTypeRUN(sE)
-asmlib.ExportTypeRUN(sE, true)
-print("TYPE-DSV-------------------------------")
-asmlib.ExportTypeDSV(sE)
-print("TRN-------------------------------")
-asmlib.ExportTypeTRN(sE)
-asmlib.ExportTypeTRN(sE, true)
-print("CAT-------------------------------")
-asmlib.ExportTypeCAT(sE)
-print("DSV-------------------------------")
-asmlib.ExportDSV("PIECES", sG, nil, true)
-asmlib.ExportDSV("ADDITIONS", sG, nil, true)
-asmlib.ExportDSV("PHYSPROPERTIES", sG, nil, true)
-asmlib.ExportSyncDB()
-
-print("MAK-------------------------------")
-print(file.IsDir("asasadadsa"))
-asmlib.RunBuilderCount(
-  function()
-    local a = 1 + {}
-  end)
-asmlib.RunBuilderCount(
-  function() end)
-asmlib.RunBuilderCount(4)
-asmlib.RunBuilderCount(function() return true end )
-print("CUS-------------------------------")
-asmlib.TranslateDSV(asmlib.GetLibraryPath("exp/","test-trackassembly_additions"), nil, nil, true)
+print(asmlib.NewPOA())

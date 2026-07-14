@@ -1,3 +1,4 @@
 Test_s_track_pack	GOG
 Shinji85_s_Rails	@Assembly/autorun/shinji.lua
 *multy_type	@Assembly/autorun/z_autoset_[multy_type].lua
+sligwolf_s_suspension_train	@Assembly/autorun/z_autorun_[sligwolf_s_suspension_train].lua
