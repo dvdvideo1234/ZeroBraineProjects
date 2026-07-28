@@ -22,15 +22,15 @@ end
 LaserLib.GetData("WDHUECNT"):SetData(10)
 
 local d, p = {r=0,g=0,b=0}
-local cor = Color(255, 255, 0, 255)
---local cor = Color(255, 255, 255, 255)
+--local cor = Color(25, 25, 25)
+local cor = Color(255, 255, 255, 255)
 
 function x(a)
-  return ("[%5.3f|%5.3f|%5.3f]"):format(a.r, a.g, a.b)
+  return ("[%7.3f|%7.3f|%7.3f]"):format(a.r, a.g, a.b)
 end
 
 function y(a)
-  return ("%5.3f"):format(a)
+  return ("%7.3f"):format(a)
 end
 
 function z(a)
@@ -52,7 +52,7 @@ function p(w)
 end
 
 
-
+p(Color(25 , 25 , 25 ))
 p(Color(255, 0  , 0  ))
 p(Color(0  , 255, 0  ))
 p(Color(0  , 0  , 255))
@@ -60,5 +60,3 @@ p(Color(255, 255, 0  ))
 p(Color(0  , 255, 255))
 p(Color(255, 0  , 255))
 p(Color(255, 255, 255))
-
---com.logTable(tW)

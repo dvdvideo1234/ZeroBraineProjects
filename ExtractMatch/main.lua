@@ -1,4 +1,4 @@
-local P = "Notify"
+local P = "Notify%("
 local F = assert(io.open("ExtractMatch/text.txt", "r"))
 local O = assert(io.open("ExtractMatch/resu.txt", "w"))
 local L, C = F:read("*line"), 1
