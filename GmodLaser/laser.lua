@@ -10,9 +10,15 @@ local drpath = require("directories")
       
 local com = require("common")
 local cmp = require("colormap")
+local sbs, ibs = drpath.getBase()
+local rps = {
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/LaserSTool",
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/LaserSTool"
+}
 
 require("gmodlib")
-require("laserlib")
+
+dofile(rps[ibs].."/lua/autorun/laserlib.lua")
 
 HSVToColor = function(H, S, V)
   local r, g, b = cmp.getColorHSV(H, S, V)

@@ -8,7 +8,7 @@ local dir = require("directories")
       dir.addBase("D:/Programs/LuaIDE")
       dir.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
 
-local sEXP = "stcontrol"-- laserbeam, primitive, tanktracktool
+local sEXP = "laserbeam"-- laserbeam, primitive, tanktracktool
 
 local com = require("common")
 local wikilib = require("wikilib")

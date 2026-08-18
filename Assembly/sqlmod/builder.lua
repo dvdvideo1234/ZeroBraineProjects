@@ -9,24 +9,53 @@ local dir = require("directories")
                 .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
+local sbs, ibs = dir.getBase()
+local rev = {
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/",
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
+}
+local bas = rev[ibs].."/ZeroBraineProjects/"
 
-rawset(_G, "CLIENT", true)
+rawset(_G, "CLIENT", false)
 
+rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
-require("trackasmlib")
 
-asmlib = trackasmlib
-if(not asmlib) then error("No library") end
+game.SinglePlayer(false)
 
+local function CongigureLIB(sRev)
+  -- single source of truth
+  local sRev = tostring(rev[ibs])
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  local SetOpVar = asmlib.SetOpVar
+  asmlib.SetOpVar = function(n, ...)
+    if (n ~= "DIRPATH_BAS") then
+      return SetOpVar(n, ...)
+    else  
+      return SetOpVar(n, bas.."Assembly/trackassembly/")
+    end
+  end
+  local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+  local NewAsmConvar = asmlib.NewAsmConvar
+  CreateConVar("trackassembly_logsmax", 0, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
+  CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
+  asmlib.NewAsmConvar = function(n, ...)
+    if (n ~= "logsmax" and n ~= "logsbrs") then
+      return NewAsmConvar(n, ...)
+    end
+  end
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  asmlib.SetLogControl(1,0)
+  return asmlib
+end
+
+local asmlib = CongigureLIB()
+
+asmlib.IsFlag("file_read_once", true)
+asmlib.SetOpVar("MODE_DATABASE", "SQL")
 asmlib.IsModel = function(m) return isstring(m) end
-
-if(not asmlib.InitBase("track","assembly")) then error("Init fail") end
-
-asmlib.NewAsmConvar("timermode", "CQT@1800@1@1/CQT@900@1@1/CQT@600@1@1", nil, gnIndependentUsed, "Memory management setting when DB mode is SQL")
-CreateConVar("gmod_language")
-require("Assembly/autorun/config")
-
-asmlib.SetLogControl(20000, false)
 
 local PIECES = asmlib.GetBuilderNick("PIECES")
 
@@ -44,3 +73,8 @@ asmlib.LogTable(IDX, "IDX")
 
 local CMD = PIECES:GetCommand()
 asmlib.LogTable(CMD, "CMD")
+print("-----------------")
+PIECES:Erase("model")
+
+
+
