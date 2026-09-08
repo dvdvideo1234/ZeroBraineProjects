@@ -11,11 +11,6 @@ local drpath = require("directories")
 require("gmodlib")
 local common = require("common")
 
-local str = "multy_type"
-local ptr = "[^%w]"
-local exp = str:match(ptr, 1, true)
-local ssb = str:gsub(ptr, "_")
-print("S:", str)
-print("R:", ssb)
-print("E:", "<"..exp..">")
+local str = "surface.CreateFont.New(\"LuapadEditor_Bold\", ( {font = \"Courier New\",) size = 16, weight = 800})"
 
+print(str:match("[%a_][%w_%.]*%s*%("))
