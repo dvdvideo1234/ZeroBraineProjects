@@ -235,8 +235,8 @@ if(not bS) then ThrowError("Category error: "..vO) end
 ]]--
 local myPieces = {
   ["models/shinji85/train/rail_16x.mdl"] = {
-    {myType, "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
-    {myType, "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
+    {"Iron tracks", "Straight 16x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},
+    {"Iron tracks", "Straight 16x", gsSymOff, gsMissDB, "-2048,0,7.346", "0,180,0", gsMissDB}
   },
   ["models/shinji85/train/rail_1x.mdl"] = {
     {myType, "Straight 1x", gsSymOff, gsMissDB, "0,0,7.346", gsMissDB, gsMissDB},

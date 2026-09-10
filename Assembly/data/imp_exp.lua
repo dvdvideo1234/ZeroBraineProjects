@@ -50,6 +50,7 @@ asmlib.IsModel = function(m) return isstring(m) end
 -------- CUSTOM TEST --------
 local sS = "set"
 local sS = "run"
+--local sS = "xxx"
 local sT = "SligWolf_s_Suspension_Train"
 local sT = "Shinji85's Rails"
 --local sT = "test_s_track_pack"
@@ -59,15 +60,23 @@ local sE, tC = sP, {}
 local sG = asmlib.DBEXP_PREFGEN
 local sM = asmlib.MODE_DATABASE
 
-require(("Assembly/autorun/z_auto"..sS.."_[%s]"):format(sP))
-
 if(sS == "run") then
+  require(("Assembly/autorun/z_auto"..sS.."_[%s]"):format(sP))
+  
   local nT = os.clock()
   asmlib.ImportDSV("PIECES", true, sP)
   asmlib.ImportDSV("ADDITIONS", true, sP)
   asmlib.ImportCategory(0, sP, false)
+  asmlib.RegisterDSV("MAIN", sP, nil, true)
   print("Elapsed: "..((os.clock() - nT) * 1000).."ms")
+elseif(sS == "set") then
+
+else
+  asmlib.ProcessDSV()
+  if(true) then return end
 end
+
+-- if(true) then return end
 
 asmlib.WorkshopID(sP, tostring(0):rep(3))
 asmlib.WorkshopID(sT, tostring(0):rep(3))

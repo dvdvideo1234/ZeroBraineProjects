@@ -1,4 +1,5 @@
-# TranslateDSV:(test@ADDITIONS@	) 26-09-09 09:19:52 [LUA]
+# TranslateDSV:(test@ADDITIONS@	) 26-09-10 18:29:08 [LUA]
+# Source:[C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/exp/test-trackassembly_additions.txt]
 # ADDITIONS:(MODELBASE	MODELADD	ENTCLASS	LINEID	POSOFF	ANGOFF	MOVETYPE	PHYSINIT	DRSHADOW	PHMOTION	PHYACTIV	SETSOLID)
 ADDITIONS:Record({"models/shinji85/train/rail_l_switch.mdl", "models/shinji85/train/sw_lever.mdl", "buttonswitch", 1, "-100,-125,0", "0,180,0", -1, -1, -1,  0, -1, -1})
 ADDITIONS:Record({"models/shinji85/train/rail_l_switch.mdl", "models/shinji85/train/rail_l_switcher1.mdl", "prop_dynamic", 2, "NULL", "NULL", MOVETYPE_VPHYSICS, SOLID_VPHYSICS, -1, -1,  1, SOLID_VPHYSICS})
