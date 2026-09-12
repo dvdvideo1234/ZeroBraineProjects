@@ -49,5 +49,8 @@ asmlib.IsModel = function(m) return isstring(m) end
 
 --------------- CUSTOM ---------------
 
---local iC = asmlib.SetConcat("A", "B", "C")
-print(asmlib.GetConcat("D", "E", "F"))
+local t = {1, 2, nil, 4}
+
+local a, b, c, d = unpack(t)
+
+print(a, b, c, d)

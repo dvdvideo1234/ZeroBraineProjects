@@ -18,18 +18,17 @@ require("gmodlib")
 
 game.SinglePlayer(false)
 
-local function CongigureLIB(sRev)
+local function CongigureLIB(sRev, bEnv)
   -- single source of truth
   dofile(sRev.."trackassembly/trackasmlib.lua")
   local asmlib = trackasmlib 
   if not asmlib then error("No library") end
-  common.tableIndexProxy(asmlib,
-  function(i, k, v)
+  local tP = common.tableIndexProxy(asmlib, function(i, k, v)
     return ((k == "DIRPATH_BAS") and (bas.."Assembly/trackassembly/") or v)
   end)
   local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
   local NewAsmConvar = asmlib.NewAsmConvar
-  CreateConVar("trackassembly_logsmax", 0, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
+  CreateConVar("trackassembly_logsmax", 1, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
   CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
   asmlib.NewAsmConvar = function(n, ...)
     if (n ~= "logsmax" and n ~= "logsbrs") then
@@ -38,6 +37,13 @@ local function CongigureLIB(sRev)
   end
   dofile(sRev.."autorun/trackassembly_init.lua")
   asmlib.SetLogControl(1,0)
+  for k, v in pairs(tP) do
+    if(bEnv or not k:find("^%L")) then 
+      asmlib.LogTable(asmlib, "asmlib")
+      asmlib.LogTable(tP, "proxy")
+      break
+    end
+  end
   return asmlib
 end
 
@@ -50,7 +56,7 @@ asmlib.IsModel = function(m) return isstring(m) end
 -------- CUSTOM TEST --------
 local sS = "set"
 local sS = "run"
---local sS = "xxx"
+local sS = "xxx"
 local sT = "SligWolf_s_Suspension_Train"
 local sT = "Shinji85's Rails"
 --local sT = "test_s_track_pack"
@@ -60,34 +66,18 @@ local sE, tC = sP, {}
 local sG = asmlib.DBEXP_PREFGEN
 local sM = asmlib.MODE_DATABASE
 
-if(sS == "run") then
-  require(("Assembly/autorun/z_auto"..sS.."_[%s]"):format(sP))
-  
-  local nT = os.clock()
-  asmlib.ImportDSV("PIECES", true, sP)
-  asmlib.ImportDSV("ADDITIONS", true, sP)
-  asmlib.ImportCategory(0, sP, false)
-  asmlib.RegisterDSV("MAIN", sP, nil, true)
-  print("Elapsed: "..((os.clock() - nT) * 1000).."ms")
-elseif(sS == "set") then
-
-else
-  asmlib.ProcessDSV()
-  if(true) then return end
-end
-
--- if(true) then return end
-
+require(("Assembly/autorun/z_autorun_[%s]"):format(sP))
+print("PROCESS-DSV-------------------------------")
+asmlib.ProcessDSV()
+if(true) then return end
+print("WS-UPDATE-------------------------------")
 asmlib.WorkshopID(sP, tostring(0):rep(3))
 asmlib.WorkshopID(sT, tostring(0):rep(3))
 local sU, tA, nA = asmlib.ComponentType(sT, "Test", "Iron tracks", "Aaaaa")
 for iD = 1, nA do asmlib.WorkshopID(tA[iD], tostring(iD):rep(3)) end
 asmlib.Log(asmlib.GetReport(sU, tA, nA))
 asmlib.LogTable(tA, "["..sT.."]:COMPONENTS")
-
-
 asmlib.WorkshopID("Iron tracks", "33334444")
-
 print("TYPE-RUN-------------------------------")
 asmlib.ExportTypeRUN(sE)
 asmlib.ExportTypeRUN(sE, true)

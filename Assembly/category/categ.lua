@@ -9,33 +9,56 @@ local dir = require("directories")
                 .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
                 
 local com = require("common")
+local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
+local bas = dir.getBase().."/ZeroBraineProjects/"
 
 rawset(_G, "CLIENT", true)
-rawset(_G, "SERVER", false)
-
+rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
-require("trackasmlib")
-local asmlib = trackasmlib
-if(not asmlib) then error("No library") end
-require("Assembly/autorun/folder")
-require("Assembly/autorun/config")
-asmlib.SetLogControl(20000, false)
 
-local function convert(m)
-local n = math.floor(tonumber(2) or 0)
-local m = m:gsub("models", "")
-local t, x = {n = 0}, m:find("/", 1, true)
-while(x and x > 0) do
-  t.n = t.n + 1; t[t.n] = m:sub(1, x-1)
-  m = m:sub(x+1, -1); x = m:find("/", 1, true)
-  end; m = m:gsub("%.mdl$","")
-  if(n == 0) then return t, m end; local a = math.abs(n)
-  if(a > t.n) then return t, m end; local s = #t-a
-  if(n < 0) then for i = 1, a do t[i] = t[i+s] end end
-  while(s > 0) do table.remove(t); s = s - 1 end
-  return t, m
+game.SinglePlayer(false)
+
+local function CongigureLIB(sRev, bEnv)
+  -- single source of truth
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  local tP = common.tableIndexProxy(asmlib, function(i, k, v)
+    return ((k == "DIRPATH_BAS") and (bas.."Assembly/trackassembly/") or v)
+  end)
+  local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+  local NewAsmConvar = asmlib.NewAsmConvar
+  CreateConVar("trackassembly_logsmax", 1, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
+  CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
+  asmlib.NewAsmConvar = function(n, ...)
+    if (n ~= "logsmax" and n ~= "logsbrs") then
+      return NewAsmConvar(n, ...)
+    end
+  end
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  asmlib.SetLogControl(1,0)
+  for k, v in pairs(tP) do
+    if(bEnv or not k:find("^%L")) then 
+      asmlib.LogTable(asmlib, "asmlib")
+      asmlib.LogTable(tP, "proxy")
+      break
+    end
+  end
+  return asmlib
 end
 
-local a, b = convert("models/scene_building/sewer_system/tunnel_big_bend.mdl")
-asmlib.LogTable(a)
-print("Name:", b)
+local asmlib = CongigureLIB(rev)
+
+asmlib.IsFlag("file_read_once", true)
+asmlib.MODE_DATABASE = "LUA"
+asmlib.IsModel = function(m) return isstring(m) end
+
+local sT, sC, fC = asmlib.Categorize("TEST", 2, "models")
+
+asmlib.LogInstance(sT)
+asmlib.LogInstance(sC)
+asmlib.LogTable(fC("models/track s/high/25a.mdl"), "CAT")
+
+--asmlib.LogTable(asmlib.TABLE_CATEGORIES, "TABLE_CATEGORIES")
+
+
