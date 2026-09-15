@@ -359,6 +359,51 @@ function Angle(p,y,r)
 
     return Vector(vx, vy, vz)
   end
+  function self:RotateAroundAxis(axis, degrees)
+    -- 1. Extract current local coordinate space axes from this angle
+    local f = self:Forward()
+    local r = self:Right()
+    local u = self:Up()
+
+    -- 2. Setup axis-angle rotation math variables
+    local a = axis:GetNormalized()
+    local rad = math.rad(degrees)
+    local cosTheta = math.cos(rad)
+    local sinTheta = math.sin(rad)
+    local oneMinusCos = 1.0 - cosTheta
+
+    -- Helper function to rotate a single 3D vector using Rodrigues' Rotation Formula matrix
+    local function rotateVector(v)
+      -- Matrix row multiplications
+      local x = v.x * (cosTheta + a.x * a.x * oneMinusCos) 
+              + v.y * (a.x * a.y * oneMinusCos - a.z * sinTheta) 
+              + v.z * (a.x * a.z * oneMinusCos + a.y * sinTheta)
+
+      local y = v.x * (a.y * a.x * oneMinusCos + a.z * sinTheta) 
+              + v.y * (cosTheta + a.y * a.y * oneMinusCos) 
+              + v.z * (a.y * a.z * oneMinusCos - a.x * sinTheta)
+
+      local z = v.x * (a.z * a.x * oneMinusCos - a.y * sinTheta) 
+              + v.y * (a.z * a.y * oneMinusCos + a.x * sinTheta) 
+              + v.z * (cosTheta + a.z * a.z * oneMinusCos)
+
+      return Vector(x, y, z)
+    end
+
+    -- 3. Rotate our direction vectors into their new orientations
+    local rotatedForward = rotateVector(f)
+    local rotatedUp      = rotateVector(u)
+
+    -- 4. Feed the new perpendicular vectors into AngleEx to resolve the final Angle
+    local newAngle = rotatedForward:AngleEx(rotatedUp)
+
+    -- 5. Mutate the current angle object matching GMod's behavior (or return it)
+    self.p = newAngle.p
+    self.y = newAngle.y
+    self.r = newAngle.r
+
+    return self
+  end
   function self:Unpack() return self.p, self.y, self.r end
   function self:SetUnpacked(p, y, r) self.p, self.y, self.r = p, y, r end
   return self
