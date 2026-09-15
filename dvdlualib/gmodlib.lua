@@ -164,12 +164,16 @@ function Vector(x,y,z)
   function self:Sub(v) self.x, self.y, self.z = (self.x-v.x), (self.y-v.y), (self.z-v.z); return self end
   function self:GetSub(...) local v = Vector(self); v:Sub(...); return v end
   function self:Unpack() return self.x, self.y, self.z end
+  function self:SetUnpacked(x, y, z) self.x, self.y, self.z = x, y, z end
   function self:Set(v)
     if(getmetatable(v) == mtVector) then
       self.x, self.y, self.z = v.x, v.y, v.z
     else
       error("Cannot set copy from "..type(v).." to vector!")
     end; return self    
+  end
+  function self:Negate()
+    self.x, self.y, self.z = -self.x, -self.y, -self.z
   end
   function self:Rotate()
   end
@@ -210,6 +214,39 @@ function Vector(x,y,z)
       return math.acos(self:Dot(vec) / math.sqrt(self:LengthSqr() * vec:LengthSqr()))
     end
     return math.atan2(self:Determinant(vec, nrm:GetNormalized()), self:Dot(vec))
+  end
+  
+  function self:AngleEx(up)
+    -- 1. Ensure our Forward vector is a clean unit vector
+    local f = self:GetNormalized()
+
+    -- 2. Find the Right vector via Left-Handed Cross Product: Right = F x Up
+    -- In Source Engine: Right = Forward:Cross(Up)
+    local r = f:Cross(up):GetNormalized()
+
+    -- 3. Re-calculate clean orthogonal Up vector to guarantee perfectly perpendicular axes
+    local u = r:Cross(f):GetNormalized()
+
+    -- 4. Calculate Yaw (Left-Handed system: Yaw acts around Z axis)
+    local yaw = math.deg(math.atan2(f.y, f.x))
+
+    -- 5. Calculate Pitch (Pitch down is positive, Pitch up is negative in Source)
+    -- Hypotenuse of the horizontal plane
+    local hL = math.sqrt(f.x * f.x + f.y * f.y)
+    local pitch = math.deg(math.atan2(-f.z, hL))
+
+    -- 6. Calculate Roll (Twist around the Forward vector)
+    -- We look at how the Right vector maps against our calculated horizontal yaw plane
+    local roll = math.deg(math.atan2(r.z, (u.z * math.cos(math.rad(pitch)))))
+
+    -- Sanity check/fallback: If looking straight up or straight down (Gymbal Lock)
+    if hL < 0.001 then
+        yaw = math.deg(math.atan2(-r.x, r.y))
+        roll = 0
+    end
+
+    -- Return the final GMod Angle object
+    return Angle(pitch, yaw, roll)
   end
   
   --[[
@@ -285,9 +322,45 @@ function Angle(p,y,r)
     if(getmetatable(p) == mtAngle) then self.p, self.y, self.r = p.p, p.y, p.r;
     else self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0; end
   end
-  function self:Unpack()
-    return self.p, self.y, self.r
+  function self:Negate()
+    self.p, self.y, self.r = -self.p, -self.y, -self.r
   end
+  function self:Forward()
+    -- GLua math functions expect radians
+    local p = math.rad(self.p)
+    local y = math.rad(self.y)
+
+    -- Calculate the forward directional vector components
+    local vx = math.cos(p) * math.cos(y)
+    local vy = math.cos(p) * math.sin(y)
+    local vz = -math.sin(p)
+
+    return Vector(vx, vy, vz)
+  end
+  function self:Right()
+    local p = math.rad(self.p)
+    local y = math.rad(self.y)
+    local r = math.rad(self.r)
+
+    local vx = -1 * math.sin(r) * math.sin(p) * math.cos(y) + math.cos(r) * math.sin(y)
+    local vy = -1 * math.sin(r) * math.sin(p) * math.sin(y) - math.cos(r) * math.cos(y)
+    local vz = -1 * math.sin(r) * math.cos(p)
+
+    return Vector(vx, vy, vz)
+  end
+  function self:Up()
+    local p = math.rad(self.p)
+    local y = math.rad(self.y)
+    local r = math.rad(self.r)
+
+    local vx = math.cos(r) * math.sin(p) * math.cos(y) + math.sin(r) * math.sin(y)
+    local vy = math.cos(r) * math.sin(p) * math.sin(y) - math.sin(r) * math.cos(y)
+    local vz = math.cos(r) * math.cos(p)
+
+    return Vector(vx, vy, vz)
+  end
+  function self:Unpack() return self.p, self.y, self.r end
+  function self:SetUnpacked(p, y, r) self.p, self.y, self.r = p, y, r end
   return self
 end
 

@@ -1,32 +1,67 @@
-require("directories")
+local dir = require("directories")
+      dir.addPath("myprograms",
+                  "ZeroBraineProjects",
+                  "CorporateProjects",
+                  -- When not located in general directory search in projects
+                  "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/ExtractWireWiki")
+                .addBase("D:/Programs/LuaIDE")
+                .addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+                
+local com = require("common")
+local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
+local bas = dir.getBase().."/ZeroBraineProjects/"
 
-CLIENT = true
+rawset(_G, "CLIENT", true)
+rawset(_G, "SERVER", (not CLIENT))
+require("gmodlib")
 
-local common = require("common")
-require("dvdlualib/gmodlib")
-require("dvdlualib/asmlib")
-local asmlib = trackasmlib
+game.SinglePlayer(false)
 
-asmlib.InitBase("track", "assembly")
+local function CongigureLIB(sRev, bEnv)
+  -- single source of truth
+  dofile(sRev.."trackassembly/trackasmlib.lua")
+  local asmlib = trackasmlib 
+  if not asmlib then error("No library") end
+  local tP = common.tableIndexProxy(asmlib, function(i, k, v)
+    return ((k == "DIRPATH_BAS") and (bas.."Assembly/trackassembly/") or v)
+  end)
+  local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
+  local NewAsmConvar = asmlib.NewAsmConvar
+  CreateConVar("trackassembly_logsmax", 1, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
+  CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
+  asmlib.NewAsmConvar = function(n, ...)
+    if (n ~= "logsmax" and n ~= "logsbrs") then
+      return NewAsmConvar(n, ...)
+    end
+  end
+  dofile(sRev.."autorun/trackassembly_init.lua")
+  asmlib.SetLogControl(1,0)
+  for k, v in pairs(tP) do
+    if(bEnv or not k:find("^%L")) then 
+      asmlib.LogTable(asmlib, "asmlib")
+      asmlib.LogTable(tP, "proxy")
+      break
+    end
+  end
+  return asmlib
+end
 
-local a = asmlib.MakeContainer("lol")
-a:Push(11)
+local asmlib = CongigureLIB(rev)
+
+asmlib.IsFlag("file_read_once", true)
+asmlib.MODE_DATABASE = "LUA"
+asmlib.IsModel = function(m) return isstring(m) end
+
+-------- CUSTOM TEST --------
+
+local a = asmlib.GetContainer("lol")
+a:Push({a = 11, "Close"})
 a:Push(22)
-a:Push(33)
-a:Push(44)
-a:Push(55)
-a:Record("1",111)
-a:Record("2",222)
-a:Record("3",333)
 
-print("ghh", a:Find(55))
+print("Find", a:Find(11, "a"))
+print("Find", a:Find(22))
 
-common.logTable(a:GetData(),"GetData")
-common.logTable(a:GetHashID(),"GetHashID")
-
-print("-----------------------------")
-a:Pull(3)
-a:Delete("2")
 
 common.logTable(a:GetData(),"GetData")
 common.logTable(a:GetHashID(),"GetHashID")
