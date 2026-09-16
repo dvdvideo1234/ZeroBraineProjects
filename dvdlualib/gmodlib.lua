@@ -443,8 +443,37 @@ end
 
 function SysTime() return os.clock() end
 
-function CompileString(s)
-  return load(s)
+function CompileString(codeStr, identifier, handleErrors)
+    identifier = identifier or "LuaCmd"
+    if handleErrors == nil then handleErrors = true end
+
+    -- ZBS / Lua 5.1 requires loadstring to compile code chunks from strings
+    local compiledFunction, err
+    if _VERSION == "Lua 5.1" and not jit then
+        -- Native Lua 5.1 fallback
+        compiledFunction, err = loadstring(codeStr, "@" .. identifier)
+    else
+        -- LuaJIT / Lua 5.2+ (What ZBS mostly uses under the hood)
+        compiledFunction, err = load(codeStr, "@" .. identifier)
+    end
+
+    -- Handle Syntax/Compilation Errors safely
+    if not compiledFunction then
+        local formattedError = string.format("[CompileString] %s", err or "Unknown syntax error")
+        if handleErrors then
+            -- Print directly to the ZBS Output/Console panel
+            print(formattedError) 
+        end
+        return formattedError
+    end
+
+    -- Optional: If the ZBS debugger is running, inject it into the compiled function's environment
+    if mobdebug and type(mobdebug.setup) == "function" then
+        -- This allows ZBS to track line breakpoints inside the compiled string chunk
+        mobdebug.on()
+    end
+
+    return compiledFunction
 end
 
 function IsValid(anyV) return anyV ~= nil end
