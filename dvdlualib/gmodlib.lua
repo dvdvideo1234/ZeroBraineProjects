@@ -115,9 +115,10 @@ function Matrix()
   return self
 end
 
-local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0}
+local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0, __fmt = "[%d]COL{%f,%f,%f,%f}"}
       mtColor.__tostring = function(self)
-        return ("["..self.ID.."]COL{"..self.r..","..self.g..","..self.b..","..self.a.."}") end
+        return mtColor.__fmt:format(self.ID, self.r, self.g, self.b, self.a)
+      end
       mtColor.__index = function(self, aK)
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
@@ -130,8 +131,10 @@ function Color(r, g, b, a)
   return self
 end
 
-local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0}
-      mtVector.__tostring = function(self) return ("["..self.ID.."]VEC{"..self.x..","..self.y..","..self.z.."}") end
+local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0, __fmt = "[%d]VEC{%f,%f,%f}"}
+      mtVector.__tostring = function(self)
+        return mtVector.__fmt:format(self.ID, self.x, self.y, self.z)
+      end
       mtVector.__index = function(self, aK)
         local cK = mtVector.__idx[aK]
         return (cK and self[cK] or nil)
@@ -188,6 +191,9 @@ function Vector(x,y,z)
   end
   function self:GetNormalized() local m = self:Length()
     if(m ~= 0) then return Vector(self.x/m, self.y/m, self.z/m) end; return Vector()
+  end
+  function self:IsZero()
+    return (self.x == 0 and self.y == 0 and self.z == 0)
   end
   function self:Zero()
     self.x, self.y, self.z = 0, 0, 0
@@ -307,8 +313,10 @@ mtVector.__mul = function(o1,o2)
   return ov
 end
 
-local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0}
-      mtAngle.__tostring = function(self) return ("["..self.ID.."]ANG{"..self.p..","..self.y..","..self.r.."}") end
+local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0, __fmt = "[%d]ANG{%f,%f,%f}"}
+      mtAngle.__tostring = function(self)
+        return mtAngle.__fmt:format(self.ID, self.p, self.y, self.r)
+      end
       mtAngle.__index = function(self, aK)
         local cK = mtAngle.__idx[aK]
         return (cK and self[cK] or nil)
@@ -324,6 +332,12 @@ function Angle(p,y,r)
   end
   function self:Negate()
     self.p, self.y, self.r = -self.p, -self.y, -self.r
+  end
+  function self:IsZero()
+    return (self.p == 0 and self.y == 0 and self.r == 0)
+  end
+  function self:Zero()
+    self.p, self.y, self.r = 0, 0, 0
   end
   function self:Forward()
     -- GLua math functions expect radians
