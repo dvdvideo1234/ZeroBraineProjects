@@ -10,8 +10,8 @@ local dir = require("directories")
 
 local common = require("common")
 
-local sSrc = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/weapons/gmod_tool/stools/trackassembly.lua"
--- C:\Users\ddobromirov\Documents\Lua-Projs\VerControl\TrackAssemblyTool_GIT\lua\weapons\gmod_tool\stools\trackassembly.lua
+local sSrc = "C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/autorun/z_autorun_[r2fttp].lua"
+
 local tPav = {
   {"GetOpVar%s*%(%s*\"[A-Z_][A-Z_]*\"%s*%)", "%(.*%)"},
   {"asmlib*s*%.%s*GetOpVar%s*%(%s*\"[A-Z_][A-Z_]*\"%s*%)", "%(.*%)"}
