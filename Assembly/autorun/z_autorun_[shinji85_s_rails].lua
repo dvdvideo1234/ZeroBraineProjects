@@ -408,7 +408,16 @@ if(not bS) then ThrowError("ADDITIONS error: "..vO) end
  *          For the example table definition below, the line ID in the database will be the same.
  * NAME   > This stores the name of the physical property. It must an actual physical property.
 ]]--
-local myPhysproperties = {}
+local myPhysproperties = {
+  [myType] = {
+    {1 , "wood"          },
+    {2 , "Wood_Box"      },
+    {3 , "Wood_Furniture"},
+    {4 , "Wood_Plank"    },
+    {5 , "Wood_Panel"    },
+    {6 , "Wood_Solid"    }
+  }
+}
 
 -- Register the addon PHYSPROPERTIES to the plugable DSV list
 local bS, vO = pcall(DoSynchronize, "PHYSPROPERTIES", myPhysproperties, true)
