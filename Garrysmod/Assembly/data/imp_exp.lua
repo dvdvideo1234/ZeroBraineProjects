@@ -10,8 +10,10 @@ local dir = require("directories")
                 
 local com = require("common")
 local rev = "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT/lua/"
-local bas, id, tProxy = dir.getBase()
-local tRepo = {
+local bas, id, tProxy = dir.getBase() -- The base will be different depending on the machine
+local prj = "Garrysmod/Assembly/" -- Where is the project located based on the working directory
+local asm = bas.."/ZeroBraineProjects/"..prj -- Full path to the poject directory
+local tRepo = { -- Different machines may have wifferent repo load location
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT",
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/TrackAssemblyTool_GIT"
 }
@@ -23,13 +25,13 @@ require("gmodlib")
 game.SinglePlayer(false)
 
 local function CongigureLIB(bEnv)
-  -- single source of truth
+  -- Single source of truth
   dofile(tRepo[id].."/lua/trackassembly/trackasmlib.lua")
   local asmlib = trackasmlib 
   if not asmlib then error("No library") end
   tProxy = common.tableIndexProxy(asmlib, function(i, k, v)
     if(k ~= "DIRPATH_BAS") then return v end
-    return bas.."/ZeroBraineProjects/Assembly/trackassembly/"
+    return asm.."trackassembly/"
   end)
   local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
   local NewAsmConvar = asmlib.NewAsmConvar
@@ -80,7 +82,7 @@ local sE, tC = sP, {}
 local sG = asmlib.DBEXP_PREFGEN
 local sM = asmlib.MODE_DATABASE
 
-require(("Assembly/autorun/z_autorun_[%s]"):format(sF))
+require((prj.."autorun/z_autorun_[%s]"):format(sF))
 print("PROCESS-DSV-------------------------------")
 asmlib.ProcessDSV()
 --if(true) then return end

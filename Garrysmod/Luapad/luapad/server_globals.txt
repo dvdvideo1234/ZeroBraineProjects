@@ -1,0 +1,45 @@
+SELECT pe_nom, pe_cha
+  FROM f_parenr
+ WHERE pe_nom LIKE 'REM%'
+ ORDER BY pe_nom;
+
+PE_NOM BEFORE  AFTER
+------ ------  ------
+REM01  FC      RC
+REM02  RC      RC
+REM03  FD      RD
+REM04  RC      RC
+REM05  FD      RD
+REM06  FC      RC
+REM07  FC      RC
+REM08  FC      RC
+REM09  FC      RC
+REM10  FD      RD
+REM11  FC      RC
+REM12  FD      RD
+REM13  RC      RC
+REM14  FD      RD
+REM15  FC      RC
+REM16  FC      RC
+REM17  FD      RD
+REM18  FC      RC
+REM19  FD      RD
+REM20  FC      RC
+REM21  FC      RC
+REM22  FD      RD
+REM23  FC      RC
+REM24  FD      RD
+REM25  FC      RC
+REM26  FC      RC
+REM27  FC      RC
+REM28  FD      RD
+REM29  FC      RC
+REM30  FC      RC
+REM31  FD      RD
+REM32  FC      RC
+
+32 rows selected.
+
+SQL> commit;
+
+Commit complete.

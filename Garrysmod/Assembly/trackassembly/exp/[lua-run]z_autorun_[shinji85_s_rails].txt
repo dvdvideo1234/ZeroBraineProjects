@@ -1,6 +1,6 @@
 --[[
- * Generator: [Shinji85's Rails] by ENT{1}{gmod_player} on [26-10-12 10:45:58]
- * Configuration: [C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/set/z_autorun_[trackassembly].txt]
+ * Generator: [Shinji85's Rails] by ENT{1}{gmod_player} on [26-10-21 17:49:10]
+ * Configuration: [C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Garrysmod/Assembly/trackassembly/set/z_autorun_[trackassembly].txt]
  * The purpose of this Lua file is to add your track pack pieces to the
  * track assembly tool, so they can appear in the tool selection menu.
  * Why the name starts with /z/ you may ask. When Gmod loads the game

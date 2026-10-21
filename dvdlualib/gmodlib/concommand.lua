@@ -1,4 +1,3 @@
-concommand = {}
 local internal = {}
 
 function concommand.Remove(sID)
@@ -10,5 +9,3 @@ function concommand.Add(sID, fAct)
   if(not sID) then return end
   internal[sID] = fAct 
 end
-
-return concommand

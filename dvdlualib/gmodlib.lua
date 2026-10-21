@@ -9,7 +9,7 @@ MAT_GLASS      = 0
 MAT_WARPSHIELD = 0
 
 local common = require("common")
-
+local luafs = require("lfs")
 local logStatus = print
 local __noval  = "N/A"
 local __tools  = {}
@@ -34,10 +34,22 @@ properties = {__data= {}}
 sql = {}
 net = {}
 vgui = {}
+resource = {}
 constraint = {}
 surface = {__fonts = {}}
 concommand = {__data = {}}
 hook = {__data = {}}
+
+require("gmodlib/hook")
+require("gmodlib/math")
+require("gmodlib/vgui")
+require("gmodlib/type")
+require("gmodlib/table")
+require("gmodlib/string")
+require("gmodlib/constants")
+require("gmodlib/duplicator")
+require("gmodlib/concommand")
+require("gmodlib/math/ease")
 
 function ErrorNoHalt(m)
   print("ERROR: "..tostring(m))
@@ -727,6 +739,10 @@ function file.Find(sName, sPath, sSort)
   end; return common.fileFind(sName, sArg)
 end
 
+function file.Time(sF)
+  return lfs.attributes(sF, "modification") or 0
+end
+
 function properties.Add(sN, tD)
   properties.__data[sN] = tD
   return tD
@@ -853,6 +869,10 @@ function constraint.NoCollide(e1, e2, b1, b2)
   return n
 end
 
+function resource.AddSingleFile(...)
+  common.logStatus("resource.AddSingleFile: {"..table.concat({...}, "|").."}")
+end
+
 local mtVGUI = {__type = "VGUI"}
       table.insert(__metatb, mtVGUI)
 function vgui.Create(sTyp, pPar)
@@ -918,7 +938,7 @@ function vgui.Create(sTyp, pPar)
 end
 
 function include(sP)
-  require(common.stringStripExtension(common.stringGetFileName("trackassembly/trackasmlib.lua")))
+  require(common.stringStripExtension(common.stringGetFileName(sP)))
 end
 
 function ErrorNoHaltWithStack(sM)
@@ -965,12 +985,3 @@ for i = 1, #__typedt do
 end
 
 CreateConVar("gmod_language")
-
-require("gmodlib/hook")
-require("gmodlib/math")
-require("gmodlib/vgui")
-require("gmodlib/table")
-require("gmodlib/string")
-require("gmodlib/constants")
-require("gmodlib/duplicator")
-require("gmodlib/concommand")
