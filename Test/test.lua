@@ -15,9 +15,9 @@ local cpx = require("complex")
 
 local a = {ab = 1, cd = 2, ef = 3, gh = "4", ij = 5,1,2,3,4}
 
+local function test(...)
+  bNex, bSam, nCos = ...
+  print(bNex, bSam, nCos)
+end
 
-com.logTable(com.tableGetKeys(a), "KEY1")
-
-com.tableClear(a, "string", true)
-
-com.logTable(com.tableGetKeys(a), "KEY2")
+test(1, 12, 123)

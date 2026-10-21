@@ -1,0 +1,9 @@
+
+# New translations to be added to [ru]
+
+
+# The translations to be removed from [ru]
+
+
+# Translations change form the last revision [ru]
+

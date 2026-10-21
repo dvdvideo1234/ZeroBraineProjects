@@ -1,0 +1,33 @@
+
+# New translations to be added to [zh-cn]
+
+tool.trackassembly.buttonas@=Apply value\:
+tool.trackassembly.crvsuprev=Change this to adjust the super-elevation magnitude used in the corners
+tool.trackassembly.crvsuprev_con=Super elevation\:
+tool.trackassembly.maxghcnt=Change this to adjust the maximum pieces to be ghosted in stacking mode
+tool.trackassembly.maxghcnt_con=Ghosts limit\:
+tool.trackassembly.maxspmarg=Change this to adjust the distance margin from the previous spawn
+tool.trackassembly.maxspmarg_con=Spawn margin\:
+tool.trackassembly.pn_contextm_ep=Expand node
+tool.trackassembly.pn_contextm_ex=Export
+tool.trackassembly.pn_contextm_exdv=Extern
+tool.trackassembly.pn_contextm_exru=Autorun
+tool.trackassembly.pn_contextm_li=Line
+tool.trackassembly.pn_contextm_licg=Change
+tool.trackassembly.pn_contextm_licr=Create
+tool.trackassembly.pn_contextm_lirm=Remove
+tool.trackassembly.pn_contextm_mv=Move
+tool.trackassembly.pn_contextm_mvbt=Bottom
+tool.trackassembly.pn_contextm_mvdn=Down
+tool.trackassembly.pn_contextm_mvtp=Top
+tool.trackassembly.pn_contextm_mvup=Up
+tool.trackassembly.pn_contextm_tg=Toggle
+tool.trackassembly.pn_contextm_ws=Workshop
+tool.trackassembly.pn_contextm_wsid=Copy WID
+tool.trackassembly.pn_contextm_wsop=Open page
+
+# The translations to be removed from [zh-cn]
+
+
+# Translations change form the last revision [zh-cn]
+

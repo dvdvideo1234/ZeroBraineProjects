@@ -1,0 +1,3 @@
+# TranslateDSV:(ron_s_2ft_track_pack@ADDITIONS@	) 26-09-28 17:12:22 [SQL]
+# Source:[C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/exp/[sql-dsv]ron_s_2ft_track_packtrackassembly_additions.txt]
+# ADDITIONS:(MODELBASE	MODELADD	ENTCLASS	LINEID	POSOFF	ANGOFF	MOVETYPE	PHYSINIT	DRSHADOW	PHMOTION	PHYACTIV	SETSOLID)

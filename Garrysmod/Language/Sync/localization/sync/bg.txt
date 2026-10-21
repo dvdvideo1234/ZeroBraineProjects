@@ -1,0 +1,9 @@
+
+# New translations to be added to [bg]
+
+
+# The translations to be removed from [bg]
+
+
+# Translations change form the last revision [bg]
+

@@ -1,0 +1,9 @@
+
+# New translations to be added to [fr]
+
+
+# The translations to be removed from [fr]
+
+
+# Translations change form the last revision [fr]
+

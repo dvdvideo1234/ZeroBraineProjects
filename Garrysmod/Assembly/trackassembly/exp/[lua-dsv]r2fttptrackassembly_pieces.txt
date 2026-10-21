@@ -1,0 +1,4 @@
+# ExportTypeDSV:(r2fttp@PIECES@	) 26-09-28 08:54:12 [LUA]
+# PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Iron tracks"	"Straight 16x"	1	"NULL"	"0,0,7.346"	"NULL"	"NULL"
+TRACKASSEMBLY_PIECES	"models/shinji85/train/rail_16x.mdl"	"Iron tracks"	"Straight 16x"	2	"NULL"	"-2048,0,7.346"	"0,180,0"	"NULL"

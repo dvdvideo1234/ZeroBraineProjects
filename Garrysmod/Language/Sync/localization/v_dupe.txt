@@ -1,0 +1,88 @@
+
+# Keys having the same value [en]
+
+ 2 : tool.trackassembly.pn_contextm_cpty                          : Type
+ 2 : tool.trackassembly.pn_routine_typ                            : Type
+
+ 2 : tool.trackassembly.forcelim_con                              : Force limit\:
+ 2 : tool.trackassembly.maxforce_con                              : Force limit\:
+
+ 2 : tool.trackassembly.pn_contextm_cpmd                          : Model
+ 2 : tool.trackassembly.pn_routine_mod                            : Model
+
+ 2 : tool.trackassembly.pn_contextm_cpnm                          : Name
+ 2 : tool.trackassembly.pn_routine_nam                            : Name
+
+ 2 : tool.trackassembly.pn_contextm_ex                            : Export
+ 2 : tool.trackassembly.pn_externdb_bte                           : Export
+
+
+# Keys having the same value [bg]
+
+ 2 : tool.trackassembly.pn_contextm_cpmd                          : Модел
+ 2 : tool.trackassembly.pn_routine_mod                            : Модел
+
+ 2 : tool.trackassembly.pn_contextm_cpty                          : Тип
+ 2 : tool.trackassembly.pn_routine_typ                            : Тип
+
+ 2 : tool.trackassembly.pn_contextm_cpnm                          : Име
+ 2 : tool.trackassembly.pn_routine_nam                            : Име
+
+
+# Keys having the same value [fr]
+
+ 2 : tool.trackassembly.pn_contextm_cprw                          : Ligne
+ 2 : tool.trackassembly.pn_contextm_li                            : Ligne
+
+ 2 : tool.trackassembly.forcelim_con                              : Limite de force\:
+ 2 : tool.trackassembly.maxforce_con                              : Limite de force\:
+
+ 2 : tool.trackassembly.pn_contextm_cpty                          : Type
+ 2 : tool.trackassembly.pn_routine_typ                            : Type
+
+ 2 : tool.trackassembly.pn_contextm_ex                            : Exporter
+ 2 : tool.trackassembly.pn_externdb_bte                           : Exporter
+
+ 2 : tool.trackassembly.pn_contextm_cpnm                          : Nom
+ 2 : tool.trackassembly.pn_routine_nam                            : Nom
+
+ 2 : tool.trackassembly.pn_contextm_cpmd                          : Modèle
+ 2 : tool.trackassembly.pn_routine_mod                            : Modèle
+
+
+# Keys having the same value [ja]
+
+
+# Keys having the same value [ru]
+
+ 2 : tool.trackassembly.pn_contextm_ex                            : Экспортировать
+ 2 : tool.trackassembly.pn_externdb_bte                           : Экспортировать
+
+ 2 : tool.trackassembly.pn_contextm_cpty                          : Тип
+ 2 : tool.trackassembly.pn_routine_typ                            : Тип
+
+ 2 : tool.trackassembly.forcelim_con                              : Ограничение силы\:
+ 2 : tool.trackassembly.maxforce_con                              : Ограничение силы\:
+
+ 2 : tool.trackassembly.pn_contextm_cpnm                          : Имя
+ 2 : tool.trackassembly.pn_routine_nam                            : Имя
+
+ 2 : tool.trackassembly.pn_contextm_cpmd                          : Модель
+ 2 : tool.trackassembly.pn_routine_mod                            : Модель
+
+
+# Keys having the same value [zh-cn]
+
+ 2 : tool.trackassembly.pn_contextm_cpty                          : 类型
+ 2 : tool.trackassembly.pn_routine_typ                            : 类型
+
+ 2 : tool.trackassembly.forcelim_con                              : 力限制\:
+ 2 : tool.trackassembly.maxforce_con                              : 力限制\:
+
+ 2 : tool.trackassembly.maxfruse_con                              : 常用组件\:
+ 2 : tool.trackassembly.pn_routine_hd                             : 常用组件\:
+
+ 2 : tool.trackassembly.pn_contextm_cpmd                          : 模型
+ 2 : tool.trackassembly.pn_routine_mod                            : 模型
+
+

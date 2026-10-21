@@ -1,0 +1,8 @@
+# TranslateDSV:(aaa@PIECES@	) 26-10-12 10:36:35 [LUA]
+# Source:[C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/dsv/aaatrackassembly_pieces.txt]
+# PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl", "TEST", "TEST-NAME", 1, "NULL", "0,-47.455105,1.482965", "0,-90,0", "NULL"})
+PIECES:Record({"models/props_phx/construct/metal_plate1x2.mdl", "TEST", "TEST-NAME", 2, "NULL", "0, 47.455105,1.482965", "0, 90,0", "NULL"})
+PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", "TEST", "TEST2", 1, "NULL", "0, 11.17773,1.482965", "0, 90,0", "NULL"})
+PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", "TEST", "TEST3", 2, "NULL", "0, 22.17773,1.482965", "0, 90,0", "NULL"})
+PIECES:Record({"models/props_phx/construct/windows/window1x2.mdl", "TEST", "TEST1", 3, "NULL", "0, 33.73248,1.482965", "0,-90,0", "NULL"})

@@ -1,0 +1,5 @@
+# TranslateDSV:(r2fttp@PIECES@	) 26-09-28 08:54:13 [LUA]
+# Source:[C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Assembly/trackassembly/exp/[lua-dsv]r2fttptrackassembly_pieces.txt]
+# PIECES:(MODEL	TYPE	NAME	LINEID	POINT	ORIGIN	ANGLE	CLASS)
+PIECES:Record({"models/shinji85/train/rail_16x.mdl", "Iron tracks", "Straight 16x", 1, "NULL", "0,0,7.346", "NULL", "NULL"})
+PIECES:Record({"models/shinji85/train/rail_16x.mdl", "Iron tracks", "Straight 16x", 2, "NULL", "-2048,0,7.346", "0,180,0", "NULL"})
