@@ -1,4 +1,4 @@
-# TranslateDSV:(shinji85_s_rails@PHYSPROPERTIES@	) 26-10-21 17:49:06 [LUA]
+# TranslateDSV:(shinji85_s_rails@PHYSPROPERTIES@	) 26-10-22 08:51:17 [LUA]
 # Source:[C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Garrysmod/Assembly/trackassembly/dsv/shinji85_s_railstrackassembly_physproperties.txt]
 # PHYSPROPERTIES:(TYPE	LINEID	NAME)
 PHYSPROPERTIES:Record({"Iron tracks", 1, "test"})

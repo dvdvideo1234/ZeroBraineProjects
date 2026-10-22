@@ -17,7 +17,6 @@ local __entity = {}
 local __convar = {}
 local __nermsg = {}
 local __lang   = {}
-local Msg      = print
 local __type   = type
 local __tobool = {["false"] = true, [""] = true, ["0"] = true, ["nil"] = true}
 local __metatb = {}
@@ -45,11 +44,15 @@ require("gmodlib/math")
 require("gmodlib/vgui")
 require("gmodlib/type")
 require("gmodlib/table")
+require("gmodlib/enums")
 require("gmodlib/string")
 require("gmodlib/constants")
 require("gmodlib/duplicator")
 require("gmodlib/concommand")
 require("gmodlib/math/ease")
+
+Msg      = print
+MsgC     = print
 
 function ErrorNoHalt(m)
   print("ERROR: "..tostring(m))
@@ -132,12 +135,13 @@ local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0, __fmt
         return mtColor.__fmt:format(self.ID, self.r, self.g, self.b, self.a)
       end
       mtColor.__index = function(self, aK)
-        local cK = mtVector.__idx[aK]
+        local cK = mtColor.__idx[aK]
         return (cK and self[cK] or nil)
       end
       table.insert(__metatb, mtColor)
 function Color(r, g, b, a)
   local self = {}; setmetatable(self, mtColor)
+  self.ID = mtColor.__ID; mtColor.__ID = mtColor.__ID + 1
   self.r, self.g = r, g
   self.b, self.a = b, (a ~= nil and a or 255)
   return self
@@ -336,7 +340,7 @@ local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0, __fmt = "[
       table.insert(__metatb, mtAngle)
 function Angle(p,y,r)
   local self = {}; setmetatable(self, mtAngle)
-  self.ID = mtVector.__ID; mtVector.__ID = mtVector.__ID + 1
+  self.ID = mtAngle.__ID; mtAngle.__ID = mtAngle.__ID + 1
   self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0
   function self:Set(p,y,r)
     if(getmetatable(p) == mtAngle) then self.p, self.y, self.r = p.p, p.y, p.r;

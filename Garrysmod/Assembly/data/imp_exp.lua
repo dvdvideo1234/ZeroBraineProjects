@@ -27,21 +27,14 @@ game.SinglePlayer(false)
 local function CongigureLIB(bEnv)
   -- Single source of truth
   dofile(tRepo[id].."/lua/trackassembly/trackasmlib.lua")
-  local asmlib = trackasmlib 
+  local asmlib, var = trackasmlib, {["logsmax"] = true, ["logsbrs"] = true}
   if not asmlib then error("No library") end
-  tProxy = common.tableIndexProxy(asmlib, function(i, k, v)
-    if(k ~= "DIRPATH_BAS") then return v end
-    return asm.."trackassembly/"
-  end)
-  local gnIndependentUsed = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY)
-  local NewAsmConvar = asmlib.NewAsmConvar
+  tProxy = common.tableIndexProxy(asmlib,
+    function(i, k, v) return (k ~= "DIRPATH_BAS") and v or (asm.."trackassembly/") end)
+  local gnIndependentUsed, NewAsmConvar = bit.bor(FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_PRINTABLEONLY), asmlib.NewAsmConvar
   CreateConVar("trackassembly_logsmax", 1, gnIndependentUsed, "Maximum logging lines being written before the counter is reset", 0, 100000)
   CreateConVar("trackassembly_logsbrs", 0, gnIndependentUsed, "Maximum logging lines being written in every I/O write flush", 0, 100000)
-  asmlib.NewAsmConvar = function(n, ...)
-    if (n ~= "logsmax" and n ~= "logsbrs") then
-      return NewAsmConvar(n, ...)
-    end
-  end
+  asmlib.NewAsmConvar = function(n, ...) if (not var[n]) then return NewAsmConvar(n, ...) end end
   dofile(tRepo[id].."/lua/autorun/trackassembly_init.lua")
   asmlib.SetLogControl(1,0)
   for k, v in pairs(tProxy) do
@@ -50,8 +43,7 @@ local function CongigureLIB(bEnv)
       asmlib.LogTable(tProxy, "proxy")
       break
     end
-  end
-  return asmlib
+  end; return asmlib
 end
 
 local asmlib = CongigureLIB()

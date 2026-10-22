@@ -4,6 +4,7 @@ local drpath = require("directories")
                   "CorporateProjects",
                   -- When not located in general directory search in projects
                   "ZeroBraineProjects/dvdlualib",
+                  "ZeroBraineProjects/Garrysmod",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
@@ -22,10 +23,10 @@ rawset(_G, "CLIENT", false)
 rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
-print(math.ease.InBack( 0.1 ))
-
+drpath.ersRec("syntax_globals.txt", com.normFolder(chk).."luapad")
 local fC = assert(io.open(rps[ibs].."/lua/autorun/luapad.lua", "rb"))
 local sC = fC:read("*all"):gsub("local COLOR_STATUS = {", "luapad.GLOB_CONFIG = GLOB_CONFIG\nGLOB_CONFIG.FOLDER = \""..chk.."\"..GLOB_CONFIG.FOLDER\nlocal COLOR_STATUS = {")
 local bS, sE = pcall(CompileString(sC))
-if(not bS) then print(sC .. sE) else print(sC) end
+if(not bS) then print(sE) end
+
 
