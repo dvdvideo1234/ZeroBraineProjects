@@ -19,14 +19,36 @@ local rps = {
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/garrysmod-luapad"
 }
 
-rawset(_G, "CLIENT", false)
+rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
-
-drpath.ersRec("syntax_globals.txt", com.normFolder(chk).."luapad")
+local bO = true
+local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")
+drpath.ersRec("sv_syntax_globals.txt", com.normFolder(chk).."luapad")
+drpath.ersRec("cl_syntax_globals.txt", com.normFolder(chk).."luapad")
 local fC = assert(io.open(rps[ibs].."/lua/autorun/luapad.lua", "rb"))
-local sC = fC:read("*all"):gsub("local COLOR_STATUS = {", "luapad.GLOB_CONFIG = GLOB_CONFIG\nGLOB_CONFIG.FOLDER = \""..chk.."\"..GLOB_CONFIG.FOLDER\nlocal COLOR_STATUS = {")
-local bS, sE = pcall(CompileString(sC))
-if(not bS) then print(sE) end
+if(bO) then
+  local tF = common.stringExplodePattern(fC:read("*all"), "[\r\n]+")
+  if(not tF) then print("Nothing to do!"); return end
+  local fO, bH = assert(io.open(chk.."out.lua", "wb")), true
+  for iF = 1, #tF do
+    local vF = tF[iF]
+    if(bH and vF:find("COLOR_STATUS", 1, true)) then
+      fO:write("----------------------------\n")
+      fO:write("\n")
+      fO:write("luapad.GLOB_CONFIG = GLOB_CONFIG\n")
+      fO:write("GLOB_CONFIG.FOLDER = \""..chk.."\"..GLOB_CONFIG.FOLDER\n")
+      fO:write("\n")
+      fO:write("print(\"L1\", 1, RunString)\n\n")
+      bH = false
+    end
+    fO:write(vF.."\n")
+  end
+  fO:flush()
+  fO:close()
+end
 
+dofile(chk.."out.lua")
+
+fC:close()
 
