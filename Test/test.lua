@@ -21,3 +21,9 @@ local function test(...)
 end
 
 test(1, 12, 123)
+
+SERVER = false
+CLIENT = false
+
+
+local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")

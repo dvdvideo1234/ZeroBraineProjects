@@ -10,6 +10,7 @@ local GLOB_CONFIG = {
   DELIMS = "|", -- General symbol used for separator
   PANLSZ = 2 / 3, -- The ratio panel will use according to the screen size
   DAYINS = 86400, -- The amount of second present in one day
+  FMQUOT = "\"%s\"", -- Format something to put it in double quotes
   MAXMSL = 60000, -- As the maximum write string limit is 65532
   ADDONN = "Luapad", -- Generic addon name
   FOLDER = "luapad/", -- Default application folder in the data file system
@@ -34,8 +35,6 @@ local VAR_EDT = CreateConVar(GLOB_CONFIG.LOWADN.."_endataorg",  1, GLOB_CONFIG.C
 
 luapad.GLOB_CONFIG = GLOB_CONFIG
 GLOB_CONFIG.FOLDER = "C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Garrysmod/Luapad/"..GLOB_CONFIG.FOLDER
-
-print("L1", 1, RunString)
 
 local COLOR_STATUS = {
   ["#TEMCO#"] = Color(  0,   0,   0,   0),
@@ -172,6 +171,7 @@ function canOperateIn(sPath)
     if(nS and nE and nS == 1) then return true end
   end; return false
 end
+
 function canUserAccess(pUser)
   if not IsValid(pUser) then
     return false
@@ -185,6 +185,7 @@ function canUserAccess(pUser)
     return true
   end
 end
+
 local function canUserAcceptStream(ply, index)
   if (ply:IsAdmin() or ply:IsSuperAdmin()) and ACCEPTED_STEAMS[index] then
     return true
@@ -194,9 +195,11 @@ local function canUserAcceptStream(ply, index)
   end
   return false
 end
+
 local function canWriteString(sCon)
   return (string.len(tostring(sCon or "")) <= GLOB_CONFIG.MAXMSL)
 end
+
 --[[
  Returns true if
   1. Automatic renew is enabled
@@ -217,11 +220,13 @@ function isAutoRenewDue(sN, sP)
   local nC = nD * GLOB_CONFIG.DAYINS
   return (os.time() - nT) > nC
 end
+
 local function getString(...)
   local tA, nA = table.Pack(...)
   for iA = 1, nA do tA[iA] = tostring(tA[iA]) end
   return unpack(tA)
 end
+
 local function runScriptHandler(sCon, sID, aSta)
   if(SERVER or not canUserAccess(LocalPlayer())) then return end
   local oR = CompileString(sCon, sID, false)
@@ -236,6 +241,7 @@ local function runScriptHandler(sCon, sID, aSta)
     aSta("Compilation error: %s", "COMS_ER", oR)
   end
 end
+
 --[[
  * Global shared function to show status in the console
 ]]
@@ -249,6 +255,7 @@ function luapad.SetConsole(sFmt, sKey, ...)
   cTmc.b, cTmc.a = cDrw.b, cDrw.a
   MsgC(cTmc, sFmt:format(getString(...)).."\n")
 end
+
 function luapad.genSyntaxGlobals()
   -- Generate a syntax highlighting configuration file based on the instance
   local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")
@@ -279,6 +286,7 @@ function luapad.genSyntaxGlobals()
     local tK, sC, nU = table.GetKeys(tS), ("\"][\""), 0
     local tU, bH = sC:Explode(sU), true; nU = (#tU + 1)
     table.sort(tK, function(u, v) return u < v end)
+
     for iE = 1, #tK do -- Loop alphabetically
       local vK = tK[iE]
       local vE = tS[vK]
@@ -318,6 +326,7 @@ function luapad.genSyntaxGlobals()
   if(nE > 0) then
     fS:Write("\n-- Enumerations\n\n")
     table.sort(tEnum, function(u, v) return u < v end)
+
     for iE = 1, nE do -- Loop alphabetically
       local sK = tEnum[iE]
       fS:Write(sN)
@@ -331,6 +340,7 @@ function luapad.genSyntaxGlobals()
   local sS = "-- Source: [%s][%s]\n"
   local tK = table.GetKeys(FMSYNTAX_METATYP)
   table.sort(tK, function(u, v) return u < v end)
+
   for iM = 1, #tK do -- Loop alphabetically
     local sC = tK[iM]
     local vM = FMSYNTAX_METATYP[sC]
@@ -354,11 +364,20 @@ function luapad.genSyntaxGlobals()
       end
     end
   end
+  local sQ = GLOB_CONFIG.FMQUOT
+  local sA = sQ:format(GLOB_CONFIG.ADDONN)
+  local sP = sQ:format(GLOB_CONFIG.FFDRPT:format(sG, ""))
+  local sC = sQ:format("COMS_"..(SERVER and "SV" or "CL"))
+  local sF = sQ:format("%s > Syntax imported: %s")
+  local sT = "luapad.SetConsole(%s, %s, %s, %s)\n"
+  fS:Write("-- Write a console message for the imported syntax\n") 
+  fS:Write(sT:format(sF, sC, sA, sP))
+  
   fS:Flush(); fS:Close()
   luapad.SetConsole("Syntax globals generated: %s", "STAT_OK", sG)
 end
+
 luapad.genSyntaxGlobals() -- Generate server-side globals
-print("LL0", 1, RunString)
 if (SERVER) then
   util.AddNetworkString(GLOB_CONFIG.LOWADN..".Upload")
   util.AddNetworkString(GLOB_CONFIG.LOWADN..".UploadClient")
@@ -409,6 +428,7 @@ if (SERVER) then
         net.Send(ply)
       end
     end)
+
   net.Receive(GLOB_CONFIG.LOWADN..".UploadClient",
     function(len, ply)
       if(not canUserAccess(ply)) then return end
@@ -430,38 +450,34 @@ if (SERVER) then
       net.WriteString(cM)
       net.Send(ply)
     end)
+
   return
 end
+
 if (CLIENT) then
   net.Receive(GLOB_CONFIG.LOWADN..".BroadcastUsers",
     function(len)
       runScriptHandler(net.ReadString(), net.ReadString(), luapad.SetConsole)
     end)
+
   net.Receive(GLOB_CONFIG.LOWADN..".StatusCallback",
     function() -- Output in the client panel
       local sM = net.ReadString()
       local cM = net.ReadString()
       luapad.SetStatus(sM, cM)
     end)
+
 end
-print("LL", 1, RunString, file.Read)
-print("------------0------------")
+
 if (file.Exists(GLOB_CONFIG.FOLDER.."cl_syntax_globals.txt", "DATA")) then
-  print("------------1------------")
   RunString(file.Read(GLOB_CONFIG.FOLDER.."cl_syntax_globals.txt", "DATA"))
-  print("------------2------------")
   if (file.Exists(GLOB_CONFIG.FOLDER.."sv_syntax_globals.txt", "DATA")) then
-    print("------------3------------")
     RunString(file.Read(GLOB_CONFIG.FOLDER.."sv_syntax_globals.txt", "DATA"))
-    print("------------4------------")
   end -- In case the server file is added and transferred merge the syntax keys
-  print("------------5------------")
 else -- Load the hard-coded syntax highlighter relative to the lua folder
-  print("------------6------------")
   include("autorun/syntax_globals.lua")
-  print("------------7------------")
 end
-print("------------8------------")
+
 --[[
  * Populates the status bar with the popper message
  * The message alpha is fading until it disappears
@@ -497,11 +513,13 @@ function luapad.SetStatus(sFmt, sKey, ...)
         if(IsValid(pLab)) then pLab:Remove() end
       end
     end)
+
   pB:Add(pLab)
   -- https://wiki.facepunch.com/gmod/HL2_Sound_List
   surface.PlaySound(GLOB_CONFIG.PRESND:format(math.random(1, 4)))
   return pLab
 end
+
 function luapad.About()
   if(SERVER) then return end
   local sD = GLOB_CONFIG.FOLDER
@@ -510,11 +528,12 @@ function luapad.About()
   end
   luapad.AddTab("about.txt", file.Read(sD.."about.txt", "DATA"), "data/"..sD)
 end
+
 -- https://heyter.github.io/js-famfamfam-search/
 function luapad.ToIcon(sIco)
   return GLOB_CONFIG.ICOFMT:format(tostring(sIco))
 end
-print("L20", 1, RunString)
+
 --[[
  * Shows a standard confirmation dialog window
  * sMsg  > The massage being send to the user
@@ -613,7 +632,7 @@ function luapad.ShowConfirmDialog(sMsg, sTxt, fnSuc, fnDsc, sSuc, sDsc)
   pFrame:DoModal()
   return pFrame
 end
-print("L2", 1, RunString)
+
 --[[
  * Normalizes a path to the gmod file system
  * sOrg > The path to be checked and converted
@@ -640,6 +659,7 @@ function luapad.GetPath(sOrg)
   -- Return the normalized path and flag
   return fP, sP.."/", oP.."/"
 end
+
 function luapad.CheckGlobal(func)
   if (luapad._sG[func] ~= nil) then
     local sN = FMSYNTAX_HILIGHT.N
@@ -656,12 +676,14 @@ function luapad.CheckGlobal(func)
   end
   return false
 end
+
 function luapad.Clear()
   if(SERVER) then return end
   if(IsValid(luapad.Frame)) then
     luapad.Frame:Remove()
   end
 end
+
 function luapad.SaveTabs()
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -682,6 +704,7 @@ function luapad.SaveTabs()
   end
   file.Write(GLOB_CONFIG.FOLDER.."saved_tabs.txt", table.concat(tW, "\n"))
 end
+
 function luapad.LoadTabs()
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -708,6 +731,7 @@ function luapad.LoadTabs()
   -- If a tab is marked as active set the last one marked
   if(aT and IsValid(aT)) then pS:SetActiveTab(aT) end
 end
+
 function luapad.Toggle()
   if(SERVER or not canUserAccess(LocalPlayer())) then return end
   if (IsValid(luapad.Frame) and not luapad.debugmode) then
@@ -851,7 +875,7 @@ function luapad.Toggle()
   luapad.PropertySheet:InvalidateLayout(true)
   luapad.Toolbar:InvalidateLayout(true)
 end
-print("L3", 1, RunString)
+
 --[[
  * This can add a custom item to the toolbar that adds custom behavior
  * vTip      > Tooltip used for help text
@@ -895,6 +919,7 @@ function luapad.AddToolbarItem(vTip, sIco, actL, actR, actM, actD)
   end
   return pBut
 end
+
 function luapad.AddToolbarSpacer()
   if(SERVER) then return end
   local pLab = luapad.Toolbar:Add("DLabel")
@@ -903,6 +928,7 @@ function luapad.AddToolbarSpacer()
   pLab:SizeToContents()
   return pLab
 end
+
 --[[
  * Closes a tab via term, name or full path
  * Closes only one tab if matched
@@ -923,6 +949,7 @@ function luapad.CloseTabName(name, nopat)
     pS:InvalidateLayout()
   end
 end
+
 --[[
  * Closes the tab by view panel reference
  * pTre > The tab reference that must be closed
@@ -947,6 +974,7 @@ function luapad.CloseTabView(pTre)
   end
   pS:InvalidateLayout()
 end
+
 --[[
  * Closes all tabs to the left
  * No tabs are found the index is empty
@@ -975,6 +1003,7 @@ function luapad.CloseTabLeft(pTre, bInc)
     cT = tI[1].Tab
   end
 end
+
 --[[
  * Closes all tabs to the right
  * No tabs are found the index is empty
@@ -1004,6 +1033,7 @@ function luapad.CloseTabRight(pTre, bInc)
     cT = tI[iT].Tab
   end
 end
+
 --[[
  * Closes the active tab
 ]]
@@ -1031,6 +1061,7 @@ function luapad.CloseTabActive()
     pS:InvalidateLayout()
   end
 end
+
 --[[
  * Closes Other tabs
 ]]
@@ -1043,6 +1074,7 @@ function luapad.CloseTabOther(pTre)
   luapad.CloseTabLeft(pTre)
   luapad.CloseTabRight(pTre)
 end
+
 --[[
  * Closes all the tabs
 ]]
@@ -1052,6 +1084,7 @@ function luapad.CloseTabAll()
   if(not IsValid(pS)) then return end
   pS:Clear()
 end
+
 --[[
  * Refreshes all the tabs on name/term
 ]]
@@ -1100,7 +1133,7 @@ function luapad.RefreshTabName(name, term, nopat)
     luapad.SetStatus("Refreshed successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
-print("L4", 1, RunString)
+
 function luapad.RefreshTabView(pTre)
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1128,6 +1161,7 @@ function luapad.RefreshTabView(pTre)
     luapad.SetStatus("File [%s%s] refresh not supported!", "STAT_WR", oB, sN)
   end
 end
+
 --[[
  * Refreshes all tabs to the left
  * No tabs are found the index is empty
@@ -1169,6 +1203,7 @@ function luapad.RefreshTabLeft(pTre, bInc)
     luapad.SetStatus("Refreshed successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
+
 --[[
  * Refreshes all tabs to the right
  * No tabs are found the index is empty
@@ -1210,6 +1245,7 @@ function luapad.RefreshTabRight(pTre, bInc)
     luapad.SetStatus("Refreshed successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
+
 --[[
  * Refreshes the active tab
 ]]
@@ -1235,6 +1271,7 @@ function luapad.RefreshTabActive()
     luapad.SetStatus("File [%s%s] refresh not supported!", "STAT_WR", oB, sN)
   end
 end
+
 --[[
  * Refreshes all tabs to the right
  * No tabs are found the index is empty
@@ -1275,6 +1312,7 @@ function luapad.RefreshTabOther(pTre)
     luapad.SetStatus("Refreshed successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
+
 function luapad.RefreshTabAll()
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1307,6 +1345,7 @@ function luapad.RefreshTabAll()
     luapad.SetStatus("Refreshed successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
+
 --[[
  * Adds a tab to the property sheet files
  * name > The file name used used for streaming
@@ -1530,6 +1569,7 @@ function luapad.AddTab(name, cont, path, term, icon)
   pSheet:InvalidateLayout()
   return pTab
 end
+
 function luapad.RunScriptMenu()
   local pMenu = DermaMenu()
   if(not IsValid(pMenu)) then return end
@@ -1550,6 +1590,7 @@ function luapad.RunScriptMenu()
   end):SetImage(luapad.ToIcon("feed_go"))
   pMenu:Open()
 end
+
 function luapad.IsOpen(name, path)
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1575,6 +1616,7 @@ function luapad.IsOpen(name, path)
     end
   end; return false
 end
+
 --[[
  * Adds a new tab to the property sheet files
  * New tabs must always be opened in the data folder
@@ -1610,6 +1652,7 @@ function luapad.NewTab(cont, path)
     luapad.SetStatus("Creating a file here [%s] is not allowed!", "STAT_WR", oB)
   end
 end
+
 --[[
  * Adds a new tab relative to the active tab path
 ]]
@@ -1623,6 +1666,7 @@ function luapad.NewTabActive()
   if(not (tS and tS.Path)) then return end
   luapad.NewTab(nil, tS.Path)
 end
+
 --[[
  * Every request is relative to the main game folder
  * Paths starting with `data/` use the `data` folder
@@ -1739,6 +1783,7 @@ function luapad.OpenTree()
   end
   return luapad.BrowserTree
 end
+
 function luapad.OpenTab(path)
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1761,6 +1806,7 @@ function luapad.OpenTab(path)
     luapad.SetStatus("Origin is %s. Using [%s] as base folder.", "STAT_OK", "active tab", tS.Path)
   end
 end
+
 function luapad.OpenBrowse()
   if(SERVER) then return end
   local tK = table.GetKeys(ENABLE_FOLDER)
@@ -1769,6 +1815,7 @@ function luapad.OpenBrowse()
     local rv = ENABLE_FOLDER[v]
     return (ru.ID < rv.ID)
   end)
+
   local pMenu = DermaMenu()
   if(not IsValid(pMenu)) then return end
   pMenu:SetPos(gui.MousePos())
@@ -1784,6 +1831,7 @@ function luapad.OpenBrowse()
     end):SetImage(luapad.ToIcon(sI))
   end; pMenu:Open()
 end
+
 function luapad.SaveScript(pTre)
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1817,6 +1865,7 @@ function luapad.SaveScript(pTre)
     luapad.SetStatus("File [%s%s] cannot be overwritten!", "STAT_WR", oB, sN)
   end
 end
+
 function luapad.SaveAsScript(pTre)
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1857,6 +1906,7 @@ function luapad.SaveAsScript(pTre)
     end, nil, "Save", "Cancel"
   )
 end
+
 function luapad.SaveAll()
   if(SERVER) then return end
   local pS = luapad.PropertySheet
@@ -1893,6 +1943,7 @@ function luapad.SaveAll()
     luapad.SetStatus("Saved successfully [%s] of [%s] tabs!", "STAT_OK", nU, nI)
   end
 end
+
 --[[
  * Delete the associated file with a given tab
  * Tab reference to be deleted. Defaults to active
@@ -1935,6 +1986,7 @@ function luapad.DeleteScript(pTre)
     end, nil, "Delete", "Cancel"
   )
 end
+
 function luapad.RunScriptClient(pTre)
   local user = LocalPlayer()
   if(SERVER or not canUserAccess(user)) then return end
@@ -1949,6 +2001,7 @@ function luapad.RunScriptClient(pTre)
              GLOB_CONFIG.FFDRPT:format(getString(sD, sN))
   runScriptHandler(sC, sI, luapad.SetStatus)
 end
+
 function luapad.RunScriptServer(pTre, bCon)
   local user = LocalPlayer()
   if(SERVER or not canUserAccess(user)) then return end
@@ -1976,6 +2029,7 @@ function luapad.RunScriptServer(pTre, bCon)
   net.WriteBool(bCon)
   net.SendToServer()
 end
+
 function luapad.RunScriptBroadcast(pTre)
   local user = LocalPlayer()
   if(SERVER or not canUserAccess(user)) then return end
@@ -2002,5 +2056,6 @@ function luapad.RunScriptBroadcast(pTre)
   net.WriteString(sI)
   net.SendToServer()
 end
+
 concommand.Add(GLOB_CONFIG.ADDONN, luapad.Toggle)
 

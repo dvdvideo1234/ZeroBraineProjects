@@ -43,6 +43,7 @@ require("gmodlib/hook")
 require("gmodlib/math")
 require("gmodlib/vgui")
 require("gmodlib/type")
+require("gmodlib/file")
 require("gmodlib/table")
 require("gmodlib/enums")
 require("gmodlib/string")
@@ -473,28 +474,28 @@ end
 
 function SysTime() return os.clock() end
 
-function CompileString(codeStr, identifier, handleErrors)
-    identifier = identifier or "LuaCmd"
-    if handleErrors == nil then handleErrors = true end
+function CompileString(sSrc, sID, bEr)
+    sID = sID or "CompileString"
+    if bEr == nil then bEr = true end
 
     -- ZBS / Lua 5.1 requires loadstring to compile code chunks from strings
-    local compiledFunction, err
+    local coFn, err
     if _VERSION == "Lua 5.1" and not jit then
         -- Native Lua 5.1 fallback
-        compiledFunction, err = loadstring(codeStr, "@" .. identifier)
+        coFn, err = loadstring(sSrc, "@" .. sID)
     else
         -- LuaJIT / Lua 5.2+ (What ZBS mostly uses under the hood)
-        compiledFunction, err = load(codeStr, "@" .. identifier)
+        coFn, err = load(sSrc, "@" .. sID)
     end
 
     -- Handle Syntax/Compilation Errors safely
-    if not compiledFunction then
-        local formattedError = string.format("[CompileString] %s", err or "Unknown syntax error")
-        if handleErrors then
+    if not coFn then
+        local fmrEr = string.format("[CompileString] %s", err or "Unknown syntax error")
+        if bEr then
             -- Print directly to the ZBS Output/Console panel
-            print(formattedError) 
+            print(fmrEr) 
         end
-        return formattedError
+        return fmrEr
     end
 
     -- Optional: If the ZBS debugger is running, inject it into the compiled function's environment
@@ -503,7 +504,7 @@ function CompileString(codeStr, identifier, handleErrors)
         mobdebug.on()
     end
 
-    return compiledFunction
+    return coFn
 end
 
 function IsValid(anyV) return anyV ~= nil end
@@ -690,6 +691,12 @@ function file.Open(n, m)
   end
   mt.Seek = function(f, n)
     return f:seek("set", n)
+  end
+  mt.Size = function(f)
+    local c = f:seek()
+    local s = f:seek("end") 
+    f:seek("set", c)
+    return s
   end
   return f
 end
@@ -955,6 +962,15 @@ end
 
 function hook.Add(vI, vF)
   hook.__data[vI] = vF
+end
+
+function RunString(sSrc, sID, bEr)
+  local sID = sID or "RunString"
+  local fR, sE = loadstring(sSrc, sID)
+  if(not fR) then error(("[%s] %s"):format(sID, sE or "Compile error")) end
+  local bS, sE = pcall(fR)
+  if(not bS) then error(("[%s] %s"):format(sID, sE or "Syntax error")) end
+  return true
 end
 
 --- INITIALIZATION ---
