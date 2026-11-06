@@ -31,7 +31,7 @@ function runScript()
   local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")
   local fC = assert(io.open(rps[ibs].."/lua/autorun/luapad.lua", "rb"))
   if(bO) then
-    local tF = common.stringExplodePattern(fC:read("*all"), "[\r\n]+")
+    local tF = com.stringExplodePattern(fC:read("*all"), "[\r\n]+")
     if(not tF) then print("Nothing to do!"); return end
     local fO, bH = assert(io.open(chk.."out.lua", "wb")), true
     for iF = 1, #tF do
