@@ -13,7 +13,7 @@ local drpath = require("directories")
 local com = require("common")
 local cmp = require("colormap")
 local sbs, ibs = drpath.getBase()
-local chk = com.stringGetChunkPath():gsub("\\", "/")
+local chk = com.stringGetChunkPath():gsub("\\", "/"):match(".-/ZeroBraineProjects/(.*)")
 local rps = {
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/garrysmod-luapad",
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/garrysmod-luapad"

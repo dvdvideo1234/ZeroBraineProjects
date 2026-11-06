@@ -42,7 +42,7 @@ local VAR_THM = CreateConVar(GLOB_CONFIG.LOWADN.."_themename", "default", GLOB_C
 ----------------------------
 
 luapad.GLOB_CONFIG = GLOB_CONFIG
-GLOB_CONFIG.FOLDER = "C:/Programs/ZeroBraineIDE/ZeroBraineProjects/Garrysmod/Luapad/"..GLOB_CONFIG.FOLDER
+GLOB_CONFIG.FOLDER = "Garrysmod/Luapad/"..GLOB_CONFIG.FOLDER
 
 local COLOR_STATUS = {
   ["#TEMCO#"] = Color(  0,   0,   0,   0),

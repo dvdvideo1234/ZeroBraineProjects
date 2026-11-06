@@ -52,8 +52,18 @@ require("gmodlib/duplicator")
 require("gmodlib/concommand")
 require("gmodlib/math/ease")
 
-Msg      = print
-MsgC     = print
+local function print_x(...)
+  local args = {...}
+  for i = 1, #args do
+    args[i] = tostring(args[i])
+  end
+  io.write(table.concat(args, "\t"))
+  io.flush() -- Forces the output to display immediately
+end
+
+Msg      = print_x
+MsgN     = print
+MsgC     = print_x
 
 function ErrorNoHalt(m)
   print("ERROR: "..tostring(m))
