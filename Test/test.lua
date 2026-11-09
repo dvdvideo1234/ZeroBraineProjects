@@ -13,6 +13,20 @@ require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 
-local a = vgui.Create("DTree")
-      a:SetToolTip("test")
-com.logTable(a)
+local self = {Parent = {}}
+self.Parent.CustomOnLoseFocus = function() end
+
+ self.TextEntry = vgui.Create("DTextEntry", self)
+  self.TextEntry:SetSize(0, 0)
+  self.TextEntry.Parent = self
+
+self.TextEntry.OnLoseFocus1 = function(self)
+  self.Parent:CustomOnLoseFocus()
+end
+
+function self.TextEntry:OnLoseFocus2()
+  self.Parent:CustomOnLoseFocus()
+end
+
+self.TextEntry.OnLoseFocus1(self)
+self.TextEntry.OnLoseFocus2()
