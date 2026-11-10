@@ -15,16 +15,16 @@ local cmp = require("colormap")
 local sbs, ibs = drpath.getBase()
 local chk = com.stringGetChunkPath():gsub("\\", "/"):match(".-/ZeroBraineProjects/(.*)")
 local rps = {
-  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/garrysmod-luapad",
-  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/garrysmod-luapad"
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME",
+  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME"
 }
 
 rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
-drpath.ersRec("sv_syntax_globals.txt", com.normFolder(chk).."luapad")
-drpath.ersRec("cl_syntax_globals.txt", com.normFolder(chk).."luapad")
+drpath.ersRec("sv_syntax_globals.txt", com.normFolder(chk).."luapad/settings")
+drpath.ersRec("cl_syntax_globals.txt", com.normFolder(chk).."luapad/settings")
 
 function runScript()
   local bO = true
@@ -40,7 +40,7 @@ function runScript()
         fO:write("----------------------------\n")
         fO:write("\n")
         fO:write("luapad.GLOB_CONFIG = GLOB_CONFIG\n")
-        fO:write("GLOB_CONFIG.FOLDER = \""..chk.."\"..GLOB_CONFIG.FOLDER\n")
+        fO:write("GLOB_CONFIG.DATADR[2] = \""..chk.."\"..GLOB_CONFIG.DATADR[2]\n")
         fO:write("\n")
         bH = false
       end
@@ -55,10 +55,6 @@ function runScript()
 
   dofile(chk.."out.lua")
   
-  if(SERVER) then 
-    RunString(file.Read(luapad.GLOB_CONFIG.FOLDER.."sv_syntax_globals.txt", "DATA"))
-  end
-  
   fC:close()
 end
 
@@ -67,17 +63,20 @@ rawset(_G, "SERVER", (not CLIENT))
 runScript()
 
 if(luapad._sG) then
-  print("CLIENT --- Source:", luapad.GLOB_CONFIG.FOLDER, luapad._sG["AddCSLuaFile"])
+  print("CLIENT --- Source:", luapad.GLOB_CONFIG.DATADR[2], luapad._sG["AddCSLuaFile"])
 else
-  print("CLIENT --- Source:", luapad.GLOB_CONFIG.FOLDER, "The syntax _sG is missing for "..tostring(luapad).."!")
+  print("CLIENT --- Source:", luapad.GLOB_CONFIG.DATADR[2], "The syntax _sG is missing for "..tostring(luapad).."!")
 end
 
 rawset(_G, "CLIENT", false)
 rawset(_G, "SERVER", (not CLIENT))
 runScript()
+if(SERVER and file.Exists(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA")) then 
+  RunString(file.Read(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA"))
+end
 
 if(luapad._sG) then
-  print("SERVER --- Source:", luapad.GLOB_CONFIG.FOLDER, luapad._sG["AddCSLuaFile"])
+  print("SERVER --- Source:", luapad.GLOB_CONFIG.DATADR[2], luapad._sG["AddCSLuaFile"])
 else
-  print("SERVER --- Source:", luapad.GLOB_CONFIG.FOLDER, "The syntax _sG is missing for "..tostring(luapad).."!")
+  print("SERVER --- Source:", luapad.GLOB_CONFIG.DATADR[2], "The syntax _sG is missing for "..tostring(luapad).."!")
 end

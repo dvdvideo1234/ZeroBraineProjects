@@ -744,10 +744,40 @@ function file.Append(n, c)
   F:close()
 end
 
-function file.CreateDir(n)
-  local s, r = pcall(os.execute, "mkdir "..n.." >nul 2>&1")
-  print(s, r, "CreateDir("..n.."): "..tostring(r))
-  return (s and 1 or r)
+function file.CreateDir(path)
+-- Normalize backslashes to forward slashes for consistent parsing
+    local norm = path:gsub("[\\/]+", "/")
+          norm = norm:gsub("%.%./", "")
+          norm = norm:gsub("^[/]+" , "")
+          norm = norm:gsub("[/]+$", "")
+    
+    local accumulated = ""
+    
+    -- Preserve leading slash for absolute paths
+    if norm:sub(1, 1) == "/" then
+        accumulated = "/"
+    end
+    
+    for dir in norm:gmatch("[^/]+") do
+        if accumulated == "" or accumulated == "/" then
+            accumulated = accumulated .. dir
+        else
+            accumulated = accumulated .. "/" .. dir
+        end
+        
+        -- Check if the directory already exists
+        local mode = lfs.attributes(accumulated, "mode")
+        if not mode then
+            local ok, err = lfs.mkdir(accumulated)
+            if not ok then
+                return nil, err
+            end
+        elseif mode ~= "directory" then
+            return nil, "Path exists and is not a directory: " .. accumulated
+        end
+    end
+    
+    return true
 end
 
 function file.Find(sName, sPath, sSort)
