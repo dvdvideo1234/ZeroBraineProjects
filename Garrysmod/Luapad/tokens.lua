@@ -10,10 +10,10 @@ local drpath = require("directories")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
      
 
-local com = require("common")
+common = require("common")
 local cmp = require("colormap")
 local sbs, ibs = drpath.getBase()
-local chk = com.stringGetChunkPath():gsub("\\", "/"):match(".-/ZeroBraineProjects/(.*)")
+local chk = common.stringGetChunkPath():gsub("\\", "/"):match(".-/ZeroBraineProjects/(.*)")
 local rps = {
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME",
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME"
@@ -23,10 +23,10 @@ rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
+dofile(rps[ibs].."/lua/autorun/luapad.lua")
+
 dofile(rps[ibs].."/lua/autorun/luapad_editor.lua")
 
-print(Vector(), Angle(), Matrix(), Color(0,0,0,0), ents.Create("asdasd"))
-
 local tx = vgui.Create("DLuapadEditor")
-
+tx:SetText(file.Read(chk.."/luapad/test.txt"))
 tx:Paint(800, 400)

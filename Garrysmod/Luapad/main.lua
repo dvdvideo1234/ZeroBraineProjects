@@ -71,6 +71,7 @@ end
 rawset(_G, "CLIENT", false)
 rawset(_G, "SERVER", (not CLIENT))
 runScript()
+
 if(SERVER and file.Exists(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA")) then 
   RunString(file.Read(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA"))
 end
@@ -82,9 +83,3 @@ else
 end
 
 drpath.ersRec("out.lua", com.normFolder(chk))
-
-----------------------
-
-local a = ("|"):Explode(("asdasd||asdasdad"):gsub("|", "!"))
-
-com.logTable(a)

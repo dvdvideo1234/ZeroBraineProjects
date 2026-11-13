@@ -1,4 +1,4 @@
-local file = {}
+file = file or {}
 
 function file.Open(n, m)
   local s, f, e = pcall(io.open, n, m)
@@ -156,5 +156,3 @@ function file.Append( filename, contents )
 	return true
 
 end
-
-return file

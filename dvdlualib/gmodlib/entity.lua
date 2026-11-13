@@ -1,3 +1,5 @@
+ents = ents or {}
+
 local __entity = {}
 
 local mtEntity = {__type = "Entity"}

@@ -44,9 +44,9 @@ local function print_x(...)
   io.flush() -- Forces the output to display immediately
 end
 
-Msg      = print_x
-MsgN     = print
-MsgC     = print_x
+Msg      = function(...) print_x("Msg:", ...) end
+MsgN     = function(...) print  ("MsgN:", ...) end
+MsgC     = function(...) print_x("MsgC:", ...) end
 
 function RegisterMetaTable(n, m)
   if(not (n and m)) then return end
