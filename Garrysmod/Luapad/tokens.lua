@@ -22,7 +22,7 @@ rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", (not CLIENT))
 require("gmodlib")
 
-function runScript()
+function configureLuapad()
   local bO = true
   local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")
   local fC = assert(io.open(rps[ibs].."/lua/autorun/luapad.lua", "rb"))
@@ -50,12 +50,12 @@ function runScript()
   end
 
   dofile(chk.."out.lua")
+  dofile(rps[ibs].."/lua/autorun/luapad_editor.lua")
   drpath.ersRec("out.lua", common.normFolder(chk))
   fC:close()
 end
 
-runScript()
-dofile(rps[ibs].."/lua/autorun/luapad_editor.lua")
+configureLuapad()
 
 local tx = vgui.Create("DLuapadEditor")
 tx:SetText(file.Read(chk.."/luapad/test.txt"))

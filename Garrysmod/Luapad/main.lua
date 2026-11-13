@@ -25,7 +25,7 @@ require("gmodlib")
 drpath.ersRec("sv_syntax_globals.txt", com.normFolder(chk).."luapad/settings")
 drpath.ersRec("cl_syntax_globals.txt", com.normFolder(chk).."luapad/settings")
 
-function runScript()
+function configureLuapad()
   local bO = true
   local sP = SERVER and "sv_" or (CLIENT and "cl_" or "na_")
   local fC = assert(io.open(rps[ibs].."/lua/autorun/luapad.lua", "rb"))
@@ -59,7 +59,7 @@ end
 
 rawset(_G, "CLIENT", true)
 rawset(_G, "SERVER", (not CLIENT))
-runScript()
+configureLuapad()
 
 if(luapad._sG) then
   print("CLIENT --- Source:", luapad.GLOB_CONFIG.DATADR[2], luapad._sG["AddCSLuaFile"])
@@ -69,7 +69,7 @@ end
 
 rawset(_G, "CLIENT", false)
 rawset(_G, "SERVER", (not CLIENT))
-runScript()
+configureLuapad()
 
 if(SERVER and file.Exists(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA")) then 
   RunString(file.Read(luapad.GLOB_CONFIG.DATADR[2]..table.concat(luapad.GLOB_CONFIG.SYNTAX):format("sv"), "DATA"))
