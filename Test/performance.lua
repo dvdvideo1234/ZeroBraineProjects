@@ -7,46 +7,55 @@ local drpath = require("directories")
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
-
-require("dvdlualib/gmodlib")
-require("dvdlualib/trackasmlib")
 local testexec = require("testexec")
 
-local mar = 300
-local cat = {}
-local ga = ("a"):rep(mar)
-local gb = ("b"):rep(mar)
-local gc = ("s"):rep(mar)
-local gd = ("d"):rep(mar)
-local arg = {ga,gb,gc,gd}
+local exp = "math_Ease_InOut"
 
-function dotdot(a,b,c,d)
-  return a.."|"..b.."|"..c.."|"..d
+local function loop(str)
+  local i, out = 1, ""
+  local char = str:sub(i,i)
+  while char and (char >= "a" and char <= "z" or
+                  char >= "A" and char <= "Z" or
+                  char >= "0" and char <= "9" or char == "_") do
+    out = out..char
+    i = i + 1
+    char = str:sub(i,i)
+  end
+  return out
 end
 
-function formats(a,b,c,d)
-  return ("%s|%s|%s|%s"):format(a,b,c,d)
+local function patt(str)
+  local out = str:match("[a-zA-Z0-9_]+")
+
+  return out
 end
 
-function formati(a,b,c,d)
-  return ("%d|%d|%d|%d"):format(a,b,c,d)
+local function nbyte(str)
+  local i, out = 1, ""
+  local char = str:sub(i,i)
+  while char do
+    local b = char:byte()
+    if(not b) then break end
+    if not (b >= 48 and b <= 57 or
+            b >= 65 and b <= 90 or
+            b >= 97 and b <= 122 or b == 95) then
+      break
+    end
+    out = out..char
+    i = i + 1
+    char = str:sub(i,i)
+  end
+  return out
 end
 
-function concat(a,b,c,d)
-  cat[1], cat[2] = a, "|"
-  cat[3], cat[4] = b, "|"
-  cat[5], cat[6] = c, "|"
-  cat[7] = d
-  return table.concat(cat)
-end
+
 
 t = testexec.New()
-t:setCase(dotdot, "dotdot")
-t:setCase(formats, "formats")
---t:setCase(formati, "formati")
-t:setCase(concat, "concat")
+t:setCase(loop, "loop")
+t:setCase(patt, "pattern")
+t:setCase(nbyte, "nbyte")
 t:setProgress(1, 0.1)
-t:setCount(1000, 100000)
+t:setCount(1000, 1000)
 --t:setCard("cat", {1,2,3,4}, "1|2|3|4")
-t:setCard("cas", arg, table.concat(arg, "|"))
+t:setCard("library", {exp}, exp)
 t:runMeasure()

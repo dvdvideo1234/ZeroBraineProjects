@@ -80,3 +80,11 @@ if(luapad._sG) then
 else
   print("SERVER --- Source:", luapad.GLOB_CONFIG.DATADR[2], "The syntax _sG is missing for "..tostring(luapad).."!")
 end
+
+drpath.ersRec("out.lua", com.normFolder(chk))
+
+----------------------
+
+local a = ("|"):Explode(("asdasd||asdasdad"):gsub("|", "!"))
+
+com.logTable(a)

@@ -1,113 +1,103 @@
-local vgui_New_DPanel     = require("gmodlib/vgui/DPanel")
-local vgui_New_DTree      = require("gmodlib/vgui/DTree")
-local vgui_New_DImage     = require("gmodlib/vgui/DImage")
-local vgui_New_DExpander  = require("gmodlib/vgui/DExpander")
-local vgui_New_DTextEntry = require("gmodlib/vgui/DTextEntry")
-local common              = require("common")
+local vgui = {}
+local baseclass = {}
+local controls = {}   -- class name -> control table
+local aliases  = { Panel = "DPanel", Label = "DLabel" }
 
-local mtVGUI = {}
-      mtVGUI.__type = "VGUI"
-      mtVGUI.__index = mtVGUI
+local function canon(name) return aliases[name] or name end
 
-local function setMeta(pA)
-  if(not pA) then return end
-  setmetatable(pA, mtVGUI)
-  pA.__type = mtVGUI.__type..":"..pA.__type
+---------------------------------------------------------------
+-- Class resolution
+---------------------------------------------------------------
+local function resolve(cls, depth)
+    depth = depth or 0
+    assert(depth < 64, "vgui: circular base class on " .. tostring(cls.ClassName))
+
+    if cls.Base then
+        local base = controls[cls.Base]
+        if not base then
+            error(("vgui: base class '%s' of '%s' is not registered")
+                :format(cls.Base, tostring(cls.ClassName)), 3)
+        end
+        resolve(base, depth + 1)
+        cls.BaseClass = base
+        setmetatable(cls, { __index = base })
+    end
+    return cls
 end
 
-function mtVGUI:Dock(nD)
-  common.logStatus("["..self.__type.."]:Dock("..tostring(nD)..")")
+local function instantiate(cls, parent, name)
+    resolve(cls)
+    local pnl = setmetatable({}, {
+        __index    = cls,
+        __tostring = function(self)
+            local ok = self.IsValid and self:IsValid()
+            return ("Panel: %s [%s]"):format(tostring(cls.ClassName), ok and "valid" or "removed")
+        end,
+    })
+    if pnl.Construct then pnl:Construct(parent, name) end
+    if pnl.Init then pnl:Init() end
+    return pnl
 end
 
-function mtVGUI:SetWide(nS)
-  self.SX = tonumber(nS) or 0
+---------------------------------------------------------------
+-- Public API
+---------------------------------------------------------------
+-- base == nil     -> "DPanel"
+-- base == "Panel" -> "DPanel" (there is no engine Panel here)
+-- base == false   -> no base (only for the root class)
+function vgui.Register(name, tbl, base)
+    if base == nil then
+        base = "DPanel"
+    elseif base then
+        base = canon(base)
+    end
+    -- a class defined on top of its own alias (DLabel on "Label", DPanel on "Panel")
+    if base == name then
+        base = (name ~= "DPanel") and "DPanel" or false
+    end
+
+    tbl.ClassName = name
+    tbl.Base      = base
+    controls[name] = tbl
+    return tbl
 end
 
-function mtVGUI:SetTall(nS)
-  self.SY = tonumber(nS) or 0
+function vgui.RegisterTable(tbl, base)
+    if base == nil then base = "DPanel" else base = canon(base) end
+    tbl.Base = base
+    return tbl
 end
 
-function mtVGUI:GetSize()
-  return self.SX, self.SY
+function vgui.Create(classname, parent, name)
+    local cls = controls[canon(classname)]
+    if not cls then return nil end
+    return instantiate(cls, parent, name)
 end
 
-function mtVGUI:GetWide(nS)
-  return self.SX
+function vgui.GetControlTable(name)
+    return controls[canon(name)]
 end
 
-function mtVGUI:GetTall(nS)
-  return self.SY
-end
+function baseclass.Get(name) return controls[canon(name)] end
 
-function mtVGUI:SetSize(nW, nH)
-  self:SetWide(nW)
-  self:SetTall(nH)
-end
+_G.vgui = vgui
 
-function mtVGUI:SetTooltip(sT)
-  common.logStatus("["..self.__type.."]:SetTooltip("..tostring(sT)..")")
-end
+---------------------------------------------------------------
+-- Built-in controls: DPanel is the root
+---------------------------------------------------------------
+local DPanel = require("gmodlib/vgui/dpanel")
+vgui.Register("DPanel", DPanel, false)
 
-function mtVGUI:SetIndentSize(nS)
-  common.logStatus("["..self.__type.."]:SetIndentSize("..tostring(nS)..")")
-end
+local DLabel = require("gmodlib/vgui/dlabel")
+vgui.Register("DLabel", DLabel, "DPanel")
 
-function mtVGUI:UpdateColours(tS)
-  if(tS == nil) then
-    common.logStatus("["..self.__type.."]:UpdateColours(nil)"); return end
-  self.Skin = tS
-end  
+local DTextEntry = require("gmodlib/vgui/dtextentry")
+vgui.Register("DTextEntry", DTextEntry, "DLabel")
 
-function mtVGUI:SetToolTip(sT)
-  self:SetTooltip(sT)
-end
 
-function mtVGUI:AddItem(vI)
-  if(vI == nil) then
-    common.logStatus("["..self.__type.."]:AddItem(nil)"); return end
-  table.insert(self.Item, vI); self.Item.Size = self.Item.Size + 1
-  common.logStatus("["..self.__type.."]:AddItem(["..(vI.__type or type(vI)).."]"..tostring(vI)..")")
-  vI.Root = self
-end
+require("gmodlib/accessorfunc")
 
-function mtVGUI:AddNode(sN)
-  if(sN == nil) then
-    common.logStatus("["..self.__type.."]:AddNode(nil)"); return end
-  local pN = vgui.Create("DTree"); self.Node[sN] = pN; return pN
-end
+require("gmodlib/vgui/dbutton")
+require("gmodlib/vgui/dvscrollbar")
 
-function mtVGUI:IsRootNode()
-  return (self.Root == nil)
-end
-
-function mtVGUI:GetSkin()
-  return self.Skin
-end
-
-function vgui.Create(sTyp, pPar)
-  if(sTyp == "DTree") then
-    local pT = vgui_New_DTree()
-          pT.Icon = vgui_New_DImage()
-          pT.Expander = vgui_New_DExpander()
-    setMeta(pT)
-    setMeta(pT.Icon)
-    setMeta(pT.Expander)
-    return pT
-  elseif(sTyp == "DTextEntry") then
-    local pT = vgui_New_DTextEntry()
-    setMeta(pT)
-    return pT
-  elseif(sTyp == "DPanel") then
-    local pT = vgui_New_DPanel()
-    setMeta(pT)
-    return pT
-  elseif(sTyp == "DImage") then
-    local pT = vgui_New_DImage()
-    setMeta(pT)
-    return pT
-  elseif(sTyp == "DExpander") then
-    local pT = vgui_New_DExpander()
-    setMeta(pT)
-    return pT
-  end
-end
+return vgui

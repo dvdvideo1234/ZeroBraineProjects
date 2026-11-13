@@ -13,7 +13,6 @@ local luafs = require("lfs")
 local logStatus = print
 local __noval  = "N/A"
 local __tools  = {}
-local __entity = {}
 local __convar = {}
 local __nermsg = {}
 local __lang   = {}
@@ -32,25 +31,10 @@ ents = {}
 properties = {__data= {}}
 sql = {}
 net = {}
-vgui = {}
 resource = {}
 constraint = {}
-surface = {__fonts = {}}
 concommand = {__data = {}}
 hook = {__data = {}}
-
-require("gmodlib/hook")
-require("gmodlib/math")
-require("gmodlib/vgui")
-require("gmodlib/type")
-require("gmodlib/file")
-require("gmodlib/table")
-require("gmodlib/enums")
-require("gmodlib/string")
-require("gmodlib/constants")
-require("gmodlib/duplicator")
-require("gmodlib/concommand")
-require("gmodlib/math/ease")
 
 local function print_x(...)
   local args = {...}
@@ -64,6 +48,16 @@ end
 Msg      = print_x
 MsgN     = print
 MsgC     = print_x
+
+function RegisterMetaTable(n, m)
+  if(not (n and m)) then return end
+  __metatb[n] = m
+end
+
+function FindMetaTable(n)
+  if(not n) then return end
+  return __metatb[n]
+end
 
 function ErrorNoHalt(m)
   print("ERROR: "..tostring(m))
@@ -79,6 +73,10 @@ end
 
 function Color(r,g,b,a)
   return {r=r,g=g,b=b,a=a}
+end
+
+function RealTime()
+  return os.clock()
 end
 
 local UselessModels = {
@@ -117,337 +115,6 @@ type = function(any)
   if(mt and mt.__type) then
     return tostring(mt.__type)
   else return __type(any) end
-end
-
-local mtMatrix = {__type = "Matrix"}
-      mtMatrix.__tostring = function(self)
-        local sM = ""
-        for iR = 1, 4 do
-          sM = sM.."["..table.concat(self[iR], ",").."]"
-          if(self[iR+1]) then sM = sM.."\n" end
-        end; return sM
-      end
-      mtMatrix.__index = mtMatrix
-      table.insert(__metatb, mtMatrix)
-
-function Matrix()
-  local self = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; setmetatable(self, mtMatrix)
-  function self:ToTable() local tM = {}
-    for iR = 1, 4 do tM[iR] = {}
-      for iC = 1, 4 do tM[iR][iC] = self[iR][iC] end
-    end; return tM
-  end
-
-  return self
-end
-
-local mtColor = {__type = "Color", __idx = {"r", "g", "b", "a"}, __ID = 0, __fmt = "[%d]COL{%f,%f,%f,%f}"}
-      mtColor.__tostring = function(self)
-        return mtColor.__fmt:format(self.ID, self.r, self.g, self.b, self.a)
-      end
-      mtColor.__index = function(self, aK)
-        local cK = mtColor.__idx[aK]
-        return (cK and self[cK] or nil)
-      end
-      table.insert(__metatb, mtColor)
-function Color(r, g, b, a)
-  local self = {}; setmetatable(self, mtColor)
-  self.ID = mtColor.__ID; mtColor.__ID = mtColor.__ID + 1
-  self.r, self.g = r, g
-  self.b, self.a = b, (a ~= nil and a or 255)
-  return self
-end
-
-local mtVector = {__type = "Vector", __idx = {"x", "y", "z"}, __ID = 0, __fmt = "[%d]VEC{%f,%f,%f}"}
-      mtVector.__tostring = function(self)
-        return mtVector.__fmt:format(self.ID, self.x, self.y, self.z)
-      end
-      mtVector.__index = function(self, aK)
-        local cK = mtVector.__idx[aK]
-        return (cK and self[cK] or nil)
-      end
-      table.insert(__metatb, mtVector)
-function Vector(x,y,z)
-  local self = {}; setmetatable(self, mtVector)
-  self.x, self.y, self.z = 0, 0, 0
-  self.ID = mtVector.__ID; mtVector.__ID = mtVector.__ID + 1
-  if(getmetatable(x) == mtVector) then
-    self.x, self.y, self.z = x.x, x.y, x.z
-  else
-    self.x, self.y, self.z = (tonumber(x) or 0), (tonumber(y) or 0), (tonumber(z) or 0)
-  end
-  function self:DistToSqr(v)
-    local x = (self.x - v.x)
-    local y = (self.y - v.y)
-    local z = (self.z - v.z)
-    return x^2 + y^2 + z^2
-  end
-  function self:Distance(v)
-    return math.sqrt(self:DistToSqr(v))
-  end
-  function self:LengthSqr() return self.x^2 + self.y^2 + self.z^2 end
-  function self:Mul(n) self.x, self.y, self.z = n*self.x, n*self.y, n*self.z end
-  function self:Div(n) self:Mul(1/n) end
-  function self:Length() return math.sqrt(self.x^2 + self.y^2 + self.z^2) end
-  function self:Dot(v) return (self.x*v.x+self.y*v.y+self.z*v.z) end
-  function self:Add(v) self.x, self.y, self.z = (self.x+v.x), (self.y+v.y), (self.z+v.z); return self end
-  function self:Sub(v) self.x, self.y, self.z = (self.x-v.x), (self.y-v.y), (self.z-v.z); return self end
-  function self:GetSub(...) local v = Vector(self); v:Sub(...); return v end
-  function self:Unpack() return self.x, self.y, self.z end
-  function self:SetUnpacked(x, y, z) self.x, self.y, self.z = x, y, z end
-  function self:Set(v)
-    if(getmetatable(v) == mtVector) then
-      self.x, self.y, self.z = v.x, v.y, v.z
-    else
-      error("Cannot set copy from "..type(v).." to vector!")
-    end; return self    
-  end
-  function self:Negate()
-    self.x, self.y, self.z = -self.x, -self.y, -self.z
-  end
-  function self:Rotate()
-  end
-  function self:Cross(v)
-    local x = self.y * v.z - self.z * v.y
-    local y = self.z * v.x - self.x * v.z
-    local z = self.x * v.y - self.y * v.x
-    return Vector(x,y,z) -- self.x, self.y, self.z = x, y, z; return self
-  end
-  function self:Normalize() local m = self:Length()
-    if(m ~= 0) then self.x, self.y, self.z = self.x/m, self.y/m, self.z/m end
-  end
-  function self:GetNormalized() local m = self:Length()
-    if(m ~= 0) then return Vector(self.x/m, self.y/m, self.z/m) end; return Vector()
-  end
-  function self:IsZero()
-    return (self.x == 0 and self.y == 0 and self.z == 0)
-  end
-  function self:Zero()
-    self.x, self.y, self.z = 0, 0, 0
-  end
-  function self:Determinant(vec2, vec3)
-    local a, b, c = self:Unpack()
-    local d, e, f = vec2:Unpack()
-    local g, h, i = vec3:Unpack()
-    return ((a*e*i)+(b*f*g)+(d*h*c)-(g*e*c)-(h*f*a)-(d*b*i))
-  end
-  function self:Project(vec)
-    local vs = Vector(self)
-    self:Set(vec)
-    self:Normalize()
-    self:Mul(vs:Dot(self))
-  end
-  function self:GetProject(...)
-    local v = Vector(self)
-    v:Project(...)
-    return v
-  end
-  function self:AngleBetween(vec, nrm)
-    if(nrm == nil) then
-      return math.acos(self:Dot(vec) / math.sqrt(self:LengthSqr() * vec:LengthSqr()))
-    end
-    return math.atan2(self:Determinant(vec, nrm:GetNormalized()), self:Dot(vec))
-  end
-  
-  function self:AngleEx(up)
-    -- 1. Ensure our Forward vector is a clean unit vector
-    local f = self:GetNormalized()
-
-    -- 2. Find the Right vector via Left-Handed Cross Product: Right = F x Up
-    -- In Source Engine: Right = Forward:Cross(Up)
-    local r = f:Cross(up):GetNormalized()
-
-    -- 3. Re-calculate clean orthogonal Up vector to guarantee perfectly perpendicular axes
-    local u = r:Cross(f):GetNormalized()
-
-    -- 4. Calculate Yaw (Left-Handed system: Yaw acts around Z axis)
-    local yaw = math.deg(math.atan2(f.y, f.x))
-
-    -- 5. Calculate Pitch (Pitch down is positive, Pitch up is negative in Source)
-    -- Hypotenuse of the horizontal plane
-    local hL = math.sqrt(f.x * f.x + f.y * f.y)
-    local pitch = math.deg(math.atan2(-f.z, hL))
-
-    -- 6. Calculate Roll (Twist around the Forward vector)
-    -- We look at how the Right vector maps against our calculated horizontal yaw plane
-    local roll = math.deg(math.atan2(r.z, (u.z * math.cos(math.rad(pitch)))))
-
-    -- Sanity check/fallback: If looking straight up or straight down (Gymbal Lock)
-    if hL < 0.001 then
-        yaw = math.deg(math.atan2(-r.x, r.y))
-        roll = 0
-    end
-
-    -- Return the final GMod Angle object
-    return Angle(pitch, yaw, roll)
-  end
-  
-  --[[
-   * This function traces both lines and if they are not parallel
-   * calculates their point of intersection. Every ray is
-   * determined by an origin /vO/ and direction /vD/
-   * On success returns the length and point of the closest
-   * intersect distance to the orthogonal connecting line.
-   * The true center is calculated by using the last two return values
-   * Takes:
-   *   vO1 --> Position origin of the first ray ( self )
-   *   vD1 --> Direction of the first ray
-   *   vO2 --> Position origin of the second ray
-   *   vD2 --> Direction of the second ray
-   * Returns:
-   *   f1 --> Intersection fraction of the first ray
-   *   f2 --> Intersection fraction of the second ray
-   *   x1 --> Intersection location of the first ray
-   *   x2 --> Intersection location of the second ray
-   *   xx --> Intersection location of both rays
-  ]]--
-  function self:IntersectRay(vD1, vO2, vD2)
-    local d1 = vD1:GetNormalized()
-    if(d1:Length() == 0) then return nil end
-    local d2 = vD2:GetNormalized()
-    if(d2:Length() == 0) then return nil end
-    local dx, oo = d1:Cross(d2), vO2:GetSub(self)
-    local dn = (dx:Length())^2
-    if(dn <= 0) then return nil end
-    local f1 = oo:Determinant(d2, dx) / dn
-    local f2 = oo:Determinant(d1, dx) / dn
-    return f1, f2
-  end
-
-  return self
-end
-
-mtVector.__add = function(o1,o2)
-  local v1 = isvector(o1) and o1 or Vector(o1)
-  local v2 = isvector(o2) and o2 or Vector(o2)
-  local ov = Vector(); ov:Set(v1); ov:Add(v2); return ov
-end
-
-mtVector.__sub = function(o1,o2)
-  local v1 = isvector(o1) and o1 or Vector(o1)
-  local v2 = isvector(o2) and o2 or Vector(o2)
-  local ov = Vector(); ov:Set(v1); ov:Sub(v2); return ov
-end
-
-mtVector.__mul = function(o1,o2)
-  local v1 = isvector(o1) and o1
-  local v2 = isvector(o2) and o2
-  local ov = Vector()
-  if(v1 and v2) then ov:Set(v1); ov:Mul(ov:Dot(v2)); return ov end
-  if(v1 and tonumber(o2)) then ov:Set(v1); ov:Mul(tonumber(o2)); return ov end
-  if(v2 and tonumber(o1)) then ov:Set(v2); ov:Mul(tonumber(o1)); return ov end
-  Msg("Cannot preform multiplication between <"..type(o1).."/"..type(o2)..">")
-  return ov
-end
-
-local mtAngle = {__type = "Angle", __idx = {"p", "y", "r"}, __ID = 0, __fmt = "[%d]ANG{%f,%f,%f}"}
-      mtAngle.__tostring = function(self)
-        return mtAngle.__fmt:format(self.ID, self.p, self.y, self.r)
-      end
-      mtAngle.__index = function(self, aK)
-        local cK = mtAngle.__idx[aK]
-        return (cK and self[cK] or nil)
-      end
-      table.insert(__metatb, mtAngle)
-function Angle(p,y,r)
-  local self = {}; setmetatable(self, mtAngle)
-  self.ID = mtAngle.__ID; mtAngle.__ID = mtAngle.__ID + 1
-  self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0
-  function self:Set(p,y,r)
-    if(getmetatable(p) == mtAngle) then self.p, self.y, self.r = p.p, p.y, p.r;
-    else self.p, self.y, self.r = tonumber(p) or 0, tonumber(y) or 0, tonumber(r) or 0; end
-  end
-  function self:Negate()
-    self.p, self.y, self.r = -self.p, -self.y, -self.r
-  end
-  function self:IsZero()
-    return (self.p == 0 and self.y == 0 and self.r == 0)
-  end
-  function self:Zero()
-    self.p, self.y, self.r = 0, 0, 0
-  end
-  function self:Forward()
-    -- GLua math functions expect radians
-    local p = math.rad(self.p)
-    local y = math.rad(self.y)
-
-    -- Calculate the forward directional vector components
-    local vx = math.cos(p) * math.cos(y)
-    local vy = math.cos(p) * math.sin(y)
-    local vz = -math.sin(p)
-
-    return Vector(vx, vy, vz)
-  end
-  function self:Right()
-    local p = math.rad(self.p)
-    local y = math.rad(self.y)
-    local r = math.rad(self.r)
-
-    local vx = -1 * math.sin(r) * math.sin(p) * math.cos(y) + math.cos(r) * math.sin(y)
-    local vy = -1 * math.sin(r) * math.sin(p) * math.sin(y) - math.cos(r) * math.cos(y)
-    local vz = -1 * math.sin(r) * math.cos(p)
-
-    return Vector(vx, vy, vz)
-  end
-  function self:Up()
-    local p = math.rad(self.p)
-    local y = math.rad(self.y)
-    local r = math.rad(self.r)
-
-    local vx = math.cos(r) * math.sin(p) * math.cos(y) + math.sin(r) * math.sin(y)
-    local vy = math.cos(r) * math.sin(p) * math.sin(y) - math.sin(r) * math.cos(y)
-    local vz = math.cos(r) * math.cos(p)
-
-    return Vector(vx, vy, vz)
-  end
-  function self:RotateAroundAxis(axis, degrees)
-    -- 1. Extract current local coordinate space axes from this angle
-    local f = self:Forward()
-    local r = self:Right()
-    local u = self:Up()
-
-    -- 2. Setup axis-angle rotation math variables
-    local a = axis:GetNormalized()
-    local rad = math.rad(degrees)
-    local cosTheta = math.cos(rad)
-    local sinTheta = math.sin(rad)
-    local oneMinusCos = 1.0 - cosTheta
-
-    -- Helper function to rotate a single 3D vector using Rodrigues' Rotation Formula matrix
-    local function rotateVector(v)
-      -- Matrix row multiplications
-      local x = v.x * (cosTheta + a.x * a.x * oneMinusCos) 
-              + v.y * (a.x * a.y * oneMinusCos - a.z * sinTheta) 
-              + v.z * (a.x * a.z * oneMinusCos + a.y * sinTheta)
-
-      local y = v.x * (a.y * a.x * oneMinusCos + a.z * sinTheta) 
-              + v.y * (cosTheta + a.y * a.y * oneMinusCos) 
-              + v.z * (a.y * a.z * oneMinusCos - a.x * sinTheta)
-
-      local z = v.x * (a.z * a.x * oneMinusCos - a.y * sinTheta) 
-              + v.y * (a.z * a.y * oneMinusCos + a.x * sinTheta) 
-              + v.z * (cosTheta + a.z * a.z * oneMinusCos)
-
-      return Vector(x, y, z)
-    end
-
-    -- 3. Rotate our direction vectors into their new orientations
-    local rotatedForward = rotateVector(f)
-    local rotatedUp      = rotateVector(u)
-
-    -- 4. Feed the new perpendicular vectors into AngleEx to resolve the final Angle
-    local newAngle = rotatedForward:AngleEx(rotatedUp)
-
-    -- 5. Mutate the current angle object matching GMod's behavior (or return it)
-    self.p = newAngle.p
-    self.y = newAngle.y
-    self.r = newAngle.r
-
-    return self
-  end
-  function self:Unpack() return self.p, self.y, self.r end
-  function self:SetUnpacked(p, y, r) self.p, self.y, self.r = p, y, r end
-  return self
 end
 
 function CompileFile(nS)
@@ -799,65 +466,6 @@ function properties.Add(sN, tD)
   return tD
 end
 
-local mtEntity = {__type = "Entity"}
-      mtEntity.__tostring = function(oE) return ("ENT{"..oE:EntIndex().."}{"..oE:GetClass().."}") end
-      mtEntity.__index = mtEntity
-      table.insert(__metatb, mtEntity)
-  function mtEntity:IsValid() return true end
-  function mtEntity:IsPlayer() return false end
-  function mtEntity:IsVehicle() return false end
-  function mtEntity:IsNPC() return false end
-  function mtEntity:IsRagdoll() return false end
-  function mtEntity:IsWeapon() return false end
-  function mtEntity:IsWidget() return false end
-  function mtEntity:GetTable() return {} end
-      
-function ents.Create(cla)
-  local self = {}; setmetatable(self, mtEntity)
-  local mcla = tostring(cla or "prop_physics")
-  local mid = (#__entity + 1)
-  local mpos = Vector(0,0,0)
-  local mang = Angle(0,0,0)
-  local mmodel = ""
-  local matach = {ID = {[1]={Pos=Vector(6,6,6), Ang=Angle(7,7,7)}}, Nam = {["test"] = 1}}
-  local mbdygrp = {{id=1},{id=2},data={1,2,3,4,5}}
-  function self:GetClass() return mcla end
-  function self:SetClass(vC) mcla = vC end
-  function self:EntIndex() return mid end
-  function self:GetPos() return mpos end
-  function self:SetPos(vP) mpos:Set(vP) end
-  function self:GetAngles() return mang end
-  function self:SetAngles(vA) mang:Set(vA) end
-  function self:GetBodyGroups() return mbdygrp end
-  function self:GetBodygroup(id) return mbdygrp.data[id] end
-  function self:SetCollisionGroup() return nil end
-  function self:SetSolid() return nil end
-  function self:SetMoveType() return nil end
-  function self:SetNotSolid() return nil end
-  function self:SetNoDraw() return nil end
-  function self:SetModel(sM) mmodel = sM end
-  function self:GetModel() return mmodel end
-  function self:LookupAttachment(sK) return matach.Nam[sK] end
-  function self:GetAttachment(iD) return matach.ID[iD] end
-  function self:CallOnRemove() return nil end
-  function self:IsWorld() return self == game.__world end
-  function self:Remove() Msg("Remove: "..tostring(self)) end
-  function self:DeleteOnRemove(e) Msg(tostring(self)..":DeleteOnRemove("..tostring(e)..")") end
-  table.insert(__entity, mid, self)
-  return self
-end
-
-ents.CreateClientProp = ents.Create
-
-function Entity(id)
-  if(id == nil) then return end
-  return __entity[id]
-end
-
-function ents.GetAll()
-  return __entity
-end
-
 function net.Start(sK)
   if(__nermsg[sK]) then tableEmpty(__nermsg[sK])
   else __nermsg[sK] = {} end
@@ -898,11 +506,6 @@ function game.GetWorld()
   game.__world = ents.Create("game_worldspawn")
   game.__world.IsValid = function(weld) return false end
   return game.__world
-end
-
-function surface.CreateFont(sK, tD)
-  if(not sK) then return nil end
-  surface.__fonts[sK] = tD
 end
 
 function constraint.Weld(e1, e2, b1, b2, frc, noc, bdel)
@@ -960,24 +563,47 @@ function FindMetaTable(cn)
   end; return nil
 end
 
+CreateConVar("gmod_language")
+
+require("gmodlib/hook")
+require("gmodlib/math")
+require("gmodlib/type")
+require("gmodlib/file")
+require("gmodlib/table")
+require("gmodlib/enums")
+require("gmodlib/string")
+require("gmodlib/surface")
+require("gmodlib/math/ease")
+require("gmodlib/color")
+require("gmodlib/vector")
+require("gmodlib/angle")
+require("gmodlib/matrix")
+require("gmodlib/entity")
+
 local __typedt = {
   {"number"},
   {"string"},
   {"boolean", "bool"},
   {"function"},
-  {"table"},
-  {mtColor.__type, mtColor.__type:lower()},
-  {mtVector.__type, mtVector.__type:lower()},
-  {mtAngle.__type, mtAngle.__type:lower()},
-  {mtMatrix.__type, mtMatrix.__type:lower()},
-  {mtEntity.__type, mtEntity.__type:lower()}
+  {"table"}
 }
+
+for k, v in pairs(__metatb) do
+  table.insert(__typedt, {v.__type, v.__type:lower()})
+end
 
 for i = 1, #__typedt do
   local v = __typedt[i]
   local n =("is"..(v[2] or v[1])) 
   local f = function(x) return type(x) == v[1] end
+  print("Define:", n)
   rawset(_G, n, f)
 end
 
-CreateConVar("gmod_language")
+require("gmodlib/derma")
+require("gmodlib/vgui")
+require("gmodlib/constants")
+require("gmodlib/duplicator")
+require("gmodlib/concommand")
+
+

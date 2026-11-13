@@ -1,12 +1,13 @@
 
-local COLOR = {}
+local COLOR = {__type = "Color"}
+
 COLOR.__index = COLOR
 
 --[[---------------------------------------------------------
 	To easily create a color table
 -----------------------------------------------------------]]
 function Color( r, g, b, a )
-
+  
 	return setmetatable( {
 		r = math.min( tonumber( r ), 255 ),
 		g = math.min( tonumber( g ), 255 ),
@@ -363,3 +364,5 @@ function COLOR:AddBlackness( blacknessAdd )
 	ColorCopy( self, HWBToColor( hue, whiteness, blackness ) )
 
 end
+
+RegisterMetaTable("Color", COLOR)
