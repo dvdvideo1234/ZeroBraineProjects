@@ -9,7 +9,6 @@ local drpath = require("directories")
       drpath.addBase("D:/Programs/LuaIDE")
       drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
      
-
 local com = require("common")
 local cmp = require("colormap")
 local sbs, ibs = drpath.getBase()
@@ -54,7 +53,7 @@ function runScript()
   end
 
   dofile(chk.."out.lua")
-  
+  drpath.ersRec("out.lua", com.normFolder(chk))
   fC:close()
 end
 
@@ -81,5 +80,3 @@ if(luapad._sG) then
 else
   print("SERVER --- Source:", luapad.GLOB_CONFIG.DATADR[2], "The syntax _sG is missing for "..tostring(luapad).."!")
 end
-
-drpath.ersRec("out.lua", com.normFolder(chk))
