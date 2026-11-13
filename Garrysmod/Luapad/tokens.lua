@@ -28,3 +28,5 @@ dofile(rps[ibs].."/lua/autorun/luapad_editor.lua")
 print(Vector(), Angle(), Matrix(), Color(0,0,0,0), ents.Create("asdasd"))
 
 local tx = vgui.Create("DLuapadEditor")
+
+tx:Paint(800, 400)
