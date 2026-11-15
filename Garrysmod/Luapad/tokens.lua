@@ -7,14 +7,14 @@ local drpath = require("directories")
                   "ZeroBraineProjects/Garrysmod",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
      
 common = require("common")
 local cmp = require("colormap")
 local sbs, ibs = drpath.getBase()
 local chk = common.stringGetChunkPath():gsub("\\", "/"):match(".-/ZeroBraineProjects/(.*)")
 local rps = {
-  "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME",
+  "I:/SteamLibrary/steamapps/common/GarrysMod/garrysmod/addons/Luapad",
   "C:/Users/ddobromirov/Documents/Lua-Projs/VerControl/Luapad-ME"
 }
 
@@ -56,6 +56,9 @@ function configureLuapad()
 end
 
 configureLuapad()
+
+luapad.debugmode = false
+rawset(_G, "USE_PATTERN", true)
 
 local tx = vgui.Create("DLuapadEditor")
 tx:SetText(file.Read(chk.."/luapad/test.txt"))

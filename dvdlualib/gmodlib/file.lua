@@ -1,120 +1,132 @@
+-- GMod `file` library running on the real disk. Only dependency: LuaFileSystem.
+-- Open/Exists/IsDir/Size/Time/Find/Delete/CreateDir/Rename are engine functions in
+-- GMod, so they are implemented here. Read/Write/Append are the public
+-- garrysmod/lua/includes/extensions/file.lua, verbatim (`!` -> `not`, `||` -> `or`).
+-- The gamePath argument ("DATA", "GAME", ...) is ignored: paths are used as given.
+
+local lfs = require("lfs")
+
 file = file or {}
 
-function file.Open(n, m)
-  local s, f, e = pcall(io.open, n, m)
-  if(not (s and f)) then
-    return logStatus("file.Open("..m.."): "..tostring(e))
-  end
-  local mt = getmetatable(f)
-  mt.Write = mt.write
-  mt.Close = mt.close
-  mt.Flush = mt.flush
-  mt.ReadLine = function(f) return f:read("*line") end
-  mt.EndOfFile = function(f)
-    local p = f:seek() -- Store position
-    local t = f:read(); f:seek("set", p)
-    return common.getPick(t, false, true)
-  end
-  mt.Read = function(f)
-    return f:read("*all")
-  end
-  mt.Tell = function(f)
-    return f:seek()
-  end
-  mt.Seek = function(f, n)
-    return f:seek("set", n)
-  end
-  mt.Size = function(f)
+-- Give io file handles the GMod File methods (once, on the shared metatable).
+do
+  local mt = getmetatable(io.stdout)
+  local m = (type(mt.__index) == "table") and mt.__index or mt -- 5.1: mt itself, 5.2+: __index table
+
+  m.Write = m.write
+  m.Close = m.close
+  m.Flush = m.flush
+  m.Tell  = function(f) return f:seek() end
+  m.Seek  = function(f, n) f:seek("set", n) end
+  m.Read  = function(f, n) return f:read(n or "*a") end -- read(0) at EOF gives nil, hence the check in file.Read
+
+  m.Size = function(f)
     local c = f:seek()
-    local s = f:seek("end") 
+    local s = f:seek("end")
     f:seek("set", c)
     return s
   end
-  return f
-end
 
-function file.Exists(n)
-  local a,b,c,d = pcall(os.execute, "cd "..n.." >nul 2>&1")
-  if(a and b and c == "exit" and d == 0) then return true end
-  local s, f = pcall(io.open, n, "rb")
-  if(s and f) then f:close(); return true; end
-  return false
-end
+  m.EndOfFile = function(f) return f:read(0) == nil end
 
-function file.IsDir(n)
-  if(type(n) ~= "string") then return false end
-  local s, r = pcall(os.execute, "cd /d "..n)
-  if(not s) then r = false end
-  if(not r) then r = false end
-  return r
-end
-
-function file.Delete(n)
-  local p = common.stringGetFilePath(n)
-  local n = common.stringGetFileName(n)
-  local a,b,c = os.execute("cd "..p.." && del /f "..n.." >nul 2>&1")
-end
-
-function file.Append(n, c)
-  local F = file.Open(n, "ab")
-  if(not F) then
-    return logStatus("file.Append: Nofile: "..tostring(n))
+  m.ReadLine = function(f) -- keeps the trailing newline, "" at end of file
+    local p = f:seek()
+    local l = f:read("*l")
+    if not l then return "" end
+    if f:seek() - p > #l then l = l .. "\n" end
+    return l
   end
-  F:seek("end")
-  F:write(tostring(c))
-  F:flush()
-  F:close()
 end
 
-function file.CreateDir(path)
--- Normalize backslashes to forward slashes for consistent parsing
-    local norm = path:gsub("[\\/]+", "/")
-          norm = norm:gsub("%.%./", "")
-          norm = norm:gsub("^[/]+" , "")
-          norm = norm:gsub("[/]+$", "")
-    
-    local accumulated = ""
-    
-    -- Preserve leading slash for absolute paths
-    if norm:sub(1, 1) == "/" then
-        accumulated = "/"
+function file.Open(name, mode, path)
+  return (io.open(name, mode))
+end
+
+function file.Exists(name, path)
+  return lfs.attributes(name, "mode") ~= nil
+end
+
+function file.IsDir(name, path)
+  return lfs.attributes(name, "mode") == "directory"
+end
+
+function file.Size(name, path)
+  local a = lfs.attributes(name)
+  if not a then return -1 end
+  return (a.mode == "directory") and 0 or a.size
+end
+
+function file.Time(name, path)
+  return lfs.attributes(name, "modification") or 0
+end
+
+function file.Delete(name, path)
+  if lfs.attributes(name, "mode") ~= "file" then return false end
+  return os.remove(name) ~= nil
+end
+
+function file.Rename(from, to)
+  return os.rename(from, to) ~= nil
+end
+
+function file.CreateDir(name)
+  local norm = name:gsub("\\", "/")
+  local acc = (norm:sub(1, 1) == "/") and "/" or ""
+  for dir in norm:gmatch("[^/]+") do
+    acc = (acc == "" or acc == "/") and (acc .. dir) or (acc .. "/" .. dir)
+    local mode = lfs.attributes(acc, "mode")
+    if not mode then
+      if not lfs.mkdir(acc) then return end
+    elseif mode ~= "directory" then
+      return
     end
-    
-    for dir in norm:gmatch("[^/]+") do
-        if accumulated == "" or accumulated == "/" then
-            accumulated = accumulated .. dir
-        else
-            accumulated = accumulated .. "/" .. dir
-        end
-        
-        -- Check if the directory already exists
-        local mode = lfs.attributes(accumulated, "mode")
-        if not mode then
-            local ok, err = lfs.mkdir(accumulated)
-            if not ok then
-                return nil, err
-            end
-        elseif mode ~= "directory" then
-            return nil, "Path exists and is not a directory: " .. accumulated
-        end
+  end
+end
+
+-- Returns files, folders. Wildcards * and ? in the last path component.
+-- sorting: "nameasc" (default), "namedesc", "dateasc", "datedesc"
+function file.Find(name, path, sorting)
+  local dir, pat = name:match("^(.*[/\\])([^/\\]*)$")
+  if not dir then dir, pat = "./", name end
+
+  pat = pat:lower():gsub("[%^%$%(%)%%%.%[%]%+%-]", "%%%0")
+  pat = pat:gsub("%*", ".*")
+  pat = "^" .. pat:gsub("%?", ".") .. "$"
+
+  local files, folders = {}, {}
+  local ok, iter, state, init = pcall(lfs.dir, dir)
+  if not ok then return files, folders end
+
+  for entry in iter, state, init do
+    if entry ~= "." and entry ~= ".." and entry:lower():match(pat) then
+      local a = lfs.attributes(dir .. entry)
+      if a then
+        local list = (a.mode == "directory") and folders or files
+        list[#list + 1] = { n = entry, t = a.modification }
+      end
     end
-    
-    return true
+  end
+
+  local s = tostring(sorting or "nameasc"):lower()
+  local byDate, desc = (s:sub(1, 4) == "date"), (s:sub(-4) == "desc")
+  local function cmp(a, b)
+    if byDate and a.t ~= b.t then
+      if desc then return a.t > b.t else return a.t < b.t end
+    end
+    if desc and not byDate then return a.n:lower() > b.n:lower() end
+    return a.n:lower() < b.n:lower()
+  end
+
+  for _, list in ipairs({ files, folders }) do
+    table.sort(list, cmp)
+    for i, e in ipairs(list) do list[i] = e.n end
+  end
+  return files, folders
 end
 
-function file.Find(sName, sPath, sSort)
-  local sSrt, sArg = tostring(sSort or ""), ""
-  local sCol = (sSort and sSrt:sub(1,4) or nil)
-  local sMod = (sSort and sSrt:sub(5,-1) or nil)
-  if(sMod) then sMod = ((sMod == "desc") and "-" or "") end
-  if(sCol == "date" or sCol == "name") then
-    sArg = " /O:"..sMod..sCol:sub(1,1):upper()
-  end; return common.fileFind(sName, sArg)
-end
-
-function file.Time(sF)
-  return lfs.attributes(sF, "modification") or 0
-end
+--------------------------------------------------------------------------------
+-- garrysmod/lua/includes/extensions/file.lua
+--------------------------------------------------------------------------------
 
 function file.Read( filename, path )
 
@@ -125,7 +137,6 @@ function file.Read( filename, path )
 	if ( not f ) then return nil end
 
 	local str = f:Read( f:Size() )
-
 	f:Close()
 
 	if ( not str ) then str = "" end
