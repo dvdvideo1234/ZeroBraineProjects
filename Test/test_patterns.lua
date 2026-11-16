@@ -11,8 +11,8 @@ local drpath = require("directories")
 require("gmodlib")
 local common = require("common")
 
-local str = "asd[==[as7"
+local str = "--[[ aaaa ]] bbbb"
 
-local res = str:match("%[=*%[")
+local a, b = str:find(".*".."%]=*%]", 5)
 
-print(res)
+print(a, b)

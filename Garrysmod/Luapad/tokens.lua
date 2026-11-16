@@ -7,7 +7,7 @@ local drpath = require("directories")
                   "ZeroBraineProjects/Garrysmod",
                   "ZeroBraineProjects/ExtractWireWiki")
       drpath.addBase("D:/Programs/LuaIDE")
-      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(1)
+      drpath.addBase("C:/Programs/ZeroBraineIDE").setBase(2)
      
 common = require("common")
 local cmp = require("colormap")
@@ -58,6 +58,7 @@ end
 configureLuapad()
 
 luapad.debugmode = false
+luapad.debugmode_row = true
 rawset(_G, "USE_PATTERN", true)
 
 local tx = vgui.Create("DLuapadEditor")
