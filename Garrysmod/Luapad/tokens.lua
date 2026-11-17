@@ -63,7 +63,7 @@ rawset(_G, "USE_PATTERN", true)
 
 local tx = vgui.Create("DLuapadEditor")
 tx:SetText(file.Read(chk.."/luapad/test.txt"))
-tx:SetSize(800, 400)
+tx:SetSize(800, 800)
 tx:PerformLayout()
 print("Size:", table.concat(tx:GetTable().Size, "|"))
 tx:Paint(tx:GetSize())

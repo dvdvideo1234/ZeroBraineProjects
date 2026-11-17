@@ -13,3 +13,4 @@ require("gmodlib")
 local com = require("common")
 local cpx = require("complex")
 
+local a = 123..
