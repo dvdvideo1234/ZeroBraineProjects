@@ -57,13 +57,13 @@ end
 
 configureLuapad()
 
-luapad.debugmode = false
-luapad.debugmode_row = true
-rawset(_G, "USE_PATTERN", true)
+luapad.debugmode = true
 
 local tx = vgui.Create("DLuapadEditor")
 tx:SetText(file.Read(chk.."/luapad/test.txt"))
-tx:SetSize(800, 800)
+tx:SetSize(800, 2000)
 tx:PerformLayout()
 print("Size:", table.concat(tx:GetTable().Size, "|"))
 tx:Paint(tx:GetSize())
+
+local a = 0xff

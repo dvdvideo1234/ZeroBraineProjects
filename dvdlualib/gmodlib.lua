@@ -23,7 +23,6 @@ local __metatb = {}
 game = {__single = true}
 language = {}
 cleanup = {}
-util = {}
 bit  = {}
 cvars = {__data={}}
 ents = {}
@@ -289,46 +288,6 @@ function language.List() return __lang end
 
 function cleanup.Register() end
 
-function util.IsValidModel(sMdl)
-  if(string.sub(tostring(sMdl),-4,-1) == ".mdl") then return true end
-  return false
-end
-
-function util.GetPlayerTrace(pl)
-  return {}
-end
-
-function util.TraceLine(dt)
-  return {
-    Entity = 0,
-    Fraction = 1,
-    FractionLeftSolid = 0,
-    Hit = false,
-    HitBox = 0,
-    HitGroup = 0,
-    HitNoDraw = false,
-    HitNonWorld = false,
-    HitNormal = Vector(0,0,1),
-    HitPos = Vector(10,10,10),
-    HitSky = false,
-    HitTexture = "**studio**",
-    HitWorld = false,
-    MatType = 0,
-    Normal = 0.5,
-    PhysicsBone = 0,
-    StartPos = Vector(0,0,0),
-    SurfaceProps = 0,
-    StartSolid = false,
-    AllSolid = false,
-    SurfaceFlags = 0,
-    DispFlags = 0,
-    Contents = 0    
-  }
-end
-
-function util.AddNetworkString()
-end
-
 function bit.bor() end
 
 function cvars.RemoveChangeCallback(sVar, sKey)
@@ -482,14 +441,12 @@ for i = 1, #__typedt do
   local v = __typedt[i]
   local n =("is"..(v[2] or v[1])) 
   local f = function(x) return type(x) == v[1] end
-  print("Define:", n)
   rawset(_G, n, f)
 end
 
+require("gmodlib/util")
 require("gmodlib/derma")
 require("gmodlib/vgui")
 require("gmodlib/constants")
 require("gmodlib/duplicator")
 require("gmodlib/concommand")
-
-
